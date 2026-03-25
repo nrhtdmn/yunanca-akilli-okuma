@@ -1,10 +1,11 @@
 {
-  "name": "Kelime Öğrenme Uygulamam",
-  "short_name": "KelimeApp",
+  "name": "Yunanca Akıllı Okuyucu - Ultimate Edition",
+  "short_name": "YunancaOkuyucu",
+  "description": "Yunanca metinleri analiz eden, kelime anlamlarını anında sunan ve akıllı testlerle dil öğrenimini hızlandıran kapsamlı bir okuma asistanı.",
   "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "background_color": "#0d0f14",
+  "theme_color": "#4f8ef7",
   "icons": [
     {
       "src": "icon-192.png",
