@@ -19,3 +19,33 @@
     }
   ]
 }
+"screenshots": [
+  {
+    "src": "screenshot-mobile1.png",
+    "sizes": "1080x1920",
+    "type": "image/png",
+    "form_factor": "narrow",
+    "label": "Yunanca Akıllı Okuma Mobil Görünümü"
+  },
+   {
+    "src": "screenshot-mobile2.png",
+    "sizes": "1080x1920",
+    "type": "image/png",
+    "form_factor": "narrow",
+    "label": "Yunanca Akıllı Okuma Mobil Görünümü"
+  },
+   {
+    "src": "screenshot-mobile3.png",
+    "sizes": "1080x1920",
+    "type": "image/png",
+    "form_factor": "narrow",
+    "label": "Yunanca Akıllı Okuma Mobil Görünümü"
+  },
+  {
+    "src": "screenshot-desktop.png",
+    "sizes": "1920x1080",
+    "type": "image/png",
+    "form_factor": "wide",
+    "label": "Yunanca Akıllı Okuma Masaüstü Paneli"
+  }
+]
