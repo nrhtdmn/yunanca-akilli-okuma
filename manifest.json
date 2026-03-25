@@ -1,5 +1,6 @@
 {
-  "name": "Yunanca Akıllı Okuyucu - Ultimate Edition",
+  "id": "/yunanca-akilli-okuma/",
+  "name": "Yunanca Akıllı Okuyucu",
   "short_name": "YunancaOkuyucu",
   "description": "Yunanca metinleri analiz eden, kelime anlamlarını anında sunan ve akıllı testlerle dil öğrenimini hızlandıran kapsamlı bir okuma asistanı.",
   "start_url": "index.html",
