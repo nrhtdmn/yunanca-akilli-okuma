@@ -39,21 +39,21 @@
     {
       "src": "screenshot-mobile1.png",
       "sizes": "1080x1920",
-      "type": "image/png",
+      "type": "image/jpeg",
       "form_factor": "narrow",
       "label": "Yunanca Akıllı Okuma Mobil Görünümü"
     },
     {
       "src": "screenshot-mobile2.png",
       "sizes": "1080x1920",
-      "type": "image/png",
+      "type": "image/jpeg",
       "form_factor": "narrow",
       "label": "Yunanca Akıllı Okuma Kelime Listesi"
     },
     {
       "src": "screenshot-mobile3.png",
       "sizes": "1080x1920",
-      "type": "image/png",
+      "type": "image/jpeg",
       "form_factor": "narrow",
       "label": "Yunanca Akıllı Okuma Test Ekranı"
     },
