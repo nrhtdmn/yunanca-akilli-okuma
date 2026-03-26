@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yunanca Akıllı Okuyucu v18.1 - Tam Sürüm & Oto Altyazı</title>
+<title>Yunanca Akıllı Okuyucu v19.0 - Video Arşivi</title>
 <style>
   :root {
     --bg: #0d0f14;
@@ -64,38 +64,9 @@
   .sync-btn-up { background: var(--border); color: white; display: flex; align-items: center; }
   
   .tts-speed-control { display: flex; align-items: center; gap: 8px; }
-   /* Ana Kaydırıcı Çubuğu */
-.tts-speed-control input[type="range"] { 
-  -webkit-appearance: none; 
-  width: 100px; 
-  height: 4px; 
-  background: var(--border); 
-  border-radius: 2px; 
-  outline: none; 
-  cursor: pointer;
-}
-
-/* Chrome, Safari, Opera ve Edge için Kaydırıcı Düğmesi (Thumb) */
-.tts-speed-control input[type="range"]::-webkit-slider-thumb { 
-  -webkit-appearance: none; 
-  width: 16px; 
-  height: 16px; 
-  border-radius: 50%; 
-  background: var(--tts-color); 
-  cursor: pointer;
-  border: none;
-  margin-top: -6px; /* Çubuğun ortasında durması için gerekebilir */
-}
-
-/* Firefox için Kaydırıcı Düğmesi */
-.tts-speed-control input[type="range"]::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--tts-color);
-  cursor: pointer;
-  border: none;
-}
+  .tts-speed-control input[type="range"] { -webkit-appearance: none; appearance: none; width: 100px; height: 4px; background: var(--border); border-radius: 2px; outline: none; cursor: pointer; }
+  .tts-speed-control input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--tts-color); cursor: pointer; border: none; margin-top: -6px; }
+  .tts-speed-control input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--tts-color); cursor: pointer; border: none; }
   .tts-speed-label { color: var(--tts-color); font-size: 0.85rem; font-weight: bold; min-width: 30px; }
   #tts-status { font-size: 0.8rem; color: var(--tts-color); background: rgba(167,139,250,0.1); padding: 4px 10px; border-radius: 20px; display: none; align-items: center; gap: 5px; }
   #tts-status.visible { display: flex; }
@@ -203,17 +174,32 @@
   .mistakes-table th, .mistakes-table td { padding: 12px; border-bottom: 1px solid var(--border); }
   .mistakes-table th { color: var(--accent2); background: #0f1219;}
 
-  /* === VİDEO MODU SİSTEMİ === */
+  /* === YENİ: VİDEO ARŞİVİ SİSTEMİ === */
   #section-video { display: none; animation: fadeIn 0.4s ease; }
   .video-setup-box { background: var(--surface); border: 1px solid var(--border); padding: 25px; border-radius: 15px; margin-bottom: 20px; box-shadow: var(--shadow); }
-  .video-setup-box textarea { width: 100%; height: 150px; font-family: monospace; font-size: 0.9rem; margin-top:10px; background: #090b10; color: var(--text); border: 1px solid var(--border); padding:10px; border-radius: 8px;}
+  
+  /* Arşiv Grid Sistemi */
+  .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; }
+  .video-card { background: #090b10; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; cursor: pointer; transition: all 0.3s ease; display: flex; flex-direction: column; }
+  .video-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 20px rgba(79, 142, 247, 0.2); }
+  .video-card-thumb { width: 100%; aspect-ratio: 16/9; background: #000; position: relative; overflow: hidden; }
+  .video-card-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+  .video-card:hover .video-card-thumb img { transform: scale(1.05); }
+  .video-card-level { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); color: var(--accent2); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; border: 1px solid rgba(232, 201, 109, 0.3); backdrop-filter: blur(4px); }
+  .video-card-content { padding: 15px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+  .video-card-title { font-size: 1.05rem; font-weight: 600; color: var(--text); margin-bottom: 10px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .video-card-play { display: inline-block; background: rgba(79, 142, 247, 0.1); color: var(--accent); padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; text-align: center; border: 1px solid rgba(79, 142, 247, 0.2); transition: 0.2s;}
+  .video-card:hover .video-card-play { background: var(--accent); color: #fff; }
+
+  /* Player Alanı */
   .yt-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 15px; margin-bottom: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); background: #000; }
   .yt-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-  
   .subtitle-container { background: var(--surface); border: 1px solid var(--border); padding: 20px; border-radius: 15px; text-align: center; min-height: 150px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: var(--shadow); transition: all 0.3s ease; }
   .sub-gr-text { font-size: 1.8rem; font-weight: bold; color: var(--accent2); margin-bottom: 10px; line-height: 1.4; transition: 0.2s;}
   .sub-tr-text { font-size: 1.1rem; color: var(--text); border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; width: 100%; transition: 0.2s;}
   .subtitle-container.active { border-color: var(--accent); box-shadow: 0 0 20px rgba(79, 142, 247, 0.2); background: linear-gradient(180deg, #13161e 0%, #1a1e29 100%);}
+  .player-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+  .active-video-title { color: var(--accent); font-size: 1.1rem; font-weight: 600; margin: 0; }
 
   /* === POPUP === */
   #wpop { position: fixed; background: #151923; border: 1px solid var(--accent); padding: 20px; border-radius: 15px; display: none; z-index: 9999; width: min(420px, 95vw); left: 50%; transform: translateX(-50%); bottom: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); animation: slideUp 0.3s ease; }
@@ -250,7 +236,6 @@
 
   #toast { position: fixed; top: 20px; right: 20px; background: var(--accent2); color: #000; padding: 12px 25px; border-radius: 10px; display: none; z-index: 10000; font-weight: 700; box-shadow: 0 5px 20px rgba(0,0,0,0.3); animation: slideInRight 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
   @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-  .tts-unsupported { background: rgba(248, 113, 113, 0.1); border: 1px solid rgba(248, 113, 113, 0.3); border-radius: 8px; padding: 8px 14px; font-size: 0.82rem; color: var(--error); display: none; }
 
   @media (max-width: 768px) {
     .quiz-options-grid { grid-template-columns: 1fr; }
@@ -258,9 +243,9 @@
     .quiz-big-word { font-size: 2.2rem; }
     #wp-gr { font-size: 1.2rem; }
     .data-sync-panel, .tts-panel { flex-direction: column; align-items: flex-start; }
-    .tts-speed-control input[type="range"] { width: 80px; }
     .exit-quiz-btn { position: static; display: block; margin: 0 auto 15px auto; width: fit-content; }
     .sub-gr-text { font-size: 1.3rem; }
+    .video-grid { grid-template-columns: 1fr; }
   }
 </style>
 
@@ -274,12 +259,12 @@
   <header id="main-header">
     <div class="logo">
       <h1>Yunanca <span>Akıllı</span> Okuyucu</h1>
-      <p>v18.1 — Otomatik Altyazı Çeviri (Scraper) & Video Modu</p>
+      <p>v19.0 — Öğrenim Kütüphanesi & Video Arşivi</p>
     </div>
     <div class="main-tabs">
-      <button class="main-tab-btn active" id="mtab-read" onclick="switchMainTab('read')">📖 Okuma</button>
+      <button class="main-tab-btn active" id="mtab-read" onclick="switchMainTab('read')">📖 Okuma Paneli</button>
       <button class="main-tab-btn" id="mtab-quiz" onclick="switchMainTab('quiz')">🧠 Öğretici Test</button>
-      <button class="main-tab-btn" id="mtab-video" onclick="switchMainTab('video')">📺 Video Modu</button>
+      <button class="main-tab-btn" id="mtab-video" onclick="switchMainTab('video')">📺 Video Arşivi</button>
     </div>
   </header>
 
@@ -330,7 +315,7 @@
       
       <div class="input-panel" id="panel-url">
         <div class="url-row">
-          <input type="text" id="url-input" placeholder="https://fluencydrop.com/..." />
+          <input type="text" id="url-input" placeholder="https://..." />
           <button class="main-btn" onclick="fetchContentFromUrl()">İçeriği Çek</button>
         </div>
         <div id="url-status" style="color:var(--accent2); font-size:0.9rem; font-weight:bold; min-height:20px;"></div>
@@ -356,36 +341,38 @@
   </div> 
 
   <div id="section-video" style="display:none;">
-    <div class="video-setup-box">
-      <h3 style="color:var(--accent); margin-bottom:15px;">Otomatik Altyazılı Gölgeli Okuma (Shadowing)</h3>
-      <p style="color:var(--text-dim); margin-bottom:15px; font-size:0.9rem;">
-        Bir YouTube videosunun linkini yapıştırın. Sistem <strong>otomatik olarak</strong> Yunanca altyazıları bulup saniyesi saniyesine Türkçe'ye çevirerek videoya entegre edecektir. Kelimeye tıklarsanız video durur ve çeviri menüsü açılır.
-      </p>
+    
+    <div id="video-library-view">
+      <div class="video-setup-box">
+        <h3 style="color:var(--accent); margin-bottom:10px; font-size: 1.6rem;">📺 Yunanca Öğrenim Arşivi</h3>
+        <p style="color:var(--text-dim); margin-bottom:0; font-size:1rem;">
+          Çalışmak istediğiniz videoyu seçin. Altyazılar otomatik yüklenecektir. Bilmediğiniz bir kelime duyarsanız altyazıya tıklayın, video durur ve çevirisi açılır.
+        </p>
+      </div>
       
-      
-      
-      <details style="margin-bottom: 20px;">
-        <summary style="color:var(--text-dim); cursor:pointer; padding:5px;">Gelişmiş Ayarlar: Manuel JSON Girişi</summary>
-        <textarea id="yt-subs-json" placeholder="JSON Altyazı Verisi..."></textarea>
-        <button class="secondary-btn" style="width:100%; margin-top:10px;" onclick="loadCustomVideo()">Sadece JSON ile Başlat</button>
-      </details>
+      <div class="video-grid" id="video-grid-container"></div>
     </div>
 
     <div id="video-workspace" style="display:none;">
+      <div class="player-header">
+        <button class="secondary-btn" onclick="closeVideoPlayer()">🔙 Arşive Dön</button>
+        <h4 class="active-video-title" id="active-video-title">Video Başlığı</h4>
+      </div>
+
       <div class="yt-container">
         <div id="youtube-player"></div>
       </div>
       
       <div id="active-subtitle-container" class="subtitle-container">
-        <div id="sub-gr" class="sub-gr-text"></div>
-        <div id="sub-tr" class="sub-tr-text"></div>
+        <div id="sub-gr" class="sub-gr-text">...</div>
+        <div id="sub-tr" class="sub-tr-text">Videonun başlaması bekleniyor...</div>
       </div>
     </div>
+
   </div>
   
   <div id="section-quiz" style="display:none;">
     <div class="quiz-card">
-      
       <div id="quiz-setup-view">
         <h2 style="color:var(--accent); margin-bottom: 20px; font-size: 2rem;">Öğretici Test Merkezi</h2>
         <p style="color:var(--text-dim); margin-bottom: 25px; font-size:1.05rem;">Zihnini yormadan öğren. Küçük hedefler koy, yanlışlarını kalıcı olarak düzelt.</p>
@@ -440,7 +427,6 @@
           <button class="main-btn" id="retry-mistakes-btn" style="padding: 15px 30px; font-size:1.1rem; background:var(--error); display:none; border:none;" onclick="retryMistakes()">Sadece Yanlışları Tekrar Et</button>
         </div>
       </div>
-
     </div>
   </div> 
 </div> 
@@ -479,6 +465,20 @@
 <div id="toast"></div>
 
 <script>
+/** ==========================================
+ * 0. VİDEO ARŞİVİ KATALOĞU (YENİ SİSTEM)
+ * ========================================== 
+ * Lütfen index.html ile aynı dizinde 'altyazilar' adında bir klasör oluşturun.
+ * İndirdiğiniz JSON dosyalarını o klasörün içine koyun (Örn: 42X-sVfNclI.json).
+ * Yeni video eklemek için sadece bu listeye yeni bir satır eklemeniz yeterlidir.
+ */
+const VIDEO_KATALOGU = [
+  { id: "42X-sVfNclI", title: "Easy Greek - Yunanistan'da Günlük Hayat (Sokak Röportajı)", level: "A2 - B1" },
+  { id: "M7lc1UVf-VE", title: "Örnek Video - Temel Seviye Pratik (Örnek ID)", level: "A1" }
+  // Buraya istediğiniz kadar video ekleyebilirsiniz. Virgül koymayı unutmayın.
+];
+
+
 /** 1. VERİ TABANI VE SÖZLÜK */
 const HUGE_RAW_DICTIONARY = [
   ["ανθρώπων", "insanların"], ["αβαείο", "manastır"], ["αβαείου", "manastırın"], ["αβαία", "manastırlar"],
@@ -493,7 +493,6 @@ let userDecks = JSON.parse(localStorage.getItem('yunanca_decks_v12')) || { "Gene
 let lastActiveDeck = localStorage.getItem('last_active_deck_v12') || "Genel Kelimeler";
 let activeWordString = "", activeContextSentence = "", activeTokenElement = null;
 
-// Test Pool Değişkenleri
 let currentQuizPool = [];
 let currentQuizIndex = 0;
 let currentQuizQuestion = null;
@@ -784,6 +783,9 @@ function switchMainTab(tabName) {
   if(tabName === 'quiz') {
     populateDeckSelects();
   }
+  if(tabName === 'video') {
+    renderVideoLibrary();
+  }
 }
 
 function switchInputTab(tabName, btnElement) {
@@ -876,7 +878,7 @@ function clearTextInputs() {
   stopSpeech();
 }
 
-/** 6. ÇEVİRİ MOTORU VE YENİ AKILLI VURGULAMA ÖZELLİĞİ (STEMMER) */
+/** 6. ÇEVİRİ MOTORU VE AKILLI VURGULAMA */
 async function getSmartTranslation(word, contextSentence = "") {
   const cleanWord = word.toLowerCase().replace(/[.,!?;():"""]/g, "").trim();
   if (userCustomDict.has(cleanWord)) return userCustomDict.get(cleanWord);
@@ -892,7 +894,6 @@ async function getSmartTranslation(word, contextSentence = "") {
   }
 }
 
-// Türkçe Kök Bulucu ve Regex Yaratıcısı
 function createFlexibleRegex(meaning) {
     let root = meaning.toLowerCase().trim();
     let words = root.split(/\s+/);
@@ -916,7 +917,6 @@ function createFlexibleRegex(meaning) {
     return new RegExp(pattern, 'gui');
 }
 
-// YENİ: Vurgulu Tam Cümle Çevirisi
 async function translateFullContext() {
   if (!activeContextSentence) return;
   const contextBox = document.getElementById('wp-context-box');
@@ -1241,7 +1241,7 @@ function deleteDeckEntirely(deckName) {
 }
 
 /** ==========================================
- * DEHB DOSTU ÖĞRETİCİ TEST MERKEZİ (v16.0)
+ * 11. ÖĞRETİCİ TEST MERKEZİ
  * ========================================== */
 function startAdvancedQuiz(isRetry = false) {
   const mode = document.getElementById('quiz-mode-select').value;
@@ -1251,10 +1251,7 @@ function startAdvancedQuiz(isRetry = false) {
     const deck = userDecks[deckName];
     if (!deck || deck.length === 0) { showToastMessage("Seçilen destede kelime yok!"); return; }
     
-    // Karıştır
     let shuffledDeck = [...deck].sort(() => Math.random() - 0.5);
-    
-    // Limit Uygula (DEHB Chunking)
     const limit = document.getElementById('quiz-limit-select').value;
     if (limit !== 'all') {
       shuffledDeck = shuffledDeck.slice(0, parseInt(limit));
@@ -1264,7 +1261,6 @@ function startAdvancedQuiz(isRetry = false) {
     quizMistakes = [];
     correctCount = 0;
   } else {
-    // Sadece yanlışları tekrarla
     currentQuizPool = [...quizMistakes].map(m => ({gr: m.gr, tr: m.tr})).sort(() => Math.random() - 0.5);
     quizMistakes = []; 
     correctCount = 0;
@@ -1273,7 +1269,6 @@ function startAdvancedQuiz(isRetry = false) {
   totalInitialWords = currentQuizPool.length;
   currentQuizIndex = 0;
 
-  // Odak Modunu Aç
   document.body.classList.add('focus-mode');
   document.getElementById('quiz-setup-view').style.display = 'none';
   document.getElementById('quiz-result-view').style.display = 'none';
@@ -1308,7 +1303,7 @@ function pushToPoolIfWrong(wordObj) {
 }
 
 function finishQuiz() {
-  document.body.classList.remove('focus-mode'); // Odak modunu kapat
+  document.body.classList.remove('focus-mode'); 
   document.getElementById('quiz-active-view').style.display = 'none';
   document.getElementById('quiz-result-view').style.display = 'block';
   
@@ -1348,7 +1343,7 @@ function loadNextQuizQuestion() {
   const area = document.getElementById('quiz-work-area');
   const feedback = document.getElementById('quiz-feedback');
   feedback.innerHTML = "";
-  feedback.className = ""; // Animasyon sınıfını temizle
+  feedback.className = "";
 
   const speakBtn = `<button class="quiz-speak-btn" onclick="speakGreek('${currentQuizQuestion.gr.replace(/'/g,"\\'")}', this)">🔊</button>`;
 
@@ -1506,499 +1501,104 @@ function evalFlash(knewIt) {
 }
 
 /** ==========================================
- * VİDEO OTOMATİK ALTYAZI (SHADOWING) PROXY FIX
+ * 12. VİDEO ARŞİVİ VE OYNATICI (YENİ)
  * ========================================== */
 let ytPlayer = null;
 let ytSubtitles = [];
 let videoSyncInterval = null;
 let currentActiveSubIndex = -1;
 
-function extractVideoID(url) {
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-  const match = url.match(regExp);
-  return (match && match[2].length === 11) ? match[2] : url; 
-}
+function renderVideoLibrary() {
+  const grid = document.getElementById('video-grid-container');
+  grid.innerHTML = "";
 
-function decodeHtmlEntities(text) {
-  const tempDiv = document.createElement("div");
-  tempDiv.innerHTML = text;
-  return tempDiv.textContent || tempDiv.innerText || "";
-}
-
-function parseXmlSubtitles(xmlText) {
-  const parser = new DOMParser();
-  const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-  const texts = xmlDoc.getElementsByTagName("text");
-  const parsed = [];
-
-  for (let i = 0; i < texts.length; i++) {
-    const start = parseFloat(texts[i].getAttribute("start") || "0");
-    const dur = parseFloat(texts[i].getAttribute("dur") || "0");
-    const rawText = texts[i].textContent || "";
-    const cleanText = decodeHtmlEntities(rawText).replace(/\s+/g, " ").trim();
-    if (!cleanText) continue;
-    parsed.push({
-      start,
-      end: start + dur,
-      text: cleanText
-    });
-  }
-
-  return parsed;
-}
-
-function extractCaptionTracksFromHtml(html) {
-  const signatures = [
-    '"captionTracks":',
-    '"playerCaptionsTracklistRenderer":',
-    '"captions":'
-  ];
-
-  for (const sign of signatures) {
-    const signIdx = html.indexOf(sign);
-    if (signIdx === -1) continue;
-
-    const tracksKeyIdx = html.indexOf('"captionTracks"', signIdx);
-    if (tracksKeyIdx === -1) continue;
-
-    const arrayStart = html.indexOf('[', tracksKeyIdx);
-    if (arrayStart === -1) continue;
-
-    let depth = 0;
-    let inString = false;
-    let escaped = false;
-
-    for (let i = arrayStart; i < html.length; i++) {
-      const ch = html[i];
-      if (inString) {
-        if (escaped) escaped = false;
-        else if (ch === '\\') escaped = true;
-        else if (ch === '"') inString = false;
-        continue;
-      }
-      if (ch === '"') {
-        inString = true;
-        continue;
-      }
-      if (ch === '[') depth++;
-      if (ch === ']') depth--;
-      if (depth === 0) {
-        const rawArray = html.slice(arrayStart, i + 1);
-        try {
-          const tracks = JSON.parse(rawArray);
-          if (Array.isArray(tracks) && tracks.length > 0) {
-            return tracks;
-          }
-        } catch (e) {
-          // denemeye devam
-        }
-        break;
-      }
-    }
-  }
-  return [];
-}
-
-function parseTrackListXml(xmlText, videoId) {
-  const parser = new DOMParser();
-  const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-  const trackNodes = xmlDoc.getElementsByTagName("track");
-  const tracks = [];
-
-  for (let i = 0; i < trackNodes.length; i++) {
-    const node = trackNodes[i];
-    const langCode = node.getAttribute("lang_code") || "";
-    const kind = node.getAttribute("kind") || "";
-    const name = node.getAttribute("name") || "";
-    if (!langCode) continue;
-
-    let baseUrl = `https://www.youtube.com/api/timedtext?v=${encodeURIComponent(videoId)}&lang=${encodeURIComponent(langCode)}`;
-    if (name) baseUrl += `&name=${encodeURIComponent(name)}`;
-    if (kind) baseUrl += `&kind=${encodeURIComponent(kind)}`;
-
-    tracks.push({
-      languageCode: langCode,
-      kind,
-      name: { simpleText: name },
-      baseUrl
-    });
-  }
-
-  return tracks;
-}
-
-function selectGreekTrack(tracks) {
-  const isGreek = (track) => {
-    const code = (track.languageCode || "").toLowerCase();
-    return code === "el" || code.startsWith("el-");
-  };
-
-  const exactGreek = tracks.find(t => isGreek(t) && !(t.kind || "").includes("asr"));
-  if (exactGreek) return exactGreek;
-  return tracks.find(isGreek) || null;
-}
-
-function selectBestSourceTrack(tracks) {
-  const priorityCodes = ["en", "tr", "de", "fr", "es", "it", "ru", "ar"];
-  const nonAsr = tracks.filter(t => !(t.kind || "").includes("asr"));
-  const pool = nonAsr.length ? nonAsr : tracks;
-
-  for (const code of priorityCodes) {
-    const match = pool.find(t => (t.languageCode || "").toLowerCase().startsWith(code));
-    if (match) return match;
-  }
-  return pool[0] || null;
-}
-
-function mapTranslationsFromGoogle(lines, translatedText) {
-  const translatedLines = translatedText.split('\n').map(s => s.trim()).filter(Boolean);
-  const mapped = [];
-  for (let i = 0; i < lines.length; i++) {
-    mapped.push(translatedLines[i] || lines[i]);
-  }
-  return mapped;
-}
-
-function normalizeErrorMessage(err) {
-  const msg = (err && err.message ? err.message : String(err || "")).toLowerCase();
-  if (msg.includes("failed to fetch") || msg.includes("networkerror") || msg.includes("load failed")) {
-    return "Ağ erişimi engellendi. Proxy servisi veya bağlantı başarısız.";
-  }
-  return err && err.message ? err.message : "Bilinmeyen hata oluştu.";
-}
-
-async function fetchViaProxies(targetUrl, timeoutMs = 15000) {
-  // Daha gelişmiş proxy havuzu ve özel istek metodları
-  const proxyBuilders = [
-    // 1. AllOrigins (JSON Wrapper ile CORS aşma - En güveniliri)
-    async (url) => {
-      const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
-      if (!res.ok) throw new Error("AllOrigins Yanıt Vermedi");
-      const data = await res.json();
-      if (!data.contents) throw new Error("Boş içerik");
-      return { ok: true, text: async () => data.contents };
-    },
-    // 2. CodeTabs Proxy
-    async (url) => {
-      const res = await fetch(`https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(url)}`);
-      if (!res.ok) throw new Error("CodeTabs HTTP " + res.status);
-      const text = await res.text();
-      return { ok: true, text: async () => text };
-    },
-    // 3. Corsproxy.io
-    async (url) => {
-      const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`);
-      if (!res.ok) throw new Error("CorsProxy HTTP " + res.status);
-      const text = await res.text();
-      return { ok: true, text: async () => text };
-    }
-  ];
-
-  let lastError = null;
-
-  for (const proxyCall of proxyBuilders) {
-    try {
-      // Zaman aşımı (Timeout) kontrolü
-      const result = await Promise.race([
-        proxyCall(targetUrl),
-        new Promise((_, reject) => setTimeout(() => reject(new Error("Zaman Aşımı")), timeoutMs))
-      ]);
-      
-      const text = await result.text();
-      
-      // YouTube Bizi Yakaladı mı Kontrolü
-      if (text.includes("consent.youtube.com") || text.includes("unusual traffic")) {
-         lastError = new Error("Proxy YouTube Captcha/Onay engeline takıldı.");
-         continue; // Bu proxy patlamış, sonrakine geç
-      }
-      
-      return { ok: true, text: async () => text };
-      
-    } catch (e) {
-      lastError = e;
-    }
-  }
-
-  throw new Error(lastError && lastError.message ? lastError.message : "Tüm proxy sunucuları YouTube tarafından reddedildi.");
-}
-async function translateLinesInChunks(lines, sourceLang, targetLang) {
-  let translatedLines = [];
-  let currentChunk = [];
-  let currentLen = 0;
-  let chunks = [];
-
-  for (let i = 0; i < lines.length; i++) {
-    if (currentLen + lines[i].length > 1500) {
-      chunks.push(currentChunk);
-      currentChunk = [];
-      currentLen = 0;
-    }
-    currentChunk.push(lines[i]);
-    currentLen += lines[i].length + 2;
-  }
-  if (currentChunk.length > 0) chunks.push(currentChunk);
-
-  for (let i = 0; i < chunks.length; i++) {
-    const textToTranslate = chunks[i].join('\n');
-    const trUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(textToTranslate)}`;
-    const trRes = await fetch(trUrl, { cache: "no-store" });
-    if(!trRes.ok) throw new Error(`Çeviri sunucusu yanıt vermedi (${targetLang}).`);
-    const trData = await trRes.json();
-    const translatedChunk = trData[0].map(item => item[0]).join('');
-    translatedLines = translatedLines.concat(mapTranslationsFromGoogle(chunks[i], translatedChunk));
-  }
-
-  return translatedLines;
-}
-
-async function fetchSubtitlesViaBackend(videoId) {
-  const backendInput = document.getElementById("yt-backend-endpoint");
-  let endpoint = backendInput ? backendInput.value.trim() : "";
-  if (!endpoint) {
-    throw new Error("Backend endpoint boş. Manuel JSON veya tarayıcı fallback kullanılır.");
-  }
-
-  // Kullanıcı full endpoint vermezse (örn: domain verir), doğru route'u ekleyelim.
-  endpoint = endpoint.replace(/\/+$/, "");
-  if (!endpoint.includes("/api/subtitles-from-youtube")) {
-    endpoint = endpoint + "/api/subtitles-from-youtube";
-  }
-  const res = await fetch(endpoint, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ videoId })
+  VIDEO_KATALOGU.forEach(video => {
+    // YouTube varsayılan thumbnail URL'si
+    const thumbUrl = `https://img.youtube.com/vi/${video.id}/hqdefault.jpg`;
+    
+    const card = document.createElement('div');
+    card.className = 'video-card';
+    card.onclick = () => openVideo(video.id, video.title);
+    
+    card.innerHTML = `
+      <div class="video-card-thumb">
+        <span class="video-card-level">${video.level}</span>
+        <img src="${thumbUrl}" alt="${video.title}">
+      </div>
+      <div class="video-card-content">
+        <div class="video-card-title">${video.title}</div>
+        <div class="video-card-play">▶ Çalışmaya Başla</div>
+      </div>
+    `;
+    grid.appendChild(card);
   });
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(text || "Backend altyazı servisi başarısız oldu.");
-  }
-  const data = await res.json();
-  if (!Array.isArray(data)) {
-    throw new Error("Backend beklenmeyen veri döndürdü.");
-  }
-  return data;
 }
 
-async function probeTracksByLanguage(videoId) {
-  const languageCandidates = ["en", "tr", "de", "fr", "es", "it", "pt", "ru", "ar", "el"];
-  const found = [];
-
-  for (const lang of languageCandidates) {
-    const urls = [
-      `https://www.youtube.com/api/timedtext?v=${encodeURIComponent(videoId)}&lang=${encodeURIComponent(lang)}`,
-      `https://www.youtube.com/api/timedtext?v=${encodeURIComponent(videoId)}&lang=${encodeURIComponent(lang)}&kind=asr`
-    ];
-
-    for (const url of urls) {
-      try {
-        const res = await fetchViaProxies(url);
-        const xml = await res.text();
-        const subs = parseXmlSubtitles(xml);
-        if (subs.length > 0) {
-          found.push({
-            languageCode: lang,
-            kind: url.includes("kind=asr") ? "asr" : "",
-            name: { simpleText: "" },
-            baseUrl: url
-          });
-          break;
-        }
-      } catch (e) {
-        // sıradaki dili dene
-      }
-    }
-  }
-
-  return found;
-}
-
-// --- YENİ: VTT DOSYASI PARSER VE ZAMANLAYICI ---
-function parseVTT(vttText) {
-    const lines = vttText.split(/\r?\n/);
-    const subs = [];
-    let i = 0;
-    while (i < lines.length) {
-        const line = lines[i].trim();
-        if (line.includes('-->')) {
-            const parts = line.split('-->');
-            const start = parseVttTime(parts[0].trim());
-            const end = parseVttTime(parts[1].trim());
-            i++;
-            let text = "";
-            while (i < lines.length && lines[i].trim() !== "" && !lines[i].includes('-->')) {
-                // HTML ve renk etiketlerini temizle (örn: <c.colorE5E5E5>)
-                let cleanLine = lines[i].replace(/<[^>]+>/g, '').trim(); 
-                if (cleanLine) text += cleanLine + " ";
-                i++;
-            }
-            if (text.trim()) subs.push({ start, end, text: text.trim().replace(/\s+/g, ' ') });
-        } else {
-            i++;
-        }
-    }
-    return subs;
-}
-
-function parseVttTime(timeStr) {
-    const parts = timeStr.split(':');
-    let sec = 0;
-    if (parts.length === 3) {
-        sec = parseFloat(parts[0]) * 3600 + parseFloat(parts[1]) * 60 + parseFloat(parts[2]);
-    } else if (parts.length === 2) {
-        sec = parseFloat(parts[0]) * 60 + parseFloat(parts[1]);
-    }
-    return sec;
-}
-
-// --- YENİ: PIPED API İLE KESİNTİSİZ ALTYAZI ÇEKİCİ ---
-// --- YENİ: VTT DOSYASI PARSER VE ZAMANLAYICI ---
-function parseVTT(vttText) {
-    const lines = vttText.split(/\r?\n/);
-    const subs = [];
-    let i = 0;
-    while (i < lines.length) {
-        const line = lines[i].trim();
-        if (line.includes('-->')) {
-            const parts = line.split('-->');
-            const start = parseVttTime(parts[0].trim());
-            const end = parseVttTime(parts[1].trim());
-            i++;
-            let text = "";
-            while (i < lines.length && lines[i].trim() !== "" && !lines[i].includes('-->')) {
-                // HTML ve renk etiketlerini temizle (örn: <c.colorE5E5E5>)
-                let cleanLine = lines[i].replace(/<[^>]+>/g, '').trim(); 
-                if (cleanLine) text += cleanLine + " ";
-                i++;
-            }
-            if (text.trim()) subs.push({ start, end, text: text.trim().replace(/\s+/g, ' ') });
-        } else {
-            i++;
-        }
-    }
-    return subs;
-}
-
-function parseVttTime(timeStr) {
-    const parts = timeStr.split(':');
-    let sec = 0;
-    if (parts.length === 3) {
-        sec = parseFloat(parts[0]) * 3600 + parseFloat(parts[1]) * 60 + parseFloat(parts[2]);
-    } else if (parts.length === 2) {
-        sec = parseFloat(parts[0]) * 60 + parseFloat(parts[1]);
-    }
-    return sec;
-}
-
-// --- YENİ: PIPED API İLE KESİNTİSİZ ALTYAZI ÇEKİCİ ---
-// --- YENİ VE EN GÜÇLÜ OTOMATİK ALTYAZI ÇEKİCİ (HİBRİT SİSTEM) ---
-// --- YENİ: KENDİ VERCEL SUNUCUMUZ İLE KESİNTİSİZ ALTYAZI ÇEKİCİ ---
-async function autoFetchSubtitles() {
-  const rawInput = document.getElementById('yt-video-id').value.trim();
-  if(!rawInput) return showToastMessage("Video ID veya Linki girin!");
-  const videoId = extractVideoID(rawInput);
+async function openVideo(videoId, title) {
+  showToastMessage("⏳ Video ve altyazılar yükleniyor...");
   
-  const btn = document.getElementById('auto-sub-btn');
-  btn.innerHTML = "⏳ Sunucuya Bağlanılıyor...";
-  btn.disabled = true;
-
-  // LÜTFEN BURAYA VERCEL'İN SİZE VERDİĞİ LİNKİ YAPIŞTIRIN (Sonunda /api/subtitles olmalı)
-  const VERCEL_URL = "https://yunanca-backend.vercel.app/api/subtitles";
-
   try {
-      // 1. Kendi Vercel sunucumuzdan altyazıları istiyoruz (YouTube engeli yok!)
-      const res = await fetch(VERCEL_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ videoId: videoId })
+    // Yerel altyazilar klasöründen JSON dosyasını çekiyoruz
+    // NOT: Yerel dosyaları fetch ile çekebilmek için uygulamanın bir sunucu üzerinden (örn: Live Server) çalıştırılması gerekir.
+    const res = await fetch(`altyazilar/${videoId}.json`);
+    
+    if (!res.ok) {
+      throw new Error("Altyazı dosyası bulunamadı. Lütfen 'altyazilar' klasöründe '" + videoId + ".json' dosyasının olduğundan emin olun.");
+    }
+    
+    ytSubtitles = await res.json();
+    
+    if (!Array.isArray(ytSubtitles) || ytSubtitles.length === 0) {
+      throw new Error("JSON dosyası formatı hatalı veya boş.");
+    }
+
+    // Arayüzü Değiştir
+    document.getElementById('video-library-view').style.display = 'none';
+    document.getElementById('video-workspace').style.display = 'block';
+    document.getElementById('active-video-title').textContent = title;
+    
+    // YouTube Oynatıcıyı Başlat
+    if (ytPlayer) {
+      ytPlayer.loadVideoById(videoId);
+    } else {
+      ytPlayer = new YT.Player('youtube-player', {
+        height: '100%', width: '100%',
+        videoId: videoId,
+        playerVars: {
+          'playsinline': 1,
+          'rel': 0,
+          'origin': window.location.origin === "null" ? "*" : window.location.origin
+        },
+        events: { 'onStateChange': onPlayerStateChange }
       });
-
-      let result;
-      try {
-          result = await res.json();
-      } catch(e) {
-          throw new Error("Sunucu çöküyor veya Vercel URL'sini yanlış yazdınız.");
-      }
-
-      if (!res.ok) {
-          throw new Error(result.error || "Sunucu bir hata döndürdü.");
-      }
-      
-      const parsedSubs = result.data;
-      if (!parsedSubs || parsedSubs.length === 0) throw new Error("Altyazı boş geldi.");
-
-      btn.innerHTML = "⏳ Çeviriler Hazırlanıyor...";
-      let greekSubs = parsedSubs;
-
-      // 2. Videonun orijinali İngilizceyse, Vercel'den İngilizce gelir. Önce onu Yunancaya çeviriyoruz.
-      if (!result.isGreek) {
-          const sourceLines = parsedSubs.map(s => s.text);
-          const elLines = await translateLinesInChunks(sourceLines, "en", "el");
-          greekSubs = parsedSubs.map((s, i) => ({ ...s, text: elLines[i] || s.text }));
-      }
-
-      // 3. Yunanca altyazıları Türkçeye çeviriyoruz
-      const grLines = greekSubs.map(s => s.text);
-      const trLines = await translateLinesInChunks(grLines, "el", "tr");
-
-      // 4. Son formatı oluşturup videoya gönderiyoruz
-      const finalResult = greekSubs.map((s, i) => ({
-          start: s.start,
-          end: s.end,
-          gr: s.text,
-          tr: (trLines[i] || s.text).replace(/\s+/g, ' ')
-      }));
-
-      // 5. Videoyu Başlat
-      document.getElementById('yt-subs-json').value = JSON.stringify(finalResult, null, 2);
-      document.getElementById('yt-video-id').value = videoId;
-      showToastMessage("✅ Vercel Sunucusuyla altyazılar çekildi!");
-      loadCustomVideo(); 
-
+    }
+    
+    // Senkronizasyonu başlat
+    if(videoSyncInterval) clearInterval(videoSyncInterval);
+    videoSyncInterval = setInterval(syncSubtitles, 200);
+    
   } catch (err) {
-      console.error(err);
-      showToastMessage("❌ Hata: " + err.message);
-  } finally {
-      btn.innerHTML = "⚡ Otomatik Çek & Çevir";
-      btn.disabled = false;
+    showToastMessage("❌ Hata: " + err.message);
   }
 }
 
-
-function loadCustomVideo() {
-  const rawInput = document.getElementById('yt-video-id').value.trim();
-  const subJsonString = document.getElementById('yt-subs-json').value.trim();
-  
-  if (!rawInput) { showToastMessage("Lütfen bir YouTube ID girin."); return; }
-  const videoId = extractVideoID(rawInput);
-  document.getElementById('yt-video-id').value = videoId;
-  
-  try {
-    ytSubtitles = JSON.parse(subJsonString);
-    if (!Array.isArray(ytSubtitles)) throw new Error("JSON Hatalı");
-  } catch (e) {
-    showToastMessage("JSON okunamadı! Altyazı verisi geçerli değil.");
-    return;
+function closeVideoPlayer() {
+  if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
+    ytPlayer.pauseVideo();
+  }
+  if(videoSyncInterval) {
+    clearInterval(videoSyncInterval);
   }
   
-  document.getElementById('video-workspace').style.display = 'block';
+  // Arayüzü Kütüphaneye Döndür
+  document.getElementById('video-workspace').style.display = 'none';
+  document.getElementById('video-library-view').style.display = 'block';
   
-  if (ytPlayer) {
-    ytPlayer.loadVideoById(videoId);
-  } else {
-    ytPlayer = new YT.Player('youtube-player', {
-      height: '100%', width: '100%',
-      videoId: videoId,
-      playerVars: {
-        'playsinline': 1,
-        'rel': 0,
-        'origin': window.location.origin === "null" ? "*" : window.location.origin
-      },
-      events: { 'onStateChange': onPlayerStateChange }
-    });
-  }
-  
-  if(videoSyncInterval) clearInterval(videoSyncInterval);
-  videoSyncInterval = setInterval(syncSubtitles, 200);
+  // Altyazı kutusunu sıfırla
+  document.getElementById('sub-gr').innerHTML = "...";
+  document.getElementById('sub-tr').textContent = "Videonun başlaması bekleniyor...";
+  document.getElementById('active-subtitle-container').classList.remove('active');
+  currentActiveSubIndex = -1;
 }
 
 function onPlayerStateChange(event) {}
