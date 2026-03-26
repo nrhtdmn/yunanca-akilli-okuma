@@ -1915,10 +1915,16 @@ async function autoFetchSubtitles() {
           body: JSON.stringify({ videoId: videoId })
       });
 
-      if (!res.ok) throw new Error("Sunucu yanıt vermedi.");
-      const result = await res.json();
-      
-      if (result.error) throw new Error(result.error);
+      let result;
+      try {
+          result = await res.json();
+      } catch(e) {
+          throw new Error("Sunucu çöküyor veya Vercel URL'sini yanlış yazdınız.");
+      }
+
+      if (!res.ok) {
+          throw new Error(result.error || "Sunucu bir hata döndürdü.");
+      }
       
       const parsedSubs = result.data;
       if (!parsedSubs || parsedSubs.length === 0) throw new Error("Altyazı boş geldi.");
