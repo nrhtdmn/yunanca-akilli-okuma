@@ -1572,6 +1572,34 @@ function extractCaptionTracksFromHtml(html) {
   return [];
 }
 
+function parseTrackListXml(xmlText, videoId) {
+  const parser = new DOMParser();
+  const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+  const trackNodes = xmlDoc.getElementsByTagName("track");
+  const tracks = [];
+
+  for (let i = 0; i < trackNodes.length; i++) {
+    const node = trackNodes[i];
+    const langCode = node.getAttribute("lang_code") || "";
+    const kind = node.getAttribute("kind") || "";
+    const name = node.getAttribute("name") || "";
+    if (!langCode) continue;
+
+    let baseUrl = `https://www.youtube.com/api/timedtext?v=${encodeURIComponent(videoId)}&lang=${encodeURIComponent(langCode)}`;
+    if (name) baseUrl += `&name=${encodeURIComponent(name)}`;
+    if (kind) baseUrl += `&kind=${encodeURIComponent(kind)}`;
+
+    tracks.push({
+      languageCode: langCode,
+      kind,
+      name: { simpleText: name },
+      baseUrl
+    });
+  }
+
+  return tracks;
+}
+
 function selectGreekTrack(tracks) {
   const isGreek = (track) => {
     const code = (track.languageCode || "").toLowerCase();
@@ -1688,11 +1716,17 @@ async function autoFetchSubtitles() {
       const res = await fetchViaProxies(targetUrl);
       const html = await res.text();
       
-      // 2) Caption track listesini güvenli biçimde ayıkla
-      const tracks = extractCaptionTracksFromHtml(html);
+      // 2) Caption track listesini ayıkla (HTML + timedtext fallback)
+      let tracks = extractCaptionTracksFromHtml(html);
+      if(!tracks.length) {
+          const listUrl = `https://www.youtube.com/api/timedtext?type=list&v=${encodeURIComponent(videoId)}`;
+          const listRes = await fetchViaProxies(listUrl);
+          const listXml = await listRes.text();
+          tracks = parseTrackListXml(listXml, videoId);
+      }
       if(!tracks.length) {
           if(html.includes("consent.youtube.com")) throw new Error("YouTube çerez onayı engeline takıldı. Lütfen manuel JSON yöntemini deneyin.");
-          throw new Error("Bu videoda otomatik oluşturulmuş veya eklenmiş bir Yunanca altyazı bulunamadı.");
+          throw new Error("Videoda erişilebilir altyazı kanalı bulunamadı.");
       }
 
       // 3) Önce Yunanca track'i bul, yoksa başka bir kaynaktan üret
