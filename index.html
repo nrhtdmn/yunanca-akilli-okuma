@@ -1834,6 +1834,45 @@ function parseVttTime(timeStr) {
 }
 
 // --- YENİ: PIPED API İLE KESİNTİSİZ ALTYAZI ÇEKİCİ ---
+// --- YENİ: VTT DOSYASI PARSER VE ZAMANLAYICI ---
+function parseVTT(vttText) {
+    const lines = vttText.split(/\r?\n/);
+    const subs = [];
+    let i = 0;
+    while (i < lines.length) {
+        const line = lines[i].trim();
+        if (line.includes('-->')) {
+            const parts = line.split('-->');
+            const start = parseVttTime(parts[0].trim());
+            const end = parseVttTime(parts[1].trim());
+            i++;
+            let text = "";
+            while (i < lines.length && lines[i].trim() !== "" && !lines[i].includes('-->')) {
+                // HTML ve renk etiketlerini temizle (örn: <c.colorE5E5E5>)
+                let cleanLine = lines[i].replace(/<[^>]+>/g, '').trim(); 
+                if (cleanLine) text += cleanLine + " ";
+                i++;
+            }
+            if (text.trim()) subs.push({ start, end, text: text.trim().replace(/\s+/g, ' ') });
+        } else {
+            i++;
+        }
+    }
+    return subs;
+}
+
+function parseVttTime(timeStr) {
+    const parts = timeStr.split(':');
+    let sec = 0;
+    if (parts.length === 3) {
+        sec = parseFloat(parts[0]) * 3600 + parseFloat(parts[1]) * 60 + parseFloat(parts[2]);
+    } else if (parts.length === 2) {
+        sec = parseFloat(parts[0]) * 60 + parseFloat(parts[1]);
+    }
+    return sec;
+}
+
+// --- YENİ: PIPED API İLE KESİNTİSİZ ALTYAZI ÇEKİCİ ---
 async function autoFetchSubtitles() {
   const rawInput = document.getElementById('yt-video-id').value.trim();
   if(!rawInput) return showToastMessage("Video ID veya Linki girin!");
@@ -1936,6 +1975,7 @@ async function autoFetchSubtitles() {
       btn.disabled = false;
   }
 }
+
 
 function loadCustomVideo() {
   const rawInput = document.getElementById('yt-video-id').value.trim();
