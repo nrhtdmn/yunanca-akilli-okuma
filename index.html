@@ -1795,19 +1795,57 @@ async function probeTracksByLanguage(videoId) {
   return found;
 }
 
+// --- YENİ: VTT DOSYASI PARSER VE ZAMANLAYICI ---
+function parseVTT(vttText) {
+    const lines = vttText.split(/\r?\n/);
+    const subs = [];
+    let i = 0;
+    while (i < lines.length) {
+        const line = lines[i].trim();
+        if (line.includes('-->')) {
+            const parts = line.split('-->');
+            const start = parseVttTime(parts[0].trim());
+            const end = parseVttTime(parts[1].trim());
+            i++;
+            let text = "";
+            while (i < lines.length && lines[i].trim() !== "" && !lines[i].includes('-->')) {
+                // HTML ve renk etiketlerini temizle (örn: <c.colorE5E5E5>)
+                let cleanLine = lines[i].replace(/<[^>]+>/g, '').trim(); 
+                if (cleanLine) text += cleanLine + " ";
+                i++;
+            }
+            if (text.trim()) subs.push({ start, end, text: text.trim().replace(/\s+/g, ' ') });
+        } else {
+            i++;
+        }
+    }
+    return subs;
+}
+
+function parseVttTime(timeStr) {
+    const parts = timeStr.split(':');
+    let sec = 0;
+    if (parts.length === 3) {
+        sec = parseFloat(parts[0]) * 3600 + parseFloat(parts[1]) * 60 + parseFloat(parts[2]);
+    } else if (parts.length === 2) {
+        sec = parseFloat(parts[0]) * 60 + parseFloat(parts[1]);
+    }
+    return sec;
+}
+
+// --- YENİ: PIPED API İLE KESİNTİSİZ ALTYAZI ÇEKİCİ ---
 async function autoFetchSubtitles() {
   const rawInput = document.getElementById('yt-video-id').value.trim();
   if(!rawInput) return showToastMessage("Video ID veya Linki girin!");
   const videoId = extractVideoID(rawInput);
   
   const btn = document.getElementById('auto-sub-btn');
-  btn.innerHTML = "⏳ Çekiliyor...";
+  btn.innerHTML = "⏳ Başlatılıyor...";
   btn.disabled = true;
 
   try {
-      // A) Backend (Eğer kuruluysa çalışır)
+      // A) Eğer kullanıcının kendi Node.js/Cloudflare backend'i kuruluysa onu dene
       try {
-        btn.innerHTML = "⏳ Sunucudan altyazı deneniyor...";
         const backendSubs = await fetchSubtitlesViaBackend(videoId);
         if (backendSubs.length > 0) {
           document.getElementById('yt-subs-json').value = JSON.stringify(backendSubs, null, 2);
@@ -1816,116 +1854,83 @@ async function autoFetchSubtitles() {
           loadCustomVideo();
           return;
         }
-      } catch (backendErr) {
-        console.warn("Backend başarısız, tarayıcı tabanlı alternatiflere geçiliyor.");
-      }
-
-      // B) Tarayıcı Tabanlı Çekim (Fallback)
-      btn.innerHTML = "⏳ Altyazı kanalları aranıyor...";
-      let tracks = [];
-      
-      // 1. Doğrudan API Liste İsteği (En hızlı ve hafif yöntem)
-      try {
-          const listUrl = `https://www.youtube.com/api/timedtext?type=list&v=${encodeURIComponent(videoId)}`;
-          const listRes = await fetchViaProxies(listUrl);
-          const listXml = await listRes.text();
-          tracks = parseTrackListXml(listXml, videoId);
       } catch (e) {
-          console.warn("API Liste İsteği başarısız.");
+        console.warn("Kişisel Backend bulunamadı, açık kaynak API'ye geçiliyor.");
       }
 
-      // 2. Eğer API boş dönerse Dil Deneme (Probing) yöntemini kullan
-      if(!tracks.length) {
-          tracks = await probeTracksByLanguage(videoId);
-      }
-
-      // 3. Hala bulamadıysa mecburen HTML kazıma (Scraping) yap
-      if(!tracks.length) {
-          btn.innerHTML = "⏳ Video sayfası taranıyor...";
-          const targetUrl = 'https://www.youtube.com/watch?v=' + videoId + '&hl=en';
-          const res = await fetchViaProxies(targetUrl);
-          const html = await res.text();
-          tracks = extractCaptionTracksFromHtml(html);
-      }
-
-      if(!tracks.length) {
-          throw new Error("Videoda erişilebilir altyazı kanalı bulunamadı veya altyazılar kapalı.");
-      }
-
-      // --- Çeviri ve Veri İşleme Aşaması ---
-      const elTrack = selectGreekTrack(tracks);
-      const sourceTrack = elTrack || selectBestSourceTrack(tracks);
-      if(!sourceTrack) throw new Error("Videoda kullanılabilir kaynak dil bulunamadı!");
-
-      const sourceLang = (sourceTrack.languageCode || "auto").split("-")[0].toLowerCase();
-      const sourceUrl = sourceTrack.baseUrl + "&fmt=srv3";
+      // B) Proxy hatalarını aşmak için Açık Kaynak Piped API kullanımı
+      btn.innerHTML = "⏳ Veri Tabanına Bağlanılıyor...";
+      const instances = [
+          'https://pipedapi.kavin.rocks',
+          'https://pipedapi.tokhmi.xyz',
+          'https://api.piped.projectsegfau.lt'
+      ];
       
-      btn.innerHTML = "⏳ Altyazı dosyası indiriliyor...";
-      const sourceRes = await fetchViaProxies(sourceUrl);
-      const sourceXml = await sourceRes.text();
-      const sourceSubs = parseXmlSubtitles(sourceXml);
-      
-      if(sourceSubs.length === 0) throw new Error("Altyazı dosyası boş.");
-
-      let greekSubs = [];
-      if (elTrack) {
-        greekSubs = sourceSubs; // Zaten Yunanca
-      } else {
-        // Yunanca değilse YouTube'un otomatik çevirisiyle Yunancaya çevir
-        try {
-          const autoGreekUrl = sourceTrack.baseUrl + "&fmt=srv3&tlang=el";
-          const autoGreekRes = await fetchViaProxies(autoGreekUrl);
-          const autoGreekXml = await autoGreekRes.text();
-          greekSubs = parseXmlSubtitles(autoGreekXml);
-        } catch (e) {
-            // Başarısız olursa Google Translate fallback
-            const sourceLines = sourceSubs.map(s => s.text);
-            const greekLinesFallback = await translateLinesInChunks(sourceLines, sourceLang || "auto", "el");
-            greekSubs = sourceSubs.map((s, i) => ({ start: s.start, end: s.end, text: greekLinesFallback[i] || s.text }));
-        }
+      let subtitlesList = null;
+      for (const baseUrl of instances) {
+          try {
+              const res = await fetch(`${baseUrl}/streams/${videoId}`);
+              if (res.ok) {
+                  const data = await res.json();
+                  if (data.subtitles && data.subtitles.length > 0) {
+                      subtitlesList = data.subtitles;
+                      break;
+                  }
+              }
+          } catch(e) { console.warn(baseUrl + " sunucusuna ulaşılamadı, diğerine geçiliyor."); }
       }
 
-      let result = greekSubs.map(s => ({ start: s.start, end: s.end, gr: s.text, tr: "Çevriliyor..." }));
+      if (!subtitlesList) throw new Error("YouTube videoyu engelledi veya altyazı bulunamadı.");
+
+      // Videodaki en uygun dili seç (Öncelik manuel Yunanca, sonra otomatik Yunanca, yoksa İngilizce)
+      let targetSub = subtitlesList.find(s => s.code.startsWith('el') && !s.autoGenerated) ||
+                      subtitlesList.find(s => s.code.startsWith('el')) ||
+                      subtitlesList.find(s => s.code.startsWith('en')) ||
+                      subtitlesList[0];
+
+      btn.innerHTML = `⏳ Altyazı indiriliyor (${targetSub.code})...`;
+      
+      // VTT dosyasını indir (Piped sunucuları CORS hatası vermez)
+      const vttRes = await fetch(targetSub.url);
+      if (!vttRes.ok) throw new Error("Altyazı dosyası indirilemedi.");
+      const vttText = await vttRes.text();
+
+      // İndirilen VTT formatını JSON'a dönüştür
+      const parsedSubs = parseVTT(vttText);
+      if (parsedSubs.length === 0) throw new Error("Altyazı dosyası okunamadı veya boş.");
+
+      // --- ÇEVİRİ AŞAMASI ---
+      btn.innerHTML = "⏳ Çeviriler Hazırlanıyor...";
+      let greekSubs = parsedSubs;
+      
+      // Eğer videodaki kaynak dil Yunanca değilse, önce onu Yunancaya çeviriyoruz
+      if (!targetSub.code.startsWith('el')) {
+         const sourceLines = parsedSubs.map(s => s.text);
+         const elLines = await translateLinesInChunks(sourceLines, targetSub.code.split('-')[0], "el");
+         greekSubs = parsedSubs.map((s, i) => ({ ...s, text: elLines[i] || s.text }));
+      }
+
+      // Yunancadan Türkçeye satır satır çeviri yapıyoruz
       const grLines = greekSubs.map(s => s.text);
+      const trLines = await translateLinesInChunks(grLines, "el", "tr");
 
-      btn.innerHTML = "⏳ Türkçe çeviri yapılıyor...";
+      // Veriyi video oynatıcıya uygun JSON nesnesine paketliyoruz
+      const finalResult = greekSubs.map((s, i) => ({
+         start: s.start,
+         end: s.end,
+         gr: s.text,
+         tr: (trLines[i] || s.text).replace(/\s+/g, ' ')
+      }));
 
-      // Önce YouTube'un kendi Türkçe çevirisini dene
-      let translatedLines = [];
-      const trTrackUrl = (elTrack ? elTrack.baseUrl : sourceTrack.baseUrl) + "&fmt=srv3&tlang=tr";
-      try {
-          const trRes = await fetchViaProxies(trTrackUrl);
-          const trXml = await trRes.text();
-          const trSubs = parseXmlSubtitles(trXml);
-          if (trSubs.length > 0) {
-              translatedLines = trSubs.map(s => s.text);
-          }
-      } catch (e) {
-          console.warn("YouTube Türkçe çeviri reddetti, Google API'ye geçiliyor.");
-      }
-
-      // Olmazsa Google Translate ile toplu çevir (API Chunking)
-      if (translatedLines.length === 0) {
-          translatedLines = await translateLinesInChunks(grLines, "el", "tr");
-      }
-      
-      for(let i=0; i<result.length; i++) {
-          if(translatedLines[i]) {
-              result[i].tr = translatedLines[i].replace(/\s+/g, ' ');
-          } else {
-              result[i].tr = result[i].gr; 
-          }
-      }
-      
-      document.getElementById('yt-subs-json').value = JSON.stringify(result, null, 2);
+      // Arayüzü güncelle ve videoyu başlat
+      document.getElementById('yt-subs-json').value = JSON.stringify(finalResult, null, 2);
       document.getElementById('yt-video-id').value = videoId;
       showToastMessage("✅ Altyazılar başarıyla çekildi ve çevrildi!");
       loadCustomVideo(); 
 
-  } catch(e) {
-      console.error(e);
-      const finalMsg = normalizeErrorMessage(e);
-      showToastMessage("❌ Hata: " + finalMsg + " (Manuel JSON deneyebilirsiniz)");
+  } catch (err) {
+      console.error(err);
+      showToastMessage("❌ Hata: " + err.message);
   } finally {
       btn.innerHTML = "⚡ Otomatik Çek & Çevir";
       btn.disabled = false;
