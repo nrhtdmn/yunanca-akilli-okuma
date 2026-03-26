@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yunanca Akıllı Okuyucu v16.0 - Tam Sürüm</title>
+<title>Yunanca Akıllı Okuyucu v17.0 - Tam Sürüm & Video Modu</title>
 <style>
   :root {
     --bg: #0d0f14;
@@ -47,7 +46,7 @@
   .logo span { color: var(--accent2); }
   .logo p { color: var(--text-dim); font-size: 0.9rem; margin-top: 5px; }
 
-  .main-tabs { display: flex; gap: 10px; }
+  .main-tabs { display: flex; gap: 10px; flex-wrap: wrap; }
   .main-tab-btn { background: var(--surface); color: var(--text-dim); border: 1px solid var(--border); padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: var(--transition); }
   .main-tab-btn:hover { border-color: var(--accent); color: var(--text); }
   .main-tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 4px 15px rgba(79, 142, 247, 0.3); }
@@ -135,40 +134,31 @@
   /* === GELİŞMİŞ TEST ÜNİTESİ === */
   #quiz-section-container { display: none; animation: fadeIn 0.4s ease; }
   .quiz-card { background: var(--surface); border: 1px solid var(--border); border-radius: 15px; padding: 40px 20px; text-align: center; max-width: 650px; margin: 0 auto; box-shadow: var(--shadow); position: relative; transition: all 0.3s ease; }
-  
   body.focus-mode .quiz-card { border-color: var(--accent); box-shadow: 0 10px 40px rgba(79, 142, 247, 0.15); margin-top: 5vh; transform: scale(1.02); }
-
   .quiz-controls-top { display: flex; gap: 10px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap; }
   .quiz-controls-top select { padding: 12px 15px; background: #000; color: white; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; outline: none; cursor: pointer; }
   .quiz-controls-top select:focus { border-color: var(--accent); }
-  
   .progress-container { width: 100%; background: #1a1e29; height: 12px; border-radius: 6px; margin-bottom: 25px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); }
   .progress-fill { height: 100%; background: linear-gradient(90deg, #4ade80, #34d399); width: 0%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 6px;}
-
   .quiz-big-word { font-size: 3rem; color: var(--accent2); font-weight: 800; margin-bottom: 20px; letter-spacing: 1px; text-shadow: 0 4px 15px rgba(232, 201, 109, 0.2); }
   .quiz-word-row { display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 30px; }
   .quiz-speak-btn { background: rgba(167,139,250,0.15); border: 1px solid rgba(167,139,250,0.4); color: var(--tts-color); border-radius: 50%; width: 60px; height: 60px; font-size: 1.6rem; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: 0.2s;}
   .quiz-speak-btn:hover { transform: scale(1.1); background: rgba(167,139,250,0.25); }
   .quiz-speak-btn.speaking { background: rgba(167,139,250,0.4); animation: pulse 0.8s infinite; }
-
   .quiz-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; }
   .quiz-opt-btn { background: #090b10; color: white; border: 2px solid var(--border); padding: 20px 15px; border-radius: 12px; font-size: 1.15rem; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center;}
   .quiz-opt-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(79, 142, 247, 0.15); transform: translateY(-2px); }
   .quiz-opt-btn.correct { background: rgba(74, 222, 128, 0.2); border-color: var(--success); color: var(--success); transform: scale(1.02); }
   .quiz-opt-btn.wrong { background: rgba(248, 113, 113, 0.2); border-color: var(--error); color: var(--error); opacity: 0.6; }
-
   #quiz-write-input { width: 100%; max-width: 450px; padding: 20px; background: #000; color: white; border: 2px solid var(--border); border-radius: 12px; text-align: center; font-size: 1.4rem; margin-bottom: 15px; outline: none; transition: 0.3s; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5); }
   #quiz-write-input:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(79, 142, 247, 0.2); }
   .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; border-color: var(--error) !important; color: var(--error); }
   @keyframes shake { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(4px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-8px, 0, 0); } 40%, 60% { transform: translate3d(8px, 0, 0); } }
-
   #quiz-feedback { margin-top: 25px; font-size: 1.3rem; font-weight: bold; min-height: 35px; display: flex; align-items: center; justify-content: center; gap: 10px; }
   .pop-anim { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
   @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-
   .exit-quiz-btn { position: absolute; top: 20px; right: 20px; background: transparent; border: 1px solid var(--border); color: var(--text-dim); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; }
   .exit-quiz-btn:hover { background: rgba(248, 113, 113, 0.1); color: var(--error); border-color: var(--error); }
-
   .result-stat-box { background: #0f1219; border: 1px solid var(--border); padding: 25px; border-radius: 15px; margin-bottom: 25px; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 15px;}
   .stat-item { display: flex; flex-direction: column; align-items: center; }
   .stat-item span { font-size: 2.5rem; font-weight: 800; line-height: 1; margin-bottom: 5px;}
@@ -177,6 +167,18 @@
   .mistakes-table th, .mistakes-table td { padding: 12px; border-bottom: 1px solid var(--border); }
   .mistakes-table th { color: var(--accent2); background: #0f1219;}
 
+  /* === VİDEO MODU SİSTEMİ === */
+  #section-video { display: none; animation: fadeIn 0.4s ease; }
+  .video-setup-box { background: var(--surface); border: 1px solid var(--border); padding: 25px; border-radius: 15px; margin-bottom: 20px; box-shadow: var(--shadow); }
+  .video-setup-box textarea { width: 100%; height: 120px; font-family: monospace; font-size: 0.9rem; }
+  .yt-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 15px; margin-bottom: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); background: #000; }
+  .yt-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+  
+  .subtitle-container { background: var(--surface); border: 1px solid var(--border); padding: 20px; border-radius: 15px; text-align: center; min-height: 150px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: var(--shadow); transition: all 0.3s ease; }
+  .sub-gr-text { font-size: 1.8rem; font-weight: bold; color: var(--accent2); margin-bottom: 10px; line-height: 1.4; transition: 0.2s;}
+  .sub-tr-text { font-size: 1.1rem; color: var(--text); border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; width: 100%; transition: 0.2s;}
+  .subtitle-container.active { border-color: var(--accent); box-shadow: 0 0 20px rgba(79, 142, 247, 0.2); background: linear-gradient(180deg, #13161e 0%, #1a1e29 100%);}
+  
   /* === POPUP === */
   #wpop { position: fixed; background: #151923; border: 1px solid var(--accent); padding: 20px; border-radius: 15px; display: none; z-index: 9999; width: min(420px, 95vw); left: 50%; transform: translateX(-50%); bottom: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); animation: slideUp 0.3s ease; }
   @keyframes slideUp { from { transform: translate(-50%, 100px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
@@ -224,8 +226,11 @@
     .data-sync-panel, .tts-panel { flex-direction: column; align-items: flex-start; }
     .tts-speed-control input[type="range"] { width: 80px; }
     .exit-quiz-btn { position: static; display: block; margin: 0 auto 15px auto; width: fit-content; }
+    .sub-gr-text { font-size: 1.3rem; }
   }
 </style>
+
+<script src="https://www.youtube.com/iframe_api"></script>
 </head>
 <body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -235,11 +240,12 @@
   <header id="main-header">
     <div class="logo">
       <h1>Yunanca <span>Akıllı</span> Okuyucu</h1>
-      <p>v16.0 — DEHB Dostu & Gelişmiş Eğitim Modülü</p>
+      <p>v17.0 — Video Gölgeli Okuma (Shadowing) Desteği</p>
     </div>
     <div class="main-tabs">
-      <button class="main-tab-btn active" id="mtab-read" onclick="switchMainTab('read')">📖 Okuma Paneli</button>
+      <button class="main-tab-btn active" id="mtab-read" onclick="switchMainTab('read')">📖 Okuma</button>
       <button class="main-tab-btn" id="mtab-quiz" onclick="switchMainTab('quiz')">🧠 Öğretici Test</button>
+      <button class="main-tab-btn" id="mtab-video" onclick="switchMainTab('video')">📺 Video Modu</button>
     </div>
   </header>
 
@@ -258,7 +264,7 @@
         <span id="tts-status-text">Seslendiriliyor...</span>
       </div>
       <div class="tts-unsupported" id="tts-unsupported">
-        ⚠️ Tarayıcınız sesli okuma desteklemiyor. Chrome veya Edge deneyin.
+        ⚠️ Tarayıcınız sesli okuma desteklemiyor.
       </div>
     </div>
   </div>
@@ -314,6 +320,33 @@
     <div id="reader"></div>
     <div id="deck-display"></div>
   </div> 
+
+  <div id="section-video" style="display:none;">
+    <div class="video-setup-box">
+      <h3 style="color:var(--accent); margin-bottom:15px;">Altyazılı Gölgeli Okuma (Shadowing)</h3>
+      <p style="color:var(--text-dim); margin-bottom:15px; font-size:0.9rem;">
+        Bir kelimeye tıkladığınızda video otomatik durur ve çeviri menüsü açılır. İşiniz bitince videoyu oynatmaya devam edebilirsiniz. (Varsayılan olarak örnek bir video ve altyazı yüklüdür).
+      </p>
+      
+      <div class="url-row">
+        <input type="text" id="yt-video-id" placeholder="YouTube Video ID (Örn: L_Guz73e6fw)" value="L_Guz73e6fw">
+      </div>
+      
+      <textarea id="yt-subs-json" placeholder="JSON Altyazı Verisi..."></textarea>
+      <button class="main-btn" style="width:100%; justify-content:center;" onclick="loadCustomVideo()">📺 Videoyu ve Altyazıları Başlat</button>
+    </div>
+
+    <div id="video-workspace" style="display:none;">
+      <div class="yt-container">
+        <div id="youtube-player"></div>
+      </div>
+      
+      <div id="active-subtitle-container" class="subtitle-container">
+        <div id="sub-gr" class="sub-gr-text"></div>
+        <div id="sub-tr" class="sub-tr-text"></div>
+      </div>
+    </div>
+  </div>
   
   <div id="section-quiz" style="display:none;">
     <div class="quiz-card">
@@ -413,7 +446,10 @@
 <script>
 /** 1. VERİ TABANI VE SÖZLÜK */
 const HUGE_RAW_DICTIONARY = [
-  ["ανθρώπων", "insanların"], ["αβαείο", "manastır"], ["αβαείου", "manastırın"], ["αβαία", "manastırlar"], ["αβαίων", "manastırların"], ["άβαχας", "abaküs"], ["άβαχα", "abaküsü"], ["άβαχας", "abaküsün"], ["άβαχα", "abaküs!"], ["άβαχες", "abaküsler"], ["άβαχες", "abaküsleri"], ["άβαχών", "abaküslerin"], ['δέρμα ', 'deri'], ['σώμα', 'beden'], ['σώματος', 'bedenin'], ['σώματα', 'bedenler'], ['σώμάτων', 'bedenlerin'], ['κόκαλο', 'kemik'], ['κόκαλου', 'kemikin'], ['κόκαλα', 'kemikler'], ['κόκαλων', 'kemiklerin'], ['μυς', 'kas'], ['άνθρωπος', 'insan'], ['άνθρωπο', 'insanı'], ['άνθρωπου', 'insanın'], ['άνθρωπε', 'insan!'], ['άνθρωποι', 'insanlar'], ['άνθρωπους', 'insanları'], ['άνθρωπων', 'insanların'], ['άντρας', 'erkek'], ['άντρα', 'erkekin'], ['άντρες', 'erkekler'], ['άντρων', 'erkeklerin'], ['γυναίκα', 'kadın'], ['γυναίκας', 'kadının'], ['γυναίκες', 'kadınlar'], ['γυναίκών', 'kadınların'], ['παιδί', 'çocuk'], ['σπίτι', 'ev'], ['σπίτιου', 'evin'], ['σπίτια', 'evler'], ['σπίτιών', 'evlerin'], ['πόλη', 'şehir'], ['πόλης', 'şehirin'], ['πόλες', 'şehirler'], ['πόλών', 'şehirlerin'], ['χώρα', 'ülke'], ['χώρας', 'ülkein'], ['χώρες', 'ülkeler'], ['χώρών', 'ülkelerin'], ['φίλος', 'arkadaş (erkek)'], ['φίλο', 'arkadaş (erkek)i'], ['φίλου', 'arkadaş (erkek)in'], ['φίλε', 'arkadaş (erkek)!'], ['φίλοι', 'arkadaş (erkek)ler'], ['φίλους', 'arkadaş (erkek)leri'], ['φίλων', 'arkadaş (erkek)lerin'], ['φίλη', 'arkadaş (kadın)'], ['φίλης', 'arkadaş (kadın)ın'], ['φίλες', 'arkadaş (kadın)lar'], ['φίλών', 'arkadaş (kadın)ların'], ['όνομα', 'isim/ad'], ['όνοματος', 'isim/adın'], ['όνοματα', 'isim/adlar'], ['όνομάτων', 'isim/adların'], ['νερό', 'su'], ['ψωμί', 'ekmek'], ['φαγητό', 'yemek'], ['καφές', 'kahve'], ['καφέ', 'kahvein'], ['καφέδες', 'kahveler'], ['καφέδων', 'kahvelerin'], ['τσάι', 'çay'], ['τσάιου', 'çayın'], ['τσάια', 'çaylar'], ['τσάιών', 'çayların'], ['σχολείο', 'okul'], ['σχολείου', 'okulın'], ['σχολεία', 'okullar'], ['σχολείων', 'okulların'], ['δάσκαλος', 'öğretmen (erkek)'], ['δάσκαλο', 'öğretmen (erkek)i'], ['δάσκαλου', 'öğretmen (erkek)in'], ['δάσκαλε', 'öğretmen (erkek)!'], ['δάσκαλοι', 'öğretmen (erkek)ler'], ['δάσκαλους', 'öğretmen (erkek)leri'], ['δάσκαλων', 'öğretmen (erkek)lerin'], ['δασκάλα', 'öğretmen (kadın)'], ['δασκάλας', 'öğretmen (kadın)ın'], ['δασκάλες', 'öğretmen (kadın)lar'], ['δασκάλών', 'öğretmen (kadın)ların'], ['βιβλίο', 'kitap'], ['βιβλίου', 'kitapın'], ['βιβλία', 'kitaplar'], ['βιβλίων', 'kitapların'], ['μάθημα', 'ders'], ['μάθηματος', 'dersin'], ['μάθηματα', 'dersler'], ['μάθημάτων', 'derslerin'], ['μέρα', 'gün'], ['μέρας', 'günin'], ['μέρες', 'günler'], ['μέρών', 'günlerin'], ['νύχτα', 'gece'], ['νύχτας', 'gecein'], ['νύχτες', 'geceler'], ['νύχτών', 'gecelerin'], ['χρόνος', 'zaman'], ['χρόνο', 'zamanı'], ['χρόνου', 'zamanın'], ['χρόνε', 'zaman!'], ['χρόνοι', 'zamanlar'], ['χρόνους', 'zamanları'], ['χρόνων', 'zamanların'], ['ώρα', 'saat'], ['ώρας', 'saatın'], ['ώρες', 'saatlar'], ['ώρών', 'saatların'], ['δρόμος', 'yol'], ['δρόμο', 'yolı'], ['δρόμου', 'yolın'], ['δρόμε', 'yol!'], ['δρόμοι', 'yollar'], ['δρόμους', 'yolları'], ['δρόμων', 'yolların'], ['αυτοκίνητο', 'araba'], ['αυτοκίνητου', 'arabaın'], ['αυτοκίνητα', 'arabalar'], ['αυτοκίνητων', 'arabaların'], ['λεωφορείο', 'otobüs'], ['λεωφορείου', 'otobüsin'], ['λεωφορεία', 'otobüsler'], ['λεωφορείων', 'otobüslerin'], ['δουλειά', 'iş'], ['δουλειάς', 'işin'], ['δουλειάδες', 'işler'], ['δουλειάδων', 'işlerin'], ['γραφείο', 'ofis'], ['γραφείου', 'ofisin'], ['γραφεία', 'ofisler'], ['γραφείων', 'ofislerin'], ['τηλέφωνο', 'telefon'], ['τηλέφωνου', 'telefonın'], ['τηλέφωνα', 'telefonlar'], ['τηλέφωνων', 'telefonların'], ['κινητό', 'cep telefonu'], ['μήνυμα', 'mesaj'], ['μήνυματος', 'mesajın'], ['μήνυματα', 'mesajlar'], ['μήνυμάτων', 'mesajların'], ['πατέρας', 'baba'], ['πατέρα', 'babaın'], ['πατέρες', 'babalar'], ['πατέρων', 'babaların'], ['μητέρα', 'anne'], ['μητέρας', 'annein'], ['μητέρες', 'anneler'], ['μητέρών', 'annelerin'], ['αδελφός', 'erkek kardeş'], ['αδελφή', 'kız kardeş'], ['οικογένεια', 'aile'], ['οικογένειας', 'ailein'], ['οικογένειες', 'aileler'], ['οικογένειών', 'ailelerin'], ['φως', 'ışık'], ['φωςτος', 'ışıkın'], ['φωςτα', 'ışıklar'], ['φωςτων', 'ışıkların'], ['ήλιος', 'güneş'], ['ήλιο', 'güneşi'], ['ήλιου', 'güneşin'], ['ήλιε', 'güneş!'], ['ήλιοι', 'güneşler'], ['ήλιους', 'güneşleri'], ['ήλιων', 'güneşlerin'], ['θάλασσα', 'deniz'], ['θάλασσας', 'denizin'], ['θάλασσες', 'denizler'], ['θάλασσών', 'denizlerin'], ['βουνό', 'dağ'], ['γη', 'dünya/toprak'], ['γης', 'dünya/toprakın'], ['γες', 'dünya/topraklar'], ['γών', 'dünya/toprakların'], ['άνθρωπος', 'kişi'], ['άνθρωπο', 'kişii'], ['άνθρωπου', 'kişiin'], ['άνθρωπε', 'kişi!'], ['άνθρωποι', 'kişiler'], ['άνθρωπους', 'kişileri'], ['άνθρωπων', 'kişilerin'], ['κατάστημα', 'mağaza'], ['κατάστηματος', 'mağazaın'], ['κατάστηματα', 'mağazalar'], ['κατάστημάτων', 'mağazaların'], ['αγορά', 'pazar / alışveriş'], ['αγοράς', 'pazar / alışverişin'], ['αγοράδες', 'pazar / alışverişler'], ['αγοράδων', 'pazar / alışverişlerin'], ['φωνή', 'ses'], ['χέρι', 'el'], ['χέριου', 'elin'], ['χέρια', 'eller'], ['χέριών', 'ellerin'], ['μάτι', 'göz'], ['μάτιου', 'gözin'], ['μάτια', 'gözler'], ['μάτιών', 'gözlerin'], ['τραπέζι', 'masa'], ['τραπέζιου', 'masaın'], ['τραπέζια', 'masalar'], ['τραπέζιών', 'masaların'], ['καρέκλα', 'sandalye'], ['καρέκλας', 'sandalyein'], ['καρέκλες', 'sandalyeler'], ['καρέκλών', 'sandalyelerin'], ['πόρτα', 'kapı'], ['πόρτας', 'kapıın'], ['πόρτες', 'kapılar'], ['πόρτών', 'kapıların'], ['παράθυρο', 'pencere'], ['παράθυρου', 'pencerein'], ['παράθυρα', 'pencereler'], ['παράθυρων', 'pencerelerin'], ['δωμάτιο', 'oda'], ['δωμάτιου', 'odaın'], ['δωμάτια', 'odalar'], ['δωμάτιων', 'odaların'], ['κουζίνα', 'mutfak'], ['κουζίνας', 'mutfakın'], ['κουζίνες', 'mutfaklar'], ['κουζίνών', 'mutfakların'], ['μπάνιο', 'banyo'], ['μπάνιου', 'banyoın'], ['μπάνια', 'banyolar'], ['μπάνιων', 'banyoların'], ['κρεβάτι', 'yatak'], ['κρεβάτιου', 'yatakın'], ['κρεβάτια', 'yataklar'], ['κρεβάτιών', 'yatakların'], ['ρούχο', 'kıyafet'], ['ρούχου', 'kıyafetin'], ['ρούχα', 'kıyafetler'], ['ρούχων', 'kıyafetlerin'], ['παπούτσι', 'ayakkabı'], ['παπούτσιου', 'ayakkabıın'], ['παπούτσια', 'ayakkabılar'], ['παπούτσιών', 'ayakkabıların'], ['τσάντα', 'çanta'], ['τσάντας', 'çantaın'], ['τσάντες', 'çantalar'], ['τσάντών', 'çantaların'], ['χρήστης', 'kullanıcı'], ['χρήστη', 'kullanıcıın'], ['χρήστες', 'kullanıcılar'], ['χρήστών', 'kullanıcıların'], ['εργασία', 'çalışma / iş'], ['εργασίας', 'çalışma / işin'], ['εργασίες', 'çalışma / işler'], ['εργασίών', 'çalışma / işlerin'], ['γραμματέας', 'sekreter'], ['υπάλληλος', 'memur / çalışan'], ['υπάλληλο', 'memur / çalışanı'], ['υπάλληλου', 'memur / çalışanın'], ['υπάλληλε', 'memur / çalışan!'], ['υπάλληλοι', 'memur / çalışanlar'], ['υπάλληλους', 'memur / çalışanları'], ['υπάλληλων', 'memur / çalışanların'], ['γιατρός', 'doktor'], ['νοσοκομείο', 'hastane'], ['νοσοκομείου', 'hastanein'], ['νοσοκομεία', 'hastaneler'], ['νοσοκομείων', 'hastanelerin'], ['φάρμακο', 'ilaç'], ['φάρμακου', 'ilaçın'], ['φάρμακα', 'ilaçlar'], ['φάρμακων', 'ilaçların'], ['υγεία', 'sağlık'], ['υγείας', 'sağlıkın'], ['υγείες', 'sağlıklar'], ['υγείών', 'sağlıkların'], ['πρόβλημα', 'problem'], ['πρόβληματος', 'problemin'], ['πρόβληματα', 'problemler'], ['πρόβλημάτων', 'problemlerin'], ['λύση', 'çözüm'], ['λύσης', 'çözümin'], ['λύσες', 'çözümler'], ['λύσών', 'çözümlerin'], ['ερώτηση', 'soru'], ['ερώτησης', 'soruın'], ['ερώτησες', 'sorular'], ['ερώτησών', 'soruların'], ['απάντηση', 'cevap'], ['απάντησης', 'cevapın'], ['απάντησες', 'cevaplar'], ['απάντησών', 'cevapların'], ['γλώσσα', 'dil'], ['γλώσσας', 'dilin'], ['γλώσσες', 'diller'], ['γλώσσών', 'dillerin'], ['λέξη', 'kelime'], ['λέξης', 'kelimein'], ['λέξες', 'kelimeler'], ['λέξών', 'kelimelerin'], ['νόημα', 'anlam'], ['νόηματος', 'anlamın'], ['νόηματα', 'anlamlar'], ['νόημάτων', 'anlamların'], ['ιστορία', 'hikâye / tarih'], ['ιστορίας', 'hikâye / tarihin'], ['ιστορίες', 'hikâye / tarihler'], ['ιστορίών', 'hikâye / tarihlerin'], ['αλήθεια', 'gerçek'], ['αλήθειας', 'gerçekin'], ['αλήθειες', 'gerçekler'], ['αλήθειών', 'gerçeklerin'], ['λάθος', 'hata'], ['λάθους', 'hataın'], ['λάθη', 'hatalar'], ['λάθών', 'hataların'], ['ιδέα', 'fikir'], ['ιδέας', 'fikirin'], ['ιδέες', 'fikirler'], ['ιδέών', 'fikirlerin'], ['σχέδιο', 'plan'], ['σχέδιου', 'planın'], ['σχέδια', 'planlar'], ['σχέδιων', 'planların'], ['πρόγραμμα', 'program'], ['πρόγραμματος', 'programın'], ['πρόγραμματα', 'programlar'], ['πρόγραμμάτων', 'programların'], ['υπολογιστής', 'bilgisayar'], ['οθόνη', 'ekran'], ['οθόνης', 'ekranın'], ['οθόνες', 'ekranlar'], ['οθόνών', 'ekranların'], ['αρχείο', 'dosya'], ['αρχείου', 'dosyaın'], ['αρχεία', 'dosyalar'], ['αρχείων', 'dosyaların'], ['εικόνα', 'resim'], ['εικόνας', 'resimin'], ['εικόνες', 'resimler'], ['εικόνών', 'resimlerin'], ['βίντεο', 'video'], ['βίντεου', 'videoın'], ['βίντεα', 'videolar'], ['βίντεων', 'videoların'], ['ήχος', 'ses'], ['ήχο', 'sesi'], ['ήχου', 'sesin'], ['ήχε', 'ses!'], ['ήχοι', 'sesler'], ['ήχους', 'sesleri'], ['ήχων', 'seslerin'], ['μουσική', 'müzik'], ['τραγούδι', 'şarkı'], ['τραγούδιου', 'şarkıın'], ['τραγούδια', 'şarkılar'], ['τραγούδιών', 'şarkıların'], ['χρόνος', 'süre / zaman'], ['χρόνο', 'süre / zamanı'], ['χρόνου', 'süre / zamanın'], ['χρόνε', 'süre / zaman!'], ['χρόνοι', 'süre / zamanlar'], ['χρόνους', 'süre / zamanları'], ['χρόνων', 'süre / zamanların'], ['στιγμή', 'an'], ['αρχή', 'başlangıç'], ['τέλος', 'son'], ['τέλους', 'sonın'], ['τέλη', 'sonlar'], ['τέλών', 'sonların'], ['τρόπος', 'yöntem'], ['τρόπο', 'yöntemi'], ['τρόπου', 'yöntemin'], ['τρόπε', 'yöntem!'], ['τρόποι', 'yöntemler'], ['τρόπους', 'yöntemleri'], ['τρόπων', 'yöntemlerin'], ['ανάγκη', 'ihtiyaç'], ['ανάγκης', 'ihtiyaçın'], ['ανάγκες', 'ihtiyaçlar'], ['ανάγκών', 'ihtiyaçların'], ['κατάσταση', 'durum'], ['κατάστασης', 'durumın'], ['κατάστασες', 'durumlar'], ['κατάστασών', 'durumların'], ['αποτέλεσμα', 'sonuç'], ['αποτέλεσματος', 'sonuçın'], ['αποτέλεσματα', 'sonuçlar'], ['αποτέλεσμάτων', 'sonuçların'], ['προσπάθεια', 'çaba'], ['προσπάθειας', 'çabaın'], ['προσπάθειες', 'çabalar'], ['προσπάθειών', 'çabaların'], ['επιτυχία', 'başarı'], ['επιτυχίας', 'başarıın'], ['επιτυχίες', 'başarılar'], ['επιτυχίών', 'başarıların'], ['μαθητής', 'öğrenci (erkek)'], ['μαθήτρια', 'öğrenci (kız)'], ['μαθήτριας', 'öğrenci (kız)ın'], ['μαθήτριες', 'öğrenci (kız)lar'], ['μαθήτριών', 'öğrenci (kız)ların'], ['καθηγητής', 'öğretmen / hoca (erkek)'], ['καθηγήτρια', 'öğretmen / hoca (kadın)'], ['καθηγήτριας', 'öğretmen / hoca (kadın)ın'], ['καθηγήτριες', 'öğretmen / hoca (kadın)lar'], ['καθηγήτριών', 'öğretmen / hoca (kadın)ların'], ['γονιός', 'ebeveyn'], ['οικοδόμος', 'inşaat işçisi'], ['οικοδόμο', 'inşaat işçisii'], ['οικοδόμου', 'inşaat işçisiin'], ['οικοδόμε', 'inşaat işçisi!'], ['οικοδόμοι', 'inşaat işçisiler'], ['οικοδόμους', 'inşaat işçisileri'], ['οικοδόμων', 'inşaat işçisilerin'], ['εργάτης', 'işçi'], ['εργάτη', 'işçiin'], ['εργάτες', 'işçiler'], ['εργάτών', 'işçilerin'], ['οδηγός', 'sürücü'], ['πελάτης', 'müşteri'], ['πελάτη', 'müşteriin'], ['πελάτες', 'müşteriler'], ['πελάτών', 'müşterilerin'], ['πωλητής', 'satıcı'], ['αγοράστρια', 'kadın alıcı'], ['αγοράστριας', 'kadın alıcıın'], ['αγοράστριες', 'kadın alıcılar'], ['αγοράστριών', 'kadın alıcıların'], ['συνάδελφος', 'meslektaş'], ['συνάδελφο', 'meslektaşı'], ['συνάδελφου', 'meslektaşın'], ['συνάδελφε', 'meslektaş!'], ['συνάδελφοι', 'meslektaşlar'], ['συνάδελφους', 'meslektaşları'], ['συνάδελφων', 'meslektaşların'], ['ομάδα', 'takım'], ['ομάδας', 'takımın'], ['ομάδες', 'takımlar'], ['ομάδών', 'takımların'], ['παιχνίδι', 'oyun'], ['παιχνίδιου', 'oyunın'], ['παιχνίδια', 'oyunlar'], ['παιχνίδιών', 'oyunların'], ['μπάλα', 'top'], ['μπάλας', 'topın'], ['μπάλες', 'toplar'], ['μπάλών', 'topların'], ['αθλητής', 'sporcu (erkek)'], ['αθλήτρια', 'sporcu (kadın)'], ['αθλήτριας', 'sporcu (kadın)ın'], ['αθλήτριες', 'sporcu (kadın)lar'], ['αθλήτριών', 'sporcu (kadın)ların'], ['γήπεδο', 'stadyum / saha'], ['γήπεδου', 'stadyum / sahaın'], ['γήπεδα', 'stadyum / sahalar'], ['γήπεδων', 'stadyum / sahaların'], ['προπόνηση', 'antrenman'], ['προπόνησης', 'antrenmanın'], ['προπόνησες', 'antrenmanlar'], ['προπόνησών', 'antrenmanların'], ['αγώνας', 'maç'], ['αγώνα', 'maçın'], ['αγώνες', 'maçlar'], ['αγώνων', 'maçların'], ['νίκη', 'galibiyet'], ['νίκης', 'galibiyetin'], ['νίκες', 'galibiyetler'], ['νίκών', 'galibiyetlerin'], ['ήττα', 'mağlubiyet'], ['ήττας', 'mağlubiyetin'], ['ήττες', 'mağlubiyetler'], ['ήττών', 'mağlubiyetlerin'], ['δύναμη', 'güç'], ['δύναμης', 'güçin'], ['δύναμες', 'güçler'], ['δύναμών', 'güçlerin'], ['σώμα', 'vücut'], ['σώματος', 'vücutın'], ['σώματα', 'vücutlar'], ['σώμάτων', 'vücutların'], ['κεφάλι', 'kafa'], ['κεφάλιου', 'kafaın'], ['κεφάλια', 'kafalar'], ['κεφάλιών', 'kafaların'], ['πρόσωπο', 'yüz'], ['πρόσωπου', 'yüzin'], ['πρόσωπα', 'yüzler'], ['πρόσωπων', 'yüzlerin'], ['στόμα', 'ağız'], ['στόματος', 'ağızın'], ['στόματα', 'ağızlar'], ['στόμάτων', 'ağızların'], ['μύτη', 'burun'], ['μύτης', 'burunın'], ['μύτες', 'burunlar'], ['μύτών', 'burunların'], ['αυτί', 'kulak'], ['πόδι', 'ayak'], ['πόδιου', 'ayakın'], ['πόδια', 'ayaklar'], ['πόδιών', 'ayakların'], ['χρώμα', 'renk'], ['χρώματος', 'renkin'], ['χρώματα', 'renkler'], ['χρώμάτων', 'renklerin'], ['άσπρο', 'beyaz renk'], ['άσπρου', 'beyaz renkin'], ['άσπρα', 'beyaz renkler'], ['άσπρων', 'beyaz renklerin'], ['μαύρο', 'siyah renk'], ['μαύρου', 'siyah renkin'], ['μαύρα', 'siyah renkler'], ['μαύρων', 'siyah renklerin'], ['κόκκινο', 'kırmızı renk'], ['κόκκινου', 'kırmızı renkin'], ['κόκκινα', 'kırmızı renkler'], ['κόκκινων', 'kırmızı renklerin'], ['πράσινο', 'yeşil renk'], ['πράσινου', 'yeşil renkin'], ['πράσινα', 'yeşil renkler'], ['πράσινων', 'yeşil renklerin'], ['μπλε', 'mavi'], ['καιρός', 'hava durumu'], ['βροχή', 'yağmur'], ['χιόνι', 'kar'], ['χιόνιου', 'karın'], ['χιόνια', 'karlar'], ['χιόνιών', 'karların'], ['άνεμος', 'rüzgâr'], ['άνεμο', 'rüzgâri'], ['άνεμου', 'rüzgârin'], ['άνεμε', 'rüzgâr!'], ['άνεμοι', 'rüzgârler'], ['άνεμους', 'rüzgârleri'], ['άνεμων', 'rüzgârlerin'], ['θερμοκρασία', 'sıcaklık'], ['θερμοκρασίας', 'sıcaklıkın'], ['θερμοκρασίες', 'sıcaklıklar'], ['θερμοκρασίών', 'sıcaklıkların'], ['καλοκαίρι', 'yaz mevsimi'], ['καλοκαίριου', 'yaz mevsimiin'], ['καλοκαίρια', 'yaz mevsimiler'], ['καλοκαίριών', 'yaz mevsimilerin'], ['χειμώνας', 'kış mevsimi'], ['χειμώνα', 'kış mevsimiin'], ['χειμώνες', 'kış mevsimiler'], ['χειμώνων', 'kış mevsimilerin'], ['άνοιξη', 'ilkbahar'], ['άνοιξης', 'ilkbaharın'], ['άνοιξες', 'ilkbaharlar'], ['άνοιξών', 'ilkbaharların'], ['φθινόπωρο', 'sonbahar'], ['φθινόπωρου', 'sonbaharın'], ['φθινόπωρα', 'sonbaharlar'], ['φθινόπωρων', 'sonbaharların'], ['πρωί', 'sabah'], ['απόγευμα', 'öğleden sonra'], ['απόγευματος', 'öğleden sonraın'], ['απόγευματα', 'öğleden sonralar'], ['απόγευμάτων', 'öğleden sonraların'], ['βράδυ', 'akşam'], ['ραντεβού', 'randevu'], ['πανεπιστήμιο', 'üniversite'], ['πανεπιστήμιου', 'üniversitein'], ['πανεπιστήμια', 'üniversiteler'], ['πανεπιστήμιων', 'üniversitelerin'], ['τάξη', 'sınıf'], ['τάξης', 'sınıfın'], ['τάξες', 'sınıflar'], ['τάξών', 'sınıfların'], ['βιβλιοθήκη', 'kütüphane'], ['βιβλιοθήκης', 'kütüphanein'], ['βιβλιοθήκες', 'kütüphaneler'], ['βιβλιοθήκών', 'kütüphanelerin'], ['μάθηση', 'öğrenme'], ['μάθησης', 'öğrenmein'], ['μάθησες', 'öğrenmeler'], ['μάθησών', 'öğrenmelerin'], ['γνώση', 'bilgi'], ['γνώσης', 'bilgiin'], ['γνώσες', 'bilgiler'], ['γνώσών', 'bilgilerin'], ['εμπειρία', 'deneyim'], ['εμπειρίας', 'deneyimin'], ['εμπειρίες', 'deneyimler'], ['εμπειρίών', 'deneyimlerin'], ['στόχος', 'hedef'], ['στόχο', 'hedefi'], ['στόχου', 'hedefin'], ['στόχε', 'hedef!'], ['στόχοι', 'hedefler'], ['στόχους', 'hedefleri'], ['στόχων', 'hedeflerin'], ['αποτέλεσμα', 'sonuç'], ['αποτέλεσματος', 'sonuçın'], ['αποτέλεσματα', 'sonuçlar'], ['αποτέλεσμάτων', 'sonuçların'], ['επιτυχία', 'başarı'], ['επιτυχίας', 'başarıın'], ['επιτυχίες', 'başarılar'], ['επιτυχίών', 'başarıların'], ['αποτυχία', 'başarısızlık'], ['αποτυχίας', 'başarısızlıkın'], ['αποτυχίες', 'başarısızlıklar'], ['αποτυχίών', 'başarısızlıkların'], ['ζωή', 'hayat'], ['κόσμος', 'dünya / insanlar'], ['κόσμο', 'dünya / insanları'], ['κόσμου', 'dünya / insanların'], ['κόσμε', 'dünya / insanlar!'], ['κόσμοι', 'dünya / insanlarlar'], ['κόσμους', 'dünya / insanlarları'], ['κόσμων', 'dünya / insanlarların'], ['κοινωνία', 'toplum'], ['κοινωνίας', 'toplumın'], ['κοινωνίες', 'toplumlar'], ['κοινωνίών', 'toplumların'], ['πολίτης', 'vatandaş'], ['πολίτη', 'vatandaşın'], ['πολίτες', 'vatandaşlar'], ['πολίτών', 'vatandaşların'], ['δικαίωμα', 'hak'], ['δικαίωματος', 'hakın'], ['δικαίωματα', 'haklar'], ['δικαίωμάτων', 'hakların'], ['νόμος', 'yasa'], ['νόμο', 'yasaı'], ['νόμου', 'yasaın'], ['νόμε', 'yasa!'], ['νόμοι', 'yasalar'], ['νόμους', 'yasaları'], ['νόμων', 'yasaların'], ['κράτος', 'devlet'], ['κράτους', 'devletin'], ['κράτη', 'devletler'], ['κράτών', 'devletlerin'], ['κυβέρνηση', 'hükümet'], ['κυβέρνησης', 'hükümetin'], ['κυβέρνησες', 'hükümetler'], ['κυβέρνησών', 'hükümetlerin'], ['πρόεδρος', 'başkan'], ['πρόεδρο', 'başkanı'], ['πρόεδρου', 'başkanın'], ['πρόεδρε', 'başkan!'], ['πρόεδροι', 'başkanlar'], ['πρόεδρους', 'başkanları'], ['πρόεδρων', 'başkanların'], ['πόλεμος', 'savaş'], ['πόλεμο', 'savaşı'], ['πόλεμου', 'savaşın'], ['πόλεμε', 'savaş!'], ['πόλεμοι', 'savaşlar'], ['πόλεμους', 'savaşları'], ['πόλεμων', 'savaşların'], ['ειρήνη', 'barış'], ['ειρήνης', 'barışın'], ['ειρήνες', 'barışlar'], ['ειρήνών', 'barışların'], ['στρατός', 'ordu'], ['στρατιώτης', 'asker'], ['στρατιώτη', 'askerin'], ['στρατιώτες', 'askerler'], ['στρατιώτών', 'askerlerin'], ['διοίκηση', 'yönetim'], ['διοίκησης', 'yönetimin'], ['διοίκησες', 'yönetimler'], ['διοίκησών', 'yönetimlerin'], ['υπηρεσία', 'hizmet'], ['υπηρεσίας', 'hizmetin'], ['υπηρεσίες', 'hizmetler'], ['υπηρεσίών', 'hizmetlerin'], ['καθήκον', 'görev'], ['καθήκόντος', 'görevin'], ['καθήκόντα', 'görevler'], ['καθήκόντων', 'görevlerin'], ['ευθύνη', 'sorumluluk'], ['ευθύνης', 'sorumlulukın'], ['ευθύνες', 'sorumluluklar'], ['ευθύνών', 'sorumlulukların'], ['απόφαση', 'karar'], ['απόφασης', 'kararın'], ['απόφασες', 'kararlar'], ['απόφασών', 'kararların'], ['επιλογή', 'seçim'], ['δυνατότητα', 'imkân'], ['δυνατότητας', 'imkânin'], ['δυνατότητες', 'imkânler'], ['δυνατότητών', 'imkânlerin'], ['ανάγκη', 'ihtiyaç'], ['ανάγκης', 'ihtiyaçın'], ['ανάγκες', 'ihtiyaçlar'], ['ανάγκών', 'ihtiyaçların'], ['τρόπος', 'yöntem'], ['τρόπο', 'yöntemi'], ['τρόπου', 'yöntemin'], ['τρόπε', 'yöntem!'], ['τρόποι', 'yöntemler'], ['τρόπους', 'yöntemleri'], ['τρόπων', 'yöntemlerin'], ['σύστημα', 'sistem'], ['σύστηματος', 'sistemin'], ['σύστηματα', 'sistemler'], ['σύστημάτων', 'sistemlerin'], ['τεχνολογία', 'teknoloji'], ['τεχνολογίας', 'teknolojiin'], ['τεχνολογίες', 'teknolojiler'], ['τεχνολογίών', 'teknolojilerin'], ['εφαρμογή', 'uygulama'], ['διαδίκτυο', 'internet'], ['διαδίκτυου', 'internetin'], ['διαδίκτυα', 'internetler'], ['διαδίκτυων', 'internetlerin'], ['ιστοσελίδα', 'web sitesi'], ['ιστοσελίδας', 'web sitesiin'], ['ιστοσελίδες', 'web sitesiler'], ['ιστοσελίδών', 'web sitesilerin'], ['πληροφορία', 'bilgi (enformasyon)'], ['πληροφορίας', 'bilgi (enformasyon)ın'], ['πληροφορίες', 'bilgi (enformasyon)lar'], ['πληροφορίών', 'bilgi (enformasyon)ların'], ['σύνδεση', 'bağlantı'], ['σύνδεσης', 'bağlantıın'], ['σύνδεσες', 'bağlantılar'], ['σύνδεσών', 'bağlantıların'], ['ταχύτητα', 'hız'], ['ταχύτητας', 'hızın'], ['ταχύτητες', 'hızlar'], ['ταχύτητών', 'hızların'], ['ενέργεια', 'enerji'], ['ενέργειας', 'enerjiin'], ['ενέργειες', 'enerjiler'], ['ενέργειών', 'enerjilerin'], ['δύναμη', 'güç'], ['δύναμης', 'güçin'], ['δύναμες', 'güçler'], ['δύναμών', 'güçlerin'], ['μηχανή', 'makine'], ['εργαλείο', 'araç'], ['εργαλείου', 'araçın'], ['εργαλεία', 'araçlar'], ['εργαλείων', 'araçların'], ['κατασκευή', 'üretim / yapı'], ['ανάπτυξη', 'gelişim'], ['ανάπτυξης', 'gelişimin'], ['ανάπτυξες', 'gelişimler'], ['ανάπτυξών', 'gelişimlerin'], ['πρόοδος', 'ilerleme'], ['πρόοδο', 'ilerlemei'], ['πρόοδου', 'ilerlemein'], ['πρόοδε', 'ilerleme!'], ['πρόοδοι', 'ilerlemeler'], ['πρόοδους', 'ilerlemeleri'], ['πρόοδων', 'ilerlemelerin'], ['μέλλον', 'gelecek'], ['μέλλόντος', 'gelecekin'], ['μέλλόντα', 'gelecekler'], ['μέλλόντων', 'geleceklerin'], ['αέρας', 'hava'], ['αέρα', 'havaın'], ['αέρες', 'havalar'], ['αέρων', 'havaların'], ['γη', 'toprak / dünya'], ['γης', 'toprak / dünyaın'], ['γες', 'toprak / dünyalar'], ['γών', 'toprak / dünyaların'], ['ουρανός', 'gökyüzü'], ['ήλιος', 'güneş'], ['ήλιο', 'güneşi'], ['ήλιου', 'güneşin'], ['ήλιε', 'güneş!'], ['ήλιοι', 'güneşler'], ['ήλιους', 'güneşleri'], ['ήλιων', 'güneşlerin'], ['φεγγάρι', 'ay'], ['φεγγάριου', 'ayın'], ['φεγγάρια', 'aylar'], ['φεγγάριών', 'ayların'], ['αστέρι', 'yıldız'], ['αστέριου', 'yıldızın'], ['αστέρια', 'yıldızlar'], ['αστέριών', 'yıldızların'], ['φωτιά', 'ateş'], ['φωτιάς', 'ateşin'], ['φωτιάδες', 'ateşler'], ['φωτιάδων', 'ateşlerin'], ['θάνατος', 'ölüm'], ['θάνατο', 'ölümi'], ['θάνατου', 'ölümin'], ['θάνατε', 'ölüm!'], ['θάνατοι', 'ölümler'], ['θάνατους', 'ölümleri'], ['θάνατων', 'ölümlerin'], ['αρχή', 'başlangıç'], ['τέλος', 'son'], ['τέλους', 'sonın'], ['τέλη', 'sonlar'], ['τέλών', 'sonların'], ['μέση', 'orta'], ['μέσης', 'ortaın'], ['μέσες', 'ortalar'], ['μέσών', 'ortaların'], ['πλευρά', 'taraf'], ['πλευράς', 'tarafın'], ['πλευράδες', 'taraflar'], ['πλευράδων', 'tarafların'], ['γραμμή', 'çizgi'], ['σημείο', 'nokta'], ['σημείου', 'noktaın'], ['σημεία', 'noktalar'], ['σημείων', 'noktaların'], ['αριθμός', 'sayı'], ['όρος', 'terim'], ['όρο', 'terimi'], ['όρου', 'terimin'], ['όρε', 'terim!'], ['όροι', 'terimler'], ['όρους', 'terimleri'], ['όρων', 'terimlerin'], ['σημασία', 'anlam / önem'], ['σημασίας', 'anlam / önemin'], ['σημασίες', 'anlam / önemler'], ['σημασίών', 'anlam / önemlerin'], ['χρήση', 'kullanım'], ['χρήσης', 'kullanımın'], ['χρήσες', 'kullanımlar'], ['χρήσών', 'kullanımların'], ['παράδειγμα', 'örnek'], ['παράδειγματος', 'örnekin'], ['παράδειγματα', 'örnekler'], ['παράδειγμάτων', 'örneklerin'], ['εξήγηση', 'açıklama'], ['εξήγησης', 'açıklamaın'], ['εξήγησες', 'açıklamalar'], ['εξήγησών', 'açıklamaların'], ['απάντηση', 'cevap'], ['απάντησης', 'cevapın'], ['απάντησες', 'cevaplar'], ['απάντησών', 'cevapların'], ['ερώτηση', 'soru'], ['ερώτησης', 'soruın'], ['ερώτησες', 'sorular'], ['ερώτησών', 'soruların'], ['φυσική', 'fizik'], ['χημεία', 'kimya'], ['χημείας', 'kimyaın'], ['χημείες', 'kimyalar'], ['χημείών', 'kimyaların'], ['ιστορία', 'tarih'], ['ιστορίας', 'tarihin'], ['ιστορίες', 'tarihler'], ['ιστορίών', 'tarihlerin'], ['γεωγραφία', 'coğrafya'], ['γεωγραφίας', 'coğrafyaın'], ['γεωγραφίες', 'coğrafyalar'], ['γεωγραφίών', 'coğrafyaların'], ['πολιτική', 'siyaset'], ['οικονομία', 'ekonomi'], ['οικονομίας', 'ekonomiin'], ['οικονομίες', 'ekonomiler'], ['οικονομίών', 'ekonomilerin'], ['αγορά', 'pazar / ekonomi'], ['αγοράς', 'pazar / ekonomiin'], ['αγοράδες', 'pazar / ekonomiler'], ['αγοράδων', 'pazar / ekonomilerin'], ['τιμή', 'fiyat'], ['προϊόν', 'ürün'], ['εταιρεία', 'şirket'], ['εταιρείας', 'şirketin'], ['εταιρείες', 'şirketler'], ['εταιρείών', 'şirketlerin'], ['επιχείρηση', 'işletme'], ['επιχείρησης', 'işletmein'], ['επιχείρησες', 'işletmeler'], ['επιχείρησών', 'işletmelerin'], ['πώληση', 'satış'], ['πώλησης', 'satışın'], ['πώλησες', 'satışlar'], ['πώλησών', 'satışların'], ['αγοράζω', 'satın alma'], ['αγοράζως', 'satın almaın'], ['παραγγελία', 'sipariş'], ['παραγγελίας', 'siparişin'], ['παραγγελίες', 'siparişler'], ['παραγγελίών', 'siparişlerin'], ['αποστολή', 'gönderim'], ['παραλαβή', 'teslim alma'], ['συμφωνία', 'anlaşma'], ['συμφωνίας', 'anlaşmaın'], ['συμφωνίες', 'anlaşmalar'], ['συμφωνίών', 'anlaşmaların'], ['συνεργασία', 'iş birliği'], ['συνεργασίας', 'iş birliğiin'], ['συνεργασίες', 'iş birliğiler'], ['συνεργασίών', 'iş birliğilerin'], ['επικοινωνία', 'iletişim'], ['επικοινωνίας', 'iletişimin'], ['επικοινωνίες', 'iletişimler'], ['επικοινωνίών', 'iletişimlerin'], ['μήνυμα', 'mesaj'], ['μήνυματος', 'mesajın'], ['μήνυματα', 'mesajlar'], ['μήνυμάτων', 'mesajların'], ['κείμενο', 'metin'], ['κείμενου', 'metinin'], ['κείμενα', 'metinler'], ['κείμενων', 'metinlerin'], ['άρθρο', 'makale'], ['άρθρου', 'makalein'], ['άρθρα', 'makaleler'], ['άρθρων', 'makalelerin'], ['σελίδα', 'sayfa'], ['σελίδας', 'sayfaın'], ['σελίδες', 'sayfalar'], ['σελίδών', 'sayfaların'], ['σκέψη', 'düşünce'], ['σκέψης', 'düşüncein'], ['σκέψες', 'düşünceler'], ['σκέψών', 'düşüncelerin'], ['γνώμη', 'görüş'], ['γνώμης', 'görüşin'], ['γνώμες', 'görüşler'], ['γνώμών', 'görüşlerin'], ['ιδιοκτήτης', 'sahip'], ['ιδιοκτήτη', 'sahipin'], ['ιδιοκτήτες', 'sahipler'], ['ιδιοκτήτών', 'sahiplerin'], ['πελάτης', 'müşteri'], ['πελάτη', 'müşteriin'], ['πελάτες', 'müşteriler'], ['πελάτών', 'müşterilerin'], ['αγόρι', 'erkek çocuk'], ['αγόριου', 'erkek çocukın'], ['αγόρια', 'erkek çocuklar'], ['αγόριών', 'erkek çocukların'], ['κορίτσι', 'kız çocuk'], ['κορίτσιου', 'kız çocukın'], ['κορίτσια', 'kız çocuklar'], ['κορίτσιών', 'kız çocukların'], ['ηλικία', 'yaş'], ['ηλικίας', 'yaşın'], ['ηλικίες', 'yaşlar'], ['ηλικίών', 'yaşların'], ['γέννηση', 'doğum'], ['γέννησης', 'doğumın'], ['γέννησες', 'doğumlar'], ['γέννησών', 'doğumların'], ['θάλαμος', 'oda / bölüm'], ['θάλαμο', 'oda / bölümi'], ['θάλαμου', 'oda / bölümin'], ['θάλαμε', 'oda / bölüm!'], ['θάλαμοι', 'oda / bölümler'], ['θάλαμους', 'oda / bölümleri'], ['θάλαμων', 'oda / bölümlerin'], ['τμήμα', 'bölüm'], ['τμήματος', 'bölümin'], ['τμήματα', 'bölümler'], ['τμήμάτων', 'bölümlerin'], ['περιοχή', 'bölge'], ['κέντρο', 'merkez'], ['κέντρου', 'merkezin'], ['κέντρα', 'merkezler'], ['κέντρων', 'merkezlerin'], ['γωνία', 'köşe'], ['γωνίας', 'köşein'], ['γωνίες', 'köşeler'], ['γωνίών', 'köşelerin'], ['είσοδος', 'giriş'], ['είσοδο', 'girişi'], ['είσοδου', 'girişin'], ['είσοδε', 'giriş!'], ['είσοδοι', 'girişler'], ['είσοδους', 'girişleri'], ['είσοδων', 'girişlerin'], ['έξοδος', 'çıkış'], ['έξοδο', 'çıkışı'], ['έξοδου', 'çıkışın'], ['έξοδε', 'çıkış!'], ['έξοδοι', 'çıkışlar'], ['έξοδους', 'çıkışları'], ['έξοδων', 'çıkışların'], ['μεταφορά', 'ulaşım'], ['μεταφοράς', 'ulaşımın'], ['μεταφοράδες', 'ulaşımlar'], ['μεταφοράδων', 'ulaşımların'], ['ταξίδι', 'seyahat'], ['ταξίδιου', 'seyahatın'], ['ταξίδια', 'seyahatlar'], ['ταξίδιών', 'seyahatların'], ['τουρίστας', 'turist'], ['τουρίστα', 'turistin'], ['τουρίστες', 'turistler'], ['τουρίστων', 'turistlerin'], ['ξενοδοχείο', 'otel'], ['ξενοδοχείου', 'otelin'], ['ξενοδοχεία', 'oteller'], ['ξενοδοχείων', 'otellerin'], ['κράτηση', 'rezervasyon'], ['κράτησης', 'rezervasyonın'], ['κράτησες', 'rezervasyonlar'], ['κράτησών', 'rezervasyonların'], ['απόσταση', 'mesafe'], ['απόστασης', 'mesafein'], ['απόστασες', 'mesafeler'], ['απόστασών', 'mesafelerin'], ['διαφορά', 'fark'], ['διαφοράς', 'farkın'], ['διαφοράδες', 'farklar'], ['διαφοράδων', 'farkların'], ['αλλαγή', 'değişim'], ['βελτίωση', 'gelişme'], ['βελτίωσης', 'gelişmein'], ['βελτίωσες', 'gelişmeler'], ['βελτίωσών', 'gelişmelerin'], ['εμπόριο', 'ticaret'], ['εμπόριου', 'ticaretin'], ['εμπόρια', 'ticaretler'], ['εμπόριων', 'ticaretlerin'], ['ανάπτυξη', 'gelişim'], ['ανάπτυξης', 'gelişimin'], ['ανάπτυξες', 'gelişimler'], ['ανάπτυξών', 'gelişimlerin'], ['προσφορά', 'teklif'], ['προσφοράς', 'teklifin'], ['προσφοράδες', 'teklifler'], ['προσφοράδων', 'tekliflerin'], ['ζήτηση', 'talep'], ['ζήτησης', 'talepin'], ['ζήτησες', 'talepler'], ['ζήτησών', 'taleplerin'], ['διαφήμιση', 'reklam'], ['διαφήμισης', 'reklamın'], ['διαφήμισες', 'reklamlar'], ['διαφήμισών', 'reklamların'], ['περιεχόμενο', 'içerik'], ['περιεχόμενου', 'içerikin'], ['περιεχόμενα', 'içerikler'], ['περιεχόμενων', 'içeriklerin'], ['πλατφόρμα', 'platform'], ['πλατφόρμας', 'platformın'], ['πλατφόρμες', 'platformlar'], ['πλατφόρμών', 'platformların'], ['χρήστης', 'kullanıcı'], ['χρήστη', 'kullanıcıın'], ['χρήστες', 'kullanıcılar'], ['χρήστών', 'kullanıcıların'], ['δεδομένο', 'veri'], ['δεδομένου', 'veriin'], ['δεδομένα', 'veriler'], ['δεδομένων', 'verilerin'], ['σύστημα', 'sistem'], ['σύστηματος', 'sistemin'], ['σύστηματα', 'sistemler'], ['σύστημάτων', 'sistemlerin'], ['λειτουργία', 'işleyiş'], ['λειτουργίας', 'işleyişin'], ['λειτουργίες', 'işleyişler'], ['λειτουργίών', 'işleyişlerin'], ['απόδοση', 'performans'], ['απόδοσης', 'performansın'], ['απόδοσες', 'performanslar'], ['απόδοσών', 'performansların'], ['ταυτότητα', 'kimlik'], ['ταυτότητας', 'kimlikin'], ['ταυτότητες', 'kimlikler'], ['ταυτότητών', 'kimliklerin'], ['ασφάλεια', 'güvenlik'], ['ασφάλειας', 'güvenlikin'], ['ασφάλειες', 'güvenlikler'], ['ασφάλειών', 'güvenliklerin'], ['χαρακτήρας', 'karakter'], ['χαρακτήρα', 'karakterin'], ['χαρακτήρες', 'karakterler'], ['χαρακτήρων', 'karakterlerin'], ['προσωπικότητα', 'kişilik'], ['προσωπικότητας', 'kişilikin'], ['προσωπικότητες', 'kişilikler'], ['προσωπικότητών', 'kişiliklerin'], ['συμπεριφορά', 'davranış'], ['συμπεριφοράς', 'davranışın'], ['συμπεριφοράδες', 'davranışlar'], ['συμπεριφοράδων', 'davranışların'], ['σχέση', 'ilişki'], ['σχέσης', 'ilişkiin'], ['σχέσες', 'ilişkiler'], ['σχέσών', 'ilişkilerin'], ['φίλος', 'arkadaş (erkek)'], ['φίλο', 'arkadaş (erkek)i'], ['φίλου', 'arkadaş (erkek)in'], ['φίλε', 'arkadaş (erkek)!'], ['φίλοι', 'arkadaş (erkek)ler'], ['φίλους', 'arkadaş (erkek)leri'], ['φίλων', 'arkadaş (erkek)lerin'], ['φίλη', 'arkadaş (kadın)'], ['φίλης', 'arkadaş (kadın)ın'], ['φίλες', 'arkadaş (kadın)lar'], ['φίλών', 'arkadaş (kadın)ların'], ['γνωστός', 'tanıdık (erkek)'], ['γνωστή', 'tanıdık (kadın)'], ['επισκέπτης', 'ziyaretçi'], ['επισκέπτη', 'ziyaretçiin'], ['επισκέπτες', 'ziyaretçiler'], ['επισκέπτών', 'ziyaretçilerin'], ['κάτοικος', 'sakin'], ['κάτοικο', 'sakini'], ['κάτοικου', 'sakinin'], ['κάτοικε', 'sakin!'], ['κάτοικοι', 'sakinler'], ['κάτοικους', 'sakinleri'], ['κάτοικων', 'sakinlerin'], ['γειτονιά', 'mahalle'], ['γειτονιάς', 'mahallein'], ['γειτονιάδες', 'mahalleler'], ['γειτονιάδων', 'mahallelerin'], ['διαμέρισμα', 'daire'], ['διαμέρισματος', 'dairein'], ['διαμέρισματα', 'daireler'], ['διαμέρισμάτων', 'dairelerin'], ['πολυκατοικία', 'apartman'], ['πολυκατοικίας', 'apartmanın'], ['πολυκατοικίες', 'apartmanlar'], ['πολυκατοικίών', 'apartmanların'], ['όροφος', 'kat'], ['όροφο', 'katı'], ['όροφου', 'katın'], ['όροφε', 'kat!'], ['όροφοι', 'katlar'], ['όροφους', 'katları'], ['όροφων', 'katların'], ['ασανσέρ', 'asansör'], ['σκάλα', 'merdiven'], ['σκάλας', 'merdivenin'], ['σκάλες', 'merdivenler'], ['σκάλών', 'merdivenlerin'], ['κλειδί', 'anahtar'], ['φως', 'ışık'], ['φωςτος', 'ışıkın'], ['φωςτα', 'ışıklar'], ['φωςτων', 'ışıkların'], ['ηλεκτρικό', 'elektrik'], ['ρεύμα', 'elektrik akımı'], ['ρεύματος', 'elektrik akımıın'], ['ρεύματα', 'elektrik akımılar'], ['ρεύμάτων', 'elektrik akımıların'], ['λογαριασμός', 'fatura'], ['πληρωμή', 'ödeme'], ['μισθός', 'maaş'], ['εισόδημα', 'gelir'], ['εισόδηματος', 'gelirin'], ['εισόδηματα', 'gelirler'], ['εισόδημάτων', 'gelirlerin'], ['έξοδο', 'gider'], ['έξοδου', 'giderin'], ['έξοδα', 'giderler'], ['έξοδων', 'giderlerin'], ['χρήμα', 'para'], ['χρήματος', 'paraın'], ['χρήματα', 'paralar'], ['χρήμάτων', 'paraların'], ['τράπεζα', 'banka'], ['τράπεζας', 'bankaın'], ['τράπεζες', 'bankalar'], ['τράπεζών', 'bankaların'], ['κάρτα', 'kart'], ['κάρτας', 'kartın'], ['κάρτες', 'kartlar'], ['κάρτών', 'kartların'], ['κωδικός', 'şifre'], ['πρόσβαση', 'erişim'], ['πρόσβασης', 'erişimin'], ['πρόσβασες', 'erişimler'], ['πρόσβασών', 'erişimlerin'], ['έλεγχος', 'kontrol'], ['έλεγχο', 'kontrolı'], ['έλεγχου', 'kontrolın'], ['έλεγχε', 'kontrol!'], ['έλεγχοι', 'kontrollar'], ['έλεγχους', 'kontrolları'], ['έλεγχων', 'kontrolların'], ['λειτουργία', 'çalışma / işleyiş'], ['λειτουργίας', 'çalışma / işleyişin'], ['λειτουργίες', 'çalışma / işleyişler'], ['λειτουργίών', 'çalışma / işleyişlerin'], ['χρήση', 'kullanım'], ['χρήσης', 'kullanımın'], ['χρήσες', 'kullanımlar'], ['χρήσών', 'kullanımların'], ['εντολή', 'komut'], ['επιλογή', 'seçim'], ['δυνατότητα', 'imkan'], ['δυνατότητας', 'imkanın'], ['δυνατότητες', 'imkanlar'], ['δυνατότητών', 'imkanların'], ['σύστημα', 'sistem'], ['σύστηματος', 'sistemin'], ['σύστηματα', 'sistemler'], ['σύστημάτων', 'sistemlerin'], ['πρόγραμμα', 'program'], ['πρόγραμματος', 'programın'], ['πρόγραμματα', 'programlar'], ['πρόγραμμάτων', 'programların'], ['αρχείο', 'dosya'], ['αρχείου', 'dosyaın'], ['αρχεία', 'dosyalar'], ['αρχείων', 'dosyaların'], ['σύνδεσμος', 'bağlantı'], ['σύνδεσμο', 'bağlantıı'], ['σύνδεσμου', 'bağlantıın'], ['σύνδεσμε', 'bağlantı!'], ['σύνδεσμοι', 'bağlantılar'], ['σύνδεσμους', 'bağlantıları'], ['σύνδεσμων', 'bağlantıların'], ['σελίδα', 'sayfa'], ['σελίδας', 'sayfaın'], ['σελίδες', 'sayfalar'], ['σελίδών', 'sayfaların'], ['περιεχόμενο', 'içerik'], ['περιεχόμενου', 'içerikin'], ['περιεχόμενα', 'içerikler'], ['περιεχόμενων', 'içeriklerin'], ['χρήστης', 'kullanıcı'], ['χρήστη', 'kullanıcıın'], ['χρήστες', 'kullanıcılar'], ['χρήστών', 'kullanıcıların'], ['εφαρμογή', 'uygulama'], ['τεχνολογία', 'teknoloji'], ['τεχνολογίας', 'teknolojiin'], ['τεχνολογίες', 'teknolojiler'], ['τεχνολογίών', 'teknolojilerin'], ['ανάπτυξη', 'geliştirme'], ['ανάπτυξης', 'geliştirmein'], ['ανάπτυξες', 'geliştirmeler'], ['ανάπτυξών', 'geliştirmelerin'], ['ενημέρωση', 'güncelleme'], ['ενημέρωσης', 'güncellemein'], ['ενημέρωσες', 'güncellemeler'], ['ενημέρωσών', 'güncellemelerin'], ['πληροφορία', 'bilgi'], ['πληροφορίας', 'bilgiin'], ['πληροφορίες', 'bilgiler'], ['πληροφορίών', 'bilgilerin'], ['αποτέλεσμα', 'sonuç'], ['αποτέλεσματος', 'sonuçın'], ['αποτέλεσματα', 'sonuçlar'], ['αποτέλεσμάτων', 'sonuçların'], ['συναίσθημα', 'duygu'], ['συναίσθηματος', 'duyguın'], ['συναίσθηματα', 'duygular'], ['συναίσθημάτων', 'duyguların'], ['αγάπη', 'sevgi'], ['αγάπης', 'sevgiin'], ['αγάπες', 'sevgiler'], ['αγάπών', 'sevgilerin'], ['μίσος', 'nefret'], ['μίσους', 'nefretin'], ['μίση', 'nefretler'], ['μίσών', 'nefretlerin'], ['χαρά', 'sevinç'], ['χαράς', 'sevinçin'], ['χαράδες', 'sevinçler'], ['χαράδων', 'sevinçlerin'], ['λύπη', 'üzüntü'], ['λύπης', 'üzüntüin'], ['λύπες', 'üzüntüler'], ['λύπών', 'üzüntülerin'], ['φόβος', 'korku'], ['φόβο', 'korkuı'], ['φόβου', 'korkuın'], ['φόβε', 'korku!'], ['φόβοι', 'korkular'], ['φόβους', 'korkuları'], ['φόβων', 'korkuların'], ['ελπίδα', 'umut'], ['ελπίδας', 'umutın'], ['ελπίδες', 'umutlar'], ['ελπίδών', 'umutların'], ['επιθυμία', 'istek'], ['επιθυμίας', 'istekin'], ['επιθυμίες', 'istekler'], ['επιθυμίών', 'isteklerin'], ['δυσκολία', 'zorluk'], ['δυσκολίας', 'zorlukın'], ['δυσκολίες', 'zorluklar'], ['δυσκολίών', 'zorlukların'], ['ευκολία', 'kolaylık'], ['ευκολίας', 'kolaylıkın'], ['ευκολίες', 'kolaylıklar'], ['ευκολίών', 'kolaylıkların'], ['πρόβλημα', 'problem'], ['πρόβληματος', 'problemin'], ['πρόβληματα', 'problemler'], ['πρόβλημάτων', 'problemlerin'], ['κίνδυνος', 'tehlike'], ['κίνδυνο', 'tehlikei'], ['κίνδυνου', 'tehlikein'], ['κίνδυνε', 'tehlike!'], ['κίνδυνοι', 'tehlikeler'], ['κίνδυνους', 'tehlikeleri'], ['κίνδυνων', 'tehlikelerin'], ['λύση', 'çözüm'], ['λύσης', 'çözümin'], ['λύσες', 'çözümler'], ['λύσών', 'çözümlerin'], ['προσπάθεια', 'çaba'], ['προσπάθειας', 'çabaın'], ['προσπάθειες', 'çabalar'], ['προσπάθειών', 'çabaların'], ['επιτυχία', 'başarı'], ['επιτυχίας', 'başarıın'], ['επιτυχίες', 'başarılar'], ['επιτυχίών', 'başarıların'], ['αποτυχία', 'başarısızlık'], ['αποτυχίας', 'başarısızlıkın'], ['αποτυχίες', 'başarısızlıklar'], ['αποτυχίών', 'başarısızlıkların'], ['εμπιστοσύνη', 'güven'], ['εμπιστοσύνης', 'güvenin'], ['εμπιστοσύνες', 'güvenler'], ['εμπιστοσύνών', 'güvenlerin'], ['ελευθερία', 'özgürlük'], ['ελευθερίας', 'özgürlükin'], ['ελευθερίες', 'özgürlükler'], ['ελευθερίών', 'özgürlüklerin'], ['δικαιοσύνη', 'adalet'], ['δικαιοσύνης', 'adaletin'], ['δικαιοσύνες', 'adaletler'], ['δικαιοσύνών', 'adaletlerin'], ['κοινωνία', 'toplum'], ['κοινωνίας', 'toplumın'], ['κοινωνίες', 'toplumlar'], ['κοινωνίών', 'toplumların'], ['υποχρέωση', 'yükümlülük'], ['υποχρέωσης', 'yükümlülükin'], ['υποχρέωσες', 'yükümlülükler'], ['υποχρέωσών', 'yükümlülüklerin'], ['ευθύνη', 'sorumluluk'], ['ευθύνης', 'sorumlulukın'], ['ευθύνες', 'sorumluluklar'], ['ευθύνών', 'sorumlulukların'], ['υποστήριξη', 'destek'], ['υποστήριξης', 'destekin'], ['υποστήριξες', 'destekler'], ['υποστήριξών', 'desteklerin'], ['βοήθεια', 'yardım'], ['βοήθειας', 'yardımın'], ['βοήθειες', 'yardımlar'], ['βοήθειών', 'yardımların'], ['συνεργασία', 'iş birliği'], ['συνεργασίας', 'iş birliğiin'], ['συνεργασίες', 'iş birliğiler'], ['συνεργασίών', 'iş birliğilerin'], ['επικοινωνία', 'iletişim'], ['επικοινωνίας', 'iletişimin'], ['επικοινωνίες', 'iletişimler'], ['επικοινωνίών', 'iletişimlerin'], ['ενημέρωση', 'bilgilendirme'], ['ενημέρωσης', 'bilgilendirmein'], ['ενημέρωσες', 'bilgilendirmeler'], ['ενημέρωσών', 'bilgilendirmelerin'], ['εφημερίδα', 'gazete'], ['εφημερίδας', 'gazetein'], ['εφημερίδες', 'gazeteler'], ['εφημερίδών', 'gazetelerin'], ['είδηση', 'haber'], ['είδησης', 'haberin'], ['είδησες', 'haberler'], ['είδησών', 'haberlerin'], ['ρεπορτάζ', 'haber dosyası'], ['πρόγραμμα', 'program'], ['πρόγραμματος', 'programın'], ['πρόγραμματα', 'programlar'], ['πρόγραμμάτων', 'programların'], ['εκπομπή', 'yayın'], ['τηλεόραση', 'televizyon'], ['τηλεόρασης', 'televizyonın'], ['τηλεόρασες', 'televizyonlar'], ['τηλεόρασών', 'televizyonların'], ['ραδιόφωνο', 'radyo'], ['ραδιόφωνου', 'radyoın'], ['ραδιόφωνα', 'radyolar'], ['ραδιόφωνων', 'radyoların'], ['κανάλι', 'kanal'], ['κανάλιου', 'kanalın'], ['κανάλια', 'kanallar'], ['κανάλιών', 'kanalların'], ['θεατής', 'izleyici'], ['ακροατής', 'dinleyici'], ['περιεχόμενο', 'içerik'], ['περιεχόμενου', 'içerikin'], ['περιεχόμενα', 'içerikler'], ['περιεχόμενων', 'içeriklerin'], ['παρουσίαση', 'sunum'], ['παρουσίασης', 'sunumın'], ['παρουσίασες', 'sunumlar'], ['παρουσίασών', 'sunumların'], ['έτος', 'yıl'], ['έτους', 'yılın'], ['έτη', 'yıllar'], ['έτών', 'yılların'], ['μήνας', 'ay'], ['μήνα', 'ayın'], ['μήνες', 'aylar'], ['μήνων', 'ayların'], ['εβδομάδα', 'hafta'], ['εβδομάδας', 'haftaın'], ['εβδομάδες', 'haftalar'], ['εβδομάδών', 'haftaların'], ['ημερομηνία', 'tarih'], ['ημερομηνίας', 'tarihin'], ['ημερομηνίες', 'tarihler'], ['ημερομηνίών', 'tarihlerin'], ['περίοδος', 'dönem'], ['περίοδο', 'dönemi'], ['περίοδου', 'dönemin'], ['περίοδε', 'dönem!'], ['περίοδοι', 'dönemler'], ['περίοδους', 'dönemleri'], ['περίοδων', 'dönemlerin'], ['στιγμή', 'an'], ['παρόν', 'şimdi / mevcut zaman'], ['παρελθόν', 'geçmiş'], ['μέλλον', 'gelecek'], ['μέλλόντος', 'gelecekin'], ['μέλλόντα', 'gelecekler'], ['μέλλόντων', 'geleceklerin'], ['αλλαγή', 'değişim'], ['ανάπτυξη', 'gelişim'], ['ανάπτυξης', 'gelişimin'], ['ανάπτυξες', 'gelişimler'], ['ανάπτυξών', 'gelişimlerin'], ['πρόοδος', 'ilerleme'], ['πρόοδο', 'ilerlemei'], ['πρόοδου', 'ilerlemein'], ['πρόοδε', 'ilerleme!'], ['πρόοδοι', 'ilerlemeler'], ['πρόοδους', 'ilerlemeleri'], ['πρόοδων', 'ilerlemelerin'], ['βελτίωση', 'iyileşme'], ['βελτίωσης', 'iyileşmein'], ['βελτίωσες', 'iyileşmeler'], ['βελτίωσών', 'iyileşmelerin'], ['πτώση', 'düşüş'], ['πτώσης', 'düşüşin'], ['πτώσες', 'düşüşler'], ['πτώσών', 'düşüşlerin'], ['αύξηση', 'artış'], ['αύξησης', 'artışın'], ['αύξησες', 'artışlar'], ['αύξησών', 'artışların'], ['κατάσταση', 'durum'], ['κατάστασης', 'durumın'], ['κατάστασες', 'durumlar'], ['κατάστασών', 'durumların'], ['επίπεδο', 'seviye'], ['επίπεδου', 'seviyein'], ['επίπεδα', 'seviyeler'], ['επίπεδων', 'seviyelerin'], ['μορφή', 'biçim'], ['τύπος', 'tür / tip'], ['τύπο', 'tür / tipi'], ['τύπου', 'tür / tipin'], ['τύπε', 'tür / tip!'], ['τύποι', 'tür / tipler'], ['τύπους', 'tür / tipleri'], ['τύπων', 'tür / tiplerin'], ['μέθοδος', 'yöntem'], ['μέθοδο', 'yöntemi'], ['μέθοδου', 'yöntemin'], ['μέθοδε', 'yöntem!'], ['μέθοδοι', 'yöntemler'], ['μέθοδους', 'yöntemleri'], ['μέθοδων', 'yöntemlerin'], ['διαδικασία', 'süreç'], ['διαδικασίας', 'süreçin'], ['διαδικασίες', 'süreçler'], ['διαδικασίών', 'süreçlerin'], ['αποτέλεσμα', 'sonuç'], ['αποτέλεσματος', 'sonuçın'], ['αποτέλεσματα', 'sonuçlar'], ['αποτέλεσμάτων', 'sonuçların'], ['αιτία', 'sebep'], ['αιτίας', 'sebepin'], ['αιτίες', 'sebepler'], ['αιτίών', 'sebeplerin'], ['λόγος', 'neden'], ['λόγο', 'nedeni'], ['λόγου', 'nedenin'], ['λόγε', 'neden!'], ['λόγοι', 'nedenler'], ['λόγους', 'nedenleri'], ['λόγων', 'nedenlerin'], ['σχέση', 'ilişki'], ['σχέσης', 'ilişkiin'], ['σχέσες', 'ilişkiler'], ['σχέσών', 'ilişkilerin'], ['διαφορά', 'fark'], ['διαφοράς', 'farkın'], ['διαφοράδες', 'farklar'], ['διαφοράδων', 'farkların'], ['ομοιότητα', 'benzerlik'], ['ομοιότητας', 'benzerlikin'], ['ομοιότητες', 'benzerlikler'], ['ομοιότητών', 'benzerliklerin'], ['παράδειγμα', 'örnek'], ['παράδειγματος', 'örnekin'], ['παράδειγματα', 'örnekler'], ['παράδειγμάτων', 'örneklerin'], ['στοιχείο', 'unsur'], ['στοιχείου', 'unsurın'], ['στοιχεία', 'unsurlar'], ['στοιχείων', 'unsurların'], ['πληροφορία', 'bilgi'], ['πληροφορίας', 'bilgiin'], ['πληροφορίες', 'bilgiler'], ['πληροφορίών', 'bilgilerin'], ['δεδομένο', 'veri'], ['δεδομένου', 'veriin'], ['δεδομένα', 'veriler'], ['δεδομένων', 'verilerin'], ['σύστημα', 'sistem'], ['σύστηματος', 'sistemin'], ['σύστηματα', 'sistemler'], ['σύστημάτων', 'sistemlerin'], ['δομή', 'yapı'], ['λειτουργία', 'işleyiş'], ['λειτουργίας', 'işleyişin'], ['λειτουργίες', 'işleyişler'], ['λειτουργίών', 'işleyişlerin'], ['μηχανισμός', 'mekanizma'], ['τεχνολογία', 'teknoloji'], ['τεχνολογίας', 'teknolojiin'], ['τεχνολογίες', 'teknolojiler'], ['τεχνολογίών', 'teknolojilerin'], ['εφαρμογή', 'uygulama'], ['χρήση', 'kullanım'], ['χρήσης', 'kullanımın'], ['χρήσες', 'kullanımlar'], ['χρήσών', 'kullanımların'], ['εργαλείο', 'araç'], ['εργαλείου', 'araçın'], ['εργαλεία', 'araçlar'], ['εργαλείων', 'araçların'], ['πρόγραμμα', 'program'], ['πρόγραμματος', 'programın'], ['πρόγραμματα', 'programlar'], ['πρόγραμμάτων', 'programların'], ['αρχείο', 'dosya'], ['αρχείου', 'dosyaın'], ['αρχεία', 'dosyalar'], ['αρχείων', 'dosyaların'], ['κείμενο', 'metin'], ['κείμενου', 'metinin'], ['κείμενα', 'metinler'], ['κείμενων', 'metinlerin'], ['άρθρο', 'makale'], ['άρθρου', 'makalein'], ['άρθρα', 'makaleler'], ['άρθρων', 'makalelerin'], ['έρευνα', 'araştırma'], ['έρευνας', 'araştırmaın'], ['έρευνες', 'araştırmalar'], ['έρευνών', 'araştırmaların'], ['μελέτη', 'inceleme'], ['μελέτης', 'incelemein'], ['μελέτες', 'incelemeler'], ['μελέτών', 'incelemelerin'], ['ανάλυση', 'analiz'], ['ανάλυσης', 'analizin'], ['ανάλυσες', 'analizler'], ['ανάλυσών', 'analizlerin'], ['αποτέλεσμα', 'sonuç'], ['αποτέλεσματος', 'sonuçın'], ['αποτέλεσματα', 'sonuçlar'], ['αποτέλεσμάτων', 'sonuçların'], ['θεωρία', 'teori'], ['θεωρίας', 'teoriin'], ['θεωρίες', 'teoriler'], ['θεωρίών', 'teorilerin'], ['πρακτική', 'uygulama / pratik'], ['γνώση', 'bilgi'], ['γνώσης', 'bilgiin'], ['γνώσες', 'bilgiler'], ['γνώσών', 'bilgilerin'], ['κατάστημα', 'mağaza'], ['κατάστηματος', 'mağazaın'], ['κατάστηματα', 'mağazalar'], ['κατάστημάτων', 'mağazaların'], ['αγορά', 'pazar / alışveriş'], ['αγοράς', 'pazar / alışverişin'], ['αγοράδες', 'pazar / alışverişler'], ['αγοράδων', 'pazar / alışverişlerin'], ['πώληση', 'satış'], ['πώλησης', 'satışın'], ['πώλησες', 'satışlar'], ['πώλησών', 'satışların'], ['τιμή', 'fiyat'], ['προϊόν', 'ürün'], ['μάρκα', 'marka'], ['μάρκας', 'markaın'], ['μάρκες', 'markalar'], ['μάρκών', 'markaların'], ['εταιρεία', 'şirket'], ['εταιρείας', 'şirketin'], ['εταιρείες', 'şirketler'], ['εταιρείών', 'şirketlerin'], ['επιχείρηση', 'işletme'], ['επιχείρησης', 'işletmein'], ['επιχείρησες', 'işletmeler'], ['επιχείρησών', 'işletmelerin'], ['πελάτης', 'müşteri'], ['πελάτη', 'müşteriin'], ['πελάτες', 'müşteriler'], ['πελάτών', 'müşterilerin'], ['παραγγελία', 'sipariş'], ['παραγγελίας', 'siparişin'], ['παραγγελίες', 'siparişler'], ['παραγγελίών', 'siparişlerin'], ['αποστολή', 'gönderim'], ['παράδοση', 'teslimat'], ['παράδοσης', 'teslimatın'], ['παράδοσες', 'teslimatlar'], ['παράδοσών', 'teslimatların'], ['μεταφορά', 'taşıma / ulaşım'], ['μεταφοράς', 'taşıma / ulaşımın'], ['μεταφοράδες', 'taşıma / ulaşımlar'], ['μεταφοράδων', 'taşıma / ulaşımların'], ['ταξίδι', 'seyahat'], ['ταξίδιου', 'seyahatın'], ['ταξίδια', 'seyahatlar'], ['ταξίδιών', 'seyahatların'], ['εισιτήριο', 'bilet'], ['εισιτήριου', 'biletin'], ['εισιτήρια', 'biletler'], ['εισιτήριων', 'biletlerin'], ['σταθμός', 'istasyon'], ['αεροδρόμιο', 'havaalanı'], ['αεροδρόμιου', 'havaalanıın'], ['αεροδρόμια', 'havaalanılar'], ['αεροδρόμιων', 'havaalanıların'], ['λιμάνι', 'liman'], ['λιμάνιου', 'limanın'], ['λιμάνια', 'limanlar'], ['λιμάνιών', 'limanların'], ['πλοίο', 'gemi'], ['πλοίου', 'gemiin'], ['πλοία', 'gemiler'], ['πλοίων', 'gemilerin'], ['αεροπλάνο', 'uçak'], ['αεροπλάνου', 'uçakın'], ['αεροπλάνα', 'uçaklar'], ['αεροπλάνων', 'uçakların'], ['οδηγός', 'sürücü'], ['επιβάτης', 'yolcu'], ['επιβάτη', 'yolcuın'], ['επιβάτες', 'yolcular'], ['επιβάτών', 'yolcuların'], ['διαδρομή', 'güzergâh'], ['απόσταση', 'mesafe'], ['απόστασης', 'mesafein'], ['απόστασες', 'mesafeler'], ['απόστασών', 'mesafelerin'], ['χρόνος', 'süre / zaman'], ['χρόνο', 'süre / zamanı'], ['χρόνου', 'süre / zamanın'], ['χρόνε', 'süre / zaman!'], ['χρόνοι', 'süre / zamanlar'], ['χρόνους', 'süre / zamanları'], ['χρόνων', 'süre / zamanların'], ['ώρα', 'saat'], ['ώρας', 'saatın'], ['ώρες', 'saatlar'], ['ώρών', 'saatların'], ['πρόγραμμα', 'program'], ['πρόγραμματος', 'programın'], ['πρόγραμματα', 'programlar'], ['πρόγραμμάτων', 'programların'], ['συνάντηση', 'toplantı'], ['συνάντησης', 'toplantıın'], ['συνάντησες', 'toplantılar'], ['συνάντησών', 'toplantıların'], ['ραντεβού', 'randevu'], ['γραφείο', 'ofis'], ['γραφείου', 'ofisin'], ['γραφεία', 'ofisler'], ['γραφείων', 'ofislerin'], ['εργασία', 'iş / görev'], ['εργασίας', 'iş / görevin'], ['εργασίες', 'iş / görevler'], ['εργασίών', 'iş / görevlerin'], ['μισθός', 'maaş'], ['σύμβαση', 'sözleşme'], ['σύμβασης', 'sözleşmein'], ['σύμβασες', 'sözleşmeler'], ['σύμβασών', 'sözleşmelerin'], ['δικαίωμα', 'hak'], ['δικαίωματος', 'hakın'], ['δικαίωματα', 'haklar'], ['δικαίωμάτων', 'hakların'], ['υποχρέωση', 'yükümlülük'], ['υποχρέωσης', 'yükümlülükin'], ['υποχρέωσες', 'yükümlülükler'], ['υποχρέωσών', 'yükümlülüklerin'], ['απόφαση', 'karar'], ['απόφασης', 'kararın'], ['απόφασες', 'kararlar'], ['απόφασών', 'kararların'], ['επιλογή', 'seçim'], ['δυνατότητα', 'imkan'], ['δυνατότητας', 'imkanın'], ['δυνατότητες', 'imkanlar'], ['δυνατότητών', 'imkanların'], ['πρόβλημα', 'problem'], ['πρόβληματος', 'problemin'], ['πρόβληματα', 'problemler'], ['πρόβλημάτων', 'problemlerin'], ['λύση', 'çözüm'], ['λύσης', 'çözümin'], ['λύσες', 'çözümler'], ['λύσών', 'çözümlerin'], ['αποτέλεσμα', 'sonuç'], ['αποτέλεσματος', 'sonuçın'], ['αποτέλεσματα', 'sonuçlar'], ['αποτέλεσμάτων', 'sonuçların'], ['επιτυχία', 'başarı'], ['επιτυχίας', 'başarıın'], ['επιτυχίες', 'başarılar'], ['επιτυχίών', 'başarıların'], ['αποτυχία', 'başarısızlık'], ['αποτυχίας', 'başarısızlıkın'], ['αποτυχίες', 'başarısızlıklar'], ['αποτυχίών', 'başarısızlıkların'], ['προσπάθεια', 'çaba'], ['προσπάθειας', 'çabaın'], ['προσπάθειες', 'çabalar'], ['προσπάθειών', 'çabaların'], ['βελτίωση', 'gelişme'], ['βελτίωσης', 'gelişmein'], ['βελτίωσες', 'gelişmeler'], ['βελτίωσών', 'gelişmelerin'], ['αλλαγή', 'değişim'], ['ανάπτυξη', 'gelişim'], ['ανάπτυξης', 'gelişimin'], ['ανάπτυξες', 'gelişimler'], ['ανάπτυξών', 'gelişimlerin'], ['μέλλον', 'gelecek'], ['μέλλόντος', 'gelecekin'], ['μέλλόντα', 'gelecekler'], ['μέλλόντων', 'geleceklerin'], ['στόχος', 'hedef'], ['στόχο', 'hedefi'], ['στόχου', 'hedefin'], ['στόχε', 'hedef!'], ['στόχοι', 'hedefler'], ['στόχους', 'hedefleri'], ['στόχων', 'hedeflerin'], ['πρόοδος', 'ilerleme'], ['πρόοδο', 'ilerlemei'], ['πρόοδου', 'ilerlemein'], ['πρόοδε', 'ilerleme!'], ['πρόοδοι', 'ilerlemeler'], ['πρόοδους', 'ilerlemeleri'], ['πρόοδων', 'ilerlemelerin'], ['οικογένεια', 'aile'], ['οικογένειας', 'ailein'], ['οικογένειες', 'aileler'], ['οικογένειών', 'ailelerin'], ['γονέας', 'ebeveyn'], ['γονέα', 'ebeveynin'], ['γονέες', 'ebeveynler'], ['γονέων', 'ebeveynlerin'], ['μητέρα', 'anne'], ['μητέρας', 'annein'], ['μητέρες', 'anneler'], ['μητέρών', 'annelerin'], ['πατέρας', 'baba'], ['πατέρα', 'babaın'], ['πατέρες', 'babalar'], ['πατέρων', 'babaların'], ['παιδί', 'çocuk'], ['αδελφός', 'erkek kardeş'], ['αδελφή', 'kız kardeş'], ['συγγενής', 'akraba'], ['φίλος', 'arkadaş (erkek)'], ['φίλο', 'arkadaş (erkek)i'], ['φίλου', 'arkadaş (erkek)in'], ['φίλε', 'arkadaş (erkek)!'], ['φίλοι', 'arkadaş (erkek)ler'], ['φίλους', 'arkadaş (erkek)leri'], ['φίλων', 'arkadaş (erkek)lerin'], ['φίλη', 'arkadaş (kadın)'], ['φίλης', 'arkadaş (kadın)ın'], ['φίλες', 'arkadaş (kadın)lar'], ['φίλών', 'arkadaş (kadın)ların'], ['συνάδελφος', 'meslektaş'], ['συνάδελφο', 'meslektaşı'], ['συνάδελφου', 'meslektaşın'], ['συνάδελφε', 'meslektaş!'], ['συνάδελφοι', 'meslektaşlar'], ['συνάδελφους', 'meslektaşları'], ['συνάδελφων', 'meslektaşların'], ['σύζυγος', 'eş'], ['σύζυγο', 'eşi'], ['σύζυγου', 'eşin'], ['σύζυγε', 'eş!'], ['σύζυγοι', 'eşler'], ['σύζυγους', 'eşleri'], ['σύζυγων', 'eşlerin'], ['σύζυγος', 'eş'], ['σύζυγο', 'eşi'], ['σύζυγου', 'eşin'], ['σύζυγε', 'eş!'], ['σύζυγοι', 'eşler'], ['σύζυγους', 'eşleri'], ['σύζυγων', 'eşlerin'], ['γάμος', 'evlilik'], ['γάμο', 'evliliki'], ['γάμου', 'evlilikin'], ['γάμε', 'evlilik!'], ['γάμοι', 'evlilikler'], ['γάμους', 'evlilikleri'], ['γάμων', 'evliliklerin'], ['διαζύγιο', 'boşanma'], ['διαζύγιου', 'boşanmaın'], ['διαζύγια', 'boşanmalar'], ['διαζύγιων', 'boşanmaların'], ['σπίτι', 'ev'], ['σπίτιου', 'evin'], ['σπίτια', 'evler'], ['σπίτιών', 'evlerin'], ['διαμέρισμα', 'daire'], ['διαμέρισματος', 'dairein'], ['διαμέρισματα', 'daireler'], ['διαμέρισμάτων', 'dairelerin'], ['δωμάτιο', 'oda'], ['δωμάτιου', 'odaın'], ['δωμάτια', 'odalar'], ['δωμάτιων', 'odaların'], ['κουζίνα', 'mutfak'], ['κουζίνας', 'mutfakın'], ['κουζίνες', 'mutfaklar'], ['κουζίνών', 'mutfakların'], ['σαλόνι', 'salon'], ['σαλόνιου', 'salonın'], ['σαλόνια', 'salonlar'], ['σαλόνιών', 'salonların'], ['μπάνιο', 'banyo'], ['μπάνιου', 'banyoın'], ['μπάνια', 'banyolar'], ['μπάνιων', 'banyoların'], ['κήπος', 'bahçe'], ['κήπο', 'bahçei'], ['κήπου', 'bahçein'], ['κήπε', 'bahçe!'], ['κήποι', 'bahçeler'], ['κήπους', 'bahçeleri'], ['κήπων', 'bahçelerin'], ['έπιπλο', 'mobilya'], ['έπιπλου', 'mobilyaın'], ['έπιπλα', 'mobilyalar'], ['έπιπλων', 'mobilyaların'], ['καρέκλα', 'sandalye'], ['καρέκλας', 'sandalyein'], ['καρέκλες', 'sandalyeler'], ['καρέκλών', 'sandalyelerin'], ['τραπέζι', 'masa'], ['τραπέζιου', 'masaın'], ['τραπέζια', 'masalar'], ['τραπέζιών', 'masaların'], ['κρεβάτι', 'yatak'], ['κρεβάτιου', 'yatakın'], ['κρεβάτια', 'yataklar'], ['κρεβάτιών', 'yatakların'], ['φως', 'ışık'], ['φωςτος', 'ışıkın'], ['φωςτα', 'ışıklar'], ['φωςτων', 'ışıkların'], ['παράθυρο', 'pencere'], ['παράθυρου', 'pencerein'], ['παράθυρα', 'pencereler'], ['παράθυρων', 'pencerelerin'], ['πόρτα', 'kapı'], ['πόρτας', 'kapıın'], ['πόρτες', 'kapılar'], ['πόρτών', 'kapıların'], ['δάπεδο', 'zemin'], ['δάπεδου', 'zeminin'], ['δάπεδα', 'zeminler'], ['δάπεδων', 'zeminlerin'], ['τοίχος', 'duvar'], ['τοίχο', 'duvarı'], ['τοίχου', 'duvarın'], ['τοίχε', 'duvar!'], ['τοίχοι', 'duvarlar'], ['τοίχους', 'duvarları'], ['τοίχων', 'duvarların'], ['ταβάνι', 'tavan'], ['ταβάνιου', 'tavanın'], ['ταβάνια', 'tavanlar'], ['ταβάνιών', 'tavanların'], ['σπίτι', 'konut'], ['σπίτιου', 'konutın'], ['σπίτια', 'konutlar'], ['σπίτιών', 'konutların'], ['γειτονιά', 'mahalle'], ['γειτονιάς', 'mahallein'], ['γειτονιάδες', 'mahalleler'], ['γειτονιάδων', 'mahallelerin'], ['δρόμος', 'yol'], ['δρόμο', 'yolı'], ['δρόμου', 'yolın'], ['δρόμε', 'yol!'], ['δρόμοι', 'yollar'], ['δρόμους', 'yolları'], ['δρόμων', 'yolların'], ['πλατεία', 'meydan'], ['πλατείας', 'meydanın'], ['πλατείες', 'meydanlar'], ['πλατείών', 'meydanların'], ['πάρκο', 'park'], ['πάρκου', 'parkın'], ['πάρκα', 'parklar'], ['πάρκων', 'parkların'], ['κατάστημα', 'mağaza'], ['κατάστηματος', 'mağazaın'], ['κατάστηματα', 'mağazalar'], ['κατάστημάτων', 'mağazaların'], ['υπεραγορά', 'süpermarket'], ['υπεραγοράς', 'süpermarketin'], ['υπεραγοράδες', 'süpermarketler'], ['υπεραγοράδων', 'süpermarketlerin'], ['φαρμακείο', 'eczane'], ['φαρμακείου', 'eczanein'], ['φαρμακεία', 'eczaneler'], ['φαρμακείων', 'eczanelerin'], ['νοσοκομείο', 'hastane'], ['νοσοκομείου', 'hastanein'], ['νοσοκομεία', 'hastaneler'], ['νοσοκομείων', 'hastanelerin'], ['σχολείο', 'okul'], ['σχολείου', 'okulın'], ['σχολεία', 'okullar'], ['σχολείων', 'okulların'], ['πανεπιστήμιο', 'üniversite'], ['πανεπιστήμιου', 'üniversitein'], ['πανεπιστήμια', 'üniversiteler'], ['πανεπιστήμιων', 'üniversitelerin'], ['βιβλιοθήκη', 'kütüphane'], ['βιβλιοθήκης', 'kütüphanein'], ['βιβλιοθήκες', 'kütüphaneler'], ['βιβλιοθήκών', 'kütüphanelerin'], ['στάση', 'durak'], ['στάσης', 'durakın'], ['στάσες', 'duraklar'], ['στάσών', 'durakların'], ['σταθμός', 'istasyon'], ['αεροδρόμιο', 'havaalanı'], ['αεροδρόμιου', 'havaalanıın'], ['αεροδρόμια', 'havaalanılar'], ['αεροδρόμιων', 'havaalanıların'], ['λιμάνι', 'liman'], ['λιμάνιου', 'limanın'], ['λιμάνια', 'limanlar'], ['λιμάνιών', 'limanların'], ['φαγητό', 'yemek'], ['ποτό', 'içecek'], ['νερό', 'su'], ['καφές', 'kahve'], ['καφέ', 'kahvein'], ['καφέδες', 'kahveler'], ['καφέδων', 'kahvelerin'], ['τσάι', 'çay'], ['τσάιου', 'çayın'], ['τσάια', 'çaylar'], ['τσάιών', 'çayların'], ['γάλα', 'süt'], ['γάλατος', 'sütin'], ['γάλατα', 'sütler'], ['γάλατων', 'sütlerin'], ['ψωμί', 'ekmek'], ['κρέας', 'et'], ['κρέαςτος', 'etin'], ['κρέαςτα', 'etler'], ['κρέαςτων', 'etlerin'], ['ψάρι', 'balık'], ['ψάριου', 'balıkın'], ['ψάρια', 'balıklar'], ['ψάριών', 'balıkların'], ['φρούτο', 'meyve'], ['φρούτου', 'meyvein'], ['φρούτα', 'meyveler'], ['φρούτων', 'meyvelerin'], ['λαχανικό', 'sebze'], ['σαλάτα', 'salata'], ['σαλάτας', 'salataın'], ['σαλάτες', 'salatalar'], ['σαλάτών', 'salataların'], ['γλυκό', 'tatlı'], ['κέικ', 'kek'], ['μπισκότο', 'bisküvi'], ['μπισκότου', 'bisküviin'], ['μπισκότα', 'bisküviler'], ['μπισκότων', 'bisküvilerin'], ['παγωτό', 'dondurma'], ['σούπα', 'çorba'], ['σούπας', 'çorbaın'], ['σούπες', 'çorbalar'], ['σούπών', 'çorbaların'], ['σάλτσα', 'sos'], ['σάλτσας', 'sosın'], ['σάλτσες', 'soslar'], ['σάλτσών', 'sosların'], ['λάδι', 'yağ'], ['λάδιου', 'yağın'], ['λάδια', 'yağlar'], ['λάδιών', 'yağların'], ['ξύδι', 'sirke'], ['ξύδιου', 'sirkein'], ['ξύδια', 'sirkeler'], ['ξύδιών', 'sirkelerin'], ['μπαχαρικό', 'baharat'], ['ζάχαρη', 'şeker'], ['ζάχαρης', 'şekerin'], ['ζάχαρες', 'şekerler'], ['ζάχαρών', 'şekerlerin'], ['αλάτι', 'tuz'], ['αλάτιου', 'tuzın'], ['αλάτια', 'tuzlar'], ['αλάτιών', 'tuzların'], ['πιπέρι', 'biber'], ['πιπέριου', 'biberin'], ['πιπέρια', 'biberler'], ['πιπέριών', 'biberlerin'], ['αυγό', 'yumurta'], ['ψήσιμο', 'pişirme'], ['ψήσιμου', 'pişirmein'], ['ψήσιμα', 'pişirmeler'], ['ψήσιμων', 'pişirmelerin'], ['μαγείρεμα', 'yemek yapma'], ['μαγείρεματος', 'yemek yapmaın'], ['μαγείρεματα', 'yemek yapmalar'], ['μαγείρεμάτων', 'yemek yapmaların'], ['γεύση', 'tat'], ['γεύσης', 'tatın'], ['γεύσες', 'tatlar'], ['γεύσών', 'tatların'], ['μυρωδιά', 'koku'], ['μυρωδιάς', 'kokuın'], ['μυρωδιάδες', 'kokular'], ['μυρωδιάδων', 'kokuların'], ['υφή', 'doku'], ['υλικό', 'malzeme'], ['συστατικό', 'bileşen'], ['μερίδα', 'porsiyon'], ['μερίδας', 'porsiyonın'], ['μερίδες', 'porsiyonlar'], ['μερίδών', 'porsiyonların'], ['τραπέζι', 'masa'], ['τραπέζιου', 'masaın'], ['τραπέζια', 'masalar'], ['τραπέζιών', 'masaların'], ['καρέκλα', 'sandalye'], ['καρέκλας', 'sandalyein'], ['καρέκλες', 'sandalyeler'], ['καρέκλών', 'sandalyelerin'], ['πιάτο', 'tabak'], ['πιάτου', 'tabakın'], ['πιάτα', 'tabaklar'], ['πιάτων', 'tabakların'], ['ποτήρι', 'bardak'], ['ποτήριου', 'bardakın'], ['ποτήρια', 'bardaklar'], ['ποτήριών', 'bardakların'], ['μαχαιροπίρουνα', 'çatal-bıçak takımı'], ['μαχαιροπίρουνατος', 'çatal-bıçak takımıın'], ['μαχαιροπίρουνατα', 'çatal-bıçak takımılar'], ['μαχαιροπίρουνατων', 'çatal-bıçak takımıların'], ['κουτάλι', 'kaşık'], ['κουτάλιου', 'kaşıkın'], ['κουτάλια', 'kaşıklar'], ['κουτάλιών', 'kaşıkların'], ['μαχαίρι', 'bıçak'], ['μαχαίριου', 'bıçakın'], ['μαχαίρια', 'bıçaklar'], ['μαχαίριών', 'bıçakların'], ['πιρούνι', 'çatal'], ['πιρούνιου', 'çatalın'], ['πιρούνια', 'çatallar'], ['πιρούνιών', 'çatalların'], ['πετσέτα', 'peçete'], ['πετσέτας', 'peçetein'], ['πετσέτες', 'peçeteler'], ['πετσέτών', 'peçetelerin'], ['τραπεζομάντηλο', 'masa örtüsü'], ['τραπεζομάντηλου', 'masa örtüsüin'], ['τραπεζομάντηλα', 'masa örtüsüler'], ['τραπεζομάντηλων', 'masa örtüsülerin'], ['κατσαρόλα', 'tencere'], ['κατσαρόλας', 'tencerein'], ['κατσαρόλες', 'tencereler'], ['κατσαρόλών', 'tencerelerin'], ['τηγάνι', 'tava'], ['φούρνος', 'fırın'], ['φούρνους', 'fırının'], ['φούρνη', 'fırınlar'], ['φούρνών', 'fırınların'], ['ψυγείο', 'buzdolabı'], ['ψυγείου', 'buzdolabıın'], ['ψυγεία', 'buzdolabılar'], ['ψυγείων', 'buzdolabıların'], ['καφετιέρα', 'kahve makinesi'], ['καφετιέρας', 'kahve makinesiin'], ['καφετιέρες', 'kahve makinesiler'], ['καφετιέρών', 'kahve makinesilerin'], ['μπλέντερ', 'blender'], ['φούρνος μικροκυμάτων', 'mikrodalga fırın'], ['κουζίνα', 'mutfak'], ['κουζίνας', 'mutfakın'], ['κουζίνες', 'mutfaklar'], ['κουζίνών', 'mutfakların'], ['τραπεζαρία', 'yemek odası'], ['τραπεζαρίας', 'yemek odasıın'], ['τραπεζαρίες', 'yemek odasılar'], ['τραπεζαρίών', 'yemek odasıların'], ['σαλόνι', 'salon'], ['σαλόνιου', 'salonın'], ['σαλόνια', 'salonlar'], ['σαλόνιών', 'salonların'], ['κρεβάτι', 'yatak'], ['κρεβάτιου', 'yatakın'], ['κρεβάτια', 'yataklar'], ['κρεβάτιών', 'yatakların'], ['μαξιλάρι', 'yastık'], ['μαξιλάριου', 'yastıkın'], ['μαξιλάρια', 'yastıklar'], ['μαξιλάριών', 'yastıkların'], ['κουβέρτα', 'battaniye'], ['κουβέρτας', 'battaniyein'], ['κουβέρτες', 'battaniyeler'], ['κουβέρτών', 'battaniyelerin'], ['σεντόνι', 'çarşaf'], ['σεντόνιου', 'çarşafın'], ['σεντόνια', 'çarşaflar'], ['σεντόνιών', 'çarşafların'], ['κουρτίνα', 'perde'], ['κουρτίνας', 'perdein'], ['κουρτίνες', 'perdeler'], ['κουρτίνών', 'perdelerin'], ['χαλί', 'halı'], ['φωτιστικό', 'lamba'], ['λάμπα', 'lamba'], ['λάμπας', 'lambaın'], ['λάμπες', 'lambalar'], ['λάμπών', 'lambaların'], ['καναπές', 'kanepe'], ['καναπέςτος', 'kanepein'], ['καναπέςτα', 'kanepeler'], ['καναπέςτων', 'kanepelerin'], ['πολυθρόνα', 'tekli koltuk'], ['πολυθρόνας', 'tekli koltukın'], ['πολυθρόνες', 'tekli koltuklar'], ['πολυθρόνών', 'tekli koltukların'], ['τραπεζάκι', 'sehpa'], ['τραπεζάκιου', 'sehpaın'], ['τραπεζάκια', 'sehpalar'], ['τραπεζάκιών', 'sehpaların'], ['ραφιέρα', 'raf'], ['ραφιέρας', 'rafın'], ['ραφιέρες', 'raflar'], ['ραφιέρών', 'rafların'], ['ντουλάπι', 'dolap'], ['ντουλάπιου', 'dolapın'], ['ντουλάπια', 'dolaplar'], ['ντουλάπιών', 'dolapların'], ['ντουλάπα', 'gardırop'], ['ντουλάπας', 'gardıropın'], ['ντουλάπες', 'gardıroplar'], ['ντουλάπών', 'gardıropların'], ['συρτάρι', 'çekmece'], ['συρτάριου', 'çekmecein'], ['συρτάρια', 'çekmeceler'], ['συρτάριών', 'çekmecelerin'], ['καθρέφτης', 'ayna'], ['καθρέφτη', 'aynaın'], ['καθρέφτες', 'aynalar'], ['καθρέφτών', 'aynaların'], ['πόρτα', 'kapı'], ['πόρτας', 'kapıın'], ['πόρτες', 'kapılar'], ['πόρτών', 'kapıların'], ['παράθυρο', 'pencere'], ['παράθυρου', 'pencerein'], ['παράθυρα', 'pencereler'], ['παράθυρων', 'pencerelerin'], ['κουδούνι', 'zil'], ['κουδούνιου', 'zilin'], ['κουδούνια', 'ziller'], ['κουδούνιών', 'zillerin'], ['τηλεόραση', 'televizyon'], ['τηλεόρασης', 'televizyonın'], ['τηλεόρασες', 'televizyonlar'], ['τηλεόρασών', 'televizyonların'], ['ραδιόφωνο', 'radyo'], ['ραδιόφωνου', 'radyoın'], ['ραδιόφωνα', 'radyolar'], ['ραδιόφωνων', 'radyoların'], ['υπολογιστής', 'bilgisayar'], ['φορητός υπολογιστής', 'dizüstü bilgisayar'], ['φορητός υπολογιστήςτος', 'dizüstü bilgisayarın'], ['φορητός υπολογιστήςτα', 'dizüstü bilgisayarlar'], ['φορητός υπολογιστήςτων', 'dizüstü bilgisayarların'], ['εκτυπωτής', 'yazıcı'], ['τηλέφωνο', 'telefon'], ['τηλέφωνου', 'telefonın'], ['τηλέφωνα', 'telefonlar'], ['τηλέφωνων', 'telefonların'], ['κινητό', 'cep telefonu'], ['φορτιστής', 'şarj cihazı'], ['φορτιστήςτος', 'şarj cihazıın'], ['φορτιστήςτα', 'şarj cihazılar'], ['φορτιστήςτων', 'şarj cihazıların'], ['κάμερα', 'kamera'], ['κάμερας', 'kameraın'], ['κάμερες', 'kameralar'], ['κάμερών', 'kameraların'], ['φωτογραφία', 'fotoğraf'], ['φωτογραφίας', 'fotoğrafın'], ['φωτογραφίες', 'fotoğraflar'], ['φωτογραφίών', 'fotoğrafların'], ['βιβλίο', 'kitap'], ['βιβλίου', 'kitapın'], ['βιβλία', 'kitaplar'], ['βιβλίων', 'kitapların'], ['περιοδικό', 'dergi'], ['εφημερίδα', 'gazete'], ['εφημερίδας', 'gazetein'], ['εφημερίδες', 'gazeteler'], ['εφημερίδών', 'gazetelerin'], ['σημειωματάριο', 'defter'], ['σημειωματάριου', 'defterin'], ['σημειωματάρια', 'defterler'], ['σημειωματάριων', 'defterlerin'], ['μολύβι', 'kurşun kalem'], ['μολύβιου', 'kurşun kalemin'], ['μολύβια', 'kurşun kalemler'], ['μολύβιών', 'kurşun kalemlerin'], ['στυλό', 'tükenmez kalem'], ['γόμα', 'silgi'], ['γόμας', 'silgiin'], ['γόμες', 'silgiler'], ['γόμών', 'silgilerin'], ['χαρτί', 'kağıt'], ['φάκελος', 'dosya'], ['φάκελους', 'dosyaın'], ['φάκελη', 'dosyalar'], ['φάκελών', 'dosyaların'], ['βιβλιοθήκη', 'kitaplık'], ['βιβλιοθήκης', 'kitaplıkın'], ['βιβλιοθήκες', 'kitaplıklar'], ['βιβλιοθήκών', 'kitaplıkların'], ['ρολόι', 'saat'], ['ρολόιου', 'saatın'], ['ρολόια', 'saatlar'], ['ρολόιών', 'saatların'], ['ημερολόγιο', 'takvim / günlük'], ['ημερολόγιου', 'takvim / günlükin'], ['ημερολόγια', 'takvim / günlükler'], ['ημερολόγιων', 'takvim / günlüklerin'], ['κάδρο', 'çerçeve'], ['κάδρου', 'çerçevein'], ['κάδρα', 'çerçeveler'], ['κάδρων', 'çerçevelerin'], ['πίνακας', 'tablo'], ['πίνακαςτος', 'tabloın'], ['πίνακαςτα', 'tablolar'], ['πίνακαςτων', 'tabloların'], ['εργαλείο', 'araç'], ['εργαλείου', 'araçın'], ['εργαλεία', 'araçlar'], ['εργαλείων', 'araçların'], ['σκούπα', 'süpürge'], ['σκούπας', 'süpürgein'], ['σκούπες', 'süpürgeler'], ['σκούπών', 'süpürgelerin'], ['σφουγγάρι', 'paspas / sünger'], ['σφουγγάριου', 'paspas / süngerin'], ['σφουγγάρια', 'paspas / süngerler'], ['σφουγγάριών', 'paspas / süngerlerin'], ['καθαριστικό', 'temizlik maddesi'], ['σαπούνι', 'sabun'], ['σαπούνιου', 'sabunın'], ['σαπούνια', 'sabunlar'], ['σαπούνιών', 'sabunların'], ['πετσέτα', 'havlu'], ['πετσέτας', 'havluın'], ['πετσέτες', 'havlular'], ['πετσέτών', 'havluların'], ['βούρτσα', 'fırça'], ['βούρτσας', 'fırçaın'], ['βούρτσες', 'fırçalar'], ['βούρτσών', 'fırçaların'], ['οδοντόβουρτσα', 'diş fırçası'], ['οδοντόβουρτσας', 'diş fırçasıın'], ['οδοντόβουρτσες', 'diş fırçasılar'], ['οδοντόβουρτσών', 'diş fırçasıların'], ['οδοντόκρεμα', 'diş macunu'], ['οδοντόκρεμας', 'diş macunuın'], ['οδοντόκρεμες', 'diş macunular'], ['οδοντόκρεμών', 'diş macunuların'], ["άβαχες", "abaküsler!"], ['φιλων', 'arkadaşların']
+  ["ανθρώπων", "insanların"], ["αβαείο", "manastır"], ["αβαείου", "manastırın"], ["αβαία", "manastırlar"],
+  ["αβαίων", "manastırların"], ["άβαχας", "abaküs"], ["άβαχα", "abaküsü"], ["άβαχες", "abaküsler"],
+  ["άβαχών", "abaküslerin"], ['φιλος', 'arkadaş'], ['φιλο', 'arkadaşı'], ['φιλου', 'arkadaşın'],
+  ['φιλε', 'arkadaş!'], ['φιλοι', 'arkadaşlar'], ['φιλους', 'arkadaşları'], ['φιλων', 'arkadaşların']
 ];
 
 const MASTER_DICT_MAP = new Map(HUGE_RAW_DICTIONARY);
@@ -422,9 +458,17 @@ let userDecks = JSON.parse(localStorage.getItem('yunanca_decks_v12')) || { "Gene
 let lastActiveDeck = localStorage.getItem('last_active_deck_v12') || "Genel Kelimeler";
 let activeWordString = "", activeContextSentence = "", activeTokenElement = null;
 
+// Test Pool Değişkenleri
+let currentQuizPool = [];
+let currentQuizIndex = 0;
+let currentQuizQuestion = null;
+
 /** 2. WEB SPEECH API — YUNANCA TELAFFUZ SİSTEMİ */
 let ttsSupported = false, ttsVoice = null, isPaused = false, globalTextForTTS = "", allWordSpans = []; 
 let currentSpeakingToken = null;
+let isSpeakingManually = false;
+let currentManualIndex = 0;
+let manualTimer = null;
 
 function initTTS() {
   if (!('speechSynthesis' in window)) {
@@ -445,6 +489,45 @@ function initTTS() {
 
 function updateSpeedLabel() {
   document.getElementById('tts-speed-label').textContent = document.getElementById('tts-speed').value + 'x';
+}
+
+function clearAllHighlights() {
+  allWordSpans.forEach(s => s.classList.remove('tts-active'));
+  const speakBtn = document.getElementById('popup-speak-btn');
+  if (speakBtn) speakBtn.classList.remove('speaking');
+  if (currentSpeakingToken) {
+    currentSpeakingToken.classList.remove('speaking');
+    currentSpeakingToken.classList.remove('tts-active');
+    currentSpeakingToken = null;
+  }
+  isSpeakingManually = false;
+  if(manualTimer) clearInterval(manualTimer);
+}
+
+function startManualHighlighting() {
+  if(allWordSpans.length === 0) return;
+  currentManualIndex = 0;
+  isSpeakingManually = true;
+  
+  const speed = parseFloat(document.getElementById('tts-speed').value);
+  const getDuration = (text) => (text.length * 90) / speed; 
+
+  const highlightNext = () => {
+    if (!isSpeakingManually || currentManualIndex >= allWordSpans.length) {
+      clearAllHighlights();
+      return;
+    }
+    
+    allWordSpans.forEach(s => s.classList.remove('tts-active'));
+    const currentSpan = allWordSpans[currentManualIndex];
+    currentSpan.classList.add('tts-active');
+    currentSpan.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    const duration = getDuration(currentSpan.textContent);
+    currentManualIndex++;
+    manualTimer = setTimeout(highlightNext, duration);
+  };
+  highlightNext();
 }
 
 function speakGreek(text, sourceElement = null) {
@@ -508,10 +591,12 @@ function speakAllText() {
     document.getElementById('tts-status').classList.add('visible');
     document.getElementById('tts-status-text').textContent = "Tüm metin okunuyor...";
     isPaused = false;
+    startManualHighlighting(); // Fallback for Mobile
   };
 
   utterance.onboundary = (event) => {
     if (event.name === 'word') {
+      if(manualTimer) clearTimeout(manualTimer); // Clear manual if native works
       clearAllHighlights();
       let activeSpan = null;
       for (let i = allWordSpans.length - 1; i >= 0; i--) {
@@ -570,17 +655,6 @@ function stopSpeech() {
   }
 }
 
-function clearAllHighlights() {
-  allWordSpans.forEach(s => s.classList.remove('tts-active'));
-  const speakBtn = document.getElementById('popup-speak-btn');
-  if (speakBtn) speakBtn.classList.remove('speaking');
-  if (currentSpeakingToken) {
-    currentSpeakingToken.classList.remove('speaking');
-    currentSpeakingToken.classList.remove('tts-active');
-    currentSpeakingToken = null;
-  }
-}
-
 function speakCurrentWord() {
   if (activeWordString) speakGreek(activeWordString);
 }
@@ -596,10 +670,8 @@ function getGreekPhonetics(word) {
     ['Λ', 'l'], ['Μ', 'm'], ['Ν', 'n'], ['Ξ', 'ks'], ['Ο', 'o'], ['Π', 'p'], ['Ρ', 'r'], ['Σ', 's'], ['Τ', 't'], ['Υ', 'i'],
     ['Φ', 'f'], ['Χ', 'h/χ'], ['Ψ', 'ps'], ['Ω', 'o'],
   ];
-
   let cleanWord = word.replace(/[.,!?;():"""]/g, '');
   let result = ''; let i = 0; const lower = cleanWord.toLowerCase();
-
   while (i < lower.length) {
     let matched = false;
     for (const [gr, tr] of rules) {
@@ -665,8 +737,11 @@ function importDataFromFile(event) {
 function switchMainTab(tabName) {
   document.getElementById('section-read').style.display = tabName === 'read' ? 'block' : 'none';
   document.getElementById('section-quiz').style.display = tabName === 'quiz' ? 'block' : 'none';
+  document.getElementById('section-video').style.display = tabName === 'video' ? 'block' : 'none';
+  
   document.getElementById('mtab-read').classList.toggle('active', tabName === 'read');
   document.getElementById('mtab-quiz').classList.toggle('active', tabName === 'quiz');
+  document.getElementById('mtab-video').classList.toggle('active', tabName === 'video');
   
   document.getElementById('main-tts-panel').style.display = tabName === 'read' ? 'flex' : 'none';
   document.getElementById('main-sync-panel').style.display = tabName === 'read' ? 'flex' : 'none';
@@ -789,22 +864,19 @@ function createFlexibleRegex(meaning) {
     let lastWord = words[words.length - 1];
     let prefix = words.length > 1 ? words.slice(0, -1).join('\\s+') + '\\s+' : '';
 
-    // Mastar eklerini at (-mak, -mek)
     if (lastWord.length > 3 && (lastWord.endsWith("mak") || lastWord.endsWith("mek"))) {
         lastWord = lastWord.slice(0, -3);
     }
 
-    // Ünsüz yumuşaması varyasyonları (p, ç, t, k -> b, c, d, ğ/y)
     let variants = [lastWord];
     if (lastWord.endsWith("t")) variants.push(lastWord.slice(0, -1) + "d");
     else if (lastWord.endsWith("p")) variants.push(lastWord.slice(0, -1) + "b");
     else if (lastWord.endsWith("k")) {
         variants.push(lastWord.slice(0, -1) + "ğ");
         variants.push(lastWord.slice(0, -1) + "y");
-        variants.push(lastWord.slice(0, -1)); // ba bazen ek alırken düşebilir
+        variants.push(lastWord.slice(0, -1));
     } else if (lastWord.endsWith("ç")) variants.push(lastWord.slice(0, -1) + "c");
 
-    // \p{L} kullanarak unicode harflerle ekleri kapsıyoruz
     const pattern = `(^|[^\\p{L}])(${prefix}(?:${variants.join('|')})\\p{L}*)`;
     return new RegExp(pattern, 'gui');
 }
@@ -817,18 +889,15 @@ async function translateFullContext() {
   
   contextBox.innerHTML = `<em>Çevriliyor...</em>`;
   try {
-    // 1. Cümlenin tam çevirisini çek
     const urlFull = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=el&tl=tr&dt=t&q=${encodeURIComponent(activeContextSentence)}`;
     const resFull = await fetch(urlFull);
     const dataFull = await resFull.json();
     let fullTranslation = dataFull[0].map(item => item[0]).join('');
 
-    // 2. Orijinal Yunanca metinde kelimenin kendisini boya
     const safeGreek = activeWordString.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const greekRegex = new RegExp(`(${safeGreek})`, 'gi');
     let highlightedGreek = activeContextSentence.replace(greekRegex, '<span class="translated-word-highlight">$1</span>');
 
-    // 3. İlgili kelimenin sözlükteki tüm olası çevirilerini/alternatiflerini çek
     const urlWord = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=el&tl=tr&dt=t&dt=bd&q=${encodeURIComponent(activeWordString)}`;
     const resWord = await fetch(urlWord);
     const dataWord = await resWord.json();
@@ -837,10 +906,8 @@ async function translateFullContext() {
     if (currentMean && currentMean !== "çeviri aranıyor..." && currentMean !== "çeviri hatası") {
         possibleMeanings.push(currentMean);
     }
-    // Ana çeviri
     if (dataWord[0] && dataWord[0][0] && dataWord[0][0][0]) possibleMeanings.push(dataWord[0][0][0].toLowerCase());
 
-    // Sözlük alternatifleri
     if (dataWord[1]) {
         dataWord[1].forEach(posGroup => {
             if (posGroup[2]) posGroup[2].forEach(altGroup => { if (altGroup[0]) possibleMeanings.push(altGroup[0].toLowerCase()); });
@@ -848,18 +915,15 @@ async function translateFullContext() {
         });
     }
 
-    // Listeyi temizle ve kelime grubunun uzunluğuna göre sırala (Önce uzun deyimleri ara)
     possibleMeanings = [...new Set(possibleMeanings.filter(m => m.length > 2))];
     possibleMeanings.sort((a, b) => b.length - a.length);
 
-    // 4. Kök analizli gelişmiş arama
     let highlightedTranslation = fullTranslation;
     for (let mean of possibleMeanings) {
         const regex = createFlexibleRegex(mean);
         if (regex.test(highlightedTranslation)) {
-            // $1: Öncesindeki boşluk veya karakter, $2: Eşleşen Türkçe kelime/deyim (eklerle birlikte)
             highlightedTranslation = highlightedTranslation.replace(regex, '$1<span class="translated-word-highlight">$2</span>');
-            break; // İlk (en uyumlu) eşleşmede dur
+            break; 
         }
     }
 
@@ -937,6 +1001,11 @@ async function triggerWordPopup(event, word, contextSentence) {
   activeTokenElement = event.target;
   activeWordString = word;
   activeContextSentence = contextSentence;
+  
+  // EĞER VİDEO MODUNDAYSAK VİDEOYU DURDUR
+  if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
+      ytPlayer.pauseVideo();
+  }
   
   const popup = document.getElementById('wpop');
   const titleGr = document.getElementById('wp-gr');
@@ -1139,24 +1208,6 @@ function deleteDeckEntirely(deckName) {
 /** ==========================================
  * YENİ DEHB DOSTU ÖĞRETİCİ TEST MERKEZİ (v16.0)
  * ========================================== */
-let quizPool = [];          // Şu an test edilen havuz
-let totalInitialWords = 0;  // Testteki toplam hedef kelime sayısı
-let quizIndex = 0;          // Havuzdaki mevcut soru indeksi
-let quizMistakes = [];      // Hata yapılan kelimeler listesi
-let correctCount = 0;       // Kalıcı öğrenilen/doğru bilinen kelimeler
-let isQuestionActive = false; // Spam tıklamayı önler
-
-// Motivasyon Mesajları
-const positivePhrases = ["Harika!", "Mükemmel!", "İşte bu!", "Çok iyi gidiyorsun!", "Süpersin!", "Tam isabet!"];
-
-function exitQuiz() {
-  document.body.classList.remove('focus-mode');
-  document.getElementById('quiz-active-view').style.display = 'none';
-  document.getElementById('quiz-result-view').style.display = 'none';
-  document.getElementById('quiz-setup-view').style.display = 'block';
-  stopSpeech();
-}
-
 function startAdvancedQuiz(isRetry = false) {
   const mode = document.getElementById('quiz-mode-select').value;
   
@@ -1174,18 +1225,18 @@ function startAdvancedQuiz(isRetry = false) {
       shuffledDeck = shuffledDeck.slice(0, parseInt(limit));
     }
 
-    quizPool = shuffledDeck;
+    currentQuizPool = shuffledDeck;
     quizMistakes = [];
     correctCount = 0;
   } else {
     // Sadece yanlışları tekrarla
-    quizPool = [...quizMistakes].map(m => ({gr: m.gr, tr: m.tr})).sort(() => Math.random() - 0.5);
+    currentQuizPool = [...quizMistakes].map(m => ({gr: m.gr, tr: m.tr})).sort(() => Math.random() - 0.5);
     quizMistakes = []; 
     correctCount = 0;
   }
 
-  totalInitialWords = quizPool.length;
-  quizIndex = 0;
+  totalInitialWords = currentQuizPool.length;
+  currentQuizIndex = 0;
 
   // Odak Modunu Aç
   document.body.classList.add('focus-mode');
@@ -1193,13 +1244,12 @@ function startAdvancedQuiz(isRetry = false) {
   document.getElementById('quiz-result-view').style.display = 'none';
   document.getElementById('quiz-active-view').style.display = 'block';
 
-  loadQuizQuestion();
+  loadNextQuizQuestion();
 }
 
 function retryMistakes() { startAdvancedQuiz(true); }
 
 function updateQuizUI() {
-  // İlerleme çubuğu, Hata yapınca geri gitmesin diye "correctCount" üzerinden hesaplanıyor.
   let progressRatio = (correctCount / totalInitialWords) * 100; 
   if (progressRatio > 100) progressRatio = 100;
   
@@ -1208,7 +1258,10 @@ function updateQuizUI() {
   document.getElementById('quiz-progress-bar').style.width = `${progressRatio}%`;
 }
 
-// Hata Ekleme ve Havuza Geri Atma (Eğitici Loop)
+let quizMistakes = [];
+let correctCount = 0;
+let totalInitialWords = 0;
+
 function recordMistake(wordObj, modeName) {
   if (!quizMistakes.some(w => w.gr === wordObj.gr)) {
     quizMistakes.push({ gr: wordObj.gr, tr: wordObj.tr, type: modeName });
@@ -1216,8 +1269,7 @@ function recordMistake(wordObj, modeName) {
 }
 
 function pushToPoolIfWrong(wordObj) {
-  // Öğrenene kadar karşına çıksın diye havuza geri atılır
-  quizPool.push(wordObj);
+  currentQuizPool.push(wordObj);
 }
 
 function finishQuiz() {
@@ -1226,7 +1278,6 @@ function finishQuiz() {
   document.getElementById('quiz-result-view').style.display = 'block';
   
   document.getElementById('res-total').textContent = totalInitialWords;
-  // correctCount en fazla totalInitialWords kadar olabilir
   let finalCorrect = totalInitialWords - quizMistakes.length;
   if(finalCorrect < 0) finalCorrect = 0;
 
@@ -1250,46 +1301,48 @@ function finishQuiz() {
   }
 }
 
-function loadQuizQuestion() {
-  if (correctCount >= totalInitialWords || quizIndex >= quizPool.length) { finishQuiz(); return; }
+let isQuestionActive = false;
+
+function loadNextQuizQuestion() {
+  if (correctCount >= totalInitialWords || currentQuizIndex >= currentQuizPool.length) { finishQuiz(); return; }
   
   updateQuizUI();
   isQuestionActive = true;
-  const currentQ = quizPool[quizIndex];
+  currentQuizQuestion = currentQuizPool[currentQuizIndex];
   const mode = document.getElementById('quiz-mode-select').value;
   const area = document.getElementById('quiz-work-area');
   const feedback = document.getElementById('quiz-feedback');
   feedback.innerHTML = "";
   feedback.className = ""; // Animasyon sınıfını temizle
 
-  const speakBtn = `<button class="quiz-speak-btn" onclick="speakGreek('${currentQ.gr.replace(/'/g,"\\'")}', this)">🔊</button>`;
+  const speakBtn = `<button class="quiz-speak-btn" onclick="speakGreek('${currentQuizQuestion.gr.replace(/'/g,"\\'")}', this)">🔊</button>`;
 
   if (mode === 'multi') {
-    let allTr = Object.values(userDecks).flat().map(i => i.tr).filter(t => t !== currentQ.tr);
-    let opts = [currentQ.tr, ...[...new Set(allTr)].sort(()=>Math.random()-0.5).slice(0,3)].sort(()=>Math.random()-0.5);
+    let allTr = Object.values(userDecks).flat().map(i => i.tr).filter(t => t !== currentQuizQuestion.tr);
+    let opts = [currentQuizQuestion.tr, ...[...new Set(allTr)].sort(()=>Math.random()-0.5).slice(0,3)].sort(()=>Math.random()-0.5);
     
     area.innerHTML = `
-      <div class="quiz-word-row"><div class="quiz-big-word">${currentQ.gr}</div>${speakBtn}</div>
+      <div class="quiz-word-row"><div class="quiz-big-word">${currentQuizQuestion.gr}</div>${speakBtn}</div>
       <div class="quiz-options-grid">${opts.map(opt => `<button class="quiz-opt-btn" onclick="evalMulti('${opt.replace(/'/g, "\\'")}')">${opt}</button>`).join('')}</div>
     `;
   } 
   else if (mode === 'listen') {
-    let allTr = Object.values(userDecks).flat().map(i => i.tr).filter(t => t !== currentQ.tr);
-    let opts = [currentQ.tr, ...[...new Set(allTr)].sort(()=>Math.random()-0.5).slice(0,3)].sort(()=>Math.random()-0.5);
+    let allTr = Object.values(userDecks).flat().map(i => i.tr).filter(t => t !== currentQuizQuestion.tr);
+    let opts = [currentQuizQuestion.tr, ...[...new Set(allTr)].sort(()=>Math.random()-0.5).slice(0,3)].sort(()=>Math.random()-0.5);
     
     area.innerHTML = `
       <div style="color:var(--text-dim); margin-bottom:15px; font-size:1.1rem;">Duyduğunuz kelimenin anlamını seçin:</div>
       <div class="quiz-word-row">
         <div class="quiz-big-word" style="filter: blur(12px); user-select:none;" id="hidden-gr-word">??????</div>
-        <button class="quiz-speak-btn" style="width:75px; height:75px; background:var(--accent); color:#fff;" onclick="speakGreek('${currentQ.gr.replace(/'/g,"\\'")}', this)">▶️</button>
+        <button class="quiz-speak-btn" style="width:75px; height:75px; background:var(--accent); color:#fff;" onclick="speakGreek('${currentQuizQuestion.gr.replace(/'/g,"\\'")}', this)">▶️</button>
       </div>
       <div class="quiz-options-grid">${opts.map(opt => `<button class="quiz-opt-btn" onclick="evalListen('${opt.replace(/'/g, "\\'")}')">${opt}</button>`).join('')}</div>
     `;
-    setTimeout(()=>speakGreek(currentQ.gr), 500); // Otomatik seslendir
+    setTimeout(()=>speakGreek(currentQuizQuestion.gr), 500); 
   }
   else if (mode === 'write') {
     area.innerHTML = `
-      <div class="quiz-word-row"><div class="quiz-big-word">${currentQ.gr}</div>${speakBtn}</div>
+      <div class="quiz-word-row"><div class="quiz-big-word">${currentQuizQuestion.gr}</div>${speakBtn}</div>
       <input type="text" id="quiz-write-input" placeholder="Türkçe karşılığı nedir?" autocomplete="off" onkeydown="if(event.key==='Enter') evalWrite()">
       <div style="display:flex; gap:10px; width:100%; max-width:450px;">
         <button class="main-btn" style="flex:2; padding:18px;" onclick="evalWrite()">Cevapla</button>
@@ -1300,8 +1353,8 @@ function loadQuizQuestion() {
   }
   else if (mode === 'flash') {
     area.innerHTML = `
-      <div class="quiz-word-row"><div class="quiz-big-word">${currentQ.gr}</div>${speakBtn}</div>
-      <div id="flash-answer" style="display:none; font-size:2.2rem; color:var(--success); font-weight:bold; margin-bottom:30px; animation:fadeIn 0.3s;">${currentQ.tr}</div>
+      <div class="quiz-word-row"><div class="quiz-big-word">${currentQuizQuestion.gr}</div>${speakBtn}</div>
+      <div id="flash-answer" style="display:none; font-size:2.2rem; color:var(--success); font-weight:bold; margin-bottom:30px; animation:fadeIn 0.3s;">${currentQuizQuestion.tr}</div>
       <button class="main-btn" id="flash-show-btn" style="padding:20px 50px; font-size:1.2rem;" onclick="document.getElementById('flash-answer').style.display='block'; this.style.display='none'; document.getElementById('flash-controls').style.display='flex';">Anlamını Göster</button>
       <div id="flash-controls" style="display:none; gap:15px; width:100%; max-width:450px; margin-top:10px;">
         <button class="main-btn" style="flex:1; background:var(--error); padding:18px;" onclick="evalFlash(false)">❌ Bilemedim</button>
@@ -1311,12 +1364,17 @@ function loadQuizQuestion() {
   }
 }
 
-// DEĞERLENDİRME FONKSİYONLARI
-function getRandomPraise() { return positivePhrases[Math.floor(Math.random() * positivePhrases.length)]; }
+function exitQuiz() {
+  document.body.classList.remove('focus-mode');
+  document.getElementById('quiz-active-view').style.display = 'none';
+  document.getElementById('quiz-result-view').style.display = 'none';
+  document.getElementById('quiz-setup-view').style.display = 'block';
+  stopSpeech();
+}
 
 function showFeedback(isSuccess, msg) {
   const fb = document.getElementById('quiz-feedback');
-  fb.className = 'pop-anim'; // animasyonu tetikle
+  fb.className = 'pop-anim'; 
   if (isSuccess) {
     fb.innerHTML = `<span style="color:var(--success); background:rgba(74,222,128,0.1); padding:8px 20px; border-radius:20px;">✅ ${msg}</span>`;
   } else {
@@ -1326,54 +1384,51 @@ function showFeedback(isSuccess, msg) {
 
 function evalMulti(selected) {
   if (!isQuestionActive) return; isQuestionActive = false;
-  const currentQ = quizPool[quizIndex];
   const btns = document.querySelectorAll('.quiz-opt-btn');
-  let isCorrect = (selected === currentQ.tr);
+  let isCorrect = (selected === currentQuizQuestion.tr);
 
   btns.forEach(btn => {
     btn.disabled = true;
-    if (btn.textContent === currentQ.tr) btn.classList.add('correct');
+    if (btn.textContent === currentQuizQuestion.tr) btn.classList.add('correct');
     else if (btn.textContent === selected && !isCorrect) btn.classList.add('wrong');
   });
 
   if (isCorrect) {
-    if(!quizMistakes.some(w=>w.gr===currentQ.gr)) correctCount++;
-    showFeedback(true, getRandomPraise());
-    updateQuizUI(); // Bar dolsun
-    quizIndex++; setTimeout(loadQuizQuestion, 1000);
+    if(!quizMistakes.some(w=>w.gr===currentQuizQuestion.gr)) correctCount++;
+    showFeedback(true, "Harika!");
+    updateQuizUI(); 
+    currentQuizIndex++; setTimeout(loadNextQuizQuestion, 1000);
   } else {
-    recordMistake(currentQ, 'multi');
-    pushToPoolIfWrong(currentQ); // Havuza tekrar ekle
+    recordMistake(currentQuizQuestion, 'multi');
+    pushToPoolIfWrong(currentQuizQuestion); 
     showFeedback(false, "Doğrusunu yeşil ile işaretledik.");
-    quizIndex++; setTimeout(loadQuizQuestion, 2000); 
+    currentQuizIndex++; setTimeout(loadNextQuizQuestion, 2000); 
   }
 }
 
 function evalListen(selected) {
-  document.getElementById('hidden-gr-word').style.filter = 'none'; // Kelimeyi göster
-  document.getElementById('hidden-gr-word').textContent = quizPool[quizIndex].gr;
+  document.getElementById('hidden-gr-word').style.filter = 'none'; 
+  document.getElementById('hidden-gr-word').textContent = currentQuizQuestion.gr;
   evalMulti(selected); 
 }
 
 function evalWrite() {
   if (!isQuestionActive) return;
-  const currentQ = quizPool[quizIndex];
   const input = document.getElementById('quiz-write-input');
   const userText = input.value.trim().toLowerCase();
-  const correctText = currentQ.tr.trim().toLowerCase();
+  const correctText = currentQuizQuestion.tr.trim().toLowerCase();
 
   if (userText === correctText) {
     isQuestionActive = false;
     input.style.borderColor = "var(--success)"; input.style.color = "var(--success)";
-    if(!quizMistakes.some(w=>w.gr===currentQ.gr)) correctCount++;
-    showFeedback(true, getRandomPraise());
+    if(!quizMistakes.some(w=>w.gr===currentQuizQuestion.gr)) correctCount++;
+    showFeedback(true, "Mükemmel!");
     updateQuizUI();
-    quizIndex++; setTimeout(loadQuizQuestion, 1000);
+    currentQuizIndex++; setTimeout(loadNextQuizQuestion, 1000);
   } else {
-    // YAZMA MODU CEZASI: Yanlışsa geçmez, kızarır ve titrer!
-    recordMistake(currentQ, 'write');
+    recordMistake(currentQuizQuestion, 'write');
     input.classList.remove('shake');
-    void input.offsetWidth; // trigger reflow
+    void input.offsetWidth; 
     input.classList.add('shake');
     showFeedback(false, "Hatalı. Tekrar dene veya ipucu al.");
   }
@@ -1381,12 +1436,11 @@ function evalWrite() {
 
 function giveWriteHint() {
   if (!isQuestionActive) return;
-  const currentQ = quizPool[quizIndex];
-  recordMistake(currentQ, 'write');
-  pushToPoolIfWrong(currentQ); // İpucu aldığı için sona ekle
+  recordMistake(currentQuizQuestion, 'write');
+  pushToPoolIfWrong(currentQuizQuestion); 
   
   const input = document.getElementById('quiz-write-input');
-  input.value = currentQ.tr; // Cevabı yazdır
+  input.value = currentQuizQuestion.tr; 
   input.style.borderColor = "var(--accent2)";
   
   const fb = document.getElementById('quiz-feedback');
@@ -1394,30 +1448,128 @@ function giveWriteHint() {
   fb.innerHTML = `<span style="color:var(--accent2); background:rgba(232,201,109,0.1); padding:8px 20px; border-radius:20px;">💡 İpucu kullanıldı. Kelime daha sonra tekrar sorulacak.</span>`;
   
   isQuestionActive = false;
-  quizIndex++; setTimeout(loadQuizQuestion, 2500);
+  currentQuizIndex++; setTimeout(loadNextQuizQuestion, 2500);
 }
 
 function evalFlash(knewIt) {
   if (!isQuestionActive) return; isQuestionActive = false;
-  const currentQ = quizPool[quizIndex];
   
   if (knewIt) {
-    if(!quizMistakes.some(w=>w.gr===currentQ.gr)) correctCount++;
+    if(!quizMistakes.some(w=>w.gr===currentQuizQuestion.gr)) correctCount++;
     updateQuizUI();
-    quizIndex++; loadQuizQuestion();
+    currentQuizIndex++; loadNextQuizQuestion();
   } else {
-    recordMistake(currentQ, 'flash');
-    pushToPoolIfWrong(currentQ); // Bilemediği için döngüye geri at
+    recordMistake(currentQuizQuestion, 'flash');
+    pushToPoolIfWrong(currentQuizQuestion); 
     
     const fb = document.getElementById('quiz-feedback');
     fb.className = 'pop-anim';
     fb.innerHTML = `<span style="color:var(--accent2); background:rgba(232,201,109,0.1); padding:8px 20px; border-radius:20px;">Daha sonra tekrar sorulacak.</span>`;
     
-    quizIndex++; setTimeout(loadQuizQuestion, 1200);
+    currentQuizIndex++; setTimeout(loadNextQuizQuestion, 1200);
+  }
+}
+
+/** ==========================================
+ * YENİ: VİDEO VE ALTYAZI (SHADOWING) SİSTEMİ
+ * ========================================== */
+let ytPlayer = null;
+let ytSubtitles = [];
+let videoSyncInterval = null;
+let currentActiveSubIndex = -1;
+
+// Örnek Altyazı JSON'u (Kullanıcı girmezse bu yüklenir)
+const defaultSubtitles = [
+  {"start": 0.5, "end": 4.5, "gr": "Γεια σας, καλώς ήρθατε στο βίντεο.", "tr": "Merhaba, videoya hoş geldiniz."},
+  {"start": 4.5, "end": 8.0, "gr": "Σήμερα θα μάθουμε ελληνικά.", "tr": "Bugün Yunanca öğreneceğiz."},
+  {"start": 8.0, "end": 12.0, "gr": "Δεν ήταν μια συνηθισμένη μέρα.", "tr": "Sıradan bir gün değildi."}
+];
+
+function loadCustomVideo() {
+  const videoId = document.getElementById('yt-video-id').value.trim();
+  const subJsonString = document.getElementById('yt-subs-json').value.trim();
+  
+  if (!videoId) { showToastMessage("Lütfen bir YouTube ID girin."); return; }
+  
+  try {
+    ytSubtitles = subJsonString ? JSON.parse(subJsonString) : defaultSubtitles;
+    if (!Array.isArray(ytSubtitles)) throw new Error("JSON Array olmalı");
+  } catch (e) {
+    showToastMessage("JSON formatı hatalı! Varsayılan altyazılar yükleniyor.");
+    ytSubtitles = defaultSubtitles;
+  }
+  
+  document.getElementById('video-workspace').style.display = 'block';
+  
+  if (ytPlayer) {
+    ytPlayer.loadVideoById(videoId);
+  } else {
+    ytPlayer = new YT.Player('youtube-player', {
+      height: '100%', width: '100%',
+      videoId: videoId,
+      events: { 'onStateChange': onPlayerStateChange }
+    });
+  }
+  
+  // Önceki interval'i temizle ve yenisini başlat
+  if(videoSyncInterval) clearInterval(videoSyncInterval);
+  videoSyncInterval = setInterval(syncSubtitles, 200);
+}
+
+function onPlayerStateChange(event) {
+  // Eğer video oynatılıyorsa (YT.PlayerState.PLAYING == 1) senkronize et
+  // Duraklatıldığında Popup kapanana kadar bekleyebilir
+}
+
+function syncSubtitles() {
+  if (!ytPlayer || typeof ytPlayer.getCurrentTime !== 'function') return;
+  const currentTime = ytPlayer.getCurrentTime();
+  
+  // Hangi altyazının aralığındayız?
+  let foundIndex = -1;
+  for (let i = 0; i < ytSubtitles.length; i++) {
+    if (currentTime >= ytSubtitles[i].start && currentTime <= ytSubtitles[i].end) {
+      foundIndex = i; break;
+    }
+  }
+
+  // Altyazı değiştiyse DOM'u güncelle
+  if (foundIndex !== currentActiveSubIndex) {
+    currentActiveSubIndex = foundIndex;
+    const subGrContainer = document.getElementById('sub-gr');
+    const subTrContainer = document.getElementById('sub-tr');
+    const mainBox = document.getElementById('active-subtitle-container');
+    
+    if (foundIndex > -1) {
+      const currentSub = ytSubtitles[foundIndex];
+      subTrContainer.textContent = currentSub.tr;
+      mainBox.classList.add('active');
+      
+      // Yunanca metni kelime kelime tıklanabilir yap
+      subGrContainer.innerHTML = "";
+      currentSub.gr.split(/(\s+)/).forEach(token => {
+        if (/[\u0370-\u03FF]/.test(token)) {
+          const span = document.createElement('span');
+          span.className = 'tok';
+          span.textContent = token;
+          // Tıklandığında Videoyu Durdurup Kelimeyi Çevir (Mevcut popup fonksiyonu kullanılıyor)
+          span.onclick = (e) => triggerWordPopup(e, token, currentSub.gr);
+          subGrContainer.appendChild(span);
+        } else {
+          subGrContainer.appendChild(document.createTextNode(token));
+        }
+      });
+    } else {
+      // O an ekranda altyazı yok
+      subGrContainer.innerHTML = "...";
+      subTrContainer.textContent = "";
+      mainBox.classList.remove('active');
+    }
   }
 }
 
 // BAŞLANGIÇ KURULUMU
+document.getElementById('yt-subs-json').value = JSON.stringify(defaultSubtitles, null, 2);
 initTTS(); 
 populateDeckSelects(); 
 renderDecksAccordion();
