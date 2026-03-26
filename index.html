@@ -1650,50 +1650,60 @@ function normalizeErrorMessage(err) {
   return err && err.message ? err.message : "Bilinmeyen hata oluştu.";
 }
 
-async function fetchViaProxies(targetUrl, timeoutMs = 12000) {
-  // Daha güvenilir ve güncel proxy listesi
+async function fetchViaProxies(targetUrl, timeoutMs = 15000) {
+  // Daha gelişmiş proxy havuzu ve özel istek metodları
   const proxyBuilders = [
-    (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-    (url) => `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(url)}`,
-    (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`
+    // 1. AllOrigins (JSON Wrapper ile CORS aşma - En güveniliri)
+    async (url) => {
+      const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+      if (!res.ok) throw new Error("AllOrigins Yanıt Vermedi");
+      const data = await res.json();
+      if (!data.contents) throw new Error("Boş içerik");
+      return { ok: true, text: async () => data.contents };
+    },
+    // 2. CodeTabs Proxy
+    async (url) => {
+      const res = await fetch(`https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(url)}`);
+      if (!res.ok) throw new Error("CodeTabs HTTP " + res.status);
+      const text = await res.text();
+      return { ok: true, text: async () => text };
+    },
+    // 3. Corsproxy.io
+    async (url) => {
+      const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`);
+      if (!res.ok) throw new Error("CorsProxy HTTP " + res.status);
+      const text = await res.text();
+      return { ok: true, text: async () => text };
+    }
   ];
 
   let lastError = null;
 
-  for (const buildProxyUrl of proxyBuilders) {
-    const proxiedUrl = buildProxyUrl(targetUrl);
-    const controller = new AbortController();
-    const timerId = setTimeout(() => controller.abort(), timeoutMs);
-
+  for (const proxyCall of proxyBuilders) {
     try {
-      const res = await fetch(proxiedUrl, { signal: controller.signal });
-      clearTimeout(timerId);
-
-      if (!res.ok) {
-        lastError = new Error(`Proxy yanıtı başarısız: HTTP ${res.status}`);
-        continue;
+      // Zaman aşımı (Timeout) kontrolü
+      const result = await Promise.race([
+        proxyCall(targetUrl),
+        new Promise((_, reject) => setTimeout(() => reject(new Error("Zaman Aşımı")), timeoutMs))
+      ]);
+      
+      const text = await result.text();
+      
+      // YouTube Bizi Yakaladı mı Kontrolü
+      if (text.includes("consent.youtube.com") || text.includes("unusual traffic")) {
+         lastError = new Error("Proxy YouTube Captcha/Onay engeline takıldı.");
+         continue; // Bu proxy patlamış, sonrakine geç
       }
-
-      const text = await res.text();
-
-      // YouTube'un çerez onay veya robot doğrulama sayfasına takılıp takılmadığını kontrol et
-      if (text.includes("consent.youtube.com") || text.includes("Our systems have detected unusual traffic")) {
-         lastError = new Error("Proxy YouTube tarafından engellendi (CAPTCHA/Consent).");
-         continue;
-      }
-
-      // Diğer fonksiyonların çalışmasını bozmamak için text()'i mockluyoruz
+      
       return { ok: true, text: async () => text };
-
+      
     } catch (e) {
-      clearTimeout(timerId);
       lastError = e;
     }
   }
 
-  throw new Error(normalizeErrorMessage(lastError));
+  throw new Error(lastError && lastError.message ? lastError.message : "Tüm proxy sunucuları YouTube tarafından reddedildi.");
 }
-
 async function translateLinesInChunks(lines, sourceLang, targetLang) {
   let translatedLines = [];
   let currentChunk = [];
