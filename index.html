@@ -64,8 +64,38 @@
   .sync-btn-up { background: var(--border); color: white; display: flex; align-items: center; }
   
   .tts-speed-control { display: flex; align-items: center; gap: 8px; }
-  .tts-speed-control input[type="range"] { -webkit-appearance: none; width: 100px; height: 4px; background: var(--border); border-radius: 2px; outline: none; }
-  .tts-speed-control input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--tts-color); cursor: pointer; }
+   /* Ana Kaydırıcı Çubuğu */
+.tts-speed-control input[type="range"] { 
+  -webkit-appearance: none; 
+  width: 100px; 
+  height: 4px; 
+  background: var(--border); 
+  border-radius: 2px; 
+  outline: none; 
+  cursor: pointer;
+}
+
+/* Chrome, Safari, Opera ve Edge için Kaydırıcı Düğmesi (Thumb) */
+.tts-speed-control input[type="range"]::-webkit-slider-thumb { 
+  -webkit-appearance: none; 
+  width: 16px; 
+  height: 16px; 
+  border-radius: 50%; 
+  background: var(--tts-color); 
+  cursor: pointer;
+  border: none;
+  margin-top: -6px; /* Çubuğun ortasında durması için gerekebilir */
+}
+
+/* Firefox için Kaydırıcı Düğmesi */
+.tts-speed-control input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--tts-color);
+  cursor: pointer;
+  border: none;
+}
   .tts-speed-label { color: var(--tts-color); font-size: 0.85rem; font-weight: bold; min-width: 30px; }
   #tts-status { font-size: 0.8rem; color: var(--tts-color); background: rgba(167,139,250,0.1); padding: 4px 10px; border-radius: 20px; display: none; align-items: center; gap: 5px; }
   #tts-status.visible { display: flex; }
@@ -1863,95 +1893,115 @@ function parseVttTime(timeStr) {
 }
 
 // --- YENİ: PIPED API İLE KESİNTİSİZ ALTYAZI ÇEKİCİ ---
+// --- YENİ VE EN GÜÇLÜ OTOMATİK ALTYAZI ÇEKİCİ (HİBRİT SİSTEM) ---
 async function autoFetchSubtitles() {
   const rawInput = document.getElementById('yt-video-id').value.trim();
   if(!rawInput) return showToastMessage("Video ID veya Linki girin!");
   const videoId = extractVideoID(rawInput);
   
   const btn = document.getElementById('auto-sub-btn');
-  btn.innerHTML = "⏳ Başlatılıyor...";
+  btn.innerHTML = "⏳ Altyazılar Aranıyor...";
   btn.disabled = true;
 
   try {
-      // A) Eğer kullanıcının kendi Node.js/Cloudflare backend'i kuruluysa onu dene
+      let subtitlesList = [];
+
+      // 1. AŞAMA: Doğrudan YouTube XML API'si (AllOrigins Proxy ile CORS aşarak)
       try {
-        const backendSubs = await fetchSubtitlesViaBackend(videoId);
-        if (backendSubs.length > 0) {
-          document.getElementById('yt-subs-json').value = JSON.stringify(backendSubs, null, 2);
-          document.getElementById('yt-video-id').value = videoId;
-          showToastMessage("✅ Sunucudan altyazı alındı!");
-          loadCustomVideo();
-          return;
-        }
-      } catch (e) {
-        console.warn("Kişisel Backend bulunamadı, açık kaynak API'ye geçiliyor.");
-      }
-
-      // B) Proxy hatalarını aşmak için Açık Kaynak Piped API kullanımı
-      btn.innerHTML = "⏳ Veri Tabanına Bağlanılıyor...";
-      const instances = [
-          'https://pipedapi.kavin.rocks',
-          'https://pipedapi.tokhmi.xyz',
-          'https://api.piped.projectsegfau.lt'
-      ];
-      
-      let subtitlesList = null;
-      for (const baseUrl of instances) {
-          try {
-              const res = await fetch(`${baseUrl}/streams/${videoId}`);
-              if (res.ok) {
-                  const data = await res.json();
-                  if (data.subtitles && data.subtitles.length > 0) {
-                      subtitlesList = data.subtitles;
-                      break;
-                  }
+          const listUrl = `https://www.youtube.com/api/timedtext?type=list&v=${videoId}`;
+          const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(listUrl)}`;
+          const listRes = await fetch(proxyUrl);
+          const listXml = await listRes.text();
+          
+          if (listXml.includes('<track')) {
+              const parser = new DOMParser();
+              const xmlDoc = parser.parseFromString(listXml, "text/xml");
+              const tracks = xmlDoc.getElementsByTagName("track");
+              for (let i = 0; i < tracks.length; i++) {
+                  subtitlesList.push({
+                      code: tracks[i].getAttribute("lang_code"),
+                      name: tracks[i].getAttribute("name"),
+                      // fmt=vtt ekleyerek VTT formatında istiyoruz
+                      url: `https://www.youtube.com/api/timedtext?v=${videoId}&lang=${tracks[i].getAttribute("lang_code")}&fmt=vtt`
+                  });
               }
-          } catch(e) { console.warn(baseUrl + " sunucusuna ulaşılamadı, diğerine geçiliyor."); }
+          }
+      } catch(e) { console.warn("1. Aşama başarısız, 2. Aşamaya geçiliyor."); }
+
+      // 2. AŞAMA: Eğer 1. Aşama başarısız olursa Güncel Piped API Sunucularını Dene
+      if (subtitlesList.length === 0) {
+          const pipedInstances = [
+              'https://pipedapi.kavin.rocks',
+              'https://api.piped.projectsegfau.lt',
+              'https://pipedapi.smnz.de',
+              'https://pipedapi.adminforge.de'
+          ];
+          
+          for (const baseUrl of pipedInstances) {
+              try {
+                  const res = await fetch(`${baseUrl}/streams/${videoId}`);
+                  if (res.ok) {
+                      const data = await res.json();
+                      if (data.subtitles && data.subtitles.length > 0) {
+                          subtitlesList = data.subtitles;
+                          break; // Bulduğunda döngüden çık
+                      }
+                  }
+              } catch(e) { continue; } // Sunucu çökmüşse diğerine geç
+          }
       }
 
-      if (!subtitlesList) throw new Error("YouTube videoyu engelledi veya altyazı bulunamadı.");
+      // Hala boşsa video altyazısızdır
+      if (subtitlesList.length === 0) {
+          throw new Error("Videoda okunabilir altyazı (CC) bulunamadı. Lütfen başka video deneyin.");
+      }
 
-      // Videodaki en uygun dili seç (Öncelik manuel Yunanca, sonra otomatik Yunanca, yoksa İngilizce)
-      let targetSub = subtitlesList.find(s => s.code.startsWith('el') && !s.autoGenerated) ||
-                      subtitlesList.find(s => s.code.startsWith('el')) ||
+      // Öncelik: Yunanca -> Türkçe -> İngilizce -> İlk bulduğu
+      let targetSub = subtitlesList.find(s => s.code.startsWith('el')) ||
+                      subtitlesList.find(s => s.code.startsWith('tr')) ||
                       subtitlesList.find(s => s.code.startsWith('en')) ||
                       subtitlesList[0];
 
-      btn.innerHTML = `⏳ Altyazı indiriliyor (${targetSub.code})...`;
-      
-      // VTT dosyasını indir (Piped sunucuları CORS hatası vermez)
-      const vttRes = await fetch(targetSub.url);
-      if (!vttRes.ok) throw new Error("Altyazı dosyası indirilemedi.");
-      const vttText = await vttRes.text();
+      btn.innerHTML = `⏳ İndiriliyor (${targetSub.code})...`;
 
-      // İndirilen VTT formatını JSON'a dönüştür
-      const parsedSubs = parseVTT(vttText);
-      if (parsedSubs.length === 0) throw new Error("Altyazı dosyası okunamadı veya boş.");
-
-      // --- ÇEVİRİ AŞAMASI ---
-      btn.innerHTML = "⏳ Çeviriler Hazırlanıyor...";
-      let greekSubs = parsedSubs;
-      
-      // Eğer videodaki kaynak dil Yunanca değilse, önce onu Yunancaya çeviriyoruz
-      if (!targetSub.code.startsWith('el')) {
-         const sourceLines = parsedSubs.map(s => s.text);
-         const elLines = await translateLinesInChunks(sourceLines, targetSub.code.split('-')[0], "el");
-         greekSubs = parsedSubs.map((s, i) => ({ ...s, text: elLines[i] || s.text }));
+      // Altyazı VTT dosyasını indir (Yine proxy kullanarak güvene alıyoruz)
+      let vttText = "";
+      try {
+          const vttRes = await fetch(targetSub.url);
+          if(!vttRes.ok) throw new Error("Doğrudan indirme başarısız");
+          vttText = await vttRes.text();
+      } catch(e) {
+          const vttProxyRes = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(targetSub.url)}`);
+          vttText = await vttProxyRes.text();
       }
 
-      // Yunancadan Türkçeye satır satır çeviri yapıyoruz
+      // VTT metnini sistemin anlayacağı formata (JSON) dönüştür
+      const parsedSubs = parseVTT(vttText);
+      if (parsedSubs.length === 0) throw new Error("İndirilen altyazı dosyası boş.");
+
+      btn.innerHTML = "⏳ Çeviriler Hazırlanıyor...";
+      let greekSubs = parsedSubs;
+
+      // Kaynak dil Yunanca değilse, önce tüm satırları Yunancaya çeviriyoruz
+      if (!targetSub.code.startsWith('el')) {
+          const sourceLines = parsedSubs.map(s => s.text);
+          const elLines = await translateLinesInChunks(sourceLines, targetSub.code.split('-')[0] || "auto", "el");
+          greekSubs = parsedSubs.map((s, i) => ({ ...s, text: elLines[i] || s.text }));
+      }
+
+      // Şimdi Yunancadan Türkçeye çeviriyoruz
       const grLines = greekSubs.map(s => s.text);
       const trLines = await translateLinesInChunks(grLines, "el", "tr");
 
-      // Veriyi video oynatıcıya uygun JSON nesnesine paketliyoruz
+      // Sonuçları birleştir
       const finalResult = greekSubs.map((s, i) => ({
-         start: s.start,
-         end: s.end,
-         gr: s.text,
-         tr: (trLines[i] || s.text).replace(/\s+/g, ' ')
+          start: s.start,
+          end: s.end,
+          gr: s.text,
+          tr: (trLines[i] || s.text).replace(/\s+/g, ' ')
       }));
 
-      // Arayüzü güncelle ve videoyu başlat
+      // Arayüzü güncelle ve videoyu çalıştır
       document.getElementById('yt-subs-json').value = JSON.stringify(finalResult, null, 2);
       document.getElementById('yt-video-id').value = videoId;
       showToastMessage("✅ Altyazılar başarıyla çekildi ve çevrildi!");
@@ -1965,7 +2015,6 @@ async function autoFetchSubtitles() {
       btn.disabled = false;
   }
 }
-
 
 function loadCustomVideo() {
   const rawInput = document.getElementById('yt-video-id').value.trim();
