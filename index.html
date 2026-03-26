@@ -336,6 +336,16 @@
         <input type="text" id="yt-video-id" placeholder="YouTube Linki veya ID'si (Örn: L_Guz73e6fw)" value="M7lc1UVf-VE">
         <button class="main-btn" id="auto-sub-btn" style="background:var(--success);" onclick="autoFetchSubtitles()">⚡ Otomatik Çek & Çevir</button>
       </div>
+
+      <div class="url-row" style="margin-bottom:15px;">
+        <input
+          type="text"
+          id="yt-backend-endpoint"
+          placeholder="Backend Endpoint (örn: https://.../api/subtitles-from-youtube)"
+          value="http://localhost:8787/api/subtitles-from-youtube"
+        />
+        <button class="secondary-btn" style="white-space:nowrap;" onclick="showToastMessage('Backend endpoint değerini güncellediğinizden emin olun.')">ℹ️</button>
+      </div>
       
       <details style="margin-bottom: 20px;">
         <summary style="color:var(--text-dim); cursor:pointer; padding:5px;">Gelişmiş Ayarlar: Manuel JSON Girişi</summary>
@@ -1702,7 +1712,17 @@ async function translateLinesInChunks(lines, sourceLang, targetLang) {
 }
 
 async function fetchSubtitlesViaBackend(videoId) {
-  const endpoint = "https://subtitle-backend-820z.onrender.com/";
+  const backendInput = document.getElementById("yt-backend-endpoint");
+  let endpoint = backendInput ? backendInput.value.trim() : "";
+  if (!endpoint) {
+    throw new Error("Backend endpoint boş. Manuel JSON veya tarayıcı fallback kullanılır.");
+  }
+
+  // Kullanıcı full endpoint vermezse (örn: domain verir), doğru route'u ekleyelim.
+  endpoint = endpoint.replace(/\/+$/, "");
+  if (!endpoint.includes("/api/subtitles-from-youtube")) {
+    endpoint = endpoint + "/api/subtitles-from-youtube";
+  }
   const res = await fetch(endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
