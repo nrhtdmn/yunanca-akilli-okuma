@@ -1583,6 +1583,18 @@ function selectGreekTrack(tracks) {
   return tracks.find(isGreek) || null;
 }
 
+function selectBestSourceTrack(tracks) {
+  const priorityCodes = ["en", "tr", "de", "fr", "es", "it", "ru", "ar"];
+  const nonAsr = tracks.filter(t => !(t.kind || "").includes("asr"));
+  const pool = nonAsr.length ? nonAsr : tracks;
+
+  for (const code of priorityCodes) {
+    const match = pool.find(t => (t.languageCode || "").toLowerCase().startsWith(code));
+    if (match) return match;
+  }
+  return pool[0] || null;
+}
+
 function mapTranslationsFromGoogle(lines, translatedText) {
   const translatedLines = translatedText.split('\n').map(s => s.trim()).filter(Boolean);
   const mapped = [];
@@ -1631,6 +1643,36 @@ async function fetchViaProxies(targetUrl, timeoutMs = 12000) {
   throw new Error(normalizeErrorMessage(lastError));
 }
 
+async function translateLinesInChunks(lines, sourceLang, targetLang) {
+  let translatedLines = [];
+  let currentChunk = [];
+  let currentLen = 0;
+  let chunks = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    if (currentLen + lines[i].length > 1500) {
+      chunks.push(currentChunk);
+      currentChunk = [];
+      currentLen = 0;
+    }
+    currentChunk.push(lines[i]);
+    currentLen += lines[i].length + 2;
+  }
+  if (currentChunk.length > 0) chunks.push(currentChunk);
+
+  for (let i = 0; i < chunks.length; i++) {
+    const textToTranslate = chunks[i].join('\n');
+    const trUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(textToTranslate)}`;
+    const trRes = await fetch(trUrl, { cache: "no-store" });
+    if(!trRes.ok) throw new Error(`Çeviri sunucusu yanıt vermedi (${targetLang}).`);
+    const trData = await trRes.json();
+    const translatedChunk = trData[0].map(item => item[0]).join('');
+    translatedLines = translatedLines.concat(mapTranslationsFromGoogle(chunks[i], translatedChunk));
+  }
+
+  return translatedLines;
+}
+
 async function autoFetchSubtitles() {
   const rawInput = document.getElementById('yt-video-id').value.trim();
   if(!rawInput) return showToastMessage("Video ID veya Linki girin!");
@@ -1653,16 +1695,44 @@ async function autoFetchSubtitles() {
           throw new Error("Bu videoda otomatik oluşturulmuş veya eklenmiş bir Yunanca altyazı bulunamadı.");
       }
 
-      // 3) Önce Yunanca track'i bul
+      // 3) Önce Yunanca track'i bul, yoksa başka bir kaynaktan üret
       const elTrack = selectGreekTrack(tracks);
-      if(!elTrack) throw new Error("Videoda Yunanca altyazı kanalı bulunamadı!");
-      
-      // 4) Yunanca altyazıyı çek
-      const greekUrl = elTrack.baseUrl + "&fmt=srv3";
-      const greekRes = await fetchViaProxies(greekUrl);
-      const greekXml = await greekRes.text();
-      const greekSubs = parseXmlSubtitles(greekXml);
-      if(greekSubs.length === 0) throw new Error("Altyazı dosyası boş.");
+      const sourceTrack = elTrack || selectBestSourceTrack(tracks);
+      if(!sourceTrack) throw new Error("Videoda kullanılabilir altyazı kanalı bulunamadı!");
+
+      const sourceLang = (sourceTrack.languageCode || "auto").split("-")[0].toLowerCase();
+      const sourceUrl = sourceTrack.baseUrl + "&fmt=srv3";
+      const sourceRes = await fetchViaProxies(sourceUrl);
+      const sourceXml = await sourceRes.text();
+      const sourceSubs = parseXmlSubtitles(sourceXml);
+      if(sourceSubs.length === 0) throw new Error("Altyazı dosyası boş.");
+
+      let greekSubs = [];
+      if (elTrack) {
+        const greekUrl = elTrack.baseUrl + "&fmt=srv3";
+        const greekRes = await fetchViaProxies(greekUrl);
+        const greekXml = await greekRes.text();
+        greekSubs = parseXmlSubtitles(greekXml);
+      } else {
+        try {
+          const autoGreekUrl = sourceTrack.baseUrl + "&fmt=srv3&tlang=el";
+          const autoGreekRes = await fetchViaProxies(autoGreekUrl);
+          const autoGreekXml = await autoGreekRes.text();
+          greekSubs = parseXmlSubtitles(autoGreekXml);
+        } catch (e) {
+          // Google fallback
+        }
+      }
+
+      if (greekSubs.length === 0) {
+        const sourceLines = sourceSubs.map(s => s.text);
+        const greekLinesFallback = await translateLinesInChunks(sourceLines, sourceLang || "auto", "el");
+        greekSubs = sourceSubs.map((s, i) => ({
+          start: s.start,
+          end: s.end,
+          text: greekLinesFallback[i] || s.text
+        }));
+      }
 
       let result = greekSubs.map(s => ({ start: s.start, end: s.end, gr: s.text, tr: "Çevriliyor..." }));
       const grLines = greekSubs.map(s => s.text);
@@ -1671,7 +1741,7 @@ async function autoFetchSubtitles() {
 
       // 5) Önce YouTube'un kendi Türkçe çeviri kanalını dene, olmazsa Google fallback
       let translatedLines = [];
-      const trTrackUrl = elTrack.baseUrl + "&fmt=srv3&tlang=tr";
+      const trTrackUrl = (elTrack ? elTrack.baseUrl : sourceTrack.baseUrl) + "&fmt=srv3&tlang=tr";
 
       try {
           const trRes = await fetchViaProxies(trTrackUrl);
@@ -1685,29 +1755,7 @@ async function autoFetchSubtitles() {
       }
 
       if (translatedLines.length === 0) {
-          let currentChunk = [];
-          let currentLen = 0;
-          let chunks = [];
-          for(let i=0; i<grLines.length; i++) {
-              if(currentLen + grLines[i].length > 1500) {
-                  chunks.push(currentChunk);
-                  currentChunk = [];
-                  currentLen = 0;
-              }
-              currentChunk.push(grLines[i]);
-              currentLen += grLines[i].length + 2;
-          }
-          if(currentChunk.length > 0) chunks.push(currentChunk);
-
-          for(let i=0; i<chunks.length; i++) {
-              const textToTranslate = chunks[i].join('\n');
-              const trUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=el&tl=tr&dt=t&q=${encodeURIComponent(textToTranslate)}`;
-              const trRes = await fetch(trUrl, { cache: "no-store" });
-              if(!trRes.ok) throw new Error("Çeviri sunucusu yanıt vermedi.");
-              const trData = await trRes.json();
-              let translatedChunk = trData[0].map(item => item[0]).join('');
-              translatedLines = translatedLines.concat(mapTranslationsFromGoogle(chunks[i], translatedChunk));
-          }
+          translatedLines = await translateLinesInChunks(grLines, "el", "tr");
       }
       
       for(let i=0; i<result.length; i++) {
