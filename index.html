@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yunanca Akıllı Okuyucu v18.0 - Otomatik Altyazı Çeviri & Video</title>
+<title>Yunanca Akıllı Okuyucu v18.1 - Tam Sürüm & Oto Altyazı</title>
 <style>
   :root {
     --bg: #0d0f14;
@@ -244,7 +244,7 @@
   <header id="main-header">
     <div class="logo">
       <h1>Yunanca <span>Akıllı</span> Okuyucu</h1>
-      <p>v18.0 — Otomatik Altyazı Çeviri (Scraper) & Video Modu</p>
+      <p>v18.1 — Otomatik Altyazı Çeviri (Scraper) & Video Modu</p>
     </div>
     <div class="main-tabs">
       <button class="main-tab-btn active" id="mtab-read" onclick="switchMainTab('read')">📖 Okuma</button>
@@ -1214,7 +1214,7 @@ function deleteDeckEntirely(deckName) {
 }
 
 /** ==========================================
- * YENİ DEHB DOSTU ÖĞRETİCİ TEST MERKEZİ (v16.0)
+ * DEHB DOSTU ÖĞRETİCİ TEST MERKEZİ (v16.0)
  * ========================================== */
 function startAdvancedQuiz(isRetry = false) {
   const mode = document.getElementById('quiz-mode-select').value;
@@ -1479,7 +1479,7 @@ function evalFlash(knewIt) {
 }
 
 /** ==========================================
- * YENİ: VİDEO OTOMATİK ALTYAZI (SHADOWING)
+ * VİDEO OTOMATİK ALTYAZI (SHADOWING) PROXY FIX
  * ========================================== */
 let ytPlayer = null;
 let ytSubtitles = [];
@@ -1502,21 +1502,32 @@ async function autoFetchSubtitles() {
   btn.disabled = true;
 
   try {
-      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent('https://www.youtube.com/watch?v=' + videoId)}`;
-      const res = await fetch(proxyUrl);
-      if(!res.ok) throw new Error("Ağ hatası");
-      const data = await res.json();
-      const html = data.contents;
+      // 1. Daha sağlam bir Proxy ile YouTube HTML'sini çek
+      const targetUrl = 'https://www.youtube.com/watch?v=' + videoId;
+      const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
       
+      const res = await fetch(proxyUrl);
+      if(!res.ok) throw new Error("Proxy bağlantısı kurulamadı. Tarayıcı eklentilerinizi (AdBlock vs) kontrol edin.");
+      const html = await res.text();
+      
+      // 2. Altyazı listesini HTML içinden ayıkla
       const match = html.match(/"captionTracks":(\[.*?\])/);
-      if(!match) throw new Error("Bu videoda altyazı bulunamadı.");
+      if(!match) {
+          if(html.includes("consent.youtube.com")) throw new Error("YouTube çerez onayı engeline takıldı. Lütfen manuel JSON yöntemini deneyin.");
+          throw new Error("Bu videoda otomatik oluşturulmuş veya eklenmiş bir Yunanca altyazı bulunamadı.");
+      }
       
       const tracks = JSON.parse(match[1]);
-      const elTrack = tracks.find(t => t.languageCode === 'el') || tracks[0]; 
       
-      const subRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(elTrack.baseUrl)}`);
-      const subData = await subRes.json();
-      const xmlText = subData.contents;
+      // Yunanca ('el') altyazıyı bul
+      const elTrack = tracks.find(t => t.languageCode === 'el') || tracks.find(t => t.languageCode.includes('el'));
+      if(!elTrack) throw new Error("Videoda Yunanca altyazı kanalı bulunamadı!");
+      
+      // 3. Altyazı XML dosyasını çek
+      const subUrl = elTrack.baseUrl;
+      const subRes = await fetch(`https://corsproxy.io/?${encodeURIComponent(subUrl)}`);
+      if(!subRes.ok) throw new Error("Altyazı metinleri indirilemedi.");
+      const xmlText = await subRes.text();
       
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(xmlText, "text/xml");
@@ -1539,13 +1550,16 @@ async function autoFetchSubtitles() {
           }
       }
       
+      if(result.length === 0) throw new Error("Altyazı dosyası boş.");
+
       btn.innerHTML = "⏳ Çevriliyor...";
       
+      // 4. Google Translate'e parça parça gönder (Chunking)
       let currentChunk = [];
       let currentLen = 0;
       let chunks = [];
       for(let i=0; i<grLines.length; i++) {
-          if(currentLen + grLines[i].length > 1000) {
+          if(currentLen + grLines[i].length > 1500) {
               chunks.push(currentChunk);
               currentChunk = [];
               currentLen = 0;
@@ -1560,13 +1574,18 @@ async function autoFetchSubtitles() {
           const textToTranslate = chunks[i].join('\n');
           const trUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=el&tl=tr&dt=t&q=${encodeURIComponent(textToTranslate)}`;
           const trRes = await fetch(trUrl);
+          if(!trRes.ok) throw new Error("Çeviri sunucusu yanıt vermedi.");
           const trData = await trRes.json();
           let translatedChunk = trData[0].map(item => item[0]).join('');
-          translatedLines = translatedLines.concat(translatedChunk.split('\n').map(s => s.trim()));
+          translatedLines = translatedLines.concat(translatedChunk.split('\n').map(s => s.trim()).filter(s => s.length > 0));
       }
       
       for(let i=0; i<result.length; i++) {
-          if(translatedLines[i]) result[i].tr = translatedLines[i].replace(/\s+/g, ' ');
+          if(translatedLines[i]) {
+              result[i].tr = translatedLines[i].replace(/\s+/g, ' ');
+          } else {
+              result[i].tr = result[i].gr; 
+          }
       }
       
       document.getElementById('yt-subs-json').value = JSON.stringify(result, null, 2);
