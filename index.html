@@ -1592,6 +1592,45 @@ function mapTranslationsFromGoogle(lines, translatedText) {
   return mapped;
 }
 
+function normalizeErrorMessage(err) {
+  const msg = (err && err.message ? err.message : String(err || "")).toLowerCase();
+  if (msg.includes("failed to fetch") || msg.includes("networkerror") || msg.includes("load failed")) {
+    return "Ağ erişimi engellendi. Proxy servisi veya bağlantı başarısız.";
+  }
+  return err && err.message ? err.message : "Bilinmeyen hata oluştu.";
+}
+
+async function fetchViaProxies(targetUrl, timeoutMs = 12000) {
+  const proxyBuilders = [
+    (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+    (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+    (url) => `https://r.jina.ai/http://${url.replace(/^https?:\/\//, '')}`
+  ];
+
+  let lastError = null;
+
+  for (const buildProxyUrl of proxyBuilders) {
+    const proxiedUrl = buildProxyUrl(targetUrl);
+    const controller = new AbortController();
+    const timerId = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+      const res = await fetch(proxiedUrl, { signal: controller.signal });
+      clearTimeout(timerId);
+      if (!res.ok) {
+        lastError = new Error(`Proxy yanıtı başarısız: HTTP ${res.status}`);
+        continue;
+      }
+      return res;
+    } catch (e) {
+      clearTimeout(timerId);
+      lastError = e;
+    }
+  }
+
+  throw new Error(normalizeErrorMessage(lastError));
+}
+
 async function autoFetchSubtitles() {
   const rawInput = document.getElementById('yt-video-id').value.trim();
   if(!rawInput) return showToastMessage("Video ID veya Linki girin!");
@@ -1604,10 +1643,7 @@ async function autoFetchSubtitles() {
   try {
       // 1) YouTube sayfasını proxy üzerinden çek
       const targetUrl = 'https://www.youtube.com/watch?v=' + videoId;
-      const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
-      
-      const res = await fetch(proxyUrl);
-      if(!res.ok) throw new Error("Proxy bağlantısı kurulamadı. Tarayıcı eklentilerinizi (AdBlock vs) kontrol edin.");
+      const res = await fetchViaProxies(targetUrl);
       const html = await res.text();
       
       // 2) Caption track listesini güvenli biçimde ayıkla
@@ -1623,8 +1659,7 @@ async function autoFetchSubtitles() {
       
       // 4) Yunanca altyazıyı çek
       const greekUrl = elTrack.baseUrl + "&fmt=srv3";
-      const greekRes = await fetch(`https://corsproxy.io/?${encodeURIComponent(greekUrl)}`);
-      if(!greekRes.ok) throw new Error("Yunanca altyazı metinleri indirilemedi.");
+      const greekRes = await fetchViaProxies(greekUrl);
       const greekXml = await greekRes.text();
       const greekSubs = parseXmlSubtitles(greekXml);
       if(greekSubs.length === 0) throw new Error("Altyazı dosyası boş.");
@@ -1639,13 +1674,11 @@ async function autoFetchSubtitles() {
       const trTrackUrl = elTrack.baseUrl + "&fmt=srv3&tlang=tr";
 
       try {
-          const trRes = await fetch(`https://corsproxy.io/?${encodeURIComponent(trTrackUrl)}`);
-          if (trRes.ok) {
-              const trXml = await trRes.text();
-              const trSubs = parseXmlSubtitles(trXml);
-              if (trSubs.length > 0) {
-                  translatedLines = trSubs.map(s => s.text);
-              }
+          const trRes = await fetchViaProxies(trTrackUrl);
+          const trXml = await trRes.text();
+          const trSubs = parseXmlSubtitles(trXml);
+          if (trSubs.length > 0) {
+              translatedLines = trSubs.map(s => s.text);
           }
       } catch (e) {
           // fallback ile devam
@@ -1669,7 +1702,7 @@ async function autoFetchSubtitles() {
           for(let i=0; i<chunks.length; i++) {
               const textToTranslate = chunks[i].join('\n');
               const trUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=el&tl=tr&dt=t&q=${encodeURIComponent(textToTranslate)}`;
-              const trRes = await fetch(trUrl);
+              const trRes = await fetch(trUrl, { cache: "no-store" });
               if(!trRes.ok) throw new Error("Çeviri sunucusu yanıt vermedi.");
               const trData = await trRes.json();
               let translatedChunk = trData[0].map(item => item[0]).join('');
@@ -1692,7 +1725,8 @@ async function autoFetchSubtitles() {
 
   } catch(e) {
       console.error(e);
-      showToastMessage("❌ Hata: " + e.message);
+      const finalMsg = normalizeErrorMessage(e);
+      showToastMessage("❌ Hata: " + finalMsg + " Manuel JSON ile de başlatabilirsiniz.");
   } finally {
       btn.innerHTML = "⚡ Otomatik Çek & Çevir";
       btn.disabled = false;
