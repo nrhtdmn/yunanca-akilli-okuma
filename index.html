@@ -1894,106 +1894,50 @@ function parseVttTime(timeStr) {
 
 // --- YENİ: PIPED API İLE KESİNTİSİZ ALTYAZI ÇEKİCİ ---
 // --- YENİ VE EN GÜÇLÜ OTOMATİK ALTYAZI ÇEKİCİ (HİBRİT SİSTEM) ---
+// --- YENİ: KENDİ VERCEL SUNUCUMUZ İLE KESİNTİSİZ ALTYAZI ÇEKİCİ ---
 async function autoFetchSubtitles() {
   const rawInput = document.getElementById('yt-video-id').value.trim();
   if(!rawInput) return showToastMessage("Video ID veya Linki girin!");
   const videoId = extractVideoID(rawInput);
   
   const btn = document.getElementById('auto-sub-btn');
-  btn.innerHTML = "⏳ Altyazılar Aranıyor...";
+  btn.innerHTML = "⏳ Sunucuya Bağlanılıyor...";
   btn.disabled = true;
 
+  // LÜTFEN BURAYA VERCEL'İN SİZE VERDİĞİ LİNKİ YAPIŞTIRIN (Sonunda /api/subtitles olmalı)
+  const VERCEL_URL = "https://yunanca-backend.vercel.app";
+
   try {
-      let subtitlesList = [];
+      // 1. Kendi Vercel sunucumuzdan altyazıları istiyoruz (YouTube engeli yok!)
+      const res = await fetch(VERCEL_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ videoId: videoId })
+      });
 
-      // 1. AŞAMA: Doğrudan YouTube XML API'si (AllOrigins Proxy ile CORS aşarak)
-      try {
-          const listUrl = `https://www.youtube.com/api/timedtext?type=list&v=${videoId}`;
-          const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(listUrl)}`;
-          const listRes = await fetch(proxyUrl);
-          const listXml = await listRes.text();
-          
-          if (listXml.includes('<track')) {
-              const parser = new DOMParser();
-              const xmlDoc = parser.parseFromString(listXml, "text/xml");
-              const tracks = xmlDoc.getElementsByTagName("track");
-              for (let i = 0; i < tracks.length; i++) {
-                  subtitlesList.push({
-                      code: tracks[i].getAttribute("lang_code"),
-                      name: tracks[i].getAttribute("name"),
-                      // fmt=vtt ekleyerek VTT formatında istiyoruz
-                      url: `https://www.youtube.com/api/timedtext?v=${videoId}&lang=${tracks[i].getAttribute("lang_code")}&fmt=vtt`
-                  });
-              }
-          }
-      } catch(e) { console.warn("1. Aşama başarısız, 2. Aşamaya geçiliyor."); }
-
-      // 2. AŞAMA: Eğer 1. Aşama başarısız olursa Güncel Piped API Sunucularını Dene
-      if (subtitlesList.length === 0) {
-          const pipedInstances = [
-              'https://pipedapi.kavin.rocks',
-              'https://api.piped.projectsegfau.lt',
-              'https://pipedapi.smnz.de',
-              'https://pipedapi.adminforge.de'
-          ];
-          
-          for (const baseUrl of pipedInstances) {
-              try {
-                  const res = await fetch(`${baseUrl}/streams/${videoId}`);
-                  if (res.ok) {
-                      const data = await res.json();
-                      if (data.subtitles && data.subtitles.length > 0) {
-                          subtitlesList = data.subtitles;
-                          break; // Bulduğunda döngüden çık
-                      }
-                  }
-              } catch(e) { continue; } // Sunucu çökmüşse diğerine geç
-          }
-      }
-
-      // Hala boşsa video altyazısızdır
-      if (subtitlesList.length === 0) {
-          throw new Error("Videoda okunabilir altyazı (CC) bulunamadı. Lütfen başka video deneyin.");
-      }
-
-      // Öncelik: Yunanca -> Türkçe -> İngilizce -> İlk bulduğu
-      let targetSub = subtitlesList.find(s => s.code.startsWith('el')) ||
-                      subtitlesList.find(s => s.code.startsWith('tr')) ||
-                      subtitlesList.find(s => s.code.startsWith('en')) ||
-                      subtitlesList[0];
-
-      btn.innerHTML = `⏳ İndiriliyor (${targetSub.code})...`;
-
-      // Altyazı VTT dosyasını indir (Yine proxy kullanarak güvene alıyoruz)
-      let vttText = "";
-      try {
-          const vttRes = await fetch(targetSub.url);
-          if(!vttRes.ok) throw new Error("Doğrudan indirme başarısız");
-          vttText = await vttRes.text();
-      } catch(e) {
-          const vttProxyRes = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(targetSub.url)}`);
-          vttText = await vttProxyRes.text();
-      }
-
-      // VTT metnini sistemin anlayacağı formata (JSON) dönüştür
-      const parsedSubs = parseVTT(vttText);
-      if (parsedSubs.length === 0) throw new Error("İndirilen altyazı dosyası boş.");
+      if (!res.ok) throw new Error("Sunucu yanıt vermedi.");
+      const result = await res.json();
+      
+      if (result.error) throw new Error(result.error);
+      
+      const parsedSubs = result.data;
+      if (!parsedSubs || parsedSubs.length === 0) throw new Error("Altyazı boş geldi.");
 
       btn.innerHTML = "⏳ Çeviriler Hazırlanıyor...";
       let greekSubs = parsedSubs;
 
-      // Kaynak dil Yunanca değilse, önce tüm satırları Yunancaya çeviriyoruz
-      if (!targetSub.code.startsWith('el')) {
+      // 2. Videonun orijinali İngilizceyse, Vercel'den İngilizce gelir. Önce onu Yunancaya çeviriyoruz.
+      if (!result.isGreek) {
           const sourceLines = parsedSubs.map(s => s.text);
-          const elLines = await translateLinesInChunks(sourceLines, targetSub.code.split('-')[0] || "auto", "el");
+          const elLines = await translateLinesInChunks(sourceLines, "en", "el");
           greekSubs = parsedSubs.map((s, i) => ({ ...s, text: elLines[i] || s.text }));
       }
 
-      // Şimdi Yunancadan Türkçeye çeviriyoruz
+      // 3. Yunanca altyazıları Türkçeye çeviriyoruz
       const grLines = greekSubs.map(s => s.text);
       const trLines = await translateLinesInChunks(grLines, "el", "tr");
 
-      // Sonuçları birleştir
+      // 4. Son formatı oluşturup videoya gönderiyoruz
       const finalResult = greekSubs.map((s, i) => ({
           start: s.start,
           end: s.end,
@@ -2001,10 +1945,10 @@ async function autoFetchSubtitles() {
           tr: (trLines[i] || s.text).replace(/\s+/g, ' ')
       }));
 
-      // Arayüzü güncelle ve videoyu çalıştır
+      // 5. Videoyu Başlat
       document.getElementById('yt-subs-json').value = JSON.stringify(finalResult, null, 2);
       document.getElementById('yt-video-id').value = videoId;
-      showToastMessage("✅ Altyazılar başarıyla çekildi ve çevrildi!");
+      showToastMessage("✅ Vercel Sunucusuyla altyazılar çekildi!");
       loadCustomVideo(); 
 
   } catch (err) {
@@ -2015,6 +1959,7 @@ async function autoFetchSubtitles() {
       btn.disabled = false;
   }
 }
+
 
 function loadCustomVideo() {
   const rawInput = document.getElementById('yt-video-id').value.trim();
