@@ -1701,6 +1701,39 @@ async function translateLinesInChunks(lines, sourceLang, targetLang) {
   return translatedLines;
 }
 
+async function probeTracksByLanguage(videoId) {
+  const languageCandidates = ["en", "tr", "de", "fr", "es", "it", "pt", "ru", "ar", "el"];
+  const found = [];
+
+  for (const lang of languageCandidates) {
+    const urls = [
+      `https://www.youtube.com/api/timedtext?v=${encodeURIComponent(videoId)}&lang=${encodeURIComponent(lang)}`,
+      `https://www.youtube.com/api/timedtext?v=${encodeURIComponent(videoId)}&lang=${encodeURIComponent(lang)}&kind=asr`
+    ];
+
+    for (const url of urls) {
+      try {
+        const res = await fetchViaProxies(url);
+        const xml = await res.text();
+        const subs = parseXmlSubtitles(xml);
+        if (subs.length > 0) {
+          found.push({
+            languageCode: lang,
+            kind: url.includes("kind=asr") ? "asr" : "",
+            name: { simpleText: "" },
+            baseUrl: url
+          });
+          break;
+        }
+      } catch (e) {
+        // sıradaki dili dene
+      }
+    }
+  }
+
+  return found;
+}
+
 async function autoFetchSubtitles() {
   const rawInput = document.getElementById('yt-video-id').value.trim();
   if(!rawInput) return showToastMessage("Video ID veya Linki girin!");
@@ -1712,7 +1745,7 @@ async function autoFetchSubtitles() {
 
   try {
       // 1) YouTube sayfasını proxy üzerinden çek
-      const targetUrl = 'https://www.youtube.com/watch?v=' + videoId;
+      const targetUrl = 'https://www.youtube.com/watch?v=' + videoId + '&hl=en';
       const res = await fetchViaProxies(targetUrl);
       const html = await res.text();
       
@@ -1723,6 +1756,10 @@ async function autoFetchSubtitles() {
           const listRes = await fetchViaProxies(listUrl);
           const listXml = await listRes.text();
           tracks = parseTrackListXml(listXml, videoId);
+      }
+      if(!tracks.length) {
+          btn.innerHTML = "⏳ Altyazı dilleri deneniyor...";
+          tracks = await probeTracksByLanguage(videoId);
       }
       if(!tracks.length) {
           if(html.includes("consent.youtube.com")) throw new Error("YouTube çerez onayı engeline takıldı. Lütfen manuel JSON yöntemini deneyin.");
