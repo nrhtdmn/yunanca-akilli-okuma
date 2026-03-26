@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yunanca Akıllı Okuyucu v17.1 - Tam Sürüm & Video Modu</title>
+<title>Yunanca Akıllı Okuyucu v18.0 - Otomatik Altyazı Çeviri & Video</title>
 <style>
   :root {
     --bg: #0d0f14;
@@ -94,7 +94,8 @@
   .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
   .main-btn { background: var(--accent); color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.95rem; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 8px; }
   .main-btn:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 3px 10px rgba(79, 142, 247, 0.3); }
-  .main-btn:active { transform: translateY(0); }
+  .main-btn:disabled { background: var(--border); color: var(--text-dim); cursor: not-allowed; transform: none; box-shadow: none;}
+  .main-btn:active:not(:disabled) { transform: translateY(0); }
   .secondary-btn { background: var(--border); color: var(--text); border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.9rem; transition: var(--transition); }
   .secondary-btn:hover { background: #32384a; }
 
@@ -175,7 +176,7 @@
   /* === VİDEO MODU SİSTEMİ === */
   #section-video { display: none; animation: fadeIn 0.4s ease; }
   .video-setup-box { background: var(--surface); border: 1px solid var(--border); padding: 25px; border-radius: 15px; margin-bottom: 20px; box-shadow: var(--shadow); }
-  .video-setup-box textarea { width: 100%; height: 120px; font-family: monospace; font-size: 0.9rem; margin-top:10px; background: #090b10; color: var(--text); border: 1px solid var(--border); padding:10px; border-radius: 8px;}
+  .video-setup-box textarea { width: 100%; height: 150px; font-family: monospace; font-size: 0.9rem; margin-top:10px; background: #090b10; color: var(--text); border: 1px solid var(--border); padding:10px; border-radius: 8px;}
   .yt-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 15px; margin-bottom: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); background: #000; }
   .yt-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
   
@@ -243,7 +244,7 @@
   <header id="main-header">
     <div class="logo">
       <h1>Yunanca <span>Akıllı</span> Okuyucu</h1>
-      <p>v17.1 — Video Gölgeli Okuma (Shadowing) Desteği</p>
+      <p>v18.0 — Otomatik Altyazı Çeviri (Scraper) & Video Modu</p>
     </div>
     <div class="main-tabs">
       <button class="main-tab-btn active" id="mtab-read" onclick="switchMainTab('read')">📖 Okuma</button>
@@ -326,17 +327,21 @@
 
   <div id="section-video" style="display:none;">
     <div class="video-setup-box">
-      <h3 style="color:var(--accent); margin-bottom:15px;">Altyazılı Gölgeli Okuma (Shadowing)</h3>
+      <h3 style="color:var(--accent); margin-bottom:15px;">Otomatik Altyazılı Gölgeli Okuma (Shadowing)</h3>
       <p style="color:var(--text-dim); margin-bottom:15px; font-size:0.9rem;">
-        Bir kelimeye tıkladığınızda video otomatik durur ve çeviri menüsü açılır. İşiniz bitince videoyu oynatmaya devam edebilirsiniz. (Varsayılan olarak çalışan, her yerde oynamaya izinli resmi YouTube API test videosu yüklüdür).
+        Bir YouTube videosunun linkini yapıştırın. Sistem <strong>otomatik olarak</strong> Yunanca altyazıları bulup saniyesi saniyesine Türkçe'ye çevirerek videoya entegre edecektir. Kelimeye tıklarsanız video durur ve çeviri menüsü açılır.
       </p>
       
-      <div class="url-row">
-        <input type="text" id="yt-video-id" placeholder="YouTube Video ID" value="M7lc1UVf-VE">
+      <div class="url-row" style="margin-bottom:15px;">
+        <input type="text" id="yt-video-id" placeholder="YouTube Linki veya ID'si (Örn: L_Guz73e6fw)" value="M7lc1UVf-VE">
+        <button class="main-btn" id="auto-sub-btn" style="background:var(--success);" onclick="autoFetchSubtitles()">⚡ Otomatik Çek & Çevir</button>
       </div>
       
-      <textarea id="yt-subs-json" placeholder="JSON Altyazı Verisi..."></textarea>
-      <button class="main-btn" style="width:100%; justify-content:center;" onclick="loadCustomVideo()">📺 Videoyu ve Altyazıları Başlat</button>
+      <details style="margin-bottom: 20px;">
+        <summary style="color:var(--text-dim); cursor:pointer; padding:5px;">Gelişmiş Ayarlar: Manuel JSON Girişi</summary>
+        <textarea id="yt-subs-json" placeholder="JSON Altyazı Verisi..."></textarea>
+        <button class="secondary-btn" style="width:100%; margin-top:10px;" onclick="loadCustomVideo()">Sadece JSON ile Başlat</button>
+      </details>
     </div>
 
     <div id="video-workspace" style="display:none;">
@@ -1474,32 +1479,124 @@ function evalFlash(knewIt) {
 }
 
 /** ==========================================
- * YENİ: VİDEO VE ALTYAZI (SHADOWING) SİSTEMİ
+ * YENİ: VİDEO OTOMATİK ALTYAZI (SHADOWING)
  * ========================================== */
 let ytPlayer = null;
 let ytSubtitles = [];
 let videoSyncInterval = null;
 let currentActiveSubIndex = -1;
 
-// Örnek Altyazı JSON'u (Kullanıcı girmezse bu yüklenir)
-const defaultSubtitles = [
-  {"start": 0.5, "end": 4.5, "gr": "Γεια σας, καλώς ήρθατε στο βίντεο.", "tr": "Merhaba, videoya hoş geldiniz."},
-  {"start": 4.5, "end": 8.0, "gr": "Σήμερα θα μάθουμε ελληνικά.", "tr": "Bugün Yunanca öğreneceğiz."},
-  {"start": 8.0, "end": 12.0, "gr": "Δεν ήταν μια συνηθισμένη μέρα.", "tr": "Sıradan bir gün değildi."}
-];
+function extractVideoID(url) {
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : url; 
+}
+
+async function autoFetchSubtitles() {
+  const rawInput = document.getElementById('yt-video-id').value.trim();
+  if(!rawInput) return showToastMessage("Video ID veya Linki girin!");
+  const videoId = extractVideoID(rawInput);
+  
+  const btn = document.getElementById('auto-sub-btn');
+  btn.innerHTML = "⏳ Çekiliyor...";
+  btn.disabled = true;
+
+  try {
+      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent('https://www.youtube.com/watch?v=' + videoId)}`;
+      const res = await fetch(proxyUrl);
+      if(!res.ok) throw new Error("Ağ hatası");
+      const data = await res.json();
+      const html = data.contents;
+      
+      const match = html.match(/"captionTracks":(\[.*?\])/);
+      if(!match) throw new Error("Bu videoda altyazı bulunamadı.");
+      
+      const tracks = JSON.parse(match[1]);
+      const elTrack = tracks.find(t => t.languageCode === 'el') || tracks[0]; 
+      
+      const subRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(elTrack.baseUrl)}`);
+      const subData = await subRes.json();
+      const xmlText = subData.contents;
+      
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+      const texts = xmlDoc.getElementsByTagName('text');
+      
+      let result = [];
+      let grLines = [];
+      for(let i=0; i<texts.length; i++) {
+          let start = parseFloat(texts[i].getAttribute('start'));
+          let dur = parseFloat(texts[i].getAttribute('dur'));
+          let txt = texts[i].textContent.replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"').trim();
+          
+          const tempDiv = document.createElement("div");
+          tempDiv.innerHTML = txt;
+          txt = tempDiv.textContent || tempDiv.innerText || "";
+          
+          if(txt) {
+              result.push({ start: start, end: start + dur, gr: txt, tr: "Çevriliyor..." });
+              grLines.push(txt);
+          }
+      }
+      
+      btn.innerHTML = "⏳ Çevriliyor...";
+      
+      let currentChunk = [];
+      let currentLen = 0;
+      let chunks = [];
+      for(let i=0; i<grLines.length; i++) {
+          if(currentLen + grLines[i].length > 1000) {
+              chunks.push(currentChunk);
+              currentChunk = [];
+              currentLen = 0;
+          }
+          currentChunk.push(grLines[i]);
+          currentLen += grLines[i].length + 2; 
+      }
+      if(currentChunk.length > 0) chunks.push(currentChunk);
+      
+      let translatedLines = [];
+      for(let i=0; i<chunks.length; i++) {
+          const textToTranslate = chunks[i].join('\n');
+          const trUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=el&tl=tr&dt=t&q=${encodeURIComponent(textToTranslate)}`;
+          const trRes = await fetch(trUrl);
+          const trData = await trRes.json();
+          let translatedChunk = trData[0].map(item => item[0]).join('');
+          translatedLines = translatedLines.concat(translatedChunk.split('\n').map(s => s.trim()));
+      }
+      
+      for(let i=0; i<result.length; i++) {
+          if(translatedLines[i]) result[i].tr = translatedLines[i].replace(/\s+/g, ' ');
+      }
+      
+      document.getElementById('yt-subs-json').value = JSON.stringify(result, null, 2);
+      document.getElementById('yt-video-id').value = videoId;
+      showToastMessage("✅ Altyazılar başarıyla çekildi ve çevrildi!");
+      loadCustomVideo(); 
+
+  } catch(e) {
+      console.error(e);
+      showToastMessage("❌ Hata: " + e.message);
+  } finally {
+      btn.innerHTML = "⚡ Otomatik Çek & Çevir";
+      btn.disabled = false;
+  }
+}
 
 function loadCustomVideo() {
-  const videoId = document.getElementById('yt-video-id').value.trim();
+  const rawInput = document.getElementById('yt-video-id').value.trim();
   const subJsonString = document.getElementById('yt-subs-json').value.trim();
   
-  if (!videoId) { showToastMessage("Lütfen bir YouTube ID girin."); return; }
+  if (!rawInput) { showToastMessage("Lütfen bir YouTube ID girin."); return; }
+  const videoId = extractVideoID(rawInput);
+  document.getElementById('yt-video-id').value = videoId;
   
   try {
-    ytSubtitles = subJsonString ? JSON.parse(subJsonString) : defaultSubtitles;
-    if (!Array.isArray(ytSubtitles)) throw new Error("JSON Array olmalı");
+    ytSubtitles = JSON.parse(subJsonString);
+    if (!Array.isArray(ytSubtitles)) throw new Error("JSON Hatalı");
   } catch (e) {
-    showToastMessage("JSON formatı hatalı! Varsayılan altyazılar yükleniyor.");
-    ytSubtitles = defaultSubtitles;
+    showToastMessage("JSON okunamadı! Altyazı verisi geçerli değil.");
+    return;
   }
   
   document.getElementById('video-workspace').style.display = 'block';
@@ -1523,9 +1620,7 @@ function loadCustomVideo() {
   videoSyncInterval = setInterval(syncSubtitles, 200);
 }
 
-function onPlayerStateChange(event) {
-  // Gerekirse oynatılma durumlarına göre işlemler yapılabilir
-}
+function onPlayerStateChange(event) {}
 
 function syncSubtitles() {
   if (!ytPlayer || typeof ytPlayer.getCurrentTime !== 'function') return;
@@ -1570,7 +1665,6 @@ function syncSubtitles() {
 }
 
 // BAŞLANGIÇ KURULUMU
-document.getElementById('yt-subs-json').value = JSON.stringify(defaultSubtitles, null, 2);
 initTTS(); 
 populateDeckSelects(); 
 renderDecksAccordion();
