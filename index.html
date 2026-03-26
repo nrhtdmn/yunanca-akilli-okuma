@@ -1701,6 +1701,24 @@ async function translateLinesInChunks(lines, sourceLang, targetLang) {
   return translatedLines;
 }
 
+async function fetchSubtitlesViaBackend(videoId) {
+  const endpoint = "https://subtitle-backend-820z.onrender.com/";
+  const res = await fetch(endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ videoId })
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || "Backend altyazı servisi başarısız oldu.");
+  }
+  const data = await res.json();
+  if (!Array.isArray(data)) {
+    throw new Error("Backend beklenmeyen veri döndürdü.");
+  }
+  return data;
+}
+
 async function probeTracksByLanguage(videoId) {
   const languageCandidates = ["en", "tr", "de", "fr", "es", "it", "pt", "ru", "ar", "el"];
   const found = [];
@@ -1744,6 +1762,22 @@ async function autoFetchSubtitles() {
   btn.disabled = true;
 
   try {
+      // A) Önce yerel backend ile SRT/çeviri üretmeyi dene (önerilen ve daha stabil)
+      try {
+        btn.innerHTML = "⏳ Sunucudan altyazı hazırlanıyor...";
+        const backendSubs = await fetchSubtitlesViaBackend(videoId);
+        if (backendSubs.length > 0) {
+          document.getElementById('yt-subs-json').value = JSON.stringify(backendSubs, null, 2);
+          document.getElementById('yt-video-id').value = videoId;
+          showToastMessage("✅ Sunucudan altyazı alındı ve işlendi!");
+          loadCustomVideo();
+          return;
+        }
+      } catch (backendErr) {
+        console.warn("Backend altyazı akışı başarısız, tarayıcı fallback deneniyor:", backendErr);
+      }
+
+      // B) Fallback: tarayıcı tabanlı akış
       // 1) YouTube sayfasını proxy üzerinden çek
       const targetUrl = 'https://www.youtube.com/watch?v=' + videoId + '&hl=en';
       const res = await fetchViaProxies(targetUrl);
