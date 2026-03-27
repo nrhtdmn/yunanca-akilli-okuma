@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yunanca Akıllı Okuyucu v23.0 - Cloud Premium</title>
+<title>Yunanca Akıllı Okuyucu v24.0 - Full Cloud Premium</title>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -67,7 +67,7 @@
   .main-tab-btn:hover { border-color: var(--accent); color: var(--text); }
   .main-tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 4px 15px rgba(79, 142, 247, 0.3); }
 
-  /* === PANELLER (SYNC & TTS) === */
+  /* === PANELLER === */
   .cloud-sync-panel, .tts-panel { background: #0f1219; border: 1px solid var(--border); border-radius: 12px; padding: 15px 20px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
   .cloud-sync-panel { border-color: rgba(74, 222, 128, 0.3); }
   .tts-panel { background: linear-gradient(135deg, #1a1030 0%, #0f1219 100%); border-color: rgba(167, 139, 250, 0.3); }
@@ -112,6 +112,8 @@
   .secondary-btn:hover { background: #32384a; }
 
   #reader { background: var(--surface); padding: 25px; border-radius: 15px; border: 1px solid var(--border); display: none; font-size: 1.15rem; margin-top: 25px; position: relative; line-height: 1.8; box-shadow: var(--shadow); }
+  
+  /* Kelime Tıklama Elementleri */
   .tok { cursor: pointer; display: inline; padding: 1px 3px; border-radius: 4px; transition: var(--transition); border-bottom: 1px solid transparent; }
   .tok:hover { background: rgba(79, 142, 247, 0.2); color: var(--accent); border-bottom-color: var(--accent); }
   .tok.highlighted { background: rgba(232, 201, 109, 0.3); color: #fff; border-bottom-color: var(--accent2); }
@@ -125,7 +127,7 @@
   .toolbar-btn:hover { background: #32384a; color: var(--text); }
   .toolbar-btn.tts-toolbar-btn { background: rgba(167,139,250,0.15); color: var(--tts-color); border: 1px solid rgba(167,139,250,0.3); }
 
-  /* === ORTAK FİLTRE VE KART SİSTEMİ === */
+  /* === ORTAK FİLTRE SİSTEMİ === */
   .category-filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 25px; justify-content: center; }
   .cat-btn { background: #0f1219; border: 1px solid var(--border); color: var(--text-dim); padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: all 0.2s; }
   .cat-btn:hover { border-color: var(--accent); color: var(--text); }
@@ -214,14 +216,14 @@
   .mistakes-table { width: 100%; text-align: left; border-collapse: collapse; margin-top: 20px; font-size: 1rem; }
   .mistakes-table th, .mistakes-table td { padding: 12px; border-bottom: 1px solid var(--border); }
 
-  /* === POPUP === */
-  #wpop { position: fixed; background: #151923; border: 1px solid var(--accent); padding: 20px; border-radius: 15px; display: none; z-index: 9999; width: min(420px, 95vw); left: 50%; transform: translateX(-50%); bottom: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); animation: slideUp 0.3s ease; }
+  /* === POPUP (DÜZELTİLDİ VE ÖN PLANA ALINDI) === */
+  #wpop { position: fixed; background: #151923; border: 1px solid var(--accent); padding: 20px; border-radius: 15px; display: none; z-index: 999999; width: min(420px, 95vw); left: 50%; transform: translateX(-50%); bottom: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.9); animation: slideUp 0.3s ease; }
   @keyframes slideUp { from { transform: translate(-50%, 100px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
   #wp-gr { font-size: 1.4rem; font-weight: 800; color: var(--accent2); word-break: break-word; line-height: 1.2; }
   #wp-mean-input { width: 100%; background: #000; border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 8px; margin-bottom: 12px; text-align: center; outline: none; }
   #wp-context-box { background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; border-left: 3px solid var(--accent); color: var(--text-dim); font-style: italic; font-size: 0.9rem; margin-bottom: 15px; line-height: 1.4; }
   
-  /* CÜMLE ÇEVİRİSİ VURGU (SARI BOYAMA YENİLENDİ) */
+  /* CÜMLE ÇEVİRİSİ VURGU (SARI BOYAMA) */
   .translated-word-highlight {
     background-color: rgba(232, 201, 109, 0.3);
     color: #e8c96d;
@@ -245,7 +247,7 @@
   .close-pop-btn { background: none; border: none; color: var(--error); font-size: 1.5rem; cursor: pointer; line-height: 1; flex-shrink: 0; }
 
   /* === AUTH & ADMIN MODALS === */
-  .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); display:none; justify-content:center; align-items:center; z-index: 10000; backdrop-filter: blur(8px); }
+  .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); display:none; justify-content:center; align-items:center; z-index: 100000; backdrop-filter: blur(8px); }
   .modal-box { background: var(--surface); padding: 30px; border-radius: 15px; width: 90%; max-width: 420px; border: 1px solid var(--border); box-shadow: 0 10px 50px rgba(0,0,0,0.8); position: relative; }
   .modal-close { position: absolute; top: 15px; right: 20px; background: transparent; border: none; color: var(--text-dim); font-size: 1.5rem; cursor: pointer; }
   .modal-close:hover { color: var(--error); }
@@ -260,7 +262,7 @@
   .admin-table th { color: var(--accent2); }
   .action-select { background: #000; color: #fff; border: 1px solid var(--border); padding: 5px; border-radius: 4px; }
 
-  #toast { position: fixed; top: 20px; right: 20px; background: var(--accent2); color: #000; padding: 12px 25px; border-radius: 10px; display: none; z-index: 10001; font-weight: 700; box-shadow: 0 5px 20px rgba(0,0,0,0.3); animation: slideInRight 0.3s ease; }
+  #toast { position: fixed; top: 20px; right: 20px; background: var(--accent2); color: #000; padding: 12px 25px; border-radius: 10px; display: none; z-index: 100001; font-weight: 700; box-shadow: 0 5px 20px rgba(0,0,0,0.3); animation: slideInRight 0.3s ease; }
   @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
   @media (max-width: 768px) {
@@ -276,7 +278,7 @@
   <header id="main-header">
     <div class="logo">
       <h1>Yunanca <span>Akıllı</span> Okuyucu</h1>
-      <p>v23.0 — Cloud & Premium Öğrenim Platformu</p>
+      <p>v24.0 — Cloud & Premium Öğrenim Platformu</p>
     </div>
     
     <div class="user-profile-header" id="user-header-area"></div>
@@ -428,7 +430,6 @@
   </div>
   <div class="action-buttons">
     <button class="action-btn-primary" onclick="saveWordToDeck()">DESTEYE EKLE</button>
-    <button class="action-btn-success" onclick="saveWordToCustomDict()" title="Kalıcı Sözlüğe Ekle/Düzelt">💾</button>
     <button class="action-btn-secondary" onclick="toggleHighlightWord()" title="Metin içinde vurgula">🖊</button>
     <button class="action-btn-translate-ctx" onclick="translateFullContext()" title="Cümlenin tamamını çevir">🌐 Cümlenin Tamamını Çevir</button>
   </div>
@@ -438,16 +439,21 @@
 
 <script>
 /** ==========================================
- * BÖLÜM 1: FIREBASE (VERİTABANI) KURULUMU
- * ========================================== 
- * SİZE ÖZEL NOT: Aşağıdaki firebaseConfig kısmını KENDİ Firebase projenizin 
- * bilgileriyle değiştirmelisiniz. Şimdilik sizin verilerinizin silinmemesi 
- * için localStorage üzerinden bir Simülasyon Veritabanı kurdum. 
- * Kodu doğrudan çalıştırabilirsiniz, sistem Firebase mantığıyla çalışacaktır.
- */
+ * BÖLÜM 1: FIREBASE (VERİTABANI) KURULUMU & BULUT SENKRONİZASYONU
+ * ========================================== */
 
-// Firebase Kurulum Placeholder'ı (İleride burayı doldurabilirsiniz)
-const firebaseConfig = {
+let dbUsers = JSON.parse(localStorage.getItem('y_users_db')) || {};
+// DİKKAT: ZORUNLU ADMIN HESABINI HER ZAMAN GARANTİ ALTINA ALIYORUZ
+dbUsers['nurhat'] = { password: 'Deniz28', role: 'admin', status: 'approved', isPremium: true, credits: 999999 };
+
+let dbUserData = JSON.parse(localStorage.getItem('y_userdata_db')) || {};
+
+let useFirebase = false;
+let db = null;
+
+try {
+    // BURAYA FIREBASE AYARLARINIZI GİREBİLİRSİNİZ (İLERİDE)
+    const firebaseConfig = {
   apiKey: "AIzaSyBD0BwWNj1ypc2oMk_ZndkwlqUsimC8Y4E",
   authDomain: "yunancaokuyucu.firebaseapp.com",
   projectId: "yunancaokuyucu",
@@ -455,30 +461,59 @@ const firebaseConfig = {
   messagingSenderId: "434539375134",
   appId: "1:434539375134:web:2538e78f0d15489c26dc0f"
 };
- //if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-// const db = firebase.firestore();
+    
+    if(firebaseConfig.apiKey && !firebaseConfig.apiKey.includes("AIzaSyB...")) {
+         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+         db = firebase.firestore();
+         useFirebase = true;
+    }
+} catch(e) {
+    console.warn("Firebase kurulum hatası, yerel hafıza (Local Storage) ile devam ediliyor.");
+}
 
-// --- SIMÜLASYON VERİTABANI (Local Storage Wrapper) ---
-// Firebase kullanılana kadar sistemin tamamen bağımsız çalışmasını sağlar.
-let dbUsers = JSON.parse(localStorage.getItem('y_users_db')) || {
-  'nurhat': { password: 'Deniz28', role: 'admin', status: 'approved', isPremium: true, credits: 99999 }
-};
-let dbUserData = JSON.parse(localStorage.getItem('y_userdata_db')) || {};
+async function fetchFromFirebase() {
+  if(!useFirebase) {
+      finishInit(); 
+      return;
+  }
+  try {
+    const usersDoc = await db.collection("global").doc("users").get();
+    if (usersDoc.exists) {
+        dbUsers = usersDoc.data();
+        // İnternetten gelen veride admin yoksa tekrar ekle
+        dbUsers['nurhat'] = { password: 'Deniz28', role: 'admin', status: 'approved', isPremium: true, credits: 999999 };
+    } else {
+        await db.collection("global").doc("users").set(dbUsers);
+    }
 
-function saveDb() { 
+    const dataDoc = await db.collection("global").doc("userdata").get();
+    if (dataDoc.exists) dbUserData = dataDoc.data();
+    else await db.collection("global").doc("userdata").set(dbUserData);
+
+    finishInit();
+  } catch(e) {
+     console.error("Bulut okuma hatası", e);
+     finishInit();
+  }
+}
+
+function saveDb() {
   localStorage.setItem('y_users_db', JSON.stringify(dbUsers)); 
   localStorage.setItem('y_userdata_db', JSON.stringify(dbUserData));
+  
+  if(useFirebase && db) {
+     db.collection("global").doc("users").set(dbUsers).catch(e => console.error(e));
+     db.collection("global").doc("userdata").set(dbUserData).catch(e => console.error(e));
+  }
 }
 
 let currentUser = null;
 let currentUsername = localStorage.getItem('y_currentUser') || null;
 
-// Kullanıcının Özel Verileri
 let userDecks = { "Genel Kelimeler": [] };
 let userCustomDict = new Map();
 let lastActiveDeck = "Genel Kelimeler";
 
-// Sisteme giriş yapıldığında kullanıcının verilerini çeker
 function loadUserData() {
   if (!currentUsername) return;
   if (!dbUserData[currentUsername]) {
@@ -486,7 +521,7 @@ function loadUserData() {
     saveDb();
   }
   const data = dbUserData[currentUsername];
-  userDecks = data.decks;
+  userDecks = data.decks || { "Genel Kelimeler": [] };
   userCustomDict = new Map(Object.entries(data.customDict || {}));
   lastActiveDeck = data.lastActiveDeck || "Genel Kelimeler";
   
@@ -494,7 +529,6 @@ function loadUserData() {
   populateDeckSelects();
 }
 
-// Kullanıcının verilerini buluta kaydeder
 function syncCloudData() {
   if (!currentUsername) return;
   dbUserData[currentUsername] = {
@@ -505,6 +539,16 @@ function syncCloudData() {
   saveDb();
 }
 
+function finishInit() {
+    initTTS();
+    if (currentUsername && dbUsers[currentUsername]) {
+        currentUser = dbUsers[currentUsername];
+        loadUserData();
+    }
+    updateUserUI();
+    renderTextLibrary();
+    renderVideoLibrary();
+}
 
 /** ==========================================
  * BÖLÜM 2: AUTH (ÜYELİK), KREDİ VE ADMİN SİSTEMİ
@@ -514,32 +558,22 @@ let isLoginMode = true;
 function updateUserUI() {
   const headerArea = document.getElementById('user-header-area');
   
-  // Oturum kapalıysa
   if (!currentUser) {
     headerArea.innerHTML = `<button class="auth-action-btn" onclick="showAuthModal(true)">Giriş Yap / Kayıt Ol</button>`;
-    document.getElementById('main-sync-panel').style.display = 'none'; // Bulut paneli gizle
+    document.getElementById('main-sync-panel').style.display = 'none';
     return;
   }
   
-  // Oturum açıksa
   let badges = `<div class="user-badge">👤 ${currentUsername}`;
-  
-  if (currentUser.role === 'admin') {
-    badges += `<span class="premium-badge" style="background:#f87171; color:#fff;">ADMİN</span>`;
-  } else if (currentUser.isPremium) {
-    badges += `<span class="premium-badge">PREMIUM</span>`;
-  } else {
-    badges += `<span class="credit-badge">${currentUser.credits} Kredi</span>`;
-  }
+  if (currentUser.role === 'admin') badges += `<span class="premium-badge" style="background:#f87171; color:#fff;">ADMİN</span>`;
+  else if (currentUser.isPremium) badges += `<span class="premium-badge">PREMIUM</span>`;
+  else badges += `<span class="credit-badge">${currentUser.credits} Kredi</span>`;
   
   badges += `<button class="logout-btn" onclick="logout()">Çıkış</button></div>`;
-  
-  if (currentUser.role === 'admin') {
-    badges += `<button class="admin-btn" onclick="openAdminPanel()">⚙️ Yönetim Paneli</button>`;
-  }
+  if (currentUser.role === 'admin') badges += `<button class="admin-btn" onclick="openAdminPanel()">⚙️ Yönetim Paneli</button>`;
   
   headerArea.innerHTML = badges;
-  document.getElementById('main-sync-panel').style.display = 'flex'; // Bulut paneli göster
+  document.getElementById('main-sync-panel').style.display = 'flex';
 }
 
 function showAuthModal(login = true) {
@@ -549,7 +583,6 @@ function showAuthModal(login = true) {
   document.getElementById('auth-switch-text').innerHTML = isLoginMode ? 'Hesabın yok mu? <b>Kayıt Ol</b>' : 'Zaten hesabın var mı? <b>Giriş Yap</b>';
   document.getElementById('auth-modal').style.display = 'flex';
 }
-
 function closeAuthModal() { document.getElementById('auth-modal').style.display = 'none'; }
 function toggleAuthMode() { showAuthModal(!isLoginMode); }
 
@@ -569,7 +602,6 @@ function submitAuth() {
     }
   } else {
     if (dbUsers[u]) { showToastMessage("❌ Bu kullanıcı adı zaten alınmış."); return; }
-    // Yeni kayıt oluştur
     dbUsers[u] = { password: p, role: 'user', status: 'pending', isPremium: false, credits: 50 };
     saveDb();
     showToastMessage("✅ Kayıt başarılı! Yöneticinin onaylamasını bekleyin.");
@@ -580,13 +612,10 @@ function submitAuth() {
 function logout() {
   currentUser = null; currentUsername = null;
   localStorage.removeItem('y_currentUser');
-  // Verileri sıfırla (Misafir modu)
   userDecks = { "Genel Kelimeler": [] }; userCustomDict = new Map();
-  renderDecksAccordion();
-  updateUserUI(); showToastMessage("Çıkış yapıldı.");
+  renderDecksAccordion(); updateUserUI(); showToastMessage("Çıkış yapıldı.");
 }
 
-// 🔐 Güvenlik ve Kredi Kontrol Fonksiyonu
 function requireAuth(actionCost = 1) {
   if (!currentUser) { showAuthModal(); return false; }
   if (currentUser.status === 'pending') { showToastMessage("⚠️ Hesabınız henüz onaylanmadı. Yöneticinin onayını bekleyin."); return false; }
@@ -602,35 +631,15 @@ function requireAuth(actionCost = 1) {
   return true;
 }
 
-// ⚙️ Yönetim Paneli
 function openAdminPanel() {
   const tbody = document.getElementById('admin-user-list');
   tbody.innerHTML = "";
   for(let username in dbUsers) {
-    if(username === 'nurhat') continue; // Kendi hesabımızı tabloda göstermeyelim
+    if(username === 'nurhat') continue; // Nurhat hesabını gizleyelim
     let user = dbUsers[username];
-    
-    let statusOpt = `
-      <select class="action-select" onchange="updateUserAdmin('${username}', 'status', this.value)">
-        <option value="pending" ${user.status==='pending'?'selected':''}>Beklemede</option>
-        <option value="approved" ${user.status==='approved'?'selected':''}>Onaylı</option>
-      </select>
-    `;
-    let premiumOpt = `
-      <select class="action-select" onchange="updateUserAdmin('${username}', 'isPremium', this.value)">
-        <option value="false" ${!user.isPremium?'selected':''}>Normal</option>
-        <option value="true" ${user.isPremium?'selected':''}>Premium</option>
-      </select>
-    `;
-    
-    tbody.innerHTML += `
-      <tr>
-        <td><b>${username}</b></td>
-        <td>${statusOpt}</td>
-        <td>${user.isPremium ? 'Sınırsız' : user.credits}</td>
-        <td>${premiumOpt}</td>
-      </tr>
-    `;
+    let statusOpt = `<select class="action-select" onchange="updateUserAdmin('${username}', 'status', this.value)"><option value="pending" ${user.status==='pending'?'selected':''}>Beklemede</option><option value="approved" ${user.status==='approved'?'selected':''}>Onaylı</option></select>`;
+    let premiumOpt = `<select class="action-select" onchange="updateUserAdmin('${username}', 'isPremium', this.value)"><option value="false" ${!user.isPremium?'selected':''}>Normal</option><option value="true" ${user.isPremium?'selected':''}>Premium</option></select>`;
+    tbody.innerHTML += `<tr><td><b>${username}</b></td><td>${statusOpt}</td><td>${user.isPremium ? 'Sınırsız' : user.credits}</td><td>${premiumOpt}</td></tr>`;
   }
   document.getElementById('admin-modal').style.display = 'flex';
 }
@@ -640,7 +649,6 @@ function updateUserAdmin(uname, key, val) {
   else dbUsers[uname][key] = val;
   saveDb(); showToastMessage("Kullanıcı yetkisi güncellendi.");
 }
-
 
 /** ==========================================
  * BÖLÜM 3: METİN VE VİDEO KATALOGLARI
@@ -662,7 +670,6 @@ const VIDEO_KATALOGU = [
 ];
 let currentVideoCategory = "Tümü";
 
-// Sözlük Havuzu (Minify edilmedi, tam liste)
 const HUGE_RAW_DICTIONARY = [
   ["ανθρώπων", "insanların"], ["αβαείο", "manastır"], ["αβαείου", "manastırın"], ["αβαία", "manastırlar"],
   ["αβαίων", "manastırların"], ["άβαχας", "abaküs"], ["άβαχα", "abaküsü"], ["άβαχες", "abaküsler"],
@@ -673,9 +680,8 @@ const MASTER_DICT_MAP = new Map(HUGE_RAW_DICTIONARY);
 let activeWordString = "", activeContextSentence = "", activeTokenElement = null;
 let currentQuizPool = [], currentQuizIndex = 0, currentQuizQuestion = null;
 
-
 /** ==========================================
- * BÖLÜM 4: WEB SPEECH API (YUNANCA TELAFFUZ SİSTEMİ)
+ * BÖLÜM 4: WEB SPEECH API (YUNANCA TELAFFUZ)
  * ========================================== */
 let ttsSupported = false, ttsVoice = null, isPaused = false, globalTextForTTS = "", allWordSpans = []; 
 let currentSpeakingToken = null, isSpeakingManually = false, currentManualIndex = 0, manualTimer = null;
@@ -686,16 +692,13 @@ function initTTS() {
   function loadVoices() { ttsVoice = speechSynthesis.getVoices().find(v => v.lang.startsWith('el')) || null; }
   loadVoices(); if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = loadVoices;
 }
-
 function updateSpeedLabel() { document.getElementById('tts-speed-label').textContent = document.getElementById('tts-speed').value + 'x'; }
-
 function clearAllHighlights() {
   allWordSpans.forEach(s => s.classList.remove('tts-active'));
   const speakBtn = document.getElementById('popup-speak-btn'); if (speakBtn) speakBtn.classList.remove('speaking');
   if (currentSpeakingToken) { currentSpeakingToken.classList.remove('speaking'); currentSpeakingToken.classList.remove('tts-active'); currentSpeakingToken = null; }
   isSpeakingManually = false; if(manualTimer) clearInterval(manualTimer);
 }
-
 function startManualHighlighting() {
   if(allWordSpans.length === 0) return;
   currentManualIndex = 0; isSpeakingManually = true;
@@ -799,7 +802,6 @@ function showToastMessage(msg) {
   const toast = document.getElementById('toast'); toast.textContent = msg; toast.style.display = "block"; setTimeout(() => toast.style.display="none", 3000);
 }
 
-
 /** ==========================================
  * BÖLÜM 5: SEKME VE ARAYÜZ KONTROLLERİ
  * ========================================== */
@@ -813,8 +815,6 @@ function switchMainTab(tabName) {
   document.getElementById('mtab-'+tabName).classList.add('active');
   
   if(tabName === 'quiz') populateDeckSelects();
-  if(tabName === 'video') renderVideoLibrary();
-  if(tabName === 'read') renderTextLibrary();
 }
 
 function switchInputTab(tabName, btnElement) {
@@ -823,7 +823,6 @@ function switchInputTab(tabName, btnElement) {
   document.querySelectorAll('.input-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-' + tabName).classList.add('active');
 }
-
 
 /** ==========================================
  * BÖLÜM 6: İÇERİK ÇEKME VE İŞLEME (READ PANELİ)
@@ -898,9 +897,8 @@ function processAndRenderText() {
 
 function clearTextInputs() { document.getElementById('input-text').value = ""; document.getElementById('reader').innerHTML = ""; document.getElementById('reader').style.display = "none"; stopSpeech(); }
 
-
 /** ==========================================
- * BÖLÜM 7: ÇEVİRİ MOTORU VE AKILLI VURGULAMA
+ * BÖLÜM 7: ÇEVİRİ MOTORU VE SARI BOYAMA (HIGHLIGHT)
  * ========================================== */
 async function getSmartTranslation(word, contextSentence = "") {
   const cleanWord = word.toLowerCase().replace(/[.,!?;():"""]/g, "").trim();
@@ -912,20 +910,9 @@ async function getSmartTranslation(word, contextSentence = "") {
   } catch (error) { return "Çeviri hatası"; }
 }
 
-function createFlexibleRegex(meaning) {
-    let root = meaning.toLowerCase().trim(); let words = root.split(/\s+/); let lastWord = words[words.length - 1];
-    let prefix = words.length > 1 ? words.slice(0, -1).join('\\s+') + '\\s+' : '';
-    if (lastWord.length > 3 && (lastWord.endsWith("mak") || lastWord.endsWith("mek"))) lastWord = lastWord.slice(0, -3);
-    let variants = [lastWord];
-    if (lastWord.endsWith("t")) variants.push(lastWord.slice(0, -1) + "d"); else if (lastWord.endsWith("p")) variants.push(lastWord.slice(0, -1) + "b");
-    else if (lastWord.endsWith("k")) { variants.push(lastWord.slice(0, -1) + "ğ"); variants.push(lastWord.slice(0, -1) + "y"); variants.push(lastWord.slice(0, -1)); } 
-    else if (lastWord.endsWith("ç")) variants.push(lastWord.slice(0, -1) + "c");
-    return new RegExp(`(^|[^\\p{L}])(${prefix}(?:${variants.join('|')})\\p{L}*)`, 'gui');
-}
-
 async function translateFullContext() {
   if (!activeContextSentence) return;
-  if(!requireAuth(1)) return; // KREDİ: 1
+  if(!requireAuth(1)) return; // Cümle Çevirisi = 1 Kredi
 
   const contextBox = document.getElementById('wp-context-box'); const currentMean = document.getElementById('wp-mean-input').value.trim().toLowerCase();
   contextBox.innerHTML = `<em>Çevriliyor...</em>`;
@@ -951,50 +938,70 @@ async function translateFullContext() {
 
     let highlightedTranslation = fullTranslation;
     for (let mean of possibleMeanings) {
-        const regex = createFlexibleRegex(mean);
+        const regex = new RegExp(`([^\\p{L}]|^)(${mean}\\p{L}*)`, 'gui');
         if (regex.test(highlightedTranslation)) { highlightedTranslation = highlightedTranslation.replace(regex, '$1<span class="translated-word-highlight">$2</span>'); break; }
     }
     contextBox.innerHTML = `<strong style="color:var(--accent)">Orijinal:</strong> ${highlightedGreek}<br><br><strong style="color:var(--success)">Çeviri:</strong> <span style="color:#fff; line-height: 1.6;">${highlightedTranslation}</span>`;
   } catch (e) { contextBox.innerHTML = `Çeviri alınamadı.`; }
 }
 
-
 /** ==========================================
- * BÖLÜM 8: POPUP (KELİME KARTI) YÖNETİMİ
+ * BÖLÜM 8: POPUP (KELİME KARTI) YÖNETİMİ & HATA ZIRHI
  * ========================================== */
 async function triggerWordPopup(event, word, contextSentence) {
-  if(!requireAuth(0)) return; // Sadece giriş kontrolü, kredi düşmez.
+  try {
+    if(!requireAuth(0)) return; // Sadece giriş kontrolü (Kredi düşmez)
 
-  activeTokenElement = event.target; activeWordString = word; activeContextSentence = contextSentence;
-  if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') ytPlayer.pauseVideo();
-  
-  const popup = document.getElementById('wpop'); const titleGr = document.getElementById('wp-gr');
-  const meanInput = document.getElementById('wp-mean-input'); const contextBox = document.getElementById('wp-context-box');
-  const phoneticBox = document.getElementById('wp-phonetic');
+    activeTokenElement = event ? event.target : null; 
+    activeWordString = word; 
+    activeContextSentence = contextSentence;
+    
+    if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
+        try { ytPlayer.pauseVideo(); } catch(e){}
+    }
+    
+    const popup = document.getElementById('wpop'); 
+    const titleGr = document.getElementById('wp-gr');
+    const meanInput = document.getElementById('wp-mean-input'); 
+    const contextBox = document.getElementById('wp-context-box');
+    const phoneticBox = document.getElementById('wp-phonetic');
 
-  titleGr.textContent = word;
-  const cleanForPhonetic = word.replace(/[.,!?;():"""]/g, '').trim();
-  if (cleanForPhonetic.length > 0) { phoneticBox.innerHTML = `<strong>Okunuşu:</strong> ${getGreekPhonetics(cleanForPhonetic)}`; phoneticBox.classList.add('visible'); } 
-  else { phoneticBox.classList.remove('visible'); }
-  
-  let displayContext = contextSentence.trim();
-  if (displayContext.length > 80) {
-    const wIdx = displayContext.indexOf(word);
-    if (wIdx > -1) {
-      let start = Math.max(0, wIdx - 35); let end = Math.min(displayContext.length, wIdx + word.length + 40);
-      displayContext = (start > 0 ? "... " : "") + displayContext.substring(start, end).trim() + (end < displayContext.length ? " ..." : "");
-    } else { displayContext = displayContext.substring(0, 80) + "..."; }
+    titleGr.textContent = word;
+    const cleanForPhonetic = word.replace(/[.,!?;():"""]/g, '').trim();
+    if (cleanForPhonetic.length > 0) { 
+        phoneticBox.innerHTML = `<strong>Okunuşu:</strong> ${getGreekPhonetics(cleanForPhonetic)}`; 
+        phoneticBox.style.display = 'block'; 
+    } else { 
+        phoneticBox.style.display = 'none'; 
+    }
+    
+    let displayContext = contextSentence.trim();
+    if (displayContext.length > 80) {
+      const wIdx = displayContext.indexOf(word);
+      if (wIdx > -1) {
+        let start = Math.max(0, wIdx - 35); let end = Math.min(displayContext.length, wIdx + word.length + 40);
+        displayContext = (start > 0 ? "... " : "") + displayContext.substring(start, end).trim() + (end < displayContext.length ? " ..." : "");
+      } else { displayContext = displayContext.substring(0, 80) + "..."; }
+    }
+    contextBox.textContent = `"${displayContext}"`;
+    
+    populateDeckSelects(); 
+    meanInput.value = "Çeviri aranıyor...";
+    const speakBtn = document.getElementById('popup-speak-btn'); 
+    if (speakBtn) speakBtn.classList.remove('speaking');
+
+    // Await işleminden önce POPUP görünür yapılır
+    popup.style.display = "block"; 
+    
+    const trans = await getSmartTranslation(word, contextSentence);
+    meanInput.value = trans;
+  } catch(err) {
+    console.error(err);
+    showToastMessage("Hata: Popup açılamadı.");
   }
-  contextBox.textContent = `"${displayContext}"`;
-  
-  popup.style.display = "block"; populateDeckSelects(); meanInput.value = "Çeviri aranıyor...";
-  const speakBtn = document.getElementById('popup-speak-btn'); if (speakBtn) speakBtn.classList.remove('speaking');
-  meanInput.value = await getSmartTranslation(word, contextSentence);
 }
-
 function closePopup() { document.getElementById('wpop').style.display = "none"; stopSpeech(); }
 function toggleHighlightWord() { if (activeTokenElement) { activeTokenElement.classList.toggle('highlighted'); showToastMessage("Kelime vurgusu değiştirildi."); } }
-
 
 /** ==========================================
  * BÖLÜM 9: DESTE VE SÖZLÜK KAYIT İŞLEMLERİ
@@ -1018,6 +1025,9 @@ function createNewDeck() {
 function saveWordToDeck() {
   const grWord = document.getElementById('wp-gr').textContent.trim(); const trMean = document.getElementById('wp-mean-input').value.trim(); const targetDeck = document.getElementById('wp-deck-select').value;
   if (!trMean || trMean === "Çeviri aranıyor...") { showToastMessage("Lütfen geçerli bir anlam girin."); return; }
+  
+  if(!userDecks[targetDeck]) userDecks[targetDeck] = [];
+
   if (userDecks[targetDeck].some(item => item.gr === grWord)) { showToastMessage("Bu kelime destede zaten mevcut!"); } 
   else {
     userDecks[targetDeck].push({ gr: grWord, tr: trMean }); lastActiveDeck = targetDeck; syncCloudData();
@@ -1067,13 +1077,11 @@ function deleteDeckEntirely(deckName) {
   if (confirm(`"${deckName}" destesini silmek istediğinize emin misiniz?`)) { delete userDecks[deckName]; if (lastActiveDeck === deckName) lastActiveDeck = "Genel Kelimeler"; syncCloudData(); renderDecksAccordion(); populateDeckSelects(); }
 }
 
-
 /** ==========================================
  * BÖLÜM 11: ÖĞRETİCİ TEST MERKEZİ
  * ========================================== */
 function startAdvancedQuiz(isRetry = false) {
-  if(!requireAuth(1)) return; // KREDİ: 1
-  
+  if(!requireAuth(1)) return; // Test = 1 Kredi
   const mode = document.getElementById('quiz-mode-select').value;
   if (!isRetry) {
     const deckName = document.getElementById('quiz-deck-select').value; const deck = userDecks[deckName];
@@ -1178,7 +1186,6 @@ function evalFlash(knewIt) {
   else { recordMistake(currentQuizQuestion, 'flash'); pushToPoolIfWrong(currentQuizQuestion); const fb = document.getElementById('quiz-feedback'); fb.className = 'pop-anim'; fb.innerHTML = `<span style="color:var(--accent2); background:rgba(232,201,109,0.1); padding:8px 20px; border-radius:20px;">Daha sonra tekrar sorulacak.</span>`; currentQuizIndex++; setTimeout(loadNextQuizQuestion, 1200); }
 }
 
-
 /** ==========================================
  * BÖLÜM 12: VİDEO ARŞİVİ SİSTEMİ
  * ========================================== */
@@ -1200,7 +1207,7 @@ function renderVideoLibrary() {
 function filterVideoCategory(catName) { currentVideoCategory = catName; renderVideoLibrary(); }
 
 async function openVideo(videoId, title) {
-  if(!requireAuth(1)) return; // KREDİ: 1
+  if(!requireAuth(1)) return; // Video Açma = 1 Kredi
   showToastMessage("⏳ Video ve altyazılar yükleniyor...");
   try {
     const res = await fetch(`altyazilar/${videoId}.json`);
@@ -1239,9 +1246,8 @@ function syncSubtitles() {
   }
 }
 
-
 /** ==========================================
- * BÖLÜM 13: METİN KÜTÜPHANESİ SİSTEMİ (KLASÖR MANTIĞI)
+ * BÖLÜM 13: METİN KÜTÜPHANESİ SİSTEMİ
  * ========================================== */
 function renderTextLibrary() {
   const container = document.getElementById('panel-library');
@@ -1278,7 +1284,7 @@ function renderTextLibrary() {
 }
 
 async function openSampleText(id) {
-  if(!requireAuth(1)) return; // KREDİ: 1
+  if(!requireAuth(1)) return; // Metin Okuma = 1 Kredi
   showToastMessage("⏳ Metin yükleniyor...");
   try {
     const res = await fetch(`ornek-metinler/${id}.txt`);
@@ -1290,9 +1296,8 @@ async function openSampleText(id) {
   } catch(e) { showToastMessage("❌ Hata: " + e.message); }
 }
 
-
 /** ==========================================
- * BÖLÜM 14: SÖZLÜK SİSTEMİ
+ * BÖLÜM 14: SÖZLÜK SİSTEMİ (TIKLANABİLİR YUNANCA KELİMELER İLE)
  * ========================================== */
 let currentDictMode = 'gr-tr';
 
@@ -1304,11 +1309,10 @@ function switchDictMode(mode, btnElement) {
 }
 
 async function searchDictionary() {
-  if(!requireAuth(1)) return; // KREDİ: 1
+  if(!requireAuth(1)) return; // Sözlük = 1 Kredi
   const word = document.getElementById('dict-search-input').value.trim();
   if(!word) { showToastMessage("Lütfen aranacak bir kelime yazın."); return; }
 
-  // YUNANCA-YUNANCA GÜVENLİK DUVARI AŞIMI (Yeni Sekme)
   if(currentDictMode === 'gr-gr') {
     showToastMessage("Sözlük güvenli sekmede açılıyor...");
     window.open("https://www.greek-language.gr/greekLang/modern_greek/tools/lexica/search.html?lq=" + encodeURIComponent(word), "_blank");
@@ -1327,15 +1331,34 @@ async function searchDictionary() {
     const res = await fetch(url); const data = await res.json();
     const mainTrans = data[0] && data[0][0] ? data[0][0][0] : "Çeviri bulunamadı.";
     
-    let phoneticHtml = "";
-    if(currentDictMode === 'gr-tr') { phoneticHtml = `<div class="dict-phonetic">/${getGreekPhonetics(word)}/</div>`; }
+    let dictHtml = "";
+    const safeWord = word.replace(/'/g, "\\'");
+    const safeTrans = mainTrans.replace(/'/g, "\\'");
 
-    let dictHtml = `<div class="dict-main-word">${word}</div>${phoneticHtml}<div class="dict-main-translation">${mainTrans}</div>`;
+    // Eğer Yunanca -> Türkçe ise (Aranan kelime Yunancadır, Tıklanabilir olmalı)
+    if(currentDictMode === 'gr-tr') { 
+        dictHtml = `<div class="dict-main-word tok" onclick="triggerWordPopup(event, '${safeWord}', 'Sözlük: ${safeWord}')" style="cursor:pointer; display:inline-block;">${word}</div>`;
+        dictHtml += `<div class="dict-phonetic">/${getGreekPhonetics(word)}/</div>`;
+        dictHtml += `<div class="dict-main-translation">${mainTrans}</div>`;
+    } 
+    // Eğer Türkçe -> Yunanca ise (Çevrilen kelime Yunancadır, Tıklanabilir olmalı)
+    else if(currentDictMode === 'tr-gr') {
+        dictHtml = `<div class="dict-main-word">${word}</div>`;
+        dictHtml += `<div class="dict-main-translation tok" onclick="triggerWordPopup(event, '${safeTrans}', 'Sözlük: ${safeTrans}')" style="cursor:pointer; display:inline-block; color:var(--accent2); margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border);">${mainTrans}</div>`;
+    }
 
     if(data[1] && data[1].length > 0) {
       data[1].forEach(posGroup => {
         let synHtml = `<div class="dict-pos-group"><div class="dict-pos-title">${posGroup[0]}</div><div class="dict-synonyms">`;
-        posGroup[1].forEach(tr => { synHtml += `<span class="dict-syn-item">${tr}</span>`; });
+        posGroup[1].forEach(tr => { 
+            const safeTr = tr.replace(/'/g, "\\'");
+            // Eğer TR -> GR isek eşanlamlılar Yunancadır, tıklanabilir yapıyoruz.
+            if(currentDictMode === 'tr-gr') {
+                synHtml += `<span class="dict-syn-item tok" onclick="triggerWordPopup(event, '${safeTr}', 'Sözlük: ${safeTr}')" style="cursor:pointer;">${tr}</span>`;
+            } else {
+                synHtml += `<span class="dict-syn-item">${tr}</span>`;
+            }
+        });
         synHtml += `</div></div>`; dictHtml += synHtml;
       });
     }
@@ -1345,11 +1368,8 @@ async function searchDictionary() {
   }
 }
 
-// BAŞLANGIÇ KURULUMU
-initTTS(); 
-loadUserData();
-updateUserUI(); 
-renderTextLibrary();
+// BAŞLANGIÇ KURULUMU - SİSTEMİ ATEŞLE
+fetchFromFirebase();
 
 </script>
 </body>
