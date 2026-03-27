@@ -439,6 +439,16 @@
       
       <h4 style="color:var(--accent2); margin-bottom: 15px; font-size: 1.2rem;">📻 Canlı Radyo İstasyonları</h4>
       <div class="text-grid" id="radio-grid-container" style="margin-bottom: 40px;"></div>
+      <h4 style="color:var(--accent2); margin-bottom: 15px; font-size: 1.2rem;">📻 Canlı Radyo İstasyonları</h4>
+      <div class="text-grid" id="radio-grid-container" style="margin-bottom: 40px;"></div>
+
+      <div style="border-top: 1px solid var(--border); padding-top: 25px; margin-bottom: 30px;">
+        <h4 style="color:var(--accent); margin-bottom: 10px; font-size: 1.2rem;">📰 Yunan Gazeteleri (Okuma Pratiği)</h4>
+        <div style="background: rgba(79,142,247,0.1); border: 1px solid rgba(79,142,247,0.3); padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 0.95rem; color: var(--text-dim);">
+          💡 <b>Nasıl Çalışılır?</b> Bir gazeteye tıklayın, ilginizi çeken haberin linkini kopyalayın ve <b>Okuma Paneli > URL'den Çek</b> bölümüne yapıştırarak haberi akıllı sözlüğümüzle okuyun!
+        </div>
+        <div class="text-grid" id="news-grid-container"></div>
+      </div>
     </div>
 
     <div id="media-workspace" style="display:none;">
@@ -714,7 +724,8 @@ function finishInit() {
     renderTextLibrary();
     renderVideoLibrary();
     renderTVLibrary();
-    renderRadioLibrary(); // RADYOLARIN ÇİZİLMESİ İÇİN EKLENDİ
+    renderRadioLibrary(); 
+    renderNewspaperLibrary(); // GAZETELERİN YÜKLENMESİ İÇİN EKLENDİ
 }
 
 /** ==========================================
@@ -1611,7 +1622,45 @@ const GREEK_TV_CHANNELS = [
   { name: "Creta TV", url: "https://live.streams.ovh/tvcreta/tvcreta/chunklist_w894751242.m3u8" },
   { name: "TRT TV", url: "https://av.hellasnet.tv/rst/trt/index.m3u8" }
 ];
+// YUNAN GAZETELERİ VE HABER SİTELERİ
+const GREEK_NEWSPAPERS = [
+  { name: "Kathimerini (Καθημερινή)", desc: "Saygın günlük gazete", url: "https://www.kathimerini.gr/" },
+  { name: "To Vima (Το Βήμα)", desc: "Köklü haber ve analiz", url: "https://www.tovima.gr/" },
+  { name: "Ta Nea (Τα Νέα)", desc: "Popüler günlük gazete", url: "https://www.tanea.gr/" },
+  { name: "Proto Thema (Πρώτο Θέμα)", desc: "Güncel ve son dakika", url: "https://www.protothema.gr/" },
+  { name: "EfSyn (Εφ.Συν.)", desc: "Bağımsız gazetecilik", url: "https://www.efsyn.gr/" },
+  { name: "Naftemporiki (Ναυτεμπορική)", desc: "Ekonomi ve finans", url: "https://www.naftemporiki.gr/" }
+];
 
+// Gazeteleri Ekrana Çizdirme
+function renderNewspaperLibrary() {
+  const grid = document.getElementById('news-grid-container');
+  let html = "";
+  GREEK_NEWSPAPERS.forEach(news => {
+    html += `
+      <div class="text-card" onclick="openNewspaper('${news.url}')" style="min-height:auto; display:flex; align-items:center; flex-direction:row; gap:15px; padding: 15px; border-color: rgba(79, 142, 247, 0.3);">
+        <span style="font-size:2.2rem;">📰</span>
+        <div style="flex: 1;">
+            <div class="text-card-title" style="margin-bottom:2px; font-size:1.1rem; color:var(--text);">${news.name}</div>
+            <div style="font-size:0.85rem; color:var(--text-dim);">${news.desc}</div>
+        </div>
+        <div style="color:var(--accent); font-size:1.5rem; font-weight:bold;">➔</div>
+      </div>`;
+  });
+  grid.innerHTML = html;
+}
+
+// Gazeteyi Açma (Yeni Sekmede Açarak Kullanıcıyı Yönlendirme)
+function openNewspaper(url) {
+    if(!requireAuth(1)) return; // 1 kredi düşmek isterseniz
+    
+    showToastMessage("Haber sitesi yeni sekmede açılıyor. Okumak istediğiniz haberin linkini kopyalamayı unutmayın!");
+    
+    // Kullanıcıya mesajı okuması için 1.5 saniye süre verip sonra yeni sekmede açıyoruz
+    setTimeout(() => {
+        window.open(url, '_blank');
+    }, 1500);
+}
   // YUNAN RADYO İSTASYONLARI LİSTESİ
 const GREEK_RADIO_CHANNELS = [
   { name: "Sfera 102.2", url: "https://sfera.live24.gr/sfera4132" },
