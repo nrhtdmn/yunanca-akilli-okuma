@@ -33,7 +33,7 @@
   body { 
     background: var(--bg); color: var(--text); 
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
-    padding: 20px; line-height: 1.6; padding-bottom: 200px;
+    padding: 20px; line-height: 1.6; padding-bottom: 240px;
     min-height: 100vh; font-size: 15px;
     transition: background 0.3s ease;
   }
@@ -217,7 +217,7 @@
   .mistakes-table th, .mistakes-table td { padding: 12px; border-bottom: 1px solid var(--border); }
 
   /* === POPUP (DÜZELTİLDİ VE ÖN PLANA ALINDI) === */
-  #wpop { position: fixed; background: #151923; border: 1px solid var(--accent); padding: 20px; border-radius: 15px; display: none; z-index: 999999; width: min(420px, 95vw); left: 50%; transform: translateX(-50%); bottom: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.9); animation: slideUp 0.3s ease; }
+  #wpop { position: fixed; background: #151923; border: 1px solid var(--accent); padding: 20px; border-radius: 15px; display: none; z-index: 999999; width: min(440px, 95vw); left: 50%; transform: translateX(-50%); bottom: 20px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.9), 0 0 0 1px rgba(79,142,247,0.2); animation: slideUp 0.3s ease; }
   @keyframes slideUp { from { transform: translate(-50%, 100px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
   #wp-gr { font-size: 1.4rem; font-weight: 800; color: var(--accent2); word-break: break-word; line-height: 1.2; }
   #wp-mean-input { width: 100%; background: #000; border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 8px; margin-bottom: 12px; text-align: center; outline: none; }
@@ -244,7 +244,10 @@
   #wp-phonetic { background: rgba(167,139,250,0.08); border: 1px solid rgba(167,139,250,0.2); border-radius: 8px; padding: 8px 14px; margin-bottom: 12px; font-size: 0.88rem; color: var(--tts-color); display: none; }
   .popup-speak-btn { background: rgba(167, 139, 250, 0.15); border: 1px solid rgba(167, 139, 250, 0.4); color: var(--tts-color); border-radius: 10px; padding: 8px 14px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
   .wpop-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+  .wpop-title-row { display: flex; align-items: center; gap: 12px; flex: 1; flex-wrap: wrap; }
   .close-pop-btn { background: none; border: none; color: var(--error); font-size: 1.5rem; cursor: pointer; line-height: 1; flex-shrink: 0; }
+  .word-item-tts { background: rgba(167,139,250,0.12); border: 1px solid rgba(167,139,250,0.3); color: var(--tts-color); border-radius: 6px; padding: 3px 8px; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
+  .word-item-tts:hover { background: rgba(167,139,250,0.25); }
 
   /* === AUTH & ADMIN MODALS === */
   .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); display:none; justify-content:center; align-items:center; z-index: 100000; backdrop-filter: blur(8px); }
@@ -264,6 +267,7 @@
 
   #toast { position: fixed; top: 20px; right: 20px; background: var(--accent2); color: #000; padding: 12px 25px; border-radius: 10px; display: none; z-index: 100001; font-weight: 700; box-shadow: 0 5px 20px rgba(0,0,0,0.3); animation: slideInRight 0.3s ease; }
   @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
   @media (max-width: 768px) {
     .quiz-options-grid { grid-template-columns: 1fr; }
@@ -324,19 +328,6 @@
       <p style="color:var(--text); margin-bottom:25px;">Uygulamayı sınırsız kullanmaya devam etmek için yöneticinizle (Admin) iletişime geçin ve hesabınızı Premium'a yükseltin.</p>
       <button class="main-btn" style="width:100%; padding:15px; background:linear-gradient(45deg, #e8c96d, #d4af37); color:#000;" onclick="document.getElementById('premium-modal').style.display='none'">Anladım</button>
     </div>
-  </div>
-
-  <div class="tts-panel" id="main-tts-panel">
-    <div class="panel-info"><strong>🔊 Yunanca Sesli Telaffuz</strong><p>Hız ayarı yapın, metinleri otomatik okutun.</p></div>
-    <div class="tts-controls">
-      <div class="tts-speed-control"><input type="range" id="tts-speed" min="0.5" max="1.5" step="0.1" value="0.85" oninput="updateSpeedLabel()"><span class="tts-speed-label" id="tts-speed-label">0.85x</span></div>
-      <div id="tts-status"><div class="tts-pulse"></div><span id="tts-status-text">Seslendiriliyor...</span></div>
-    </div>
-  </div>
-
-  <div class="cloud-sync-panel" id="main-sync-panel">
-    <div class="panel-info"><strong>☁️ Bulut Senkronizasyonu Aktif</strong><p>Kelime ve desteleriniz kişisel hesabınıza otomatik kaydediliyor.</p></div>
-    <div style="font-size:1.5rem;">✅</div>
   </div>
 
   <div id="section-read" style="display: block; animation: fadeIn 0.4s ease;">
@@ -414,7 +405,21 @@
       </div>
     </div>
   </div> 
-</div> 
+  <!-- ALT PANELLERe TAŞINDI: Sesli Telaffuz & Bulut Senkronizasyonu -->
+  <div class="tts-panel" id="main-tts-panel" style="margin-top: 25px;">
+    <div class="panel-info"><strong>🔊 Yunanca Sesli Telaffuz</strong><p>Hız ayarı yapın, metinleri otomatik okutun.</p></div>
+    <div class="tts-controls">
+      <div class="tts-speed-control"><input type="range" id="tts-speed" min="0.5" max="1.5" step="0.1" value="0.85" oninput="updateSpeedLabel()"><span class="tts-speed-label" id="tts-speed-label">0.85x</span></div>
+      <div id="tts-status"><div class="tts-pulse"></div><span id="tts-status-text">Seslendiriliyor...</span></div>
+    </div>
+  </div>
+
+  <div class="cloud-sync-panel" id="main-sync-panel" style="display:none;">
+    <div class="panel-info"><strong>☁️ Bulut Senkronizasyonu Aktif</strong><p>Kelime ve desteleriniz kişisel hesabınıza otomatik kaydediliyor.</p></div>
+    <div style="font-size:1.5rem;">✅</div>
+  </div>
+
+</div>
 
 <div id="wpop">
   <div class="wpop-header">
@@ -424,6 +429,10 @@
   <div id="wp-phonetic"></div>
   <input type="text" id="wp-mean-input" placeholder="Anlamı aranıyor...">
   <div id="wp-context-box"></div>
+  <div id="popup-guest-msg" style="display:none; text-align:center; padding:10px; background:rgba(79,142,247,0.08); border:1px solid rgba(79,142,247,0.2); border-radius:8px; margin-bottom:10px;">
+    <span style="color:var(--text-dim); font-size:0.9rem;">Kelimeyi desteye eklemek için </span>
+    <button onclick="closePopup(); showAuthModal(true);" style="background:none; border:none; color:var(--accent); cursor:pointer; font-weight:bold; font-size:0.9rem; text-decoration:underline;">giriş yapın</button>
+  </div>
   <div class="deck-tools">
     <div class="deck-tools-row"><label>Hangi Desteye Eklensin?</label><button onclick="createNewDeck()">+ Yeni Deste</button></div>
     <select id="wp-deck-select"></select>
@@ -462,7 +471,7 @@ try {
   appId: "1:434539375134:web:2538e78f0d15489c26dc0f"
 };
     
-    if(firebaseConfig.apiKey && !firebaseConfig.apiKey.includes("AIzaSyB...")) {
+    if(firebaseConfig.apiKey && firebaseConfig.projectId && !firebaseConfig.projectId.includes("YOUR_PROJECT")) {
          if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
          db = firebase.firestore();
          useFirebase = true;
@@ -864,7 +873,7 @@ async function loadPdfFile(inputElement) {
 }
 
 function processAndRenderText() {
-  if(!requireAuth(1)) return; // KREDİ: 1
+  // Misafir de metni okuyabilir; kaydetme/test işlemleri auth gerektirir
   const rawText = document.getElementById('input-text').value;
   if(!rawText.trim()) { showToastMessage("Lütfen işlenecek bir metin girin."); return; }
   const readerDiv = document.getElementById('reader'); readerDiv.innerHTML = ""; readerDiv.style.display = "block";
@@ -948,57 +957,77 @@ async function translateFullContext() {
 /** ==========================================
  * BÖLÜM 8: POPUP (KELİME KARTI) YÖNETİMİ & HATA ZIRHI
  * ========================================== */
-async function triggerWordPopup(event, word, contextSentence) {
-  try {
-    if(!requireAuth(0)) return; // Sadece giriş kontrolü (Kredi düşmez)
+function triggerWordPopup(event, word, contextSentence) {
+  // Giriş yoksa popup açılır ama kaydetme özellikleri gizlenir
+  const isLoggedIn = !!currentUser && currentUser.status === 'approved';
 
-    activeTokenElement = event ? event.target : null; 
-    activeWordString = word; 
-    activeContextSentence = contextSentence;
-    
-    if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
-        try { ytPlayer.pauseVideo(); } catch(e){}
-    }
-    
-    const popup = document.getElementById('wpop'); 
-    const titleGr = document.getElementById('wp-gr');
-    const meanInput = document.getElementById('wp-mean-input'); 
-    const contextBox = document.getElementById('wp-context-box');
-    const phoneticBox = document.getElementById('wp-phonetic');
+  activeTokenElement = event ? event.target : null;
+  activeWordString = word;
+  activeContextSentence = contextSentence;
 
-    titleGr.textContent = word;
-    const cleanForPhonetic = word.replace(/[.,!?;():"""]/g, '').trim();
-    if (cleanForPhonetic.length > 0) { 
-        phoneticBox.innerHTML = `<strong>Okunuşu:</strong> ${getGreekPhonetics(cleanForPhonetic)}`; 
-        phoneticBox.style.display = 'block'; 
-    } else { 
-        phoneticBox.style.display = 'none'; 
-    }
-    
-    let displayContext = contextSentence.trim();
-    if (displayContext.length > 80) {
-      const wIdx = displayContext.indexOf(word);
-      if (wIdx > -1) {
-        let start = Math.max(0, wIdx - 35); let end = Math.min(displayContext.length, wIdx + word.length + 40);
-        displayContext = (start > 0 ? "... " : "") + displayContext.substring(start, end).trim() + (end < displayContext.length ? " ..." : "");
-      } else { displayContext = displayContext.substring(0, 80) + "..."; }
-    }
-    contextBox.textContent = `"${displayContext}"`;
-    
-    populateDeckSelects(); 
-    meanInput.value = "Çeviri aranıyor...";
-    const speakBtn = document.getElementById('popup-speak-btn'); 
-    if (speakBtn) speakBtn.classList.remove('speaking');
+  // YT duraklatma
+  try { if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') ytPlayer.pauseVideo(); } catch(e) {}
 
-    // Await işleminden önce POPUP görünür yapılır
-    popup.style.display = "block"; 
-    
-    const trans = await getSmartTranslation(word, contextSentence);
-    meanInput.value = trans;
-  } catch(err) {
-    console.error(err);
-    showToastMessage("Hata: Popup açılamadı.");
+  // DOM elemanları
+  const popup      = document.getElementById('wpop');
+  const titleGr    = document.getElementById('wp-gr');
+  const meanInput  = document.getElementById('wp-mean-input');
+  const contextBox = document.getElementById('wp-context-box');
+  const phoneticBox= document.getElementById('wp-phonetic');
+  const speakBtn   = document.getElementById('popup-speak-btn');
+  const deckTools  = popup.querySelector('.deck-tools');
+  const actionBtns = popup.querySelector('.action-buttons');
+  const guestMsg   = document.getElementById('popup-guest-msg');
+
+  // Kelime başlığı
+  titleGr.textContent = word;
+
+  // Telaffuz
+  const cleanWord = word.replace(/[.,!?;():"""«»]/g, '').trim();
+  if (cleanWord.length > 0) {
+    phoneticBox.innerHTML = '<strong>Okunuşu:</strong> ' + getGreekPhonetics(cleanWord);
+    phoneticBox.style.display = 'block';
+  } else {
+    phoneticBox.style.display = 'none';
   }
+
+  // Bağlam cümlesi
+  let ctx = (contextSentence || '').trim();
+  if (ctx.length > 80) {
+    const idx = ctx.indexOf(word);
+    if (idx > -1) {
+      let s = Math.max(0, idx - 35);
+      let e = Math.min(ctx.length, idx + word.length + 40);
+      ctx = (s > 0 ? '... ' : '') + ctx.substring(s, e).trim() + (e < ctx.length ? ' ...' : '');
+    } else {
+      ctx = ctx.substring(0, 80) + '...';
+    }
+  }
+  contextBox.textContent = ctx ? '"' + ctx + '"' : '';
+
+  // Çeviri alanı sıfırla
+  meanInput.value = 'Çeviri aranıyor...';
+  if (speakBtn) speakBtn.classList.remove('speaking');
+
+  // Giriş durumuna göre kaydet/misafir görünümü
+  if (isLoggedIn) {
+    try { populateDeckSelects(); } catch(e) {}
+    if (deckTools) deckTools.style.display = 'flex';
+    if (actionBtns) actionBtns.style.display = 'flex';
+    if (guestMsg)   guestMsg.style.display   = 'none';
+  } else {
+    if (deckTools) deckTools.style.display = 'none';
+    if (actionBtns) actionBtns.style.display = 'none';
+    if (guestMsg)   guestMsg.style.display   = 'block';
+  }
+
+  // POPUP'U HEMEN GÖSTER — çeviri beklenmez
+  popup.style.display = 'block';
+
+  // Çeviriyi arka planda getir
+  getSmartTranslation(word, contextSentence)
+    .then(function(trans) { meanInput.value = trans || '—'; })
+    .catch(function()     { meanInput.value = 'Çeviri alınamadı'; });
 }
 function closePopup() { document.getElementById('wpop').style.display = "none"; stopSpeech(); }
 function toggleHighlightWord() { if (activeTokenElement) { activeTokenElement.classList.toggle('highlighted'); showToastMessage("Kelime vurgusu değiştirildi."); } }
