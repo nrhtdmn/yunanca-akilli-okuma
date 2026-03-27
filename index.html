@@ -462,7 +462,7 @@ let db = null;
 
 try {
     // BURAYA FIREBASE AYARLARINIZI GİREBİLİRSİNİZ (İLERİDE)
-    const firebaseConfig = {
+ const firebaseConfig = {
   apiKey: "AIzaSyBD0BwWNj1ypc2oMk_ZndkwlqUsimC8Y4E",
   authDomain: "yunancaokuyucu.firebaseapp.com",
   projectId: "yunancaokuyucu",
@@ -470,6 +470,7 @@ try {
   messagingSenderId: "434539375134",
   appId: "1:434539375134:web:2538e78f0d15489c26dc0f"
 };
+
     
     if(firebaseConfig.apiKey && firebaseConfig.projectId && !firebaseConfig.projectId.includes("YOUR_PROJECT")) {
          if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
