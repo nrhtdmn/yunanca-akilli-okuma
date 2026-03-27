@@ -635,6 +635,7 @@ function finishInit() {
     updateUserUI();
     renderTextLibrary();
     renderVideoLibrary();
+    renderTVLibrary(); // KANALLARIN GÖRÜNMESİ İÇİN BU SATIRI EKLEDİK
 }
 
 /** ==========================================
@@ -1500,20 +1501,33 @@ function evalFlash(knewIt) {
 
 
 /** ==========================================
- * BÖLÜM 12: VİDEO ARŞİVİ SİSTEMİ
+ * BÖLÜM 12: VİDEO ARŞİVİ SİSTEMİ VE CANLI TV
  * ========================================== */
 
-// 1. EKSİK OLAN GLOBAL DEĞİŞKENLERİ TANIMLIYORUZ
+// GLOBAL DEĞİŞKENLER
 let ytPlayer = null;
 let ytSubtitles = [];
 let videoSyncInterval = null;
 let currentActiveSubIndex = -1;
+let hlsInstance = null; // Canlı yayın motoru
 
-// 2. KODUN ÇÖKMESİNE NEDEN OLAN EKSİK FONKSİYON
-function onPlayerStateChange(event) {
-  // Oynatıcı durumu değiştiğinde tetiklenir (Örn: Video durduğunda, başladığında).
-  // Şu an için boş kalabilir ancak API'nin çökmemesi için mutlaka tanımlı olmalıdır.
-}
+// YUNAN TV KANALLARI LİSTESİ
+const GREEK_TV_CHANNELS = [
+  { name: "Alpha TV", url: "https://alphatvlive2.siliconweb.com/alphatvlive/live_abr/playlist.m3u8" },
+  { name: "SKAİ TV", url: "https://skai-live.siliconweb.com/media/cambria4/index.m3u8" },
+  { name: "Action24", url: "https://actionlive.siliconweb.com/actionabr/actiontv/actionlive/actiontv_720p/chunks.m3u8" },
+  { name: "BOYAH TV", url: "https://diavlos-cache.cnt.grnet.gr/parltv/webtv-1b.sdp/chunklist.m3u8" },
+  { name: "Blue Sky TV", url: "https://cdn5.smart-tv-data.com/bluesky/bluesky-live/playlist.m3u8" },
+  { name: "Star Int TV", url: "https://livestar.siliconweb.com/starvod/star_int/star_int.m3u8" },
+  { name: "TV 100", url: "https://gwebstream.net/hls/stream_0.m3u8" },
+  { name: "KRHTH TV", url: "https://cretetvlive.siliconweb.com/cretetv/liveabr/cretetv/live_source/chunks.m3u8" },
+  { name: "One TV", url: "https://onechannel.siliconweb.com/one/live_abr/one/stream_720p/chunks_dvr.m3u8" },
+  { name: "Epirus 1 TV", url: "https://rtmp.win:3929/live/epiruslive.m3u8" },
+  { name: "Creta TV", url: "https://live.streams.ovh/tvcreta/tvcreta/chunklist_w894751242.m3u8" },
+  { name: "TRT TV", url: "https://av.hellasnet.tv/rst/trt/index.m3u8" }
+];
+
+function onPlayerStateChange(event) { }
 
 function renderVideoLibrary() {
   const grid = document.getElementById('video-grid-container'); const filterContainer = document.getElementById('video-category-filters');
@@ -1530,38 +1544,8 @@ function renderVideoLibrary() {
     grid.appendChild(card);
   });
 }
+
 function filterVideoCategory(catName) { currentVideoCategory = catName; renderVideoLibrary(); }
-
-async function openVideo(videoId, title) {
-  if(!requireAuth(1)) return; // Video Açma = 1 Kredi
-  showToastMessage("⏳ Video ve altyazılar yükleniyor...");
-  try {
-    const res = await fetch(`altyazilar/${videoId}.json`);
-    if (!res.ok) throw new Error(`Altyazı dosyası bulunamadı ('altyazilar/${videoId}.json').`);
-    ytSubtitles = await res.json();
-    if (!Array.isArray(ytSubtitles) || ytSubtitles.length === 0) throw new Error("JSON formatı hatalı veya boş.");
-
-    document.getElementById('video-library-view').style.display = 'none'; 
-    document.getElementById('video-workspace').style.display = 'block'; 
-    document.getElementById('active-video-title').textContent = title;
-
-    // YUNAN TV KANALLARI LİSTESİ
-const GREEK_TV_CHANNELS = [
-  { name: "Alpha TV", url: "https://alphatvlive2.siliconweb.com/alphatvlive/live_abr/playlist.m3u8" },
-  { name: "SKAİ TV", url: "https://skai-live.siliconweb.com/media/cambria4/index.m3u8" },
-  { name: "Action24", url: "https://actionlive.siliconweb.com/actionabr/actiontv/actionlive/actiontv_720p/chunks.m3u8" },
-  { name: "BOYAH TV", url: "https://diavlos-cache.cnt.grnet.gr/parltv/webtv-1b.sdp/chunklist.m3u8" },
-  { name: "Blue Sky TV", url: "https://cdn5.smart-tv-data.com/bluesky/bluesky-live/playlist.m3u8" },
-  { name: "Star Int TV", url: "https://livestar.siliconweb.com/starvod/star_int/star_int.m3u8" },
-  { name: "TV 100", url: "https://gwebstream.net/hls/stream_0.m3u8" },
-  { name: "KRHTH TV", url: "https://cretetvlive.siliconweb.com/cretetv/liveabr/cretetv/live_source/chunks.m3u8" },
-  { name: "One TV", url: "https://onechannel.siliconweb.com/one/live_abr/one/stream_720p/chunks_dvr.m3u8" },
-  { name: "Epirus 1 TV", url: "https://rtmp.win:3929/live/epiruslive.m3u8" },
-  { name: "Creta TV", url: "https://live.streams.ovh/tvcreta/tvcreta/chunklist_w894751242.m3u8" },
-  { name: "TRT TV", url: "https://av.hellasnet.tv/rst/trt/index.m3u8" }
-];
-
-let hlsInstance = null; // Canlı yayın motoru
 
 // TV Listesini Ekrana Çizdirme
 function renderTVLibrary() {
@@ -1579,27 +1563,22 @@ function renderTVLibrary() {
 
 // TV Kanalını Açma Fonksiyonu
 function openTVChannel(url, title) {
-  if(!requireAuth(1)) return; // Kredi düşmek isterseniz
+  if(!requireAuth(1)) return; 
 
   document.getElementById('video-library-view').style.display = 'none'; 
   document.getElementById('video-workspace').style.display = 'block'; 
   document.getElementById('active-video-title').textContent = "CANLI YAYIN: " + title;
   
-  // YouTube'u gizle, TV oynatıcıyı göster
   document.getElementById('youtube-player').style.display = 'none';
   const videoElem = document.getElementById('hls-player');
   videoElem.style.display = 'block';
-  
-  // Canlı yayında altyazı olmadığı için altyazı kutusunu gizle
   document.getElementById('active-subtitle-container').style.display = 'none';
 
-  // Eğer arka planda YouTube açıksa durdur
   try { if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') ytPlayer.pauseVideo(); } catch(e) {}
   if(videoSyncInterval) clearInterval(videoSyncInterval); 
 
-  // Canlı Yayını Başlat
   if (Hls.isSupported()) {
-      if(hlsInstance) hlsInstance.destroy(); // Önceki yayını temizle
+      if(hlsInstance) hlsInstance.destroy(); 
       hlsInstance = new Hls();
       hlsInstance.loadSource(url);
       hlsInstance.attachMedia(videoElem);
@@ -1607,7 +1586,6 @@ function openTVChannel(url, title) {
           videoElem.play();
       });
   }
-  // Apple cihazları için (Yerel destek)
   else if (videoElem.canPlayType('application/vnd.apple.mpegurl')) {
       videoElem.src = url;
       videoElem.addEventListener('loadedmetadata', function() {
@@ -1616,17 +1594,34 @@ function openTVChannel(url, title) {
   }
 }
 
+async function openVideo(videoId, title) {
+  if(!requireAuth(1)) return; 
+  showToastMessage("⏳ Video ve altyazılar yükleniyor...");
+  try {
+    const res = await fetch(`altyazilar/${videoId}.json`);
+    if (!res.ok) throw new Error(`Altyazı dosyası bulunamadı ('altyazilar/${videoId}.json').`);
+    ytSubtitles = await res.json();
+    if (!Array.isArray(ytSubtitles) || ytSubtitles.length === 0) throw new Error("JSON formatı hatalı veya boş.");
+
+    document.getElementById('video-library-view').style.display = 'none'; 
+    document.getElementById('video-workspace').style.display = 'block'; 
+    document.getElementById('active-video-title').textContent = title;
     
-    // YOUTUBE PLAYER KONTROLÜ
+    // Canlı TV oynatıcıyı gizle, YouTube'u göster
+    document.getElementById('hls-player').style.display = 'none';
+    if(hlsInstance) hlsInstance.destroy(); 
+    document.getElementById('hls-player').pause();
+    
+    document.getElementById('youtube-player').style.display = 'block';
+    document.getElementById('active-subtitle-container').style.display = 'flex';
+    
     if (ytPlayer && typeof ytPlayer.loadVideoById === 'function') {
         ytPlayer.loadVideoById(videoId);
     } else {
       ytPlayer = new YT.Player('youtube-player', { 
-          height: '100%', 
-          width: '100%', 
-          videoId: videoId, 
+          height: '100%', width: '100%', videoId: videoId, 
           playerVars: { 'playsinline': 1, 'rel': 0, 'origin': window.location.origin === "null" ? "*" : window.location.origin }, 
-          events: { 'onStateChange': onPlayerStateChange } // Artık hata vermeyecek
+          events: { 'onStateChange': onPlayerStateChange }
       });
     }
     if(videoSyncInterval) clearInterval(videoSyncInterval); 
@@ -1639,9 +1634,10 @@ function openTVChannel(url, title) {
 function closeVideoPlayer() {
   if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') ytPlayer.pauseVideo(); 
   if(videoSyncInterval) clearInterval(videoSyncInterval);
+  if(hlsInstance) hlsInstance.destroy(); document.getElementById('hls-player').pause();
+
   document.getElementById('video-workspace').style.display = 'none'; document.getElementById('video-library-view').style.display = 'block';
   document.getElementById('sub-gr').innerHTML = "..."; document.getElementById('sub-tr').textContent = "Videonun başlaması bekleniyor..."; document.getElementById('active-subtitle-container').classList.remove('active'); currentActiveSubIndex = -1;
-if(hlsInstance) hlsInstance.destroy(); document.getElementById('hls-player').pause();
 }
 
 function syncSubtitles() {
@@ -1667,7 +1663,6 @@ function syncSubtitles() {
     }
   }
 }
-
 /** ==========================================
  * BÖLÜM 13: METİN KÜTÜPHANESİ SİSTEMİ
  * ========================================== */
