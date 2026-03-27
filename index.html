@@ -9,7 +9,7 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <script src="https://www.youtube.com/iframe_api"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <style>
   :root {
     --bg: #0d0f14;
@@ -390,11 +390,19 @@
   <div id="section-video" style="display:none;">
     <div id="video-library-view">
       <div class="video-setup-box"><h3 style="color:var(--accent); margin-bottom:10px; font-size: 1.6rem;">📺 Yunanca Öğrenim Arşivi</h3><p style="color:var(--text-dim); margin-bottom:0; font-size:1rem;">İlginizi çeken kategoriye tıklayın ve çalışmak istediğiniz videoyu seçin.</p></div>
-      <div class="category-filters" id="video-category-filters"></div><div class="video-grid" id="video-grid-container"></div>
+      <div class="category-filters" id="video-category-filters"></div>
+      <div class="video-grid" id="video-grid-container" style="margin-bottom: 40px;"></div>
+
+      <div class="video-setup-box" style="border-color: rgba(74, 222, 128, 0.4);"><h3 style="color:var(--success); margin-bottom:10px; font-size: 1.6rem;">📡 Canlı Yunan TV Kanalları</h3><p style="color:var(--text-dim); margin-bottom:0; font-size:1rem;">Yunanistan televizyonlarını canlı izleyerek kulak dolgunluğu kazanın.</p></div>
+      <div class="text-grid" id="tv-grid-container"></div>
     </div>
+
     <div id="video-workspace" style="display:none;">
       <div class="player-header"><button class="secondary-btn" onclick="closeVideoPlayer()">🔙 Arşive Dön</button><h4 class="active-video-title" id="active-video-title">Video Başlığı</h4></div>
-      <div class="yt-container"><div id="youtube-player"></div></div>
+      <div class="yt-container">
+        <div id="youtube-player"></div>
+        <video id="hls-player" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; background: #000;" controls></video>
+      </div>
       <div id="active-subtitle-container" class="subtitle-container"><div id="sub-gr" class="sub-gr-text">...</div><div id="sub-tr" class="sub-tr-text">Videonun başlaması bekleniyor...</div></div>
     </div>
   </div>
@@ -571,6 +579,7 @@ async function fetchFromFirebase() {
     finishInit();
   } catch(e) {
      console.error("Bulut okuma hatası", e);
+      renderTVLibrary();
      finishInit();
   }
 }
@@ -1535,6 +1544,78 @@ async function openVideo(videoId, title) {
     document.getElementById('video-library-view').style.display = 'none'; 
     document.getElementById('video-workspace').style.display = 'block'; 
     document.getElementById('active-video-title').textContent = title;
+
+    // YUNAN TV KANALLARI LİSTESİ
+const GREEK_TV_CHANNELS = [
+  { name: "Alpha TV", url: "https://alphatvlive2.siliconweb.com/alphatvlive/live_abr/playlist.m3u8" },
+  { name: "SKAİ TV", url: "https://skai-live.siliconweb.com/media/cambria4/index.m3u8" },
+  { name: "Action24", url: "https://actionlive.siliconweb.com/actionabr/actiontv/actionlive/actiontv_720p/chunks.m3u8" },
+  { name: "BOYAH TV", url: "https://diavlos-cache.cnt.grnet.gr/parltv/webtv-1b.sdp/chunklist.m3u8" },
+  { name: "Blue Sky TV", url: "https://cdn5.smart-tv-data.com/bluesky/bluesky-live/playlist.m3u8" },
+  { name: "Star Int TV", url: "https://livestar.siliconweb.com/starvod/star_int/star_int.m3u8" },
+  { name: "TV 100", url: "https://gwebstream.net/hls/stream_0.m3u8" },
+  { name: "KRHTH TV", url: "https://cretetvlive.siliconweb.com/cretetv/liveabr/cretetv/live_source/chunks.m3u8" },
+  { name: "One TV", url: "https://onechannel.siliconweb.com/one/live_abr/one/stream_720p/chunks_dvr.m3u8" },
+  { name: "Epirus 1 TV", url: "https://rtmp.win:3929/live/epiruslive.m3u8" },
+  { name: "Creta TV", url: "https://live.streams.ovh/tvcreta/tvcreta/chunklist_w894751242.m3u8" },
+  { name: "TRT TV", url: "https://av.hellasnet.tv/rst/trt/index.m3u8" }
+];
+
+let hlsInstance = null; // Canlı yayın motoru
+
+// TV Listesini Ekrana Çizdirme
+function renderTVLibrary() {
+  const grid = document.getElementById('tv-grid-container');
+  let html = "";
+  GREEK_TV_CHANNELS.forEach(tv => {
+    html += `
+      <div class="text-card" onclick="openTVChannel('${tv.url}', '${tv.name}')" style="min-height:auto; display:flex; align-items:center; flex-direction:row; gap:15px; padding: 15px;">
+        <span style="font-size:2rem;">🔴</span>
+        <div class="text-card-title" style="margin-bottom:0; font-size:1.15rem;">${tv.name}</div>
+      </div>`;
+  });
+  grid.innerHTML = html;
+}
+
+// TV Kanalını Açma Fonksiyonu
+function openTVChannel(url, title) {
+  if(!requireAuth(1)) return; // Kredi düşmek isterseniz
+
+  document.getElementById('video-library-view').style.display = 'none'; 
+  document.getElementById('video-workspace').style.display = 'block'; 
+  document.getElementById('active-video-title').textContent = "CANLI YAYIN: " + title;
+  
+  // YouTube'u gizle, TV oynatıcıyı göster
+  document.getElementById('youtube-player').style.display = 'none';
+  const videoElem = document.getElementById('hls-player');
+  videoElem.style.display = 'block';
+  
+  // Canlı yayında altyazı olmadığı için altyazı kutusunu gizle
+  document.getElementById('active-subtitle-container').style.display = 'none';
+
+  // Eğer arka planda YouTube açıksa durdur
+  try { if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') ytPlayer.pauseVideo(); } catch(e) {}
+  if(videoSyncInterval) clearInterval(videoSyncInterval); 
+
+  // Canlı Yayını Başlat
+  if (Hls.isSupported()) {
+      if(hlsInstance) hlsInstance.destroy(); // Önceki yayını temizle
+      hlsInstance = new Hls();
+      hlsInstance.loadSource(url);
+      hlsInstance.attachMedia(videoElem);
+      hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
+          videoElem.play();
+      });
+  }
+  // Apple cihazları için (Yerel destek)
+  else if (videoElem.canPlayType('application/vnd.apple.mpegurl')) {
+      videoElem.src = url;
+      videoElem.addEventListener('loadedmetadata', function() {
+          videoElem.play();
+      });
+  }
+}
+
     
     // YOUTUBE PLAYER KONTROLÜ
     if (ytPlayer && typeof ytPlayer.loadVideoById === 'function') {
@@ -1560,6 +1641,7 @@ function closeVideoPlayer() {
   if(videoSyncInterval) clearInterval(videoSyncInterval);
   document.getElementById('video-workspace').style.display = 'none'; document.getElementById('video-library-view').style.display = 'block';
   document.getElementById('sub-gr').innerHTML = "..."; document.getElementById('sub-tr').textContent = "Videonun başlaması bekleniyor..."; document.getElementById('active-subtitle-container').classList.remove('active'); currentActiveSubIndex = -1;
+if(hlsInstance) hlsInstance.destroy(); document.getElementById('hls-player').pause();
 }
 
 function syncSubtitles() {
