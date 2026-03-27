@@ -313,6 +313,7 @@
       <button class="main-tab-btn active" id="mtab-read" onclick="switchMainTab('read')">📖 Okuma Paneli</button>
       <button class="main-tab-btn" id="mtab-quiz" onclick="switchMainTab('quiz')">🧠 Öğretici Test</button>
       <button class="main-tab-btn" id="mtab-video" onclick="switchMainTab('video')">📺 Video Arşivi</button>
+      <button class="main-tab-btn" id="mtab-media" onclick="switchMainTab('media')">📡 Canlı Medya</button>
       <button class="main-tab-btn" id="mtab-dict" onclick="switchMainTab('dict')">📚 Sözlük</button>
     </div>
   </header>
@@ -414,18 +415,37 @@
       <div class="video-setup-box"><h3 style="color:var(--accent); margin-bottom:10px; font-size: 1.6rem;">📺 Yunanca Öğrenim Arşivi</h3><p style="color:var(--text-dim); margin-bottom:0; font-size:1rem;">İlginizi çeken kategoriye tıklayın ve çalışmak istediğiniz videoyu seçin.</p></div>
       <div class="category-filters" id="video-category-filters"></div>
       <div class="video-grid" id="video-grid-container" style="margin-bottom: 40px;"></div>
-
-      <div class="video-setup-box" style="border-color: rgba(74, 222, 128, 0.4);"><h3 style="color:var(--success); margin-bottom:10px; font-size: 1.6rem;">📡 Canlı Yunan TV Kanalları</h3><p style="color:var(--text-dim); margin-bottom:0; font-size:1rem;">Yunanistan televizyonlarını canlı izleyerek kulak dolgunluğu kazanın.</p></div>
-      <div class="text-grid" id="tv-grid-container"></div>
     </div>
 
     <div id="video-workspace" style="display:none;">
       <div class="player-header"><button class="secondary-btn" onclick="closeVideoPlayer()">🔙 Arşive Dön</button><h4 class="active-video-title" id="active-video-title">Video Başlığı</h4></div>
       <div class="yt-container">
         <div id="youtube-player"></div>
-        <video id="hls-player" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; background: #000;" controls></video>
       </div>
       <div id="active-subtitle-container" class="subtitle-container"><div id="sub-gr" class="sub-gr-text">...</div><div id="sub-tr" class="sub-tr-text">Videonun başlaması bekleniyor...</div></div>
+    </div>
+  </div>
+
+  <div id="section-media" style="display:none; animation: fadeIn 0.4s ease;">
+    <div id="media-library-view">
+      <div class="video-setup-box" style="border-color: rgba(74, 222, 128, 0.4);">
+        <h3 style="color:var(--success); margin-bottom:10px; font-size: 1.6rem;">📡 Canlı Yunan Medyası</h3>
+        <p style="color:var(--text-dim); margin-bottom:0; font-size:1rem;">Yunanistan TV kanalları, radyoları ve gazeteleriyle dile maruz kalın.</p>
+      </div>
+      
+      <h4 style="color:var(--text); margin-bottom: 15px; font-size: 1.2rem;">📺 Canlı TV Kanalları</h4>
+      <div class="text-grid" id="tv-grid-container"></div>
+      
+      </div>
+
+    <div id="media-workspace" style="display:none;">
+      <div class="player-header">
+        <button class="secondary-btn" onclick="closeMediaWorkspace()">🔙 Medya Merkezine Dön</button>
+        <h4 class="active-video-title" id="active-media-title">Canlı Yayın</h4>
+      </div>
+      <div class="yt-container">
+        <video id="hls-player" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000;" controls></video>
+      </div>
     </div>
   </div>
   
@@ -990,6 +1010,7 @@ function switchMainTab(tabName) {
   document.getElementById('section-read').style.display = tabName === 'read' ? 'block' : 'none';
   document.getElementById('section-quiz').style.display = tabName === 'quiz' ? 'block' : 'none';
   document.getElementById('section-video').style.display = tabName === 'video' ? 'block' : 'none';
+  document.getElementById('section-media').style.display = tabName === 'media' ? 'block' : 'none'; // YENİ EKLENDİ
   document.getElementById('section-dict').style.display = tabName === 'dict' ? 'block' : 'none';
   
   document.querySelectorAll('.main-tab-btn').forEach(b => b.classList.remove('active'));
@@ -1601,20 +1622,18 @@ function renderTVLibrary() {
 }
 
 // TV Kanalını Açma Fonksiyonu
+// TV Kanalını Açma Fonksiyonu
 function openTVChannel(url, title) {
   if(!requireAuth(1)) return; 
 
-  document.getElementById('video-library-view').style.display = 'none'; 
-  document.getElementById('video-workspace').style.display = 'block'; 
-  document.getElementById('active-video-title').textContent = "CANLI YAYIN: " + title;
+  document.getElementById('media-library-view').style.display = 'none'; 
+  document.getElementById('media-workspace').style.display = 'block'; 
+  document.getElementById('active-media-title').textContent = "CANLI YAYIN: " + title;
   
-  document.getElementById('youtube-player').style.display = 'none';
   const videoElem = document.getElementById('hls-player');
-  videoElem.style.display = 'block';
-  document.getElementById('active-subtitle-container').style.display = 'none';
 
+  // Arka planda eğer YouTube açıksa durdur
   try { if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') ytPlayer.pauseVideo(); } catch(e) {}
-  if(videoSyncInterval) clearInterval(videoSyncInterval); 
 
   if (Hls.isSupported()) {
       if(hlsInstance) hlsInstance.destroy(); 
@@ -1631,6 +1650,15 @@ function openTVChannel(url, title) {
           videoElem.play();
       });
   }
+}
+
+// Yeni: Medya oynatıcıyı kapatma fonksiyonu
+function closeMediaWorkspace() {
+  if(hlsInstance) hlsInstance.destroy(); 
+  document.getElementById('hls-player').pause();
+  
+  document.getElementById('media-workspace').style.display = 'none'; 
+  document.getElementById('media-library-view').style.display = 'block';
 }
 
 async function openVideo(videoId, title) {
@@ -1673,7 +1701,7 @@ async function openVideo(videoId, title) {
 function closeVideoPlayer() {
   if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') ytPlayer.pauseVideo(); 
   if(videoSyncInterval) clearInterval(videoSyncInterval);
-  if(hlsInstance) hlsInstance.destroy(); document.getElementById('hls-player').pause();
+ 
 
   document.getElementById('video-workspace').style.display = 'none'; document.getElementById('video-library-view').style.display = 'block';
   document.getElementById('sub-gr').innerHTML = "..."; document.getElementById('sub-tr').textContent = "Videonun başlaması bekleniyor..."; document.getElementById('active-subtitle-container').classList.remove('active'); currentActiveSubIndex = -1;
