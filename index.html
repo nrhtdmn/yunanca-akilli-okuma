@@ -637,10 +637,8 @@ function showAuthModal(login = true) {
   document.getElementById('auth-switch-text').innerHTML = isLoginMode ? 'Hesabın yok mu? <b>Kayıt Ol</b>' : 'Zaten hesabın var mı? <b>Giriş Yap</b>';
   document.getElementById('auth-modal').style.display = 'flex';
 }
-function closeAuthModal() { document.getElementById('auth-modal').style.display = 'none'; }
-function toggleAuthMode() { showAuthModal(!isLoginMode); }
 
-function submitAuth() {
+  function submitAuth() {
   const u = document.getElementById('auth-username').value.trim();
   const p = document.getElementById('auth-password').value.trim();
   if(!u || !p) { showToastMessage("Kullanıcı adı ve şifre boş olamaz."); return; }
@@ -660,6 +658,18 @@ function submitAuth() {
     saveDb();
     showToastMessage("✅ Kayıt başarılı! Yöneticinin onaylamasını bekleyin.");
     isLoginMode = true; showAuthModal(true);
+    
+    // --- TELEGRAM BİLDİRİM KODU BAŞLANGICI ---
+    const botToken = "8741748332:AAEZI5xsFw6gLW5MnvsRGYKn91KrkieppaQ";
+    const chatId = "5546102141"; 
+    const mesaj = `🚨 Yeni Kayıt Geldi!\n\n👤 Kullanıcı: ${u}\n\nLütfen Yunanca Akıllı Okuyucu paneline girip onaylayın.`;
+    
+    const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(mesaj)}`;
+    
+    fetch(telegramUrl)
+      .then(response => console.log("Telegram bildirimi gönderildi."))
+      .catch(error => console.error("Telegram bildirimi başarısız:", error));
+    // --- TELEGRAM BİLDİRİM KODU BİTİŞİ ---
   }
 }
 
