@@ -708,12 +708,40 @@ function updateUserAdmin(uname, key, val) {
  * BÖLÜM 3: METİN VE VİDEO KATALOGLARI
  * ========================================== */
 const METIN_KATALOGU = [
-  { id: "ornek-hikaye-1", title: "Küçük Prens (Bölüm 1)", level: "A1", category: "📖 Hikaye" },
-  { id: "ornek-diyalog-1", title: "Kafede Sipariş Verme", level: "A1", category: "💬 Günlük Diyalog" },
-  { id: "ornek-haber-1", title: "Atina'da Yeni Metro Hattı", level: "A2", category: "📰 Haber" },
-  { id: "ornek-haber-2", title: "Yunanistan Turizmi Büyüyor", level: "A2", category: "📰 Haber" },
-  { id: "ornek-tarih-1", title: "Antik Yunan ve Tanrılar", level: "B1", category: "🏛️ Tarih ve Kültür" },
-  { id: "ornek-ileri-1", title: "Ekonomi Makalesi", level: "C1", category: "📰 Makale" }
+  { id: "hikaye-1", title: "n", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-2", title: "Ένα Απρόσμενο Ταξίδι στη Στάση Του Λεωφορείου", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-3", title: "Η Άσκηση στη Βροχή", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-4", title: "Η Δύσκολη Μέρα της Εύας", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-5", title: "Η Έκπληξη για τα Γενέθλια του Νίκου", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-6", title: "Η έκπληξη για τη μαμά", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-7", title: "Η Μέρα με τα Παπούτσια", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-8", title: "Η Μέρα με το Απίθανο Ρομπότ", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-9", title: "Η Μέρα που Ο Πέτρος Έμαθε για το Καλοκαίρι και την Υγεία", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-10", title: "Η Μέρα στο Δάσος με τη Λίνα", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-11", title: "Η μέρα στο ποτάμι", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-12", title: "Η μέρα της άσκησης", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-13", title: "Η Μέρα της Σιωπής στο Λιβάδι", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-14", title: "Η Μικρή Αποτυχία στην Τάξη", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-15", title: "Η μικρή λίμνη και τα χρώματα", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-16", title: "Η Μικρή Περιπέτεια της Μαρίας στο Δάσος", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-17", title: "Η Μικρή Περιπέτεια του Θανάση με τον Πυρετό", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-18", title: "Η Νέα Τάξη του Θανάση", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-19", title: "Η Σιωπή στο Σπίτι", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-20", title: "Η Ώρα της Σιωπής Στο Σπίτι", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-21", title: "Μια Ησυχη Αγορά", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-22", title: "Μια Παράξενη Μέρα στο Νοσοκομείο", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-23", title: "Το Αστείο Ρομπότ του Νίκου", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-24", title: "Το Καλάθι της Λίας στο Σούπερ Μάρκετ", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-25", title: "Το Κινητό και το Μεγάλο Μήνυμα", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-26", title: "Το Λάθος Μήνυμα", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-27", title: "Το Μικρό Φεστιβάλ στην Πόλη", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-28", title: "Το Μυστήριο στο Λιμάνι", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-29", title: "Το Παράξενο Καλάθι της Ελένης", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-30", title: "Το Παράξενο Πρωινό", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-31", title: "Το Περίεργο Ποδόσφαιρο του Νίκου", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-32", title: "Το πρώτο μου ρομπότ", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-33", title: "Το Πρώτο Ταξίδι της Έλενας", level: "A1", category: "📖 Hikaye" },
+  { id: "hikaye-34", title: "Το Σφάλμα στο Τρένο", level: "A1", category: "📖 Hikaye" }
 ];
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 let currentTextCategory = "Tümü";
