@@ -707,41 +707,13 @@ function updateUserAdmin(uname, key, val) {
 /** ==========================================
  * BÖLÜM 3: METİN VE VİDEO KATALOGLARI
  * ========================================== */
-const ΜΕΤΙΝ_ΚΑΤΑΛΟΓΟΥ = [
-  { id: "Ταξίδι-στη-στάση-του-λεωφορείου", title: "Ταξίδι στη Στάση του Λεωφορείου", level: "A1", category: "📖 Hikaye" },
-  { id: "Άσκηση-στη-βροχή", title: "Άσκηση στη Βροχή", level: "A1", category: "📖 Hikaye" },
-  { id: "Έκπληξη-για-τα-γενέθλια-του-νίκου", title: "Έκπληξη για τα Γενέθλια του Νίκου", level: "A1", category: "📖 Hikaye" },
-  { id: "έκπληξη-για-τη-μαμά", title: "Έκπληξη για τη Μαμά", level: "A1", category: "📖 Hikaye" },
-  { id: "Ώρα-της-σιωπής-στο-σπίτι", title: "Ώρα της Σιωπής στο Σπίτι", level: "A1", category: "📖 Hikaye" },
-  { id: "δύσκολη-μέρα-της-εύας", title: "Δύσκολη Μέρα της Εύας", level: "A1", category: "📖 Hikaye" },
-  { id: "μέρα-με-τα-παπούτσια", title: "Μέρα με τα Παπούτσια", level: "A1", category: "📖 Hikaye" },
-  { id: "μέρα-με-το-απίθανο-ρομπότ", title: "Μέρα με το Απίθανο Ρομπότ", level: "A1", category: "📖 Hikaye" },
-  { id: "μέρα-που-ο-πέτρος-έμαθε-για-το-καλοκαίρι-και-την-υγεία", title: "Μέρα που ο Πέτρος Έμαθε για το Καλοκαίρι και την Υγεία", level: "A1", category: "📖 Hikaye" },
-  { id: "μέρα-στο-δάσος-με-τη-λίνα", title: "Μέρα στο Δάσος με τη Λίνα", level: "A1", category: "📖 Hikaye" },
-  { id: "μέρα-στο-ποτάμι", title: "Μέρα στο Ποτάμι", level: "A1", category: "📖 Hikaye" },
-  { id: "μέρα-της-άσκησης", title: "Μέρα της Άσκησης", level: "A1", category: "📖 Hikaye" },
-  { id: "μέρα-της-σιωπής-στο-λιβάδι", title: "Μέρα της Σιωπής στο Λιβάδι", level: "A1", category: "📖 Hikaye" },
-  { id: "μικρή-αποτυχία-στην-τάξη", title: "Μικρή Αποτυχία στην Τάξη", level: "A1", category: "📖 Hikaye" },
-  { id: "μικρή-λίμνη-και-τα-χρώματα", title: "Μικρή Λίμνη και τα Χρώματα", level: "A1", category: "📖 Hikaye" },
-  { id: "μικρή-περιπέτεια-της-μαρίας-στο-δάσος", title: "Μικρή Περιπέτεια της Μαρίας στο Δάσος", level: "A1", category: "📖 Hikaye" },
-  { id: "μικρή-περιπέτεια-του-θανάση-με-τον-πυρετό", title: "Μικρή Περιπέτεια του Θανάση με τον Πυρετό", level: "A1", category: "📖 Hikaye" },
-  { id: "νέα-τάξη-του-θανάση", title: "Νέα Τάξη του Θανάση", level: "A1", category: "📖 Hikaye" },
-  { id: "σιωπή-στο-σπίτι", title: "Σιωπή στο Σπίτι", level: "A1", category: "📖 Hikaye" },
-  { id: "μια-ήσυχη-αγορά", title: "Μια Ήσυχη Αγορά", level: "A1", category: "📖 Hikaye" },
-  { id: "μια-παράξενη-μέρα-στο-νοσοκομείο", title: "Μια Παράξενη Μέρα στο Νοσοκομείο", level: "A1", category: "📖 Hikaye" },
-  { id: "το-αστείο-ρομπότ-του-νίκου", title: "Το Αστείο Ρομπότ του Νίκου", level: "A1", category: "📖 Hikaye" },
-  { id: "το-καλάθι-της-λίας-στο-σούπερ-μάρκετ", title: "Το Καλάθι της Λίας στο Σούπερ Μάρκετ", level: "A1", category: "📖 Hikaye" },
-  { id: "το-κινητό-και-το-μεγάλο-μήνυμα", title: "Το Κινητό και το Μεγάλο Μήνυμα", level: "A1", category: "📖 Hikaye" },
-  { id: "το-λάθος-μήνυμα", title: "Το Λάθος Μήνυμα", level: "A1", category: "📖 Hikaye" },
-  { id: "το-μικρό-φεστιβάλ-στην-πόλη", title: "Το Μικρό Φεστιβάλ στην Πόλη", level: "A1", category: "📖 Hikaye" },
-  { id: "το-μυστήριο-στο-λιμάνι", title: "Το Μυστήριο στο Λιμάνι", level: "A1", category: "📖 Hikaye" },
-  { id: "το-παράξενο-καλάθι-της-ελένης", title: "Το Παράξενο Καλάθι της Ελένης", level: "A1", category: "📖 Hikaye" },
-  { id: "το-παράξενο-πρωινό", title: "Το Παράξενο Πρωινό", level: "A1", category: "📖 Hikaye" },
-  { id: "το-περίεργο-ποδόσφαιρο-του-νίκου", title: "Το Περίεργο Ποδόσφαιρο του Νίκου", level: "A1", category: "📖 Hikaye" },
-  { id: "το-πρώτο-μου-ρομπότ", title: "Το Πρώτο μου Ρομπότ", level: "A1", category: "📖 Hikaye" },
-  { id: "το-πρώτο-ταξίδι-της-έλενας", title: "Το Πρώτο Ταξίδι της Έλενας", level: "A1", category: "📖 Hikaye" },
-  { id: "acaba-latin", title: "Το Πρώτο Ταξίδι της Έλενας", level: "A1", category: "📖 Hikaye" },
-  { id: "το-σφάλμα-στο-τρένο", title: "Το Σφάλμα στο Τρένο", level: "A1", category: "📖 Hikaye" }
+const METIN_KATALOGU = [
+  { id: "ornek-hikaye-1", title: "Küçük Prens (Bölüm 1)", level: "A1", category: "📖 Hikaye" },
+  { id: "ornek-diyalog-1", title: "Kafede Sipariş Verme", level: "A1", category: "💬 Günlük Diyalog" },
+  { id: "ornek-haber-1", title: "Atina'da Yeni Metro Hattı", level: "A2", category: "📰 Haber" },
+  { id: "ornek-haber-2", title: "Yunanistan Turizmi Büyüyor", level: "A2", category: "📰 Haber" },
+  { id: "ornek-tarih-1", title: "Antik Yunan ve Tanrılar", level: "B1", category: "🏛️ Tarih ve Kültür" },
+  { id: "ornek-ileri-1", title: "Ekonomi Makalesi", level: "C1", category: "📰 Makale" }
 ];
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 let currentTextCategory = "Tümü";
