@@ -296,6 +296,28 @@
   .bell-badge { position: absolute; top: -2px; right: -2px; background: var(--error); color: white; font-size: 0.7rem; font-weight: bold; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--surface); display: none; }
   .announcement-item { background: linear-gradient(145deg, rgba(79,142,247,0.1) 0%, rgba(0,0,0,0.2) 100%); border-left: 4px solid var(--accent); padding: 15px; margin-bottom: 15px; border-radius: 6px; text-align: left; }
   .announcement-date { font-size: 0.85rem; color: var(--accent2); margin-bottom: 5px; font-weight: bold; }
+/* === SORU BANKASI SİSTEMİ === */
+.exam-option-btn {
+  background: #090b10; color: var(--text); border: 2px solid var(--border);
+  padding: 15px 20px; border-radius: 12px; font-size: 1.1rem; text-align: left;
+  cursor: pointer; transition: 0.2s; display: flex; gap: 15px; align-items: center;
+  margin-bottom: 10px; width: 100%;
+}
+.exam-option-btn:hover:not(:disabled) {
+  border-color: var(--accent); background: rgba(79, 142, 247, 0.1); transform: translateX(5px);
+}
+.exam-option-btn.correct {
+  background: rgba(74, 222, 128, 0.15); border-color: var(--success); color: var(--success);
+}
+.exam-option-btn.wrong {
+  background: rgba(248, 113, 113, 0.15); border-color: var(--error); color: var(--error); opacity: 0.7;
+}
+.exam-opt-letter {
+  background: var(--surface); color: var(--accent2); padding: 5px 12px;
+  border-radius: 8px; font-weight: bold; border: 1px solid var(--border);
+  }
+
+  
 </style>
 </head>
 <body>
@@ -315,6 +337,8 @@
       <button class="main-tab-btn" id="mtab-video" onclick="switchMainTab('video')">📺 Video Arşivi</button>
       <button class="main-tab-btn" id="mtab-media" onclick="switchMainTab('media')">📡 Canlı Medya</button>
       <button class="main-tab-btn" id="mtab-dict" onclick="switchMainTab('dict')">📚 Sözlük</button>
+   <button class="main-tab-btn" id="mtab-exam" onclick="switchMainTab('exam')">📝 Soru Bankası</button>
+
     </div>
   </header>
 
@@ -497,7 +521,29 @@
       <div id="dict-results" class="dict-result-card"></div>
     </div>
   </div>
+<div id="section-exam" style="display:none; animation: fadeIn 0.4s ease;">
+  <div id="exam-library-view">
+    <div class="video-setup-box">
+      <h3 style="color:var(--accent); margin-bottom:10px; font-size: 1.6rem;">📝 Yunanca Soru Bankası</h3>
+      <p style="color:var(--text-dim); margin-bottom:0; font-size:1rem;">Yüzlerce soru ile pratik yapın. Bilmediğiniz kelimelere tıklayıp destenize ekleyebilirsiniz.</p>
+    </div>
+    <div class="text-grid" id="exam-grid-container" style="margin-bottom: 40px;"></div>
+  </div>
 
+  <div id="exam-workspace" style="display:none;">
+    <div class="player-header">
+      <button class="secondary-btn" onclick="closeExamWorkspace()">🔙 Sorulara Dön</button>
+      <h4 class="active-video-title" id="active-exam-title">Soru Çözümü</h4>
+    </div>
+    
+    <div class="quiz-card" style="max-width: 800px; margin: 0 auto; text-align: left; padding: 30px;">
+      <div id="exam-q-text" style="font-size: 1.35rem; line-height: 1.8; margin-bottom: 25px;"></div>
+      <div id="exam-options-container"></div>
+      <div id="exam-feedback" style="margin-top: 25px; font-size: 1.2rem; font-weight: bold; text-align: center; min-height: 30px;"></div>
+    </div>
+  </div>
+</div>
+  
  <div id="section-quiz" style="display:none;">
     <div class="quiz-card">
       <div id="quiz-setup-view">
@@ -1048,7 +1094,7 @@ function switchMainTab(tabName) {
   document.getElementById('section-video').style.display = tabName === 'video' ? 'block' : 'none';
   document.getElementById('section-media').style.display = tabName === 'media' ? 'block' : 'none'; // YENİ EKLENDİ
   document.getElementById('section-dict').style.display = tabName === 'dict' ? 'block' : 'none';
-  
+  document.getElementById('section-exam').style.display = tabName === 'exam' ? 'block' : 'none';
   document.querySelectorAll('.main-tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('mtab-'+tabName).classList.add('active');
   
@@ -1901,7 +1947,120 @@ async function openSampleText(id) {
     showToastMessage("✅ Metin başarıyla yüklendi!");
   } catch(e) { showToastMessage("❌ Hata: " + e.message); }
 }
+/** ==========================================
+ * BÖLÜM 15: SORU BANKASI (EXAM) SİSTEMİ
+ * ========================================== */
 
+// 1. Sorularını buraya istediğin kadar ekleyebilirsin
+const SORU_BANKASI = [
+  {
+    id: 1,
+    category: "Okuma & Anlama",
+    question: "Τελικά, τα μαντεία ----.",
+    options: {
+      A: "ήταν χώροι που βοήθησαν στη διάδοση της γνώσης, σύμφωνα με το Θουκυδίδη",
+      B: "ήταν ένας σημαντικός θεσμός που ήταν αποδεκτός από τους σοφιστές",
+      C: "μοιράστηκαν την ίδια τύχη με τον αρχαίο κόσμο",
+      D: "ήταν χώροι στους οποίους διδασκόταν η μαντική",
+      E: "βοηθούσαν τους ανθρώπους να βρουν το σωστό δρόμο"
+    },
+    answer: "C"
+  }
+  // Buraya virgül koyup diğer sorularını {...} formatında ekleyebilirsin.
+];
+
+// Metinleri kelime kelime tıklanabilir (span.tok) hale getiren yardımcı fonksiyon
+function tokenizeForExam(text) {
+  let html = '';
+  // Cümleyi popup içinde göstermek için tırnakları temizliyoruz
+  let safeSentence = text.replace(/'/g, "\\'").replace(/"/g, '\\"'); 
+  
+  text.split(/(\s+)/).forEach(token => {
+    if (/[\u0370-\u03FF]/.test(token)) {
+      let safeWord = token.replace(/'/g, "\\'").replace(/"/g, '\\"');
+      html += `<span class="tok" onclick="triggerWordPopup(event, '${safeWord}', '${safeSentence}')">${token}</span>`;
+    } else {
+      html += token; // Noktalama işaretleri ve boşluklar olduğu gibi kalır
+    }
+  });
+  return html;
+}
+
+// Soru listesini ekrana çizdirir
+function renderExamLibrary() {
+  const grid = document.getElementById('exam-grid-container');
+  let html = "";
+  SORU_BANKASI.forEach((q, index) => {
+    html += `
+      <div class="text-card" onclick="openExamQuestion(${q.id})" style="min-height:auto; display:flex; flex-direction:column; padding: 20px;">
+        <div style="color:var(--accent2); font-size:0.85rem; font-weight:bold; margin-bottom:8px;">Soru ${index + 1} • ${q.category}</div>
+        <div class="text-card-title" style="margin-bottom:15px; font-size:1.1rem; flex-grow:1;">${q.question.substring(0, 60)}...</div>
+        <div class="text-card-play">Çöz ➔</div>
+      </div>`;
+  });
+  grid.innerHTML = html;
+}
+
+// Seçilen soruyu açar
+let currentActiveExam = null;
+
+function openExamQuestion(id) {
+  if(!requireAuth(1)) return; // 1 kredi düşmek istersen
+
+  currentActiveExam = SORU_BANKASI.find(q => q.id === id);
+  if(!currentActiveExam) return;
+
+  document.getElementById('exam-library-view').style.display = 'none';
+  document.getElementById('exam-workspace').style.display = 'block';
+  document.getElementById('active-exam-title').textContent = `Soru Çözümü`;
+  document.getElementById('exam-feedback').innerHTML = '';
+
+  // Soruyu tıklanabilir formatta basıyoruz
+  document.getElementById('exam-q-text').innerHTML = tokenizeForExam(currentActiveExam.question);
+
+  // Şıkları tıklanabilir formatta basıyoruz
+  let optsHtml = '';
+  for (const [key, text] of Object.entries(currentActiveExam.options)) {
+    optsHtml += `
+      <button class="exam-option-btn" id="exam-opt-${key}" onclick="checkExamAnswer('${key}')">
+        <span class="exam-opt-letter">${key}</span>
+        <span style="flex-grow:1;">${tokenizeForExam(text)}</span>
+      </button>`;
+  }
+  document.getElementById('exam-options-container').innerHTML = optsHtml;
+}
+
+// Cevap kontrolü
+function checkExamAnswer(selectedKey) {
+  const isCorrect = (selectedKey === currentActiveExam.answer);
+  const feedback = document.getElementById('exam-feedback');
+  const allBtns = document.querySelectorAll('.exam-option-btn');
+
+  // Tüm butonları pasif yap
+  allBtns.forEach(btn => btn.disabled = true);
+
+  if (isCorrect) {
+    document.getElementById(`exam-opt-${selectedKey}`).classList.add('correct');
+    feedback.innerHTML = `<span style="color:var(--success);">✅ Doğru Cevap! Tebrikler.</span>`;
+  } else {
+    document.getElementById(`exam-opt-${selectedKey}`).classList.add('wrong');
+    document.getElementById(`exam-opt-${currentActiveExam.answer}`).classList.add('correct'); // Doğruyu göster
+    feedback.innerHTML = `<span style="color:var(--error);">❌ Yanlış Cevap. Doğrusu '${currentActiveExam.answer}' olmalıydı.</span>`;
+  }
+}
+
+function closeExamWorkspace() {
+  document.getElementById('exam-workspace').style.display = 'none';
+  document.getElementById('exam-library-view').style.display = 'block';
+}
+
+// BAŞLANGIÇTA ÇALIŞMASI İÇİN MEVCUT KODUNA ŞU GÜNCELLEMELERİ YAP:
+// 1. switchMainTab fonksiyonunun içine şunu ekle:
+// document.getElementById('section-exam').style.display = tabName === 'exam' ? 'block' : 'none';
+
+// 2. finishInit() fonksiyonunun en altına şunu ekle:
+// renderExamLibrary();
+  
 /** ==========================================
  * BÖLÜM 14: SÖZLÜK SİSTEMİ (TIKLANABİLİR YUNANCA KELİMELER İLE)
  * ========================================== */
