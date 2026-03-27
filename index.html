@@ -760,19 +760,6 @@ function syncCloudData() {
   saveDb();
 }
 
-function finishInit() {
-    initTTS();
-    if (currentUsername && dbUsers[currentUsername]) {
-        currentUser = dbUsers[currentUsername];
-        loadUserData();
-    }
-    updateUserUI();
-    renderTextLibrary();
-    renderVideoLibrary();
-    renderTVLibrary();
-    renderRadioLibrary(); 
-    renderNewspaperLibrary(); // GAZETELERİN YÜKLENMESİ İÇİN EKLENDİ
-}
 
 /** ==========================================
  * BÖLÜM 2: AUTH (ÜYELİK), KREDİ VE ADMİN SİSTEMİ
@@ -787,6 +774,22 @@ function updateUserUI() {
     document.getElementById('main-sync-panel').style.display = 'none';
     return;
   }
+ function finishInit() {
+    initTTS();
+    if (currentUsername && dbUsers[currentUsername]) {
+        currentUser = dbUsers[currentUsername];
+        loadUserData();
+    }
+    updateUserUI();
+    renderTextLibrary();
+    renderVideoLibrary();
+    renderTVLibrary();
+    renderRadioLibrary(); 
+    renderNewspaperLibrary(); 
+    
+    // EKSİK OLAN SATIR BURASI:
+    renderExamLibrary(); 
+ }
   
   // Çan Butonu Eklendi
   let badges = `<button class="bell-btn" onclick="openAnnouncementsModal()" title="Duyurular">🔔<span class="bell-badge" id="bell-badge">0</span></button>`;
