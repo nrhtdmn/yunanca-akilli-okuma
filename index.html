@@ -291,6 +291,11 @@
     .url-row { flex-direction: column; }
     .video-grid, .text-grid { grid-template-columns: 1fr; }
   }
+  .bell-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; position: relative; padding: 0 5px; transition: transform 0.2s; }
+  .bell-btn:hover { transform: scale(1.1); }
+  .bell-badge { position: absolute; top: -2px; right: -2px; background: var(--error); color: white; font-size: 0.7rem; font-weight: bold; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--surface); display: none; }
+  .announcement-item { background: linear-gradient(145deg, rgba(79,142,247,0.1) 0%, rgba(0,0,0,0.2) 100%); border-left: 4px solid var(--accent); padding: 15px; margin-bottom: 15px; border-radius: 6px; text-align: left; }
+  .announcement-date { font-size: 0.85rem; color: var(--accent2); margin-bottom: 5px; font-weight: bold; }
 </style>
 </head>
 <body>
@@ -327,13 +332,30 @@
   <div class="modal-overlay" id="admin-modal">
     <div class="modal-box" style="max-width: 700px;">
       <button class="modal-close" onclick="closeAdminModal()">✕</button>
-      <h2 class="modal-title" style="color:var(--error);">Yönetici Paneli</h2>
-      <div style="max-height: 400px; overflow-y:auto;">
+      <h2 class="modal-title" style="color:var(--error); margin-bottom:10px;">Yönetici Paneli</h2>
+      
+      <div style="background:#090b10; padding:15px; border-radius:10px; margin-bottom:20px; border:1px solid var(--border);">
+         <h3 style="color:var(--accent); margin-bottom:10px; font-size:1.1rem;">📢 Yeni Duyuru Yayınla</h3>
+         <textarea id="admin-ann-text" style="width:100%; height:70px; margin-bottom:10px; background:#000; color:#fff; border:1px solid var(--border); border-radius:8px; padding:10px; font-family:inherit; outline:none;" placeholder="Üyelerin ekranına düşecek haberi/mesajı yazın..."></textarea>
+         <button class="main-btn" style="width:100%; padding:10px;" onclick="sendAnnouncement()">Tüm Üyelere Gönder</button>
+      </div>
+
+      <div style="max-height: 250px; overflow-y:auto;">
         <table class="admin-table">
           <thead><tr><th>Kullanıcı</th><th>Durum</th><th>Kredi</th><th>İşlem</th></tr></thead>
           <tbody id="admin-user-list"></tbody>
         </table>
       </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="announcement-modal">
+    <div class="modal-box" style="max-width: 500px; text-align:center;">
+      <button class="modal-close" onclick="document.getElementById('announcement-modal').style.display='none'">✕</button>
+      <h2 style="font-size:2.5rem; margin-bottom:5px;">🔔</h2>
+      <h2 class="modal-title" style="color:var(--text); margin-bottom:20px;">Duyurular & Yenilikler</h2>
+      <div id="announcement-list" style="max-height: 400px; overflow-y:auto; padding-right:5px;">
+         </div>
     </div>
   </div>
 
@@ -557,6 +579,8 @@ try {
     console.warn("Firebase kurulum hatası, yerel hafıza (Local Storage) ile devam ediliyor.");
 }
 
+let dbAnnouncements = JSON.parse(localStorage.getItem('y_announcements_db')) || [];
+
 async function fetchFromFirebase() {
   if(!useFirebase) {
       finishInit(); 
@@ -566,7 +590,6 @@ async function fetchFromFirebase() {
     const usersDoc = await db.collection("global").doc("users").get();
     if (usersDoc.exists) {
         dbUsers = usersDoc.data();
-        // İnternetten gelen veride admin yoksa tekrar ekle
         dbUsers['nurhat'] = { password: 'Deniz28', role: 'admin', status: 'approved', isPremium: true, credits: 999999 };
     } else {
         await db.collection("global").doc("users").set(dbUsers);
@@ -576,10 +599,21 @@ async function fetchFromFirebase() {
     if (dataDoc.exists) dbUserData = dataDoc.data();
     else await db.collection("global").doc("userdata").set(dbUserData);
 
+    // YENİ EKLENEN DUYURU DİNLEYİCİSİ
+    db.collection("global").doc("announcements").onSnapshot((doc) => {
+        if (doc.exists) {
+            dbAnnouncements = doc.data().list || [];
+            localStorage.setItem('y_announcements_db', JSON.stringify(dbAnnouncements));
+            updateBellIcon();
+        } else {
+            db.collection("global").doc("announcements").set({list: dbAnnouncements});
+        }
+    });
+
     finishInit();
   } catch(e) {
      console.error("Bulut okuma hatası", e);
-      renderTVLibrary();
+     renderTVLibrary();
      finishInit();
   }
 }
@@ -652,7 +686,10 @@ function updateUserUI() {
     return;
   }
   
-  let badges = `<div class="user-badge">👤 ${currentUsername}`;
+  // Çan Butonu Eklendi
+  let badges = `<button class="bell-btn" onclick="openAnnouncementsModal()" title="Duyurular">🔔<span class="bell-badge" id="bell-badge">0</span></button>`;
+  
+  badges += `<div class="user-badge">👤 ${currentUsername}`;
   if (currentUser.role === 'admin') badges += `<span class="premium-badge" style="background:#f87171; color:#fff;">ADMİN</span>`;
   else if (currentUser.isPremium) badges += `<span class="premium-badge">PREMIUM</span>`;
   else badges += `<span class="credit-badge">${currentUser.credits} Kredi</span>`;
@@ -662,6 +699,8 @@ function updateUserUI() {
   
   headerArea.innerHTML = badges;
   document.getElementById('main-sync-panel').style.display = 'flex';
+  
+  updateBellIcon(); // Bildirim sayısını kontrol et
 }
 
 function showAuthModal(login = true) {
@@ -1784,7 +1823,70 @@ async function searchDictionary() {
     resultsContainer.innerHTML = `<div style="text-align:center; color:var(--error); padding:20px;">❌ Çeviri sırasında bir hata oluştu.</div>`;
   }
 }
+// --- BİLDİRİM VE DUYURU MOTORU ---
+function sendAnnouncement() {
+    const text = document.getElementById('admin-ann-text').value.trim();
+    if (!text) return;
+    
+    const newAnn = { 
+        id: Date.now(), 
+        text: text, 
+        date: new Date().toLocaleDateString('tr-TR') + ' - ' + new Date().toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'}) 
+    };
+    
+    dbAnnouncements.unshift(newAnn); // En başa ekle
+    
+    if (useFirebase && db) {
+        db.collection("global").doc("announcements").set({list: dbAnnouncements});
+    }
+    localStorage.setItem('y_announcements_db', JSON.stringify(dbAnnouncements));
+    
+    document.getElementById('admin-ann-text').value = '';
+    showToastMessage("✅ Duyuru başarıyla tüm üyelere gönderildi!");
+}
 
+function updateBellIcon() {
+    if (!currentUser) return;
+    const lastRead = dbUserData[currentUsername]?.lastReadAnnouncementsTime || 0;
+    const unreadCount = dbAnnouncements.filter(a => a.id > lastRead).length;
+    
+    const badge = document.getElementById('bell-badge');
+    if (badge) {
+        if (unreadCount > 0) {
+            badge.textContent = unreadCount;
+            badge.style.display = 'flex';
+            badge.style.animation = 'pulse 1.5s infinite'; // Dikkat çekmesi için
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+}
+
+function openAnnouncementsModal() {
+    const listContainer = document.getElementById('announcement-list');
+    
+    if (dbAnnouncements.length === 0) {
+        listContainer.innerHTML = '<p style="text-align:center; color:var(--text-dim); margin-top:30px;">Henüz bir duyuru bulunmuyor.</p>';
+    } else {
+        listContainer.innerHTML = dbAnnouncements.map(a => `
+            <div class="announcement-item">
+                <div class="announcement-date">${a.date}</div>
+                <div style="color:var(--text); line-height:1.5;">${a.text}</div>
+            </div>
+        `).join('');
+    }
+    
+    document.getElementById('announcement-modal').style.display = 'flex';
+    
+    // Mesajlar okundu olarak işaretle
+    if (dbAnnouncements.length > 0) {
+        if (!dbUserData[currentUsername]) dbUserData[currentUsername] = {};
+        dbUserData[currentUsername].lastReadAnnouncementsTime = dbAnnouncements[0].id;
+        syncCloudData(); // Veritabanına kaydet
+        updateBellIcon(); // Kırmızı noktayı sil
+    }
+}
+// --- BİLDİRİM MOTORU BİTİŞ ---
 // BAŞLANGIÇ KURULUMU - SİSTEMİ ATEŞLE
 fetchFromFirebase();
 
