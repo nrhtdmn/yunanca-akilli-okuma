@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yunanca Akıllı Okuyucu v20.0 - Metin ve Video Arşivi</title>
+<title>Yunanca Akıllı Okuyucu v21.0 - Kapsamlı Arşiv & Sözlük</title>
 <style>
   :root {
     --bg: #0d0f14;
@@ -32,7 +32,6 @@
     transition: background 0.3s ease;
   }
 
-  /* DEHB Dostu Odak Modu */
   body.focus-mode { background: #050608; }
   body.focus-mode header, 
   body.focus-mode .data-sync-panel, 
@@ -75,7 +74,7 @@
 
   /* === INPUT & READER === */
   .input-section { background: var(--surface); border: 1px solid var(--border); border-radius: 15px; padding: 25px; margin-bottom: 25px; box-shadow: var(--shadow); }
-  .input-tabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 15px; flex-wrap: wrap; }
+  .input-tabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 15px; flex-wrap: wrap; justify-content: center; }
   .sub-tab-btn { background: transparent; color: var(--text-dim); border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 0.95rem; font-weight: 600; transition: var(--transition); }
   .sub-tab-btn.active { background: var(--border); color: var(--accent); }
   .sub-tab-btn:hover:not(.active) { background: rgba(255,255,255,0.05); }
@@ -115,24 +114,38 @@
   .toolbar-btn.tts-toolbar-btn { background: rgba(167,139,250,0.15); color: var(--tts-color); border: 1px solid rgba(167,139,250,0.3); }
   .toolbar-btn.tts-toolbar-btn:hover { background: rgba(167,139,250,0.25); }
 
-  /* === ORTAK FİLTRE VE KART SİSTEMİ (DEHB DOSTU) === */
-  .category-filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 25px; justify-content: center; }
-  .cat-btn { background: #0f1219; border: 1px solid var(--border); color: var(--text-dim); padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 6px;}
-  .cat-btn:hover { border-color: var(--accent); color: var(--text); transform: translateY(-2px); }
-  .cat-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 5px 15px rgba(79, 142, 247, 0.35); transform: scale(1.05); }
+  /* === AKORDİYON (DESTE & METİN LİSTESİ) === */
+  .deck-section { margin-bottom: 12px; background: var(--surface); border-radius: 10px; border: 1px solid var(--border); overflow: hidden; }
+  .deck-header { background: #1c212d; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; transition: var(--transition); }
+  .deck-header:hover { background: #242a3a; }
+  .deck-header strong { font-size: 1.05rem; color: var(--accent); }
+  .deck-arrow { font-size: 0.9rem; color: var(--text-dim); transition: transform 0.3s; }
+  .deck-arrow.open { transform: rotate(180deg); }
+  .deck-content { padding: 12px 20px; display: none; background: #0f1219; }
+  .deck-content.open { display: block; animation: fadeIn 0.3s ease; }
+  .word-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center; font-size: 1rem; }
+  .word-item:last-child { border-bottom: none; }
+  .word-item span b { color: var(--accent2); margin-right: 8px; font-size: 1.05rem; }
+  .del-btn { color: var(--error); cursor: pointer; background: rgba(248, 113, 113, 0.1); border: 1px solid rgba(248, 113, 113, 0.3); font-size: 0.9rem; padding: 4px 10px; border-radius: 6px; transition: var(--transition); }
+  .del-btn:hover { background: var(--error); color: #000; }
+  .word-item-tts { background: none; border: none; color: var(--tts-color); cursor: pointer; font-size: 1rem; padding: 2px 6px; border-radius: 4px; transition: 0.2s; opacity: 0.6; }
+  .word-item-tts:hover { opacity: 1; background: rgba(167,139,250,0.1); }
 
   /* === METİN KÜTÜPHANESİ KARTLARI === */
-  .text-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; margin-top: 15px; }
-  .text-card { background: linear-gradient(145deg, #0f1219 0%, #090b10 100%); border: 1px solid var(--border); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s ease; position: relative; display: flex; flex-direction: column; min-height: 150px; animation: fadeIn 0.4s ease;}
-  .text-card:hover { border-color: var(--accent2); transform: translateY(-5px); box-shadow: 0 10px 20px rgba(232, 201, 109, 0.15); }
-  .text-card-badges { display: flex; justify-content: space-between; margin-bottom: 15px; }
-  .text-badge-level { background: rgba(232, 201, 109, 0.15); color: var(--accent2); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; border: 1px solid rgba(232, 201, 109, 0.3); }
-  .text-badge-cat { background: rgba(79, 142, 247, 0.15); color: var(--accent); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; border: 1px solid rgba(79, 142, 247, 0.3); }
-  .text-card-title { font-size: 1.15rem; font-weight: bold; color: var(--text); margin-bottom: 15px; flex-grow: 1; line-height: 1.4;}
-  .text-card-play { color: var(--accent2); font-weight: bold; font-size: 0.95rem; text-align: right; margin-top: auto; display: flex; justify-content: flex-end; align-items: center; gap: 5px; transition: 0.2s;}
+  .text-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; margin-top: 10px; margin-bottom: 15px; }
+  .text-card { background: linear-gradient(145deg, #13161e 0%, #090b10 100%); border: 1px solid var(--border); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s ease; position: relative; display: flex; flex-direction: column; min-height: 140px;}
+  .text-card:hover { border-color: var(--accent2); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(232, 201, 109, 0.1); }
+  .text-card-title { font-size: 1.1rem; font-weight: bold; color: var(--text); margin-bottom: 15px; flex-grow: 1; line-height: 1.4;}
+  .text-card-play { color: var(--accent2); font-weight: bold; font-size: 0.9rem; text-align: right; margin-top: auto; display: flex; justify-content: flex-end; align-items: center; gap: 5px; transition: 0.2s;}
   .text-card:hover .text-card-play { transform: translateX(3px); }
 
   /* === VİDEO KÜTÜPHANESİ KARTLARI === */
+  .video-setup-box { background: var(--surface); border: 1px solid var(--border); padding: 25px; border-radius: 15px; margin-bottom: 20px; box-shadow: var(--shadow); }
+  .category-filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 25px; justify-content: center; }
+  .cat-btn { background: #0f1219; border: 1px solid var(--border); color: var(--text-dim); padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: all 0.2s; }
+  .cat-btn:hover { border-color: var(--accent); color: var(--text); }
+  .cat-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
   .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
   .video-card { background: #090b10; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; cursor: pointer; transition: all 0.3s ease; display: flex; flex-direction: column; animation: fadeIn 0.4s ease;}
   .video-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 20px rgba(79, 142, 247, 0.2); }
@@ -156,23 +169,22 @@
   .player-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
   .active-video-title { color: var(--accent); font-size: 1.1rem; font-weight: 600; margin: 0; }
 
-  /* === DESTE LİSTESİ === */
-  #deck-display { margin-top: 30px; }
-  .deck-section { margin-bottom: 12px; background: var(--surface); border-radius: 10px; border: 1px solid var(--border); overflow: hidden; }
-  .deck-header { background: #1c212d; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; transition: var(--transition); }
-  .deck-header:hover { background: #242a3a; }
-  .deck-header strong { font-size: 1.05rem; color: var(--accent); }
-  .deck-arrow { font-size: 0.9rem; color: var(--text-dim); transition: transform 0.3s; }
-  .deck-arrow.open { transform: rotate(180deg); }
-  .deck-content { padding: 12px 20px; display: none; background: #0f1219; }
-  .deck-content.open { display: block; animation: fadeIn 0.3s ease; }
-  .word-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center; font-size: 1rem; }
-  .word-item:last-child { border-bottom: none; }
-  .word-item span b { color: var(--accent2); margin-right: 8px; font-size: 1.05rem; }
-  .del-btn { color: var(--error); cursor: pointer; background: rgba(248, 113, 113, 0.1); border: 1px solid rgba(248, 113, 113, 0.3); font-size: 0.9rem; padding: 4px 10px; border-radius: 6px; transition: var(--transition); }
-  .del-btn:hover { background: var(--error); color: #000; }
-  .word-item-tts { background: none; border: none; color: var(--tts-color); cursor: pointer; font-size: 1rem; padding: 2px 6px; border-radius: 4px; transition: 0.2s; opacity: 0.6; }
-  .word-item-tts:hover { opacity: 1; background: rgba(167,139,250,0.1); }
+  /* === SÖZLÜK SİSTEMİ (YENİ) === */
+  #section-dict { display: none; animation: fadeIn 0.4s ease; }
+  .dict-box { background: var(--surface); border: 1px solid var(--border); padding: 25px; border-radius: 15px; margin-bottom: 20px; box-shadow: var(--shadow); }
+  .dict-result-card { background: #090b10; border: 1px solid var(--border); padding: 20px; border-radius: 12px; margin-top: 20px; display: none; animation: fadeIn 0.3s ease; }
+  .dict-result-card.active { display: block; }
+  .dict-main-word { font-size: 2.2rem; color: var(--accent); font-weight: bold; margin-bottom: 5px; }
+  .dict-phonetic { color: var(--tts-color); font-size: 0.95rem; margin-bottom: 15px; font-family: monospace; }
+  .dict-main-translation { font-size: 1.4rem; color: #fff; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
+  .dict-pos-group { margin-bottom: 15px; }
+  .dict-pos-title { color: var(--accent2); font-size: 1rem; font-weight: bold; font-style: italic; margin-bottom: 8px; text-transform: capitalize; }
+  .dict-synonyms { display: flex; flex-wrap: wrap; gap: 8px; }
+  .dict-syn-item { background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; color: var(--text-dim); }
+  
+  #dict-iframe-container { display: none; width: 100%; height: 600px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); margin-top: 20px; background: #fff; }
+  #dict-iframe-container.active { display: block; }
+  #dict-iframe { width: 100%; height: 100%; border: none; }
 
   /* === GELİŞMİŞ TEST ÜNİTESİ === */
   #quiz-section-container { display: none; animation: fadeIn 0.4s ease; }
@@ -260,9 +272,9 @@
     .exit-quiz-btn { position: static; display: block; margin: 0 auto 15px auto; width: fit-content; }
     .sub-gr-text { font-size: 1.3rem; }
     .video-grid, .text-grid { grid-template-columns: 1fr; }
+    .dict-main-word { font-size: 1.8rem; }
   }
 </style>
-
 <script src="https://www.youtube.com/iframe_api"></script>
 </head>
 <body>
@@ -273,12 +285,13 @@
   <header id="main-header">
     <div class="logo">
       <h1>Yunanca <span>Akıllı</span> Okuyucu</h1>
-      <p>v20.0 — Kapsamlı Metin & Video Arşivi</p>
+      <p>v21.0 — Kütüphane, Video Arşivi & Gelişmiş Sözlük</p>
     </div>
     <div class="main-tabs">
       <button class="main-tab-btn active" id="mtab-read" onclick="switchMainTab('read')">📖 Okuma Paneli</button>
       <button class="main-tab-btn" id="mtab-quiz" onclick="switchMainTab('quiz')">🧠 Öğretici Test</button>
       <button class="main-tab-btn" id="mtab-video" onclick="switchMainTab('video')">📺 Video Arşivi</button>
+      <button class="main-tab-btn" id="mtab-dict" onclick="switchMainTab('dict')">📚 Sözlük</button>
     </div>
   </header>
 
@@ -322,12 +335,10 @@
       </div>
       
       <div class="input-panel active" id="panel-library">
-        <div class="category-filters" id="text-category-filters"></div>
-        <div class="text-grid" id="text-grid-container"></div>
-      </div>
+        </div>
 
       <div class="input-panel" id="panel-paste">
-        <textarea id="input-text" placeholder="Çalışmak istediğiniz Yunanca metni buraya yapıştırın..."></textarea>
+        <textarea id="input-text" placeholder="Çalışmak istediğiniz metni buraya yapıştırın..."></textarea>
         <div class="btn-group">
           <button class="main-btn" onclick="processAndRenderText()">🚀 Metni İşle ve Oku</button>
           <button class="secondary-btn" onclick="clearTextInputs()">Temizle</button>
@@ -357,15 +368,11 @@
   </div> 
 
   <div id="section-video" style="display:none;">
-    
     <div id="video-library-view">
       <div class="video-setup-box">
         <h3 style="color:var(--accent); margin-bottom:10px; font-size: 1.6rem;">📺 Yunanca Öğrenim Arşivi</h3>
-        <p style="color:var(--text-dim); margin-bottom:0; font-size:1rem;">
-          İlginizi çeken kategoriye tıklayın ve çalışmak istediğiniz videoyu seçin.
-        </p>
+        <p style="color:var(--text-dim); margin-bottom:0; font-size:1rem;">İlginizi çeken kategoriye tıklayın ve çalışmak istediğiniz videoyu seçin.</p>
       </div>
-      
       <div class="category-filters" id="video-category-filters"></div>
       <div class="video-grid" id="video-grid-container"></div>
     </div>
@@ -375,19 +382,34 @@
         <button class="secondary-btn" onclick="closeVideoPlayer()">🔙 Arşive Dön</button>
         <h4 class="active-video-title" id="active-video-title">Video Başlığı</h4>
       </div>
-
-      <div class="yt-container">
-        <div id="youtube-player"></div>
-      </div>
-      
+      <div class="yt-container"><div id="youtube-player"></div></div>
       <div id="active-subtitle-container" class="subtitle-container">
         <div id="sub-gr" class="sub-gr-text">...</div>
         <div id="sub-tr" class="sub-tr-text">Videonun başlaması bekleniyor...</div>
       </div>
     </div>
-
   </div>
   
+  <div id="section-dict">
+    <div class="dict-box">
+      <div class="input-tabs" style="justify-content:center;">
+        <button class="sub-tab-btn active" onclick="switchDictMode('gr-tr', this)">🇬🇷 ➔ 🇹🇷 Yunanca - Türkçe</button>
+        <button class="sub-tab-btn" onclick="switchDictMode('tr-gr', this)">🇹🇷 ➔ 🇬🇷 Türkçe - Yunanca</button>
+        <button class="sub-tab-btn" onclick="switchDictMode('gr-gr', this)">🇬🇷 ➔ 🇬🇷 Yunanca - Yunanca</button>
+      </div>
+      <div class="url-row" style="margin-top:20px;">
+        <input type="text" id="dict-search-input" placeholder="Aranacak kelimeyi yazın..." onkeydown="if(event.key==='Enter') searchDictionary()">
+        <button class="main-btn" onclick="searchDictionary()">Ara</button>
+      </div>
+      
+      <div id="dict-results" class="dict-result-card"></div>
+      
+      <div id="dict-iframe-container">
+        <iframe id="dict-iframe"></iframe>
+      </div>
+    </div>
+  </div>
+
   <div id="section-quiz" style="display:none;">
     <div class="quiz-card">
       <div id="quiz-setup-view">
@@ -414,13 +436,11 @@
 
       <div id="quiz-active-view" style="display:none;">
         <button class="exit-quiz-btn" onclick="exitQuiz()">🚪 Çıkış</button>
-        
         <div style="display:flex; justify-content:space-between; color:var(--text-dim); font-size:0.95rem; margin-bottom:8px; font-weight:bold; letter-spacing: 0.5px;">
           <span id="quiz-progress-text">DOĞRU: 0 / 10</span>
           <span id="quiz-mistake-counter" style="color:var(--error); opacity: 0.8;">HATA: 0</span>
         </div>
         <div class="progress-container"><div class="progress-fill" id="quiz-progress-bar"></div></div>
-        
         <div id="quiz-work-area" style="min-height: 250px; display:flex; flex-direction:column; justify-content:center; align-items:center;"></div>
         <div id="quiz-feedback"></div>
       </div>
@@ -433,12 +453,10 @@
           <div class="stat-item"><span id="res-wrong" style="color:var(--error)">5</span><small>Hata</small></div>
           <div class="stat-item"><span id="res-score" style="color:var(--accent2)">%75</span><small>Başarı</small></div>
         </div>
-        
         <div id="mistakes-container" style="display:none;">
           <h3 style="color:var(--error); margin-bottom:15px; font-size: 1.2rem;">Tekrar Edilmesi Gerekenler:</h3>
           <table class="mistakes-table" id="mistakes-table"></table>
         </div>
-
         <div style="display:flex; gap:15px; margin-top:35px; justify-content:center; flex-wrap:wrap;">
           <button class="main-btn" style="padding: 15px 30px; font-size:1.1rem; background: var(--surface); color: var(--text); border: 2px solid var(--border);" onclick="exitQuiz()">Ana Menü</button>
           <button class="main-btn" id="retry-mistakes-btn" style="padding: 15px 30px; font-size:1.1rem; background:var(--error); display:none; border:none;" onclick="retryMistakes()">Sadece Yanlışları Tekrar Et</button>
@@ -452,30 +470,22 @@
   <div class="wpop-header">
     <div class="wpop-title-row">
       <h2 id="wp-gr"></h2>
-      <button class="popup-speak-btn" id="popup-speak-btn" onclick="speakCurrentWord()">
-        🔊 <span class="speak-label">Dinle</span>
-      </button>
+      <button class="popup-speak-btn" id="popup-speak-btn" onclick="speakCurrentWord()">🔊 <span class="speak-label">Dinle</span></button>
     </div>
     <button class="close-pop-btn" onclick="closePopup()">✕</button>
   </div>
-  
   <div id="wp-phonetic"></div>
   <input type="text" id="wp-mean-input" placeholder="Anlamı aranıyor...">
   <div id="wp-context-box"></div>
-
   <div class="deck-tools">
-    <div class="deck-tools-row">
-      <label>Hangi Desteye Eklensin?</label>
-      <button onclick="createNewDeck()">+ Yeni Deste</button>
-    </div>
+    <div class="deck-tools-row"><label>Hangi Desteye Eklensin?</label><button onclick="createNewDeck()">+ Yeni Deste</button></div>
     <select id="wp-deck-select"></select>
   </div>
-
   <div class="action-buttons">
     <button class="action-btn-primary" onclick="saveWordToDeck()">DESTEYE EKLE</button>
     <button class="action-btn-success" onclick="saveWordToCustomDict()" title="Kalıcı Sözlüğe Ekle/Düzelt">💾</button>
     <button class="action-btn-secondary" onclick="toggleHighlightWord()" title="Metin içinde vurgula">🖊</button>
-    <button class="action-btn-translate-ctx" onclick="translateFullContext()" title="Cümlenin tamamını çevir">🌐 Cümlenin Tamamını Çevir & Kelimeyi Vurgula</button>
+    <button class="action-btn-translate-ctx" onclick="translateFullContext()" title="Cümlenin tamamını çevir">🌐 Cümlenin Tamamını Çevir</button>
   </div>
 </div>
 
@@ -483,23 +493,22 @@
 
 <script>
 /** ==========================================
- * 0.1 METİN ARŞİVİ KATALOĞU (YENİ SİSTEM)
- * ========================================== 
- * 'ornek-metinler' adında bir klasör oluşturun ve dosyaları .txt olarak içine koyun.
- */
+ * 0.1 METİN ARŞİVİ KATALOĞU (KLASÖR SİSTEMİ İÇİN)
+ * Lütfen level kısımlarını sadece A1, A2, B1, B2, C1, C2 olarak girin.
+ * ========================================== */
 const METIN_KATALOGU = [
-  { id: "ornek-hikaye-1", title: "Küçük Prens (Bölüm 1)", level: "A1 - A2", category: "📖 Hikaye" },
+  { id: "ornek-hikaye-1", title: "Küçük Prens (Bölüm 1)", level: "A1", category: "📖 Hikaye" },
   { id: "ornek-diyalog-1", title: "Kafede Sipariş Verme", level: "A1", category: "💬 Günlük Diyalog" },
-  { id: "ornek-haber-1", title: "Atina'da Yeni Metro Hattı Açıldı", level: "B1", category: "📰 Haber" },
-  { id: "ornek-tarih-1", title: "Antik Yunan ve Tanrılar", level: "B2", category: "🏛️ Tarih ve Kültür" }
+  { id: "ornek-haber-1", title: "Atina'da Yeni Metro Hattı", level: "A2", category: "📰 Haber" },
+  { id: "ornek-haber-2", title: "Yunanistan Turizmi Büyüyor", level: "A2", category: "📰 Haber" },
+  { id: "ornek-tarih-1", title: "Antik Yunan ve Tanrılar", level: "B1", category: "🏛️ Tarih ve Kültür" },
+  { id: "ornek-ileri-1", title: "Ekonomi Makalesi", level: "C1", category: "📰 Makale" }
 ];
-let currentTextCategory = "Tümü";
+const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
 /** ==========================================
  * 0.2 VİDEO ARŞİVİ KATALOĞU
- * ========================================== 
- * 'altyazilar' adında bir klasör oluşturun ve JSON dosyalarını içine koyun.
- */
+ * ========================================== */
 const VIDEO_KATALOGU = [
   { id: "42X-sVfNclI", title: "Easy Greek - Yunanistan'da Günlük Hayat", level: "A2 - B1", category: "🎬 Sokak Röportajı" },
   { id: "M7lc1UVf-VE", title: "Örnek Eğitim Videosu", level: "A1", category: "📚 Temel Eğitim" }
@@ -526,10 +535,7 @@ let currentQuizQuestion = null;
 
 /** 2. WEB SPEECH API — YUNANCA TELAFFUZ SİSTEMİ */
 let ttsSupported = false, ttsVoice = null, isPaused = false, globalTextForTTS = "", allWordSpans = []; 
-let currentSpeakingToken = null;
-let isSpeakingManually = false;
-let currentManualIndex = 0;
-let manualTimer = null;
+let currentSpeakingToken = null; let isSpeakingManually = false; let currentManualIndex = 0; let manualTimer = null;
 
 function initTTS() {
   if (!('speechSynthesis' in window)) return;
@@ -539,180 +545,85 @@ function initTTS() {
     ttsVoice = voices.find(v => v.lang === 'el-GR') || voices.find(v => v.lang.startsWith('el')) || null;
   }
   loadVoices();
-  if (speechSynthesis.onvoiceschanged !== undefined) {
-    speechSynthesis.onvoiceschanged = loadVoices;
-  }
+  if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = loadVoices;
 }
-
-function updateSpeedLabel() {
-  document.getElementById('tts-speed-label').textContent = document.getElementById('tts-speed').value + 'x';
-}
-
+function updateSpeedLabel() { document.getElementById('tts-speed-label').textContent = document.getElementById('tts-speed').value + 'x'; }
 function clearAllHighlights() {
   allWordSpans.forEach(s => s.classList.remove('tts-active'));
-  const speakBtn = document.getElementById('popup-speak-btn');
-  if (speakBtn) speakBtn.classList.remove('speaking');
-  if (currentSpeakingToken) {
-    currentSpeakingToken.classList.remove('speaking');
-    currentSpeakingToken.classList.remove('tts-active');
-    currentSpeakingToken = null;
-  }
-  isSpeakingManually = false;
-  if(manualTimer) clearInterval(manualTimer);
+  const speakBtn = document.getElementById('popup-speak-btn'); if (speakBtn) speakBtn.classList.remove('speaking');
+  if (currentSpeakingToken) { currentSpeakingToken.classList.remove('speaking'); currentSpeakingToken.classList.remove('tts-active'); currentSpeakingToken = null; }
+  isSpeakingManually = false; if(manualTimer) clearInterval(manualTimer);
 }
-
 function startManualHighlighting() {
   if(allWordSpans.length === 0) return;
-  currentManualIndex = 0;
-  isSpeakingManually = true;
-  
+  currentManualIndex = 0; isSpeakingManually = true;
   const speed = parseFloat(document.getElementById('tts-speed').value);
   const getDuration = (text) => (text.length * 90) / speed; 
-
   const highlightNext = () => {
-    if (!isSpeakingManually || currentManualIndex >= allWordSpans.length) {
-      clearAllHighlights();
-      return;
-    }
-    
+    if (!isSpeakingManually || currentManualIndex >= allWordSpans.length) { clearAllHighlights(); return; }
     allWordSpans.forEach(s => s.classList.remove('tts-active'));
     const currentSpan = allWordSpans[currentManualIndex];
-    currentSpan.classList.add('tts-active');
-    currentSpan.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-    const duration = getDuration(currentSpan.textContent);
+    currentSpan.classList.add('tts-active'); currentSpan.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    manualTimer = setTimeout(highlightNext, getDuration(currentSpan.textContent));
     currentManualIndex++;
-    manualTimer = setTimeout(highlightNext, duration);
   };
   highlightNext();
 }
 
 function speakGreek(text, sourceElement = null) {
-  if (!ttsSupported) return;
-  speechSynthesis.cancel();
-  clearAllHighlights();
-  
+  if (!ttsSupported) return; speechSynthesis.cancel(); clearAllHighlights();
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'el-GR';
-  utterance.rate = parseFloat(document.getElementById('tts-speed').value);
+  utterance.lang = 'el-GR'; utterance.rate = parseFloat(document.getElementById('tts-speed').value);
   if (ttsVoice) utterance.voice = ttsVoice;
-
   utterance.onstart = () => {
     document.getElementById('tts-status').classList.add('visible');
-    const speakBtn = document.getElementById('popup-speak-btn');
-    if (speakBtn) speakBtn.classList.add('speaking');
+    const speakBtn = document.getElementById('popup-speak-btn'); if (speakBtn) speakBtn.classList.add('speaking');
     if (sourceElement) {
-      if (sourceElement.classList.contains('quiz-speak-btn')) {
-        sourceElement.classList.add('speaking');
-      } else {
-        sourceElement.classList.add('tts-active');
-      }
+      if (sourceElement.classList.contains('quiz-speak-btn')) sourceElement.classList.add('speaking');
+      else sourceElement.classList.add('tts-active');
       currentSpeakingToken = sourceElement;
     }
   };
-
-  utterance.onend = () => { 
-    document.getElementById('tts-status').classList.remove('visible');
-    clearAllHighlights(); 
-  };
-  
-  utterance.onerror = () => {
-    document.getElementById('tts-status').classList.remove('visible');
-    clearAllHighlights();
-  };
-
+  utterance.onend = () => { document.getElementById('tts-status').classList.remove('visible'); clearAllHighlights(); };
+  utterance.onerror = () => { document.getElementById('tts-status').classList.remove('visible'); clearAllHighlights(); };
   speechSynthesis.speak(utterance);
 }
 
 function speakAllText() {
   if (!ttsSupported) { showToastMessage("⚠️ Tarayıcınız ses okumayı desteklemiyor."); return; }
-  if (isPaused) {
-    speechSynthesis.resume();
-    isPaused = false;
-    document.getElementById('tts-status').classList.add('visible');
-    document.getElementById('tts-status-text').textContent = "Seslendiriliyor...";
-    return;
-  }
-
-  speechSynthesis.cancel();
-  clearAllHighlights();
-  if (!globalTextForTTS.trim()) return;
+  if (isPaused) { speechSynthesis.resume(); isPaused = false; document.getElementById('tts-status').classList.add('visible'); document.getElementById('tts-status-text').textContent = "Seslendiriliyor..."; return; }
+  speechSynthesis.cancel(); clearAllHighlights(); if (!globalTextForTTS.trim()) return;
 
   const utterance = new SpeechSynthesisUtterance(globalTextForTTS);
-  utterance.lang = 'el-GR';
-  utterance.rate = parseFloat(document.getElementById('tts-speed').value);
+  utterance.lang = 'el-GR'; utterance.rate = parseFloat(document.getElementById('tts-speed').value);
   if (ttsVoice) utterance.voice = ttsVoice;
-
-  utterance.onstart = () => {
-    document.getElementById('tts-status').classList.add('visible');
-    document.getElementById('tts-status-text').textContent = "Tüm metin okunuyor...";
-    isPaused = false;
-    startManualHighlighting(); 
-  };
-
+  utterance.onstart = () => { document.getElementById('tts-status').classList.add('visible'); document.getElementById('tts-status-text').textContent = "Tüm metin okunuyor..."; isPaused = false; startManualHighlighting(); };
   utterance.onboundary = (event) => {
     if (event.name === 'word') {
-      if(manualTimer) clearTimeout(manualTimer); 
-      clearAllHighlights();
+      if(manualTimer) clearTimeout(manualTimer); clearAllHighlights();
       let activeSpan = null;
       for (let i = allWordSpans.length - 1; i >= 0; i--) {
-        let startIdx = parseInt(allWordSpans[i].getAttribute('data-start'));
-        if (event.charIndex >= startIdx) {
-          activeSpan = allWordSpans[i];
-          break;
-        }
+        if (event.charIndex >= parseInt(allWordSpans[i].getAttribute('data-start'))) { activeSpan = allWordSpans[i]; break; }
       }
       if (activeSpan) {
-        activeSpan.classList.add('tts-active');
-        currentSpeakingToken = activeSpan;
+        activeSpan.classList.add('tts-active'); currentSpeakingToken = activeSpan;
         const rect = activeSpan.getBoundingClientRect();
-        if (rect.top < 100 || rect.bottom > window.innerHeight - 100) {
-           activeSpan.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+        if (rect.top < 100 || rect.bottom > window.innerHeight - 100) activeSpan.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }
   };
-
-  utterance.onend = () => {
-    document.getElementById('tts-status').classList.remove('visible');
-    clearAllHighlights();
-    isPaused = false;
-  };
-  utterance.onerror = () => {
-    document.getElementById('tts-status').classList.remove('visible');
-    clearAllHighlights();
-    isPaused = false;
-  };
-
+  utterance.onend = () => { document.getElementById('tts-status').classList.remove('visible'); clearAllHighlights(); isPaused = false; };
+  utterance.onerror = () => { document.getElementById('tts-status').classList.remove('visible'); clearAllHighlights(); isPaused = false; };
   speechSynthesis.speak(utterance);
 }
-
 function togglePauseSpeech() {
   if (speechSynthesis.speaking) {
-    if (speechSynthesis.paused) {
-      speechSynthesis.resume();
-      isPaused = false;
-      document.getElementById('tts-status-text').textContent = "Seslendiriliyor...";
-    } else {
-      speechSynthesis.pause();
-      isPaused = true;
-      document.getElementById('tts-status-text').textContent = "Duraklatıldı...";
-    }
+    if (speechSynthesis.paused) { speechSynthesis.resume(); isPaused = false; document.getElementById('tts-status-text').textContent = "Seslendiriliyor..."; } 
+    else { speechSynthesis.pause(); isPaused = true; document.getElementById('tts-status-text').textContent = "Duraklatıldı..."; }
   }
 }
-
-function stopSpeech() {
-  if (ttsSupported) {
-    speechSynthesis.cancel();
-    isPaused = false;
-    document.getElementById('tts-status').classList.remove('visible');
-    clearAllHighlights();
-  }
-}
-
-function speakCurrentWord() {
-  if (activeWordString) speakGreek(activeWordString);
-}
+function stopSpeech() { if (ttsSupported) { speechSynthesis.cancel(); isPaused = false; document.getElementById('tts-status').classList.remove('visible'); clearAllHighlights(); } }
+function speakCurrentWord() { if (activeWordString) speakGreek(activeWordString); }
 
 function getGreekPhonetics(word) {
   const rules = [
@@ -747,42 +658,19 @@ function exportDataToFile() {
   const dataToSave = { decks: userDecks, customDict: Array.from(userCustomDict.entries()), lastDeck: lastActiveDeck };
   const blob = new Blob([JSON.stringify(dataToSave, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = "yunanca_verilerim.json";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  const a = document.createElement('a'); a.href = url; a.download = "yunanca_verilerim.json"; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
   showToastMessage("✅ Veriler dosyaya başarıyla indirildi!");
 }
-
 function importDataFromFile(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
+  const file = event.target.files[0]; if (!file) return; const reader = new FileReader();
   reader.onload = function(e) {
     try {
       const importedData = JSON.parse(e.target.result);
-      if (importedData.decks) {
-        userDecks = importedData.decks;
-        saveDecksToLocalStorage();
-      }
-      if (importedData.customDict) {
-        userCustomDict = new Map(importedData.customDict);
-        localStorage.setItem('yunanca_custom_dict_v12', JSON.stringify(Object.fromEntries(userCustomDict)));
-      }
-      if (importedData.lastDeck) {
-        lastActiveDeck = importedData.lastDeck;
-        localStorage.setItem('last_active_deck_v12', lastActiveDeck);
-      }
-      renderDecksAccordion();
-      populateDeckSelects();
-      showToastMessage("📂 Veriler dosyadan başarıyla yüklendi!");
-      event.target.value = "";
-    } catch (err) {
-      showToastMessage("❌ Dosya okuma hatası.");
-    }
+      if (importedData.decks) { userDecks = importedData.decks; saveDecksToLocalStorage(); }
+      if (importedData.customDict) { userCustomDict = new Map(importedData.customDict); localStorage.setItem('yunanca_custom_dict_v12', JSON.stringify(Object.fromEntries(userCustomDict))); }
+      if (importedData.lastDeck) { lastActiveDeck = importedData.lastDeck; localStorage.setItem('last_active_deck_v12', lastActiveDeck); }
+      renderDecksAccordion(); populateDeckSelects(); showToastMessage("📂 Veriler dosyadan başarıyla yüklendi!"); event.target.value = "";
+    } catch (err) { showToastMessage("❌ Dosya okuma hatası."); }
   };
   reader.readAsText(file);
 }
@@ -792,13 +680,15 @@ function switchMainTab(tabName) {
   document.getElementById('section-read').style.display = tabName === 'read' ? 'block' : 'none';
   document.getElementById('section-quiz').style.display = tabName === 'quiz' ? 'block' : 'none';
   document.getElementById('section-video').style.display = tabName === 'video' ? 'block' : 'none';
+  document.getElementById('section-dict').style.display = tabName === 'dict' ? 'block' : 'none';
   
   document.getElementById('mtab-read').classList.toggle('active', tabName === 'read');
   document.getElementById('mtab-quiz').classList.toggle('active', tabName === 'quiz');
   document.getElementById('mtab-video').classList.toggle('active', tabName === 'video');
+  document.getElementById('mtab-dict').classList.toggle('active', tabName === 'dict');
   
   document.getElementById('main-tts-panel').style.display = tabName === 'read' ? 'flex' : 'none';
-  document.getElementById('main-sync-panel').style.display = tabName === 'read' ? 'flex' : 'none';
+  document.getElementById('main-sync-panel').style.display = (tabName === 'read' || tabName === 'dict') ? 'flex' : 'none';
 
   if(tabName === 'quiz') populateDeckSelects();
   if(tabName === 'video') renderVideoLibrary();
@@ -811,28 +701,20 @@ function switchInputTab(tabName, btnElement) {
   document.querySelectorAll('.input-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-' + tabName).classList.add('active');
 }
-
 function showToastMessage(msg) {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.style.display = "block";
-  setTimeout(() => toast.style.display="none", 3000);
+  const toast = document.getElementById('toast'); toast.textContent = msg; toast.style.display = "block"; setTimeout(() => toast.style.display="none", 3000);
 }
 
 /** 5. VERİ ÇEKME FONKSİYONLARI */
 async function fetchContentFromUrl() {
-  const url = document.getElementById('url-input').value.trim();
-  const statusDiv = document.getElementById('url-status');
+  const url = document.getElementById('url-input').value.trim(); const statusDiv = document.getElementById('url-status');
   if (!url) { showToastMessage("Lütfen geçerli bir URL girin."); return; }
   statusDiv.textContent = "⏳ İnternetten veri çekiliyor, lütfen bekleyin...";
   try {
     const res = await fetch(`https://r.jina.ai/${url}`, { headers: { 'Accept': 'text/plain', 'X-Return-Format': 'text' }});
     if (!res.ok) throw new Error("HTTP " + res.status);
     let raw = await res.text();
-    raw = raw.replace(/^(Title|URL|Published Time|Description|Source URL):.*$/gm, '');
-    raw = raw.replace(/Proficiency \(C\d\)/gi, '');
-    raw = raw.replace(/\d+\s*min read/gi, '');
-    raw = raw.replace(/You are reading the free text version\.?/gi, '');
+    raw = raw.replace(/^(Title|URL|Published Time|Description|Source URL):.*$/gm, '').replace(/Proficiency \(C\d\)/gi, '').replace(/\d+\s*min read/gi, '').replace(/You are reading the free text version\.?/gi, '');
     const skipPatterns = [ /\[.*?\]\(.*?\)/, /^[A-Z\s]{2,30}$/, /Σύνταξη|Ακολουθήστε|Δείτε όλες|Tags|Similar|Headlines/i ];
     let lines = raw.split('\n').map(l => l.trim()).filter(line => {
       if (!line) return false;
@@ -840,44 +722,24 @@ async function fetchContentFromUrl() {
       return true;
     });
     document.getElementById('input-text').value = lines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
-    switchInputTab('paste', document.querySelectorAll('.sub-tab-btn')[1]); // Kendi metnimi gir sekmesine geç
-    statusDiv.textContent = "";
-    showToastMessage("✅ Web sayfasından metin başarıyla çekildi!");
-  } catch(e) {
-    statusDiv.textContent = "❌ Hata: Sayfa çekilemedi veya site engelliyor.";
-  }
+    switchInputTab('paste', document.querySelectorAll('.sub-tab-btn')[1]);
+    statusDiv.textContent = ""; showToastMessage("✅ Web sayfasından metin başarıyla çekildi!");
+  } catch(e) { statusDiv.textContent = "❌ Hata: Sayfa çekilemedi veya site engelliyor."; }
 }
 
 async function loadPdfFile(inputElement) {
-  const file = inputElement.files[0];
-  if (!file) return;
-  const statusDiv = document.getElementById('pdf-status');
-  statusDiv.textContent = "⏳ PDF analiz ediliyor...";
+  const file = inputElement.files[0]; if (!file) return; const statusDiv = document.getElementById('pdf-status'); statusDiv.textContent = "⏳ PDF analiz ediliyor...";
   try {
-    const arrayBuffer = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-    let fullText = "";
+    const arrayBuffer = await file.arrayBuffer(); const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise; let fullText = "";
     for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const textContent = await page.getTextContent();
-      const pageText = textContent.items.map(item => item.str).join(' ');
-      fullText += pageText + "\n\n";
+      const page = await pdf.getPage(i); const textContent = await page.getTextContent();
+      fullText += textContent.items.map(item => item.str).join(' ') + "\n\n";
     }
-    document.getElementById('input-text').value = fullText.trim();
-    switchInputTab('paste', document.querySelectorAll('.sub-tab-btn')[1]);
-    statusDiv.textContent = "";
-    showToastMessage(`✅ PDF Başarıyla Okundu (${pdf.numPages} Sayfa)`);
-  } catch(e) {
-    statusDiv.textContent = "❌ PDF okunamadı.";
-  }
+    document.getElementById('input-text').value = fullText.trim(); switchInputTab('paste', document.querySelectorAll('.sub-tab-btn')[1]);
+    statusDiv.textContent = ""; showToastMessage(`✅ PDF Başarıyla Okundu (${pdf.numPages} Sayfa)`);
+  } catch(e) { statusDiv.textContent = "❌ PDF okunamadı."; }
 }
-
-function clearTextInputs() {
-  document.getElementById('input-text').value = "";
-  document.getElementById('reader').innerHTML = "";
-  document.getElementById('reader').style.display = "none";
-  stopSpeech();
-}
+function clearTextInputs() { document.getElementById('input-text').value = ""; document.getElementById('reader').innerHTML = ""; document.getElementById('reader').style.display = "none"; stopSpeech(); }
 
 /** 6. ÇEVİRİ MOTORU VE AKILLI VURGULAMA */
 async function getSmartTranslation(word, contextSentence = "") {
@@ -885,54 +747,40 @@ async function getSmartTranslation(word, contextSentence = "") {
   if (userCustomDict.has(cleanWord)) return userCustomDict.get(cleanWord);
   if (MASTER_DICT_MAP.has(cleanWord)) return MASTER_DICT_MAP.get(cleanWord);
   try {
-    const singleUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=el&tl=tr&dt=t&q=${encodeURIComponent(cleanWord)}`;
-    const singleResponse = await fetch(singleUrl);
-    const singleData = await singleResponse.json();
-    return singleData[0][0][0].toLowerCase().trim();
+    const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=el&tl=tr&dt=t&q=${encodeURIComponent(cleanWord)}`);
+    const data = await res.json(); return data[0][0][0].toLowerCase().trim();
   } catch (error) { return "Çeviri hatası"; }
 }
 
 function createFlexibleRegex(meaning) {
-    let root = meaning.toLowerCase().trim();
-    let words = root.split(/\s+/);
-    let lastWord = words[words.length - 1];
+    let root = meaning.toLowerCase().trim(); let words = root.split(/\s+/); let lastWord = words[words.length - 1];
     let prefix = words.length > 1 ? words.slice(0, -1).join('\\s+') + '\\s+' : '';
     if (lastWord.length > 3 && (lastWord.endsWith("mak") || lastWord.endsWith("mek"))) lastWord = lastWord.slice(0, -3);
     let variants = [lastWord];
-    if (lastWord.endsWith("t")) variants.push(lastWord.slice(0, -1) + "d");
-    else if (lastWord.endsWith("p")) variants.push(lastWord.slice(0, -1) + "b");
+    if (lastWord.endsWith("t")) variants.push(lastWord.slice(0, -1) + "d"); else if (lastWord.endsWith("p")) variants.push(lastWord.slice(0, -1) + "b");
     else if (lastWord.endsWith("k")) { variants.push(lastWord.slice(0, -1) + "ğ"); variants.push(lastWord.slice(0, -1) + "y"); variants.push(lastWord.slice(0, -1)); } 
     else if (lastWord.endsWith("ç")) variants.push(lastWord.slice(0, -1) + "c");
-    const pattern = `(^|[^\\p{L}])(${prefix}(?:${variants.join('|')})\\p{L}*)`;
-    return new RegExp(pattern, 'gui');
+    return new RegExp(`(^|[^\\p{L}])(${prefix}(?:${variants.join('|')})\\p{L}*)`, 'gui');
 }
 
 async function translateFullContext() {
   if (!activeContextSentence) return;
-  const contextBox = document.getElementById('wp-context-box');
-  const currentMean = document.getElementById('wp-mean-input').value.trim().toLowerCase();
+  const contextBox = document.getElementById('wp-context-box'); const currentMean = document.getElementById('wp-mean-input').value.trim().toLowerCase();
   contextBox.innerHTML = `<em>Çevriliyor...</em>`;
   try {
-    const urlFull = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=el&tl=tr&dt=t&q=${encodeURIComponent(activeContextSentence)}`;
-    const resFull = await fetch(urlFull);
-    const dataFull = await resFull.json();
-    let fullTranslation = dataFull[0].map(item => item[0]).join('');
-
-    const safeGreek = activeWordString.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const greekRegex = new RegExp(`(${safeGreek})`, 'gi');
+    const resFull = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=el&tl=tr&dt=t&q=${encodeURIComponent(activeContextSentence)}`);
+    const dataFull = await resFull.json(); let fullTranslation = dataFull[0].map(item => item[0]).join('');
+    const safeGreek = activeWordString.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); const greekRegex = new RegExp(`(${safeGreek})`, 'gi');
     let highlightedGreek = activeContextSentence.replace(greekRegex, '<span class="translated-word-highlight">$1</span>');
 
-    const urlWord = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=el&tl=tr&dt=t&dt=bd&q=${encodeURIComponent(activeWordString)}`;
-    const resWord = await fetch(urlWord);
-    const dataWord = await resWord.json();
-
-    let possibleMeanings = [];
+    const resWord = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=el&tl=tr&dt=t&dt=bd&q=${encodeURIComponent(activeWordString)}`);
+    const dataWord = await resWord.json(); let possibleMeanings = [];
     if (currentMean && currentMean !== "çeviri aranıyor..." && currentMean !== "çeviri hatası") possibleMeanings.push(currentMean);
     if (dataWord[0] && dataWord[0][0] && dataWord[0][0][0]) possibleMeanings.push(dataWord[0][0][0].toLowerCase());
     if (dataWord[1]) {
-        dataWord[1].forEach(posGroup => {
-            if (posGroup[2]) posGroup[2].forEach(altGroup => { if (altGroup[0]) possibleMeanings.push(altGroup[0].toLowerCase()); });
-            if (posGroup[1]) posGroup[1].forEach(alt => possibleMeanings.push(alt.toLowerCase()));
+        dataWord[1].forEach(pG => {
+            if (pG[2]) pG[2].forEach(aG => { if (aG[0]) possibleMeanings.push(aG[0].toLowerCase()); });
+            if (pG[1]) pG[1].forEach(alt => possibleMeanings.push(alt.toLowerCase()));
         });
     }
     possibleMeanings = [...new Set(possibleMeanings.filter(m => m.length > 2))].sort((a, b) => b.length - a.length);
@@ -940,10 +788,7 @@ async function translateFullContext() {
     let highlightedTranslation = fullTranslation;
     for (let mean of possibleMeanings) {
         const regex = createFlexibleRegex(mean);
-        if (regex.test(highlightedTranslation)) {
-            highlightedTranslation = highlightedTranslation.replace(regex, '$1<span class="translated-word-highlight">$2</span>');
-            break; 
-        }
+        if (regex.test(highlightedTranslation)) { highlightedTranslation = highlightedTranslation.replace(regex, '$1<span class="translated-word-highlight">$2</span>'); break; }
     }
     contextBox.innerHTML = `<strong>Orijinal:</strong> ${highlightedGreek}<br><br><strong>Çeviri:</strong> <span style="color:#fff; line-height: 1.6;">${highlightedTranslation}</span>`;
   } catch (e) { contextBox.innerHTML = `Çeviri alınamadı.`; }
@@ -953,13 +798,9 @@ async function translateFullContext() {
 function processAndRenderText() {
   const rawText = document.getElementById('input-text').value;
   if(!rawText.trim()) { showToastMessage("Lütfen işlenecek bir metin girin."); return; }
+  const readerDiv = document.getElementById('reader'); readerDiv.innerHTML = ""; readerDiv.style.display = "block";
 
-  const readerDiv = document.getElementById('reader');
-  readerDiv.innerHTML = "";
-  readerDiv.style.display = "block";
-
-  const toolbar = document.createElement('div');
-  toolbar.className = 'reader-toolbar';
+  const toolbar = document.createElement('div'); toolbar.className = 'reader-toolbar';
   toolbar.innerHTML = `
     <div class="reader-toolbar-left">📖 Kelimeye tıkla → çeviri + telaffuz</div>
     <div class="reader-toolbar-right">
@@ -969,406 +810,225 @@ function processAndRenderText() {
     </div>`;
   readerDiv.appendChild(toolbar);
 
-  globalTextForTTS = "";
-  allWordSpans = [];
-  const lines = rawText.split('\n');
-  
-  lines.forEach(line => {
-    if (!line.trim()) {
-      readerDiv.appendChild(document.createElement('br'));
-      globalTextForTTS += "\n";
-      return;
-    }
-    
-    const pContainer = document.createElement('div');
-    pContainer.style.marginBottom = "15px";
-
-    const tokens = line.split(/(\s+)/);
-    tokens.forEach(token => {
+  globalTextForTTS = ""; allWordSpans = [];
+  rawText.split('\n').forEach(line => {
+    if (!line.trim()) { readerDiv.appendChild(document.createElement('br')); globalTextForTTS += "\n"; return; }
+    const pContainer = document.createElement('div'); pContainer.style.marginBottom = "15px";
+    line.split(/(\s+)/).forEach(token => {
       if (/[\u0370-\u03FF]/.test(token)) {
-        const span = document.createElement('span');
-        span.className = 'tok';
-        span.textContent = token;
-        span.setAttribute('data-start', globalTextForTTS.length);
-        globalTextForTTS += token;
-        span.setAttribute('data-end', globalTextForTTS.length);
-        span.onclick = (e) => triggerWordPopup(e, token, line);
-        pContainer.appendChild(span);
-        allWordSpans.push(span);
-      } else {
-        pContainer.appendChild(document.createTextNode(token));
-        globalTextForTTS += token;
-      }
+        const span = document.createElement('span'); span.className = 'tok'; span.textContent = token;
+        span.setAttribute('data-start', globalTextForTTS.length); globalTextForTTS += token; span.setAttribute('data-end', globalTextForTTS.length);
+        span.onclick = (e) => triggerWordPopup(e, token, line); pContainer.appendChild(span); allWordSpans.push(span);
+      } else { pContainer.appendChild(document.createTextNode(token)); globalTextForTTS += token; }
     });
-    readerDiv.appendChild(pContainer);
-    globalTextForTTS += "\n"; 
+    readerDiv.appendChild(pContainer); globalTextForTTS += "\n"; 
   });
-
-  renderDecksAccordion();
-  window.scrollTo({ top: readerDiv.offsetTop - 30, behavior: 'smooth' });
+  renderDecksAccordion(); window.scrollTo({ top: readerDiv.offsetTop - 30, behavior: 'smooth' });
 }
 
 /** 8. POPUP (KELİME KARTI) YÖNETİMİ */
 async function triggerWordPopup(event, word, contextSentence) {
-  activeTokenElement = event.target;
-  activeWordString = word;
-  activeContextSentence = contextSentence;
-  
+  activeTokenElement = event.target; activeWordString = word; activeContextSentence = contextSentence;
   if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') ytPlayer.pauseVideo();
   
-  const popup = document.getElementById('wpop');
-  const titleGr = document.getElementById('wp-gr');
-  const meanInput = document.getElementById('wp-mean-input');
-  const contextBox = document.getElementById('wp-context-box');
+  const popup = document.getElementById('wpop'); const titleGr = document.getElementById('wp-gr');
+  const meanInput = document.getElementById('wp-mean-input'); const contextBox = document.getElementById('wp-context-box');
   const phoneticBox = document.getElementById('wp-phonetic');
 
   titleGr.textContent = word;
   const cleanForPhonetic = word.replace(/[.,!?;():"""]/g, '').trim();
-  if (cleanForPhonetic.length > 0) {
-    phoneticBox.innerHTML = `<strong>Okunuşu:</strong> ${getGreekPhonetics(cleanForPhonetic)}`;
-    phoneticBox.classList.add('visible');
-  } else {
-    phoneticBox.classList.remove('visible');
-  }
+  if (cleanForPhonetic.length > 0) { phoneticBox.innerHTML = `<strong>Okunuşu:</strong> ${getGreekPhonetics(cleanForPhonetic)}`; phoneticBox.classList.add('visible'); } 
+  else { phoneticBox.classList.remove('visible'); }
   
   let displayContext = contextSentence.trim();
   if (displayContext.length > 80) {
     const wIdx = displayContext.indexOf(word);
     if (wIdx > -1) {
-      let start = Math.max(0, wIdx - 35);
-      let end = Math.min(displayContext.length, wIdx + word.length + 40);
+      let start = Math.max(0, wIdx - 35); let end = Math.min(displayContext.length, wIdx + word.length + 40);
       displayContext = (start > 0 ? "... " : "") + displayContext.substring(start, end).trim() + (end < displayContext.length ? " ..." : "");
-    } else {
-      displayContext = displayContext.substring(0, 80) + "...";
-    }
+    } else { displayContext = displayContext.substring(0, 80) + "..."; }
   }
   contextBox.textContent = `"${displayContext}"`;
   
-  popup.style.display = "block";
-  populateDeckSelects();
-  meanInput.value = "Çeviri aranıyor...";
-  
-  const speakBtn = document.getElementById('popup-speak-btn');
-  if (speakBtn) speakBtn.classList.remove('speaking');
-
-  const finalTranslation = await getSmartTranslation(word, contextSentence);
-  meanInput.value = finalTranslation;
+  popup.style.display = "block"; populateDeckSelects(); meanInput.value = "Çeviri aranıyor...";
+  const speakBtn = document.getElementById('popup-speak-btn'); if (speakBtn) speakBtn.classList.remove('speaking');
+  meanInput.value = await getSmartTranslation(word, contextSentence);
 }
 
-function closePopup() {
-  document.getElementById('wpop').style.display = "none";
-  stopSpeech();
-}
-function toggleHighlightWord() {
-  if (activeTokenElement) {
-    activeTokenElement.classList.toggle('highlighted');
-    showToastMessage("Kelime vurgusu değiştirildi.");
-  }
-}
+function closePopup() { document.getElementById('wpop').style.display = "none"; stopSpeech(); }
+function toggleHighlightWord() { if (activeTokenElement) { activeTokenElement.classList.toggle('highlighted'); showToastMessage("Kelime vurgusu değiştirildi."); } }
 
 /** 9. DESTE VE SÖZLÜK KAYIT İŞLEMLERİ */
 function populateDeckSelects() {
-  const optionsHtml = Object.keys(userDecks).map(deckName => 
-    `<option value="${deckName}" ${deckName === lastActiveDeck ? 'selected' : ''}>${deckName} (${userDecks[deckName].length} kelime)</option>`
-  ).join('');
-  const popSelect = document.getElementById('wp-deck-select');
-  if(popSelect) popSelect.innerHTML = optionsHtml;
-  const quizSelect = document.getElementById('quiz-deck-select');
-  if(quizSelect) quizSelect.innerHTML = optionsHtml;
+  const optionsHtml = Object.keys(userDecks).map(deckName => `<option value="${deckName}" ${deckName === lastActiveDeck ? 'selected' : ''}>${deckName} (${userDecks[deckName].length} kelime)</option>`).join('');
+  const popSelect = document.getElementById('wp-deck-select'); if(popSelect) popSelect.innerHTML = optionsHtml;
+  const quizSelect = document.getElementById('quiz-deck-select'); if(quizSelect) quizSelect.innerHTML = optionsHtml;
 }
 function createNewDeck() {
   const newName = prompt("Yeni deste adı girin:");
   if (newName && newName.trim()) {
     const cleanName = newName.trim();
     if (!userDecks[cleanName]) {
-      userDecks[cleanName] = [];
-      lastActiveDeck = cleanName;
-      saveDecksToLocalStorage();
-      populateDeckSelects();
-      renderDecksAccordion();
-      showToastMessage(`"${cleanName}" destesi oluşturuldu.`);
+      userDecks[cleanName] = []; lastActiveDeck = cleanName; saveDecksToLocalStorage(); populateDeckSelects(); renderDecksAccordion(); showToastMessage(`"${cleanName}" destesi oluşturuldu.`);
     } else { showToastMessage("Bu isimde bir deste zaten var!"); }
   }
 }
 function saveWordToDeck() {
-  const grWord = document.getElementById('wp-gr').textContent.trim();
-  const trMean = document.getElementById('wp-mean-input').value.trim();
-  const targetDeck = document.getElementById('wp-deck-select').value;
+  const grWord = document.getElementById('wp-gr').textContent.trim(); const trMean = document.getElementById('wp-mean-input').value.trim(); const targetDeck = document.getElementById('wp-deck-select').value;
   if (!trMean || trMean === "Çeviri aranıyor...") { showToastMessage("Lütfen geçerli bir anlam girin."); return; }
-  if (userDecks[targetDeck].some(item => item.gr === grWord)) {
-    showToastMessage("Bu kelime destede zaten mevcut!");
-  } else {
-    userDecks[targetDeck].push({ gr: grWord, tr: trMean });
-    lastActiveDeck = targetDeck;
-    saveDecksToLocalStorage();
-    localStorage.setItem('last_active_deck_v12', lastActiveDeck);
-    renderDecksAccordion();
-    populateDeckSelects();
-    showToastMessage("📚 Kelime desteye eklendi.");
+  if (userDecks[targetDeck].some(item => item.gr === grWord)) { showToastMessage("Bu kelime destede zaten mevcut!"); } 
+  else {
+    userDecks[targetDeck].push({ gr: grWord, tr: trMean }); lastActiveDeck = targetDeck; saveDecksToLocalStorage(); localStorage.setItem('last_active_deck_v12', lastActiveDeck);
+    renderDecksAccordion(); populateDeckSelects(); showToastMessage("📚 Kelime desteye eklendi.");
   }
   closePopup();
 }
 function saveWordToCustomDict() {
-  const cleanWord = document.getElementById('wp-gr').textContent.toLowerCase().replace(/[.,!?;():]/g, "").trim();
-  const newMean = document.getElementById('wp-mean-input').value.trim();
-  if(newMean) {
-    userCustomDict.set(cleanWord, newMean);
-    localStorage.setItem('yunanca_custom_dict_v12', JSON.stringify(Object.fromEntries(userCustomDict)));
-    showToastMessage("💾 Sözlüğe geçici olarak işlendi.");
-  }
+  const cleanWord = document.getElementById('wp-gr').textContent.toLowerCase().replace(/[.,!?;():]/g, "").trim(); const newMean = document.getElementById('wp-mean-input').value.trim();
+  if(newMean) { userCustomDict.set(cleanWord, newMean); localStorage.setItem('yunanca_custom_dict_v12', JSON.stringify(Object.fromEntries(userCustomDict))); showToastMessage("💾 Sözlüğe geçici olarak işlendi."); }
 }
 function saveDecksToLocalStorage() { localStorage.setItem('yunanca_decks_v12', JSON.stringify(userDecks)); }
 
 /** 10. DESTE LİSTESİ (AKORDİYON) */
 function renderDecksAccordion() {
-  const displayContainer = document.getElementById('deck-display');
-  displayContainer.innerHTML = "";
+  const displayContainer = document.getElementById('deck-display'); displayContainer.innerHTML = "";
   for (let deckName in userDecks) {
-    const wordList = userDecks[deckName];
-    const safeId = deckName.replace(/[^a-zA-Z0-9]/g, '_');
-    let wordsHtml = "";
+    const wordList = userDecks[deckName]; const safeId = deckName.replace(/[^a-zA-Z0-9]/g, '_'); let wordsHtml = "";
     if (wordList.length === 0) { wordsHtml = `<p style="color:var(--text-dim); text-align:center;">Bu destede henüz kelime yok.</p>`; } 
     else {
       wordsHtml = wordList.map((item, index) => `
-        <div class="word-item">
-          <span><b>${item.gr}</b> ${item.tr}</span>
+        <div class="word-item"><span><b>${item.gr}</b> ${item.tr}</span>
           <div style="display:flex; gap:6px; align-items:center;">
             <button class="word-item-tts" onclick="speakGreek('${item.gr.replace(/'/g, "\\'")}'); event.stopPropagation();" title="Dinle">🔊</button>
             <button class="del-btn" onclick="deleteWordFromDeck('${deckName}', ${index})" title="Sil">🗑️</button>
           </div>
-        </div>
-      `).join('');
+        </div>`).join('');
     }
-    const deleteDeckBtn = deckName !== "Genel Kelimeler" 
-      ? `<button class="del-btn" onclick="event.stopPropagation(); deleteDeckEntirely('${deckName}')" style="margin-right:15px;" title="Desteyi Sil">Desteyi Sil</button>` : ``;
-
+    const deleteDeckBtn = deckName !== "Genel Kelimeler" ? `<button class="del-btn" onclick="event.stopPropagation(); deleteDeckEntirely('${deckName}')" style="margin-right:15px;" title="Desteyi Sil">Desteyi Sil</button>` : ``;
     displayContainer.innerHTML += `
       <div class="deck-section">
-        <div class="deck-header" onclick="toggleAccordion('${safeId}')">
-          <strong>📂 ${deckName} (${wordList.length} kelime)</strong>
-          <div style="display:flex; align-items:center;">
-            ${deleteDeckBtn}
-            <span class="deck-arrow" id="arrow-${safeId}">▼</span>
-          </div>
+        <div class="deck-header" onclick="toggleAccordion('deck-${safeId}')"><strong>📂 ${deckName} (${wordList.length} kelime)</strong>
+          <div style="display:flex; align-items:center;">${deleteDeckBtn}<span class="deck-arrow" id="arrow-deck-${safeId}">▼</span></div>
         </div>
-        <div class="deck-content" id="content-${safeId}">
-          ${wordsHtml}
-        </div>
-      </div>
-    `;
+        <div class="deck-content" id="content-deck-${safeId}">${wordsHtml}</div>
+      </div>`;
   }
 }
 function toggleAccordion(safeId) {
-  const content = document.getElementById('content-' + safeId);
-  const arrow = document.getElementById('arrow-' + safeId);
+  const content = document.getElementById('content-' + safeId); const arrow = document.getElementById('arrow-' + safeId);
   if (content) { content.classList.toggle('open'); arrow.classList.toggle('open'); }
 }
 function deleteWordFromDeck(deckName, wordIndex) {
-  if (confirm("Bu kelimeyi silmek istediğinize emin misiniz?")) {
-    userDecks[deckName].splice(wordIndex, 1);
-    saveDecksToLocalStorage(); renderDecksAccordion(); populateDeckSelects();
-  }
+  if (confirm("Bu kelimeyi silmek istediğinize emin misiniz?")) { userDecks[deckName].splice(wordIndex, 1); saveDecksToLocalStorage(); renderDecksAccordion(); populateDeckSelects(); }
 }
 function deleteDeckEntirely(deckName) {
-  if (confirm(`"${deckName}" destesini silmek istediğinize emin misiniz?`)) {
-    delete userDecks[deckName];
-    if (lastActiveDeck === deckName) lastActiveDeck = "Genel Kelimeler";
-    saveDecksToLocalStorage(); renderDecksAccordion(); populateDeckSelects();
-  }
+  if (confirm(`"${deckName}" destesini silmek istediğinize emin misiniz?`)) { delete userDecks[deckName]; if (lastActiveDeck === deckName) lastActiveDeck = "Genel Kelimeler"; saveDecksToLocalStorage(); renderDecksAccordion(); populateDeckSelects(); }
 }
 
 /** 11. ÖĞRETİCİ TEST MERKEZİ */
 function startAdvancedQuiz(isRetry = false) {
   const mode = document.getElementById('quiz-mode-select').value;
   if (!isRetry) {
-    const deckName = document.getElementById('quiz-deck-select').value;
-    const deck = userDecks[deckName];
+    const deckName = document.getElementById('quiz-deck-select').value; const deck = userDecks[deckName];
     if (!deck || deck.length === 0) { showToastMessage("Seçilen destede kelime yok!"); return; }
-    let shuffledDeck = [...deck].sort(() => Math.random() - 0.5);
-    const limit = document.getElementById('quiz-limit-select').value;
+    let shuffledDeck = [...deck].sort(() => Math.random() - 0.5); const limit = document.getElementById('quiz-limit-select').value;
     if (limit !== 'all') shuffledDeck = shuffledDeck.slice(0, parseInt(limit));
-    currentQuizPool = shuffledDeck;
-    quizMistakes = []; correctCount = 0;
+    currentQuizPool = shuffledDeck; quizMistakes = []; correctCount = 0;
   } else {
-    currentQuizPool = [...quizMistakes].map(m => ({gr: m.gr, tr: m.tr})).sort(() => Math.random() - 0.5);
-    quizMistakes = []; correctCount = 0;
+    currentQuizPool = [...quizMistakes].map(m => ({gr: m.gr, tr: m.tr})).sort(() => Math.random() - 0.5); quizMistakes = []; correctCount = 0;
   }
-  totalInitialWords = currentQuizPool.length;
-  currentQuizIndex = 0;
-  document.body.classList.add('focus-mode');
-  document.getElementById('quiz-setup-view').style.display = 'none';
-  document.getElementById('quiz-result-view').style.display = 'none';
-  document.getElementById('quiz-active-view').style.display = 'block';
+  totalInitialWords = currentQuizPool.length; currentQuizIndex = 0;
+  document.body.classList.add('focus-mode'); document.getElementById('quiz-setup-view').style.display = 'none'; document.getElementById('quiz-result-view').style.display = 'none'; document.getElementById('quiz-active-view').style.display = 'block';
   loadNextQuizQuestion();
 }
 
 function retryMistakes() { startAdvancedQuiz(true); }
 function updateQuizUI() {
-  let progressRatio = (correctCount / totalInitialWords) * 100; 
-  if (progressRatio > 100) progressRatio = 100;
+  let progressRatio = (correctCount / totalInitialWords) * 100; if (progressRatio > 100) progressRatio = 100;
   document.getElementById('quiz-progress-text').textContent = `ÖĞRENİLEN: ${correctCount} / ${totalInitialWords}`;
   document.getElementById('quiz-mistake-counter').textContent = `HATA: ${quizMistakes.length}`;
   document.getElementById('quiz-progress-bar').style.width = `${progressRatio}%`;
 }
 
 let quizMistakes = []; let correctCount = 0; let totalInitialWords = 0;
-function recordMistake(wordObj, modeName) {
-  if (!quizMistakes.some(w => w.gr === wordObj.gr)) quizMistakes.push({ gr: wordObj.gr, tr: wordObj.tr, type: modeName });
-}
+function recordMistake(wordObj, modeName) { if (!quizMistakes.some(w => w.gr === wordObj.gr)) quizMistakes.push({ gr: wordObj.gr, tr: wordObj.tr, type: modeName }); }
 function pushToPoolIfWrong(wordObj) { currentQuizPool.push(wordObj); }
 
 function finishQuiz() {
-  document.body.classList.remove('focus-mode'); 
-  document.getElementById('quiz-active-view').style.display = 'none';
-  document.getElementById('quiz-result-view').style.display = 'block';
+  document.body.classList.remove('focus-mode'); document.getElementById('quiz-active-view').style.display = 'none'; document.getElementById('quiz-result-view').style.display = 'block';
   document.getElementById('res-total').textContent = totalInitialWords;
-  let finalCorrect = totalInitialWords - quizMistakes.length;
-  if(finalCorrect < 0) finalCorrect = 0;
-  document.getElementById('res-correct').textContent = finalCorrect;
-  document.getElementById('res-wrong').textContent = quizMistakes.length;
-  let score = Math.round((finalCorrect / totalInitialWords) * 100) || 0;
-  if (score > 100) score = 100;
+  let finalCorrect = totalInitialWords - quizMistakes.length; if(finalCorrect < 0) finalCorrect = 0;
+  document.getElementById('res-correct').textContent = finalCorrect; document.getElementById('res-wrong').textContent = quizMistakes.length;
+  let score = Math.round((finalCorrect / totalInitialWords) * 100) || 0; if (score > 100) score = 100;
   document.getElementById('res-score').textContent = `%${score}`;
 
-  const table = document.getElementById('mistakes-table');
-  table.innerHTML = "";
+  const table = document.getElementById('mistakes-table'); table.innerHTML = "";
   if (quizMistakes.length > 0) {
-    document.getElementById('mistakes-container').style.display = 'block';
-    document.getElementById('retry-mistakes-btn').style.display = 'inline-flex';
+    document.getElementById('mistakes-container').style.display = 'block'; document.getElementById('retry-mistakes-btn').style.display = 'inline-flex';
     table.innerHTML = `<tr><th>Yunanca</th><th>Türkçe</th></tr>` + quizMistakes.map(m => `<tr><td><b>${m.gr}</b></td><td>${m.tr}</td></tr>`).join('');
-  } else {
-    document.getElementById('mistakes-container').style.display = 'none';
-    document.getElementById('retry-mistakes-btn').style.display = 'none';
-  }
+  } else { document.getElementById('mistakes-container').style.display = 'none'; document.getElementById('retry-mistakes-btn').style.display = 'none'; }
 }
 
 let isQuestionActive = false;
 function loadNextQuizQuestion() {
   if (correctCount >= totalInitialWords || currentQuizIndex >= currentQuizPool.length) { finishQuiz(); return; }
-  updateQuizUI(); isQuestionActive = true;
-  currentQuizQuestion = currentQuizPool[currentQuizIndex];
-  const mode = document.getElementById('quiz-mode-select').value;
-  const area = document.getElementById('quiz-work-area');
-  const feedback = document.getElementById('quiz-feedback');
+  updateQuizUI(); isQuestionActive = true; currentQuizQuestion = currentQuizPool[currentQuizIndex];
+  const mode = document.getElementById('quiz-mode-select').value; const area = document.getElementById('quiz-work-area'); const feedback = document.getElementById('quiz-feedback');
   feedback.innerHTML = ""; feedback.className = "";
   const speakBtn = `<button class="quiz-speak-btn" onclick="speakGreek('${currentQuizQuestion.gr.replace(/'/g,"\\'")}', this)">🔊</button>`;
 
   if (mode === 'multi') {
     let allTr = Object.values(userDecks).flat().map(i => i.tr).filter(t => t !== currentQuizQuestion.tr);
     let opts = [currentQuizQuestion.tr, ...[...new Set(allTr)].sort(()=>Math.random()-0.5).slice(0,3)].sort(()=>Math.random()-0.5);
-    area.innerHTML = `
-      <div class="quiz-word-row"><div class="quiz-big-word">${currentQuizQuestion.gr}</div>${speakBtn}</div>
-      <div class="quiz-options-grid">${opts.map(opt => `<button class="quiz-opt-btn" onclick="evalMulti('${opt.replace(/'/g, "\\'")}')">${opt}</button>`).join('')}</div>
-    `;
+    area.innerHTML = `<div class="quiz-word-row"><div class="quiz-big-word">${currentQuizQuestion.gr}</div>${speakBtn}</div><div class="quiz-options-grid">${opts.map(opt => `<button class="quiz-opt-btn" onclick="evalMulti('${opt.replace(/'/g, "\\'")}')">${opt}</button>`).join('')}</div>`;
   } 
   else if (mode === 'listen') {
     let allTr = Object.values(userDecks).flat().map(i => i.tr).filter(t => t !== currentQuizQuestion.tr);
     let opts = [currentQuizQuestion.tr, ...[...new Set(allTr)].sort(()=>Math.random()-0.5).slice(0,3)].sort(()=>Math.random()-0.5);
-    area.innerHTML = `
-      <div style="color:var(--text-dim); margin-bottom:15px; font-size:1.1rem;">Duyduğunuz kelimenin anlamını seçin:</div>
-      <div class="quiz-word-row">
-        <div class="quiz-big-word" style="filter: blur(12px); user-select:none;" id="hidden-gr-word">??????</div>
-        <button class="quiz-speak-btn" style="width:75px; height:75px; background:var(--accent); color:#fff;" onclick="speakGreek('${currentQuizQuestion.gr.replace(/'/g,"\\'")}', this)">▶️</button>
-      </div>
-      <div class="quiz-options-grid">${opts.map(opt => `<button class="quiz-opt-btn" onclick="evalListen('${opt.replace(/'/g, "\\'")}')">${opt}</button>`).join('')}</div>
-    `;
+    area.innerHTML = `<div style="color:var(--text-dim); margin-bottom:15px; font-size:1.1rem;">Duyduğunuz kelimenin anlamını seçin:</div><div class="quiz-word-row"><div class="quiz-big-word" style="filter: blur(12px); user-select:none;" id="hidden-gr-word">??????</div><button class="quiz-speak-btn" style="width:75px; height:75px; background:var(--accent); color:#fff;" onclick="speakGreek('${currentQuizQuestion.gr.replace(/'/g,"\\'")}', this)">▶️</button></div><div class="quiz-options-grid">${opts.map(opt => `<button class="quiz-opt-btn" onclick="evalListen('${opt.replace(/'/g, "\\'")}')">${opt}</button>`).join('')}</div>`;
     setTimeout(()=>speakGreek(currentQuizQuestion.gr), 500); 
   }
   else if (mode === 'write') {
-    area.innerHTML = `
-      <div class="quiz-word-row"><div class="quiz-big-word">${currentQuizQuestion.gr}</div>${speakBtn}</div>
-      <input type="text" id="quiz-write-input" placeholder="Türkçe karşılığı nedir?" autocomplete="off" onkeydown="if(event.key==='Enter') evalWrite()">
-      <div style="display:flex; gap:10px; width:100%; max-width:450px;">
-        <button class="main-btn" style="flex:2; padding:18px;" onclick="evalWrite()">Cevapla</button>
-        <button class="secondary-btn" style="flex:1;" onclick="giveWriteHint()">İpucu</button>
-      </div>
-    `;
+    area.innerHTML = `<div class="quiz-word-row"><div class="quiz-big-word">${currentQuizQuestion.gr}</div>${speakBtn}</div><input type="text" id="quiz-write-input" placeholder="Türkçe karşılığı nedir?" autocomplete="off" onkeydown="if(event.key==='Enter') evalWrite()"><div style="display:flex; gap:10px; width:100%; max-width:450px;"><button class="main-btn" style="flex:2; padding:18px;" onclick="evalWrite()">Cevapla</button><button class="secondary-btn" style="flex:1;" onclick="giveWriteHint()">İpucu</button></div>`;
     setTimeout(() => document.getElementById('quiz-write-input').focus(), 100);
   }
   else if (mode === 'flash') {
-    area.innerHTML = `
-      <div class="quiz-word-row"><div class="quiz-big-word">${currentQuizQuestion.gr}</div>${speakBtn}</div>
-      <div id="flash-answer" style="display:none; font-size:2.2rem; color:var(--success); font-weight:bold; margin-bottom:30px; animation:fadeIn 0.3s;">${currentQuizQuestion.tr}</div>
-      <button class="main-btn" id="flash-show-btn" style="padding:20px 50px; font-size:1.2rem;" onclick="document.getElementById('flash-answer').style.display='block'; this.style.display='none'; document.getElementById('flash-controls').style.display='flex';">Anlamını Göster</button>
-      <div id="flash-controls" style="display:none; gap:15px; width:100%; max-width:450px; margin-top:10px;">
-        <button class="main-btn" style="flex:1; background:var(--error); padding:18px;" onclick="evalFlash(false)">❌ Bilemedim</button>
-        <button class="main-btn" style="flex:1; background:var(--success); padding:18px;" onclick="evalFlash(true)">✅ Biliyordum</button>
-      </div>
-    `;
+    area.innerHTML = `<div class="quiz-word-row"><div class="quiz-big-word">${currentQuizQuestion.gr}</div>${speakBtn}</div><div id="flash-answer" style="display:none; font-size:2.2rem; color:var(--success); font-weight:bold; margin-bottom:30px; animation:fadeIn 0.3s;">${currentQuizQuestion.tr}</div><button class="main-btn" id="flash-show-btn" style="padding:20px 50px; font-size:1.2rem;" onclick="document.getElementById('flash-answer').style.display='block'; this.style.display='none'; document.getElementById('flash-controls').style.display='flex';">Anlamını Göster</button><div id="flash-controls" style="display:none; gap:15px; width:100%; max-width:450px; margin-top:10px;"><button class="main-btn" style="flex:1; background:var(--error); padding:18px;" onclick="evalFlash(false)">❌ Bilemedim</button><button class="main-btn" style="flex:1; background:var(--success); padding:18px;" onclick="evalFlash(true)">✅ Biliyordum</button></div>`;
   }
 }
 
-function exitQuiz() {
-  document.body.classList.remove('focus-mode');
-  document.getElementById('quiz-active-view').style.display = 'none';
-  document.getElementById('quiz-result-view').style.display = 'none';
-  document.getElementById('quiz-setup-view').style.display = 'block';
-  stopSpeech();
-}
+function exitQuiz() { document.body.classList.remove('focus-mode'); document.getElementById('quiz-active-view').style.display = 'none'; document.getElementById('quiz-result-view').style.display = 'none'; document.getElementById('quiz-setup-view').style.display = 'block'; stopSpeech(); }
 
-function showFeedback(isSuccess, msg) {
-  const fb = document.getElementById('quiz-feedback'); fb.className = 'pop-anim'; 
-  fb.innerHTML = `<span style="color:var(--${isSuccess?'success':'error'}); background:rgba(${isSuccess?'74,222,128':'248,113,113'},0.1); padding:8px 20px; border-radius:20px;">${isSuccess?'✅':'❌'} ${msg}</span>`;
-}
+function showFeedback(isSuccess, msg) { const fb = document.getElementById('quiz-feedback'); fb.className = 'pop-anim'; fb.innerHTML = `<span style="color:var(--${isSuccess?'success':'error'}); background:rgba(${isSuccess?'74,222,128':'248,113,113'},0.1); padding:8px 20px; border-radius:20px;">${isSuccess?'✅':'❌'} ${msg}</span>`; }
 
 function evalMulti(selected) {
-  if (!isQuestionActive) return; isQuestionActive = false;
-  const btns = document.querySelectorAll('.quiz-opt-btn');
-  let isCorrect = (selected === currentQuizQuestion.tr);
-  btns.forEach(btn => {
-    btn.disabled = true;
-    if (btn.textContent === currentQuizQuestion.tr) btn.classList.add('correct');
-    else if (btn.textContent === selected && !isCorrect) btn.classList.add('wrong');
-  });
-  if (isCorrect) {
-    if(!quizMistakes.some(w=>w.gr===currentQuizQuestion.gr)) correctCount++;
-    showFeedback(true, "Harika!"); updateQuizUI(); currentQuizIndex++; setTimeout(loadNextQuizQuestion, 1000);
-  } else {
-    recordMistake(currentQuizQuestion, 'multi'); pushToPoolIfWrong(currentQuizQuestion); 
-    showFeedback(false, "Doğrusunu yeşil ile işaretledik."); currentQuizIndex++; setTimeout(loadNextQuizQuestion, 2000); 
-  }
+  if (!isQuestionActive) return; isQuestionActive = false; const btns = document.querySelectorAll('.quiz-opt-btn'); let isCorrect = (selected === currentQuizQuestion.tr);
+  btns.forEach(btn => { btn.disabled = true; if (btn.textContent === currentQuizQuestion.tr) btn.classList.add('correct'); else if (btn.textContent === selected && !isCorrect) btn.classList.add('wrong'); });
+  if (isCorrect) { if(!quizMistakes.some(w=>w.gr===currentQuizQuestion.gr)) correctCount++; showFeedback(true, "Harika!"); updateQuizUI(); currentQuizIndex++; setTimeout(loadNextQuizQuestion, 1000); } 
+  else { recordMistake(currentQuizQuestion, 'multi'); pushToPoolIfWrong(currentQuizQuestion); showFeedback(false, "Doğrusunu yeşil ile işaretledik."); currentQuizIndex++; setTimeout(loadNextQuizQuestion, 2000); }
 }
 
-function evalListen(selected) {
-  document.getElementById('hidden-gr-word').style.filter = 'none'; 
-  document.getElementById('hidden-gr-word').textContent = currentQuizQuestion.gr;
-  evalMulti(selected); 
-}
+function evalListen(selected) { document.getElementById('hidden-gr-word').style.filter = 'none'; document.getElementById('hidden-gr-word').textContent = currentQuizQuestion.gr; evalMulti(selected); }
 
 function evalWrite() {
-  if (!isQuestionActive) return;
-  const input = document.getElementById('quiz-write-input');
+  if (!isQuestionActive) return; const input = document.getElementById('quiz-write-input');
   if (input.value.trim().toLowerCase() === currentQuizQuestion.tr.trim().toLowerCase()) {
     isQuestionActive = false; input.style.borderColor = "var(--success)"; input.style.color = "var(--success)";
-    if(!quizMistakes.some(w=>w.gr===currentQuizQuestion.gr)) correctCount++;
-    showFeedback(true, "Mükemmel!"); updateQuizUI(); currentQuizIndex++; setTimeout(loadNextQuizQuestion, 1000);
-  } else {
-    recordMistake(currentQuizQuestion, 'write'); input.classList.remove('shake'); void input.offsetWidth; input.classList.add('shake');
-    showFeedback(false, "Hatalı. Tekrar dene veya ipucu al.");
-  }
+    if(!quizMistakes.some(w=>w.gr===currentQuizQuestion.gr)) correctCount++; showFeedback(true, "Mükemmel!"); updateQuizUI(); currentQuizIndex++; setTimeout(loadNextQuizQuestion, 1000);
+  } else { recordMistake(currentQuizQuestion, 'write'); input.classList.remove('shake'); void input.offsetWidth; input.classList.add('shake'); showFeedback(false, "Hatalı. Tekrar dene veya ipucu al."); }
 }
 
 function giveWriteHint() {
-  if (!isQuestionActive) return;
-  recordMistake(currentQuizQuestion, 'write'); pushToPoolIfWrong(currentQuizQuestion); 
-  const input = document.getElementById('quiz-write-input');
-  input.value = currentQuizQuestion.tr; input.style.borderColor = "var(--accent2)";
-  const fb = document.getElementById('quiz-feedback'); fb.className = 'pop-anim';
-  fb.innerHTML = `<span style="color:var(--accent2); background:rgba(232,201,109,0.1); padding:8px 20px; border-radius:20px;">💡 İpucu kullanıldı. Kelime daha sonra tekrar sorulacak.</span>`;
+  if (!isQuestionActive) return; recordMistake(currentQuizQuestion, 'write'); pushToPoolIfWrong(currentQuizQuestion); 
+  const input = document.getElementById('quiz-write-input'); input.value = currentQuizQuestion.tr; input.style.borderColor = "var(--accent2)";
+  const fb = document.getElementById('quiz-feedback'); fb.className = 'pop-anim'; fb.innerHTML = `<span style="color:var(--accent2); background:rgba(232,201,109,0.1); padding:8px 20px; border-radius:20px;">💡 İpucu kullanıldı. Kelime daha sonra tekrar sorulacak.</span>`;
   isQuestionActive = false; currentQuizIndex++; setTimeout(loadNextQuizQuestion, 2500);
 }
 
 function evalFlash(knewIt) {
   if (!isQuestionActive) return; isQuestionActive = false;
-  if (knewIt) {
-    if(!quizMistakes.some(w=>w.gr===currentQuizQuestion.gr)) correctCount++;
-    updateQuizUI(); currentQuizIndex++; loadNextQuizQuestion();
-  } else {
-    recordMistake(currentQuizQuestion, 'flash'); pushToPoolIfWrong(currentQuizQuestion); 
-    const fb = document.getElementById('quiz-feedback'); fb.className = 'pop-anim';
-    fb.innerHTML = `<span style="color:var(--accent2); background:rgba(232,201,109,0.1); padding:8px 20px; border-radius:20px;">Daha sonra tekrar sorulacak.</span>`;
-    currentQuizIndex++; setTimeout(loadNextQuizQuestion, 1200);
-  }
+  if (knewIt) { if(!quizMistakes.some(w=>w.gr===currentQuizQuestion.gr)) correctCount++; updateQuizUI(); currentQuizIndex++; loadNextQuizQuestion(); } 
+  else { recordMistake(currentQuizQuestion, 'flash'); pushToPoolIfWrong(currentQuizQuestion); const fb = document.getElementById('quiz-feedback'); fb.className = 'pop-anim'; fb.innerHTML = `<span style="color:var(--accent2); background:rgba(232,201,109,0.1); padding:8px 20px; border-radius:20px;">Daha sonra tekrar sorulacak.</span>`; currentQuizIndex++; setTimeout(loadNextQuizQuestion, 1200); }
 }
 
 /** ==========================================
@@ -1377,35 +1037,20 @@ function evalFlash(knewIt) {
 let ytPlayer = null; let ytSubtitles = []; let videoSyncInterval = null; let currentActiveSubIndex = -1;
 
 function renderVideoLibrary() {
-  const grid = document.getElementById('video-grid-container');
-  const filterContainer = document.getElementById('video-category-filters');
-  const uniqueCategories = [...new Set(VIDEO_KATALOGU.map(v => v.category))];
-  const allCategories = ["Tümü", ...uniqueCategories];
-
+  const grid = document.getElementById('video-grid-container'); const filterContainer = document.getElementById('video-category-filters');
+  const uniqueCategories = [...new Set(VIDEO_KATALOGU.map(v => v.category))]; const allCategories = ["Tümü", ...uniqueCategories];
   filterContainer.innerHTML = allCategories.map(cat => `<button class="cat-btn ${cat === currentVideoCategory ? 'active' : ''}" onclick="filterVideoCategory('${cat}')">${cat}</button>`).join('');
-
   const filteredVideos = currentVideoCategory === "Tümü" ? VIDEO_KATALOGU : VIDEO_KATALOGU.filter(v => v.category === currentVideoCategory);
   grid.innerHTML = "";
   if (filteredVideos.length === 0) { grid.innerHTML = `<p style="color:var(--text-dim); text-align:center; grid-column: 1 / -1; padding: 30px;">Bu kategoride henüz video bulunmuyor.</p>`; return; }
-
   filteredVideos.forEach(video => {
-    const card = document.createElement('div'); card.className = 'video-card';
-    card.onclick = () => openVideo(video.id, video.title);
+    const card = document.createElement('div'); card.className = 'video-card'; card.onclick = () => openVideo(video.id, video.title);
     card.innerHTML = `
-      <div class="video-card-thumb">
-        <span class="video-card-level">${video.level}</span>
-        <span class="video-card-category-badge">${video.category}</span>
-        <img src="https://img.youtube.com/vi/${video.id}/hqdefault.jpg" alt="${video.title}">
-      </div>
-      <div class="video-card-content">
-        <div class="video-card-title">${video.title}</div>
-        <div class="video-card-play">▶ Çalışmaya Başla</div>
-      </div>
-    `;
+      <div class="video-card-thumb"><span class="video-card-level">${video.level}</span><span class="video-card-category-badge">${video.category}</span><img src="https://img.youtube.com/vi/${video.id}/hqdefault.jpg" alt="${video.title}"></div>
+      <div class="video-card-content"><div class="video-card-title">${video.title}</div><div class="video-card-play">▶ Çalışmaya Başla</div></div>`;
     grid.appendChild(card);
   });
 }
-
 function filterVideoCategory(catName) { currentVideoCategory = catName; renderVideoLibrary(); }
 
 async function openVideo(videoId, title) {
@@ -1416,130 +1061,207 @@ async function openVideo(videoId, title) {
     ytSubtitles = await res.json();
     if (!Array.isArray(ytSubtitles) || ytSubtitles.length === 0) throw new Error("JSON formatı hatalı veya boş.");
 
-    document.getElementById('video-library-view').style.display = 'none';
-    document.getElementById('video-workspace').style.display = 'block';
-    document.getElementById('active-video-title').textContent = title;
-    
+    document.getElementById('video-library-view').style.display = 'none'; document.getElementById('video-workspace').style.display = 'block'; document.getElementById('active-video-title').textContent = title;
     if (ytPlayer) ytPlayer.loadVideoById(videoId);
     else {
-      ytPlayer = new YT.Player('youtube-player', {
-        height: '100%', width: '100%', videoId: videoId,
-        playerVars: { 'playsinline': 1, 'rel': 0, 'origin': window.location.origin === "null" ? "*" : window.location.origin },
-        events: { 'onStateChange': onPlayerStateChange }
-      });
+      ytPlayer = new YT.Player('youtube-player', { height: '100%', width: '100%', videoId: videoId, playerVars: { 'playsinline': 1, 'rel': 0, 'origin': window.location.origin === "null" ? "*" : window.location.origin }, events: { 'onStateChange': onPlayerStateChange } });
     }
-    if(videoSyncInterval) clearInterval(videoSyncInterval);
-    videoSyncInterval = setInterval(syncSubtitles, 200);
+    if(videoSyncInterval) clearInterval(videoSyncInterval); videoSyncInterval = setInterval(syncSubtitles, 200);
   } catch (err) { showToastMessage("❌ Hata: " + err.message); }
 }
 
 function closeVideoPlayer() {
-  if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') ytPlayer.pauseVideo();
-  if(videoSyncInterval) clearInterval(videoSyncInterval);
-  
-  document.getElementById('video-workspace').style.display = 'none';
-  document.getElementById('video-library-view').style.display = 'block';
-  document.getElementById('sub-gr').innerHTML = "...";
-  document.getElementById('sub-tr').textContent = "Videonun başlaması bekleniyor...";
-  document.getElementById('active-subtitle-container').classList.remove('active');
-  currentActiveSubIndex = -1;
+  if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') ytPlayer.pauseVideo(); if(videoSyncInterval) clearInterval(videoSyncInterval);
+  document.getElementById('video-workspace').style.display = 'none'; document.getElementById('video-library-view').style.display = 'block';
+  document.getElementById('sub-gr').innerHTML = "..."; document.getElementById('sub-tr').textContent = "Videonun başlaması bekleniyor..."; document.getElementById('active-subtitle-container').classList.remove('active'); currentActiveSubIndex = -1;
 }
 
 function syncSubtitles() {
-  if (!ytPlayer || typeof ytPlayer.getCurrentTime !== 'function') return;
-  const currentTime = ytPlayer.getCurrentTime();
-  let foundIndex = -1;
-  for (let i = 0; i < ytSubtitles.length; i++) {
-    if (currentTime >= ytSubtitles[i].start && currentTime <= ytSubtitles[i].end) { foundIndex = i; break; }
-  }
-
+  if (!ytPlayer || typeof ytPlayer.getCurrentTime !== 'function') return; const currentTime = ytPlayer.getCurrentTime(); let foundIndex = -1;
+  for (let i = 0; i < ytSubtitles.length; i++) { if (currentTime >= ytSubtitles[i].start && currentTime <= ytSubtitles[i].end) { foundIndex = i; break; } }
   if (foundIndex !== currentActiveSubIndex) {
-    currentActiveSubIndex = foundIndex;
-    const subGrContainer = document.getElementById('sub-gr');
-    const subTrContainer = document.getElementById('sub-tr');
-    const mainBox = document.getElementById('active-subtitle-container');
-    
+    currentActiveSubIndex = foundIndex; const subGrContainer = document.getElementById('sub-gr'); const subTrContainer = document.getElementById('sub-tr'); const mainBox = document.getElementById('active-subtitle-container');
     if (foundIndex > -1) {
-      const currentSub = ytSubtitles[foundIndex];
-      subTrContainer.textContent = currentSub.tr;
-      mainBox.classList.add('active');
-      subGrContainer.innerHTML = "";
+      const currentSub = ytSubtitles[foundIndex]; subTrContainer.textContent = currentSub.tr; mainBox.classList.add('active'); subGrContainer.innerHTML = "";
       currentSub.gr.split(/(\s+)/).forEach(token => {
         if (/[\u0370-\u03FF]/.test(token)) {
-          const span = document.createElement('span'); span.className = 'tok'; span.textContent = token;
-          span.onclick = (e) => triggerWordPopup(e, token, currentSub.gr);
-          subGrContainer.appendChild(span);
+          const span = document.createElement('span'); span.className = 'tok'; span.textContent = token; span.onclick = (e) => triggerWordPopup(e, token, currentSub.gr); subGrContainer.appendChild(span);
         } else subGrContainer.appendChild(document.createTextNode(token));
       });
-    } else {
-      subGrContainer.innerHTML = "..."; subTrContainer.textContent = ""; mainBox.classList.remove('active');
-    }
+    } else { subGrContainer.innerHTML = "..."; subTrContainer.textContent = ""; mainBox.classList.remove('active'); }
   }
 }
 
 /** ==========================================
- * 13. METİN KÜTÜPHANESİ SİSTEMİ (YENİ)
+ * 13. METİN KÜTÜPHANESİ SİSTEMİ (KLASÖR MANTIĞI İLE)
  * ========================================== */
 function renderTextLibrary() {
-  const grid = document.getElementById('text-grid-container');
-  const filterContainer = document.getElementById('text-category-filters');
+  const container = document.getElementById('panel-library');
   
-  const uniqueCategories = [...new Set(METIN_KATALOGU.map(v => v.category))];
-  const allCategories = ["Tümü", ...uniqueCategories];
+  let html = `
+    <div style="text-align:center; margin-bottom:25px;">
+      <h3 style="color:var(--accent); font-size: 1.6rem; margin-bottom:5px;">📚 Okuma Kütüphanesi</h3>
+      <p style="color:var(--text-dim); font-size:0.95rem;">Seviyenize uygun klasörü açın ve çalışmak istediğiniz metni seçin.</p>
+    </div>
+  `;
 
-  filterContainer.innerHTML = allCategories.map(cat => 
-    `<button class="cat-btn ${cat === currentTextCategory ? 'active' : ''}" onclick="filterTextCategory('${cat}')">${cat}</button>`
-  ).join('');
-
-  const filteredTexts = currentTextCategory === "Tümü" 
-    ? METIN_KATALOGU 
-    : METIN_KATALOGU.filter(v => v.category === currentTextCategory);
-
-  grid.innerHTML = "";
-  if (filteredTexts.length === 0) {
-    grid.innerHTML = `<p style="color:var(--text-dim); text-align:center; grid-column: 1 / -1; padding: 30px;">Bu kategoride henüz metin bulunmuyor.</p>`;
-    return;
-  }
-
-  filteredTexts.forEach(item => {
-    const card = document.createElement('div');
-    card.className = 'text-card';
-    card.onclick = () => openSampleText(item.id);
+  LEVELS.forEach(level => {
+    // Bu seviyedeki tüm metinleri bul
+    const textsInLevel = METIN_KATALOGU.filter(t => t.level === level);
+    const safeLevel = level;
     
-    card.innerHTML = `
-      <div class="text-card-badges">
-         <span class="text-badge-cat">${item.category}</span>
-         <span class="text-badge-level">${item.level}</span>
-      </div>
-      <div class="text-card-title">${item.title}</div>
-      <div class="text-card-play">📖 Çalışmaya Başla ➔</div>
-    `;
-    grid.appendChild(card);
-  });
-}
+    let levelContent = '';
+    
+    if (textsInLevel.length === 0) {
+      levelContent = `<div style="padding: 15px 20px; color:var(--text-dim); text-align:center; font-style:italic;">Bu seviyede henüz metin bulunmuyor.</div>`;
+    } else {
+      // Metinleri alt kategorilerine göre grupla
+      const categories = [...new Set(textsInLevel.map(t => t.category))];
+      
+      categories.forEach(cat => {
+        const safeCat = safeLevel + "_" + cat.replace(/[^a-zA-Z0-9]/g, '_');
+        const textsInCat = textsInLevel.filter(t => t.category === cat);
+        
+        let cardsHtml = `<div class="text-grid">`;
+        textsInCat.forEach(item => {
+          cardsHtml += `
+            <div class="text-card" onclick="openSampleText('${item.id}')">
+              <div class="text-card-title">${item.title}</div>
+              <div class="text-card-play">📖 Oku ➔</div>
+            </div>`;
+        });
+        cardsHtml += `</div>`;
 
-function filterTextCategory(catName) {
-  currentTextCategory = catName;
-  renderTextLibrary();
+        // Kategori Akordiyonu (Örn: A2 -> Haber)
+        levelContent += `
+          <div class="deck-section" style="margin: 10px 15px; border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; background: rgba(0,0,0,0.2);">
+            <div class="deck-header" onclick="toggleAccordion('cat-${safeCat}')" style="background:transparent; padding: 12px 15px;">
+              <strong style="color: var(--text); font-size: 1rem;">${cat} <span style="color:var(--text-dim); font-size:0.8rem; font-weight:normal;">(${textsInCat.length} Metin)</span></strong>
+              <span class="deck-arrow" id="arrow-cat-${safeCat}">▼</span>
+            </div>
+            <div class="deck-content" id="content-cat-${safeCat}" style="background:transparent; padding-top:5px; border-top: 1px solid rgba(255,255,255,0.05);">
+              ${cardsHtml}
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // Ana Seviye Akordiyonu (Örn: A1 Seviyesi)
+    html += `
+      <div class="deck-section" style="margin-bottom:15px; border: 1px solid var(--border);">
+        <div class="deck-header" onclick="toggleAccordion('lvl-${safeLevel}')" style="font-size: 1.15rem; padding: 18px 20px; background: linear-gradient(90deg, #1c212d 0%, #13161e 100%);">
+          <strong>🎓 ${level} Seviyesi</strong>
+          <span class="deck-arrow" id="arrow-lvl-${safeLevel}">▼</span>
+        </div>
+        <div class="deck-content" id="content-lvl-${safeLevel}" style="padding: 5px 0 15px 0;">
+          ${levelContent}
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
 }
 
 async function openSampleText(id) {
   showToastMessage("⏳ Metin yükleniyor...");
   try {
     const res = await fetch(`ornek-metinler/${id}.txt`);
-    if (!res.ok) {
-      throw new Error(`Metin dosyası bulunamadı. Lütfen 'ornek-metinler' klasöründe '${id}.txt' dosyasının olduğundan emin olun.`);
-    }
+    if (!res.ok) throw new Error(`'ornek-metinler/${id}.txt' dosyası bulunamadı.`);
     const text = await res.text();
-    
-    // Metni okuma paneline aktar
     document.getElementById('input-text').value = text;
-    
-    // Doğrudan işlemi başlat
     processAndRenderText();
     showToastMessage("✅ Metin başarıyla yüklendi!");
+  } catch(e) { showToastMessage("❌ Hata: " + e.message); }
+}
+
+/** ==========================================
+ * 14. SÖZLÜK SİSTEMİ (YENİ)
+ * ========================================== */
+let currentDictMode = 'gr-tr';
+
+function switchDictMode(mode, btnElement) {
+  const tabs = document.getElementById('section-dict').querySelectorAll('.sub-tab-btn');
+  tabs.forEach(btn => btn.classList.remove('active'));
+  btnElement.classList.add('active');
+  currentDictMode = mode;
+  
+  // Eğer input'ta bir şey yazıyorsa, modu değiştirince otomatik ara
+  const searchInput = document.getElementById('dict-search-input').value.trim();
+  if(searchInput.length > 0) {
+    searchDictionary();
+  }
+}
+
+async function searchDictionary() {
+  const word = document.getElementById('dict-search-input').value.trim();
+  if(!word) { showToastMessage("Lütfen aranacak bir kelime yazın."); return; }
+
+  const iframeContainer = document.getElementById('dict-iframe-container');
+  const iframe = document.getElementById('dict-iframe');
+  const resultsContainer = document.getElementById('dict-results');
+
+  // Yunanca-Yunanca Seçildiyse
+  if(currentDictMode === 'gr-gr') {
+    resultsContainer.classList.remove('active');
+    iframeContainer.classList.add('active');
+    showToastMessage("⏳ Sözlük sayfası yükleniyor...");
+    iframe.src = "https://www.greek-language.gr/greekLang/modern_greek/tools/lexica/search.html?lq=" + encodeURIComponent(word);
+    return;
+  }
+
+  // Türkçe-Yunanca veya Yunanca-Türkçe Seçildiyse
+  iframeContainer.classList.remove('active');
+  resultsContainer.classList.add('active');
+  resultsContainer.innerHTML = `<div style="text-align:center; color:var(--accent); padding:20px;">⏳ Çevriliyor...</div>`;
+
+  const sl = currentDictMode === 'gr-tr' ? 'el' : 'tr';
+  const tl = currentDictMode === 'gr-tr' ? 'tr' : 'el';
+
+  try {
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${tl}&dt=t&dt=bd&q=${encodeURIComponent(word)}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    
+    // Ana Çeviri
+    const mainTrans = data[0] && data[0][0] ? data[0][0][0] : "Çeviri bulunamadı.";
+    
+    // Okunuş (Eğer Yunancadan Türkçeye çevriliyorsa okunuşu gösterelim)
+    let phoneticHtml = "";
+    if(currentDictMode === 'gr-tr') {
+       phoneticHtml = `<div class="dict-phonetic">/${getGreekPhonetics(word)}/</div>`;
+    }
+
+    let dictHtml = `
+      <div class="dict-main-word">${word}</div>
+      ${phoneticHtml}
+      <div class="dict-main-translation">${mainTrans}</div>
+    `;
+
+    // Eş Anlamlılar ve Sözlük Grupları (Noun, Verb vs.)
+    if(data[1] && data[1].length > 0) {
+      data[1].forEach(posGroup => {
+        const type = posGroup[0]; // İsim, Fiil vb.
+        const translations = posGroup[1]; // Çeviri dizisi
+        
+        let synHtml = `<div class="dict-pos-group">
+           <div class="dict-pos-title">${type}</div>
+           <div class="dict-synonyms">`;
+           
+        translations.forEach(tr => {
+           synHtml += `<span class="dict-syn-item">${tr}</span>`;
+        });
+        
+        synHtml += `</div></div>`;
+        dictHtml += synHtml;
+      });
+    }
+
+    resultsContainer.innerHTML = dictHtml;
+
   } catch(e) {
-    showToastMessage("❌ Hata: " + e.message);
+    resultsContainer.innerHTML = `<div style="text-align:center; color:var(--error); padding:20px;">❌ Çeviri sırasında bir hata oluştu. Lütfen bağlantınızı kontrol edin.</div>`;
   }
 }
 
