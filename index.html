@@ -1218,6 +1218,19 @@ function evalFlash(knewIt) {
 /** ==========================================
  * BÖLÜM 12: VİDEO ARŞİVİ SİSTEMİ
  * ========================================== */
+
+// 1. EKSİK OLAN GLOBAL DEĞİŞKENLERİ TANIMLIYORUZ
+let ytPlayer = null;
+let ytSubtitles = [];
+let videoSyncInterval = null;
+let currentActiveSubIndex = -1;
+
+// 2. KODUN ÇÖKMESİNE NEDEN OLAN EKSİK FONKSİYON
+function onPlayerStateChange(event) {
+  // Oynatıcı durumu değiştiğinde tetiklenir (Örn: Video durduğunda, başladığında).
+  // Şu an için boş kalabilir ancak API'nin çökmemesi için mutlaka tanımlı olmalıdır.
+}
+
 function renderVideoLibrary() {
   const grid = document.getElementById('video-grid-container'); const filterContainer = document.getElementById('video-category-filters');
   const uniqueCategories = [...new Set(VIDEO_KATALOGU.map(v => v.category))]; const allCategories = ["Tümü", ...uniqueCategories];
@@ -1244,26 +1257,47 @@ async function openVideo(videoId, title) {
     ytSubtitles = await res.json();
     if (!Array.isArray(ytSubtitles) || ytSubtitles.length === 0) throw new Error("JSON formatı hatalı veya boş.");
 
-    document.getElementById('video-library-view').style.display = 'none'; document.getElementById('video-workspace').style.display = 'block'; document.getElementById('active-video-title').textContent = title;
-    if (ytPlayer) ytPlayer.loadVideoById(videoId);
-    else {
-      ytPlayer = new YT.Player('youtube-player', { height: '100%', width: '100%', videoId: videoId, playerVars: { 'playsinline': 1, 'rel': 0, 'origin': window.location.origin === "null" ? "*" : window.location.origin }, events: { 'onStateChange': onPlayerStateChange } });
+    document.getElementById('video-library-view').style.display = 'none'; 
+    document.getElementById('video-workspace').style.display = 'block'; 
+    document.getElementById('active-video-title').textContent = title;
+    
+    // YOUTUBE PLAYER KONTROLÜ
+    if (ytPlayer && typeof ytPlayer.loadVideoById === 'function') {
+        ytPlayer.loadVideoById(videoId);
+    } else {
+      ytPlayer = new YT.Player('youtube-player', { 
+          height: '100%', 
+          width: '100%', 
+          videoId: videoId, 
+          playerVars: { 'playsinline': 1, 'rel': 0, 'origin': window.location.origin === "null" ? "*" : window.location.origin }, 
+          events: { 'onStateChange': onPlayerStateChange } // Artık hata vermeyecek
+      });
     }
-    if(videoSyncInterval) clearInterval(videoSyncInterval); videoSyncInterval = setInterval(syncSubtitles, 200);
-  } catch (err) { showToastMessage("❌ Hata: " + err.message); }
+    if(videoSyncInterval) clearInterval(videoSyncInterval); 
+    videoSyncInterval = setInterval(syncSubtitles, 200);
+  } catch (err) { 
+      showToastMessage("❌ Hata: " + err.message); 
+  }
 }
 
 function closeVideoPlayer() {
-  if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') ytPlayer.pauseVideo(); if(videoSyncInterval) clearInterval(videoSyncInterval);
+  if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') ytPlayer.pauseVideo(); 
+  if(videoSyncInterval) clearInterval(videoSyncInterval);
   document.getElementById('video-workspace').style.display = 'none'; document.getElementById('video-library-view').style.display = 'block';
   document.getElementById('sub-gr').innerHTML = "..."; document.getElementById('sub-tr').textContent = "Videonun başlaması bekleniyor..."; document.getElementById('active-subtitle-container').classList.remove('active'); currentActiveSubIndex = -1;
 }
 
 function syncSubtitles() {
-  if (!ytPlayer || typeof ytPlayer.getCurrentTime !== 'function') return; const currentTime = ytPlayer.getCurrentTime(); let foundIndex = -1;
+  if (!ytPlayer || typeof ytPlayer.getCurrentTime !== 'function') return; 
+  const currentTime = ytPlayer.getCurrentTime(); let foundIndex = -1;
   for (let i = 0; i < ytSubtitles.length; i++) { if (currentTime >= ytSubtitles[i].start && currentTime <= ytSubtitles[i].end) { foundIndex = i; break; } }
+  
   if (foundIndex !== currentActiveSubIndex) {
-    currentActiveSubIndex = foundIndex; const subGrContainer = document.getElementById('sub-gr'); const subTrContainer = document.getElementById('sub-tr'); const mainBox = document.getElementById('active-subtitle-container');
+    currentActiveSubIndex = foundIndex; 
+    const subGrContainer = document.getElementById('sub-gr'); 
+    const subTrContainer = document.getElementById('sub-tr'); 
+    const mainBox = document.getElementById('active-subtitle-container');
+    
     if (foundIndex > -1) {
       const currentSub = ytSubtitles[foundIndex]; subTrContainer.textContent = currentSub.tr; mainBox.classList.add('active'); subGrContainer.innerHTML = "";
       currentSub.gr.split(/(\s+)/).forEach(token => {
@@ -1271,7 +1305,9 @@ function syncSubtitles() {
           const span = document.createElement('span'); span.className = 'tok'; span.textContent = token; span.onclick = (e) => triggerWordPopup(e, token, currentSub.gr); subGrContainer.appendChild(span);
         } else subGrContainer.appendChild(document.createTextNode(token));
       });
-    } else { subGrContainer.innerHTML = "..."; subTrContainer.textContent = ""; mainBox.classList.remove('active'); }
+    } else { 
+        subGrContainer.innerHTML = "..."; subTrContainer.textContent = ""; mainBox.classList.remove('active'); 
+    }
   }
 }
 
