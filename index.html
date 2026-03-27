@@ -638,7 +638,11 @@ function showAuthModal(login = true) {
   document.getElementById('auth-modal').style.display = 'flex';
 }
 
-  function submitAuth() {
+// YANLIŞLIKLA SİLİNEN O İKİ KRİTİK SATIR BURADA:
+function closeAuthModal() { document.getElementById('auth-modal').style.display = 'none'; }
+function toggleAuthMode() { showAuthModal(!isLoginMode); }
+
+function submitAuth() {
   const u = document.getElementById('auth-username').value.trim();
   const p = document.getElementById('auth-password').value.trim();
   if(!u || !p) { showToastMessage("Kullanıcı adı ve şifre boş olamaz."); return; }
@@ -653,13 +657,25 @@ function showAuthModal(login = true) {
       showToastMessage("❌ Hatalı kullanıcı adı veya şifre.");
     }
   } else {
+    // KAYIT OLMA MODU
     if (dbUsers[u]) { showToastMessage("❌ Bu kullanıcı adı zaten alınmış."); return; }
+    
+    // 1. Kullanıcıyı oluştur ve veritabanına kaydet
     dbUsers[u] = { password: p, role: 'user', status: 'pending', isPremium: false, credits: 50 };
     saveDb();
-    showToastMessage("✅ Kayıt başarılı! Yöneticinin onaylamasını bekleyin.");
-    isLoginMode = true; showAuthModal(true);
     
-    // --- TELEGRAM BİLDİRİM KODU BAŞLANGICI ---
+    // 2. Kayıt başarılı olduğunda kullanıcıyı doğrudan içeri al ve pencereyi KAPAT
+    currentUser = dbUsers[u]; 
+    currentUsername = u;
+    localStorage.setItem('y_currentUser', u);
+    loadUserData();
+    closeAuthModal(); // Pencere kapandı
+    updateUserUI();   // Sağ üstteki isim güncellendi
+    
+    // 3. Kullanıcıya net bir bilgi mesajı göster
+    showToastMessage("✅ Kayıt başarılı! Yönetici onaylayana kadar kısıtlı erişimdesiniz.");
+    
+    // --- TELEGRAM BİLDİRİM KODU ---
     const botToken = "8741748332:AAEZI5xsFw6gLW5MnvsRGYKn91KrkieppaQ";
     const chatId = "5546102141"; 
     const mesaj = `🚨 Yeni Kayıt Geldi!\n\n👤 Kullanıcı: ${u}\n\nLütfen Yunanca Akıllı Okuyucu paneline girip onaylayın.`;
@@ -671,8 +687,8 @@ function showAuthModal(login = true) {
       .catch(error => console.error("Telegram bildirimi başarısız:", error));
     // --- TELEGRAM BİLDİRİM KODU BİTİŞİ ---
   }
-}
-
+      }
+    
 function logout() {
   currentUser = null; currentUsername = null;
   localStorage.removeItem('y_currentUser');
