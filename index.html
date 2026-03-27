@@ -347,21 +347,45 @@
     </div>
   </div>
 
-  <div id="section-read" style="display: block; animation: fadeIn 0.4s ease;">
-    <div class="input-section">
+   <div id="section-read" style="display: block; animation: fadeIn 0.4s ease;">
+    
+    <div id="reader"></div>
+    <div id="deck-display"></div>
+
+    <div class="input-section" style="margin-top: 25px;">
       <div class="input-tabs">
         <button class="sub-tab-btn active" onclick="switchInputTab('library', this)">📚 Örnek Metinler</button>
         <button class="sub-tab-btn" onclick="switchInputTab('paste', this)">✏️ Kendi Metnimi Gir</button>
         <button class="sub-tab-btn" onclick="switchInputTab('url', this)">🌐 URL'den Çek</button>
         <button class="sub-tab-btn" onclick="switchInputTab('pdf', this)">📄 PDF Yükle</button>
       </div>
-      <div class="input-panel active" id="panel-library"><div class="category-filters" id="text-category-filters"></div><div class="text-grid" id="text-grid-container"></div></div>
-      <div class="input-panel" id="panel-paste"><textarea id="input-text" placeholder="Çalışmak istediğiniz metni buraya yapıştırın..."></textarea><div class="btn-group"><button class="main-btn" onclick="processAndRenderText()">🚀 Metni İşle ve Oku</button><button class="secondary-btn" onclick="clearTextInputs()">Temizle</button></div></div>
-      <div class="input-panel" id="panel-url"><div class="url-row"><input type="text" id="url-input" placeholder="https://..." /><button class="main-btn" onclick="fetchContentFromUrl()">İçeriği Çek</button></div><div id="url-status" style="color:var(--accent2); font-size:0.9rem; font-weight:bold; min-height:20px;"></div></div>
-      <div class="input-panel" id="panel-pdf"><label class="pdf-label" for="pdf-input"><span style="font-size:2rem;">📄</span><span>PDF dosyasını seçin</span></label><input type="file" id="pdf-input" accept=".pdf" onchange="loadPdfFile(this)"><div id="pdf-status"></div></div>
+      <div class="input-panel active" id="panel-library">
+        <div class="category-filters" id="text-category-filters"></div>
+        <div class="text-grid" id="text-grid-container"></div>
+      </div>
+      <div class="input-panel" id="panel-paste">
+        <textarea id="input-text" placeholder="Çalışmak istediğiniz metni buraya yapıştırın..."></textarea>
+        <div class="btn-group">
+          <button class="main-btn" onclick="processAndRenderText()">🚀 Metni İşle ve Oku</button>
+          <button class="secondary-btn" onclick="clearTextInputs()">Temizle</button>
+        </div>
+      </div>
+      <div class="input-panel" id="panel-url">
+        <div class="url-row">
+          <input type="text" id="url-input" placeholder="https://..." />
+          <button class="main-btn" onclick="fetchContentFromUrl()">İçeriği Çek</button>
+        </div>
+        <div id="url-status" style="color:var(--accent2); font-size:0.9rem; font-weight:bold; min-height:20px;"></div>
+      </div>
+      <div class="input-panel" id="panel-pdf">
+        <label class="pdf-label" for="pdf-input"><span style="font-size:2rem;">📄</span><span>PDF dosyasını seçin</span></label>
+        <input type="file" id="pdf-input" accept=".pdf" onchange="loadPdfFile(this)">
+        <div id="pdf-status"></div>
+      </div>
     </div>
-    <div id="reader"></div><div id="deck-display"></div>
+    
   </div> 
+  
 
   <div id="section-video" style="display:none;">
     <div id="video-library-view">
