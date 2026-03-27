@@ -192,29 +192,41 @@
   .dict-synonyms { display: flex; flex-wrap: wrap; gap: 8px; }
   .dict-syn-item { background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; color: var(--text-dim); }
 
-  /* === GELİŞMİŞ TEST ÜNİTESİ === */
-  #quiz-section-container { display: none; animation: fadeIn 0.4s ease; }
-  .quiz-card { background: var(--surface); border: 1px solid var(--border); border-radius: 15px; padding: 40px 20px; text-align: center; max-width: 650px; margin: 0 auto; box-shadow: var(--shadow); position: relative; transition: all 0.3s ease; }
-  body.focus-mode .quiz-card { border-color: var(--accent); box-shadow: 0 10px 40px rgba(79, 142, 247, 0.15); margin-top: 5vh; transform: scale(1.02); }
-  .quiz-controls-top { display: flex; gap: 10px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap; }
-  .quiz-controls-top select { padding: 12px 15px; background: #000; color: white; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; outline: none; cursor: pointer; }
-  .progress-container { width: 100%; background: #1a1e29; height: 12px; border-radius: 6px; margin-bottom: 25px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, #4ade80, #34d399); width: 0%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 6px;}
-  .quiz-big-word { font-size: 3rem; color: var(--accent2); font-weight: 800; margin-bottom: 20px; text-shadow: 0 4px 15px rgba(232, 201, 109, 0.2); }
-  .quiz-word-row { display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 30px; }
-  .quiz-speak-btn { background: rgba(167,139,250,0.15); border: 1px solid rgba(167,139,250,0.4); color: var(--tts-color); border-radius: 50%; width: 60px; height: 60px; font-size: 1.6rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-  .quiz-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; }
-  .quiz-opt-btn { background: #090b10; color: white; border: 2px solid var(--border); padding: 20px 15px; border-radius: 12px; font-size: 1.15rem; font-weight: 600; cursor: pointer; }
-  .quiz-opt-btn.correct { background: rgba(74, 222, 128, 0.2); border-color: var(--success); color: var(--success); }
-  .quiz-opt-btn.wrong { background: rgba(248, 113, 113, 0.2); border-color: var(--error); color: var(--error); opacity: 0.6; }
-  #quiz-write-input { width: 100%; max-width: 450px; padding: 20px; background: #000; color: white; border: 2px solid var(--border); border-radius: 12px; text-align: center; font-size: 1.4rem; margin-bottom: 15px; outline: none; }
-  #quiz-feedback { margin-top: 25px; font-size: 1.3rem; font-weight: bold; min-height: 35px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-  .exit-quiz-btn { position: absolute; top: 20px; right: 20px; background: transparent; border: 1px solid var(--border); color: var(--text-dim); padding: 6px 12px; border-radius: 6px; cursor: pointer; }
-  .result-stat-box { background: #0f1219; border: 1px solid var(--border); padding: 25px; border-radius: 15px; margin-bottom: 25px; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 15px;}
+ /* === GELİŞMİŞ TEST ÜNİTESİ (YENİ MOBİL TASARIM) === */
+  #section-quiz { display: none; animation: fadeIn 0.4s ease; padding-bottom: 50px; }
+  .quiz-mobile-container { max-width: 500px; margin: 0 auto; padding: 20px 10px; }
+  
+  /* Üst Kontroller */
+  .quiz-top-controls { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; }
+  .mobile-select { background: transparent; color: var(--text); border: 1px solid var(--accent); padding: 15px; border-radius: 10px; font-size: 1rem; width: 100%; outline: none; appearance: none; text-align: center; cursor: pointer; }
+  .mobile-select option { background: var(--surface); color: var(--text); }
+  .mobile-start-btn { background: var(--accent); color: white; border: none; padding: 16px; border-radius: 10px; font-size: 1.1rem; font-weight: bold; width: 100%; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(79, 142, 247, 0.3); }
+  .mobile-start-btn:hover { background: var(--accent-hover); transform: translateY(-2px); }
+
+  /* Aktif Test Alanı */
+  #quiz-active-area { text-align: center; margin-top: 40px; }
+  .quiz-big-word { font-size: 2.8rem; color: var(--accent2); font-weight: 800; margin-bottom: 30px; letter-spacing: 1px; word-wrap: break-word; }
+  
+  /* Seçenekler (Dikey Grid) */
+  .quiz-options-vertical { display: flex; flex-direction: column; gap: 12px; }
+  .quiz-opt-btn-mobile { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 18px; border-radius: 10px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; width: 100%; }
+  .quiz-opt-btn-mobile:hover:not(:disabled) { background: rgba(255, 255, 255, 0.05); border-color: var(--text-dim); }
+  .quiz-opt-btn-mobile.correct { border-color: var(--success); color: var(--success); background: rgba(74, 222, 128, 0.1); }
+  .quiz-opt-btn-mobile.wrong { border-color: var(--error); color: var(--error); background: rgba(248, 113, 113, 0.1); opacity: 0.7; }
+
+  /* Kart Modu (Flashcard) */
+  .flash-answer-text { color: var(--accent); font-size: 2.2rem; font-weight: bold; margin-bottom: 30px; animation: fadeIn 0.3s ease; }
+  .flash-show-btn { background: var(--accent); color: white; border: none; padding: 16px; border-radius: 10px; font-size: 1.1rem; font-weight: bold; width: 100%; max-width: 300px; margin: 0 auto; cursor: pointer; }
+
+  /* Sıradaki Kelime Butonu */
+  .mobile-next-btn { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 10px; font-size: 1.1rem; font-weight: bold; width: 100%; margin-top: 30px; cursor: pointer; transition: 0.2s; animation: fadeIn 0.3s ease; }
+  .mobile-next-btn:hover { background: var(--accent-hover); }
+
+  /* Sonuç Ekranı */
+  .result-stat-box { background: var(--surface); border: 1px solid var(--border); padding: 25px; border-radius: 15px; margin-bottom: 25px; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 15px; }
   .stat-item { display: flex; flex-direction: column; align-items: center; }
-  .stat-item span { font-size: 2.5rem; font-weight: 800; margin-bottom: 5px;}
-  .mistakes-table { width: 100%; text-align: left; border-collapse: collapse; margin-top: 20px; font-size: 1rem; }
-  .mistakes-table th, .mistakes-table td { padding: 12px; border-bottom: 1px solid var(--border); }
+  .stat-item span { font-size: 2.5rem; font-weight: 800; line-height: 1; margin-bottom: 5px; }
+  .stat-item small { color: var(--text-dim); font-size: 0.95rem; text-transform: uppercase; }
 
   /* === POPUP (DÜZELTİLDİ VE ÖN PLANA ALINDI) === */
   #wpop { position: fixed; background: #151923; border: 1px solid var(--accent); padding: 20px; border-radius: 15px; display: none; z-index: 999999; width: min(440px, 95vw); left: 50%; transform: translateX(-50%); bottom: 20px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.9), 0 0 0 1px rgba(79,142,247,0.2); animation: slideUp 0.3s ease; }
@@ -374,16 +386,39 @@
   </div>
 
   <div id="section-quiz" style="display:none;">
-    <div class="quiz-card">
-      <div id="quiz-setup-view">
-        <h2 style="color:var(--accent); margin-bottom: 20px; font-size: 2rem;">Öğretici Test Merkezi</h2>
-        <div class="quiz-controls-top">
-          <select id="quiz-deck-select" title="Çalışılacak Deste"></select>
-          <select id="quiz-limit-select" title="Soru Sınırı"><option value="10">Kısa Çalışma (10 Kelime)</option><option value="20" selected>Orta Çalışma (20 Kelime)</option></select>
-          <select id="quiz-mode-select" title="Test Modu"><option value="multi">Çoktan Seçmeli (Önerilen)</option><option value="write">Yazma Testi</option><option value="listen">Dinleme Testi</option><option value="flash">Kart Modu</option></select>
-        </div>
-        <button class="main-btn" style="margin: 0 auto; padding: 18px 50px; font-size: 1.2rem;" onclick="startAdvancedQuiz()">🚀 Odaklan ve Başla</button>
+    <div class="quiz-mobile-container">
+      
+      <div class="quiz-top-controls">
+        <select id="quiz-deck-select" class="mobile-select"></select>
+        <select id="quiz-mode-select" class="mobile-select">
+          <option value="multi">Çoktan Seçmeli (4 Şık)</option>
+          <option value="flash">Kart Modu (Flashcard)</option>
+        </select>
+        <input type="hidden" id="quiz-limit-select" value="all"> 
+        <button class="mobile-start-btn" onclick="startAdvancedQuiz()">Testi Başlat / Yenile</button>
       </div>
+
+      <div id="quiz-active-area" style="display:none;">
+        <div class="quiz-big-word" id="q-word">kelime</div>
+        
+        <div id="q-options-container" class="quiz-options-vertical"></div>
+        
+        <div id="q-flash-answer" class="flash-answer-text" style="display:none;">anlam</div>
+        <button id="q-flash-show" class="flash-show-btn" style="display:none;" onclick="showFlashAnswer()">Cevabı Göster</button>
+        
+        <button id="q-next-btn" class="mobile-next-btn" style="display:none;" onclick="loadNextQuizQuestion()">Sıradaki Kelime ➔</button>
+      </div>
+
+      <div id="quiz-result-view" style="display:none; text-align:center; margin-top: 40px;">
+        <h2 style="color:var(--success); margin-bottom:20px; font-size:2.2rem;">🎉 Test Bitti!</h2>
+        <div class="result-stat-box">
+          <div class="stat-item"><span id="res-total" style="color:var(--text)">0</span><small>Soru</small></div>
+          <div class="stat-item"><span id="res-correct" style="color:var(--success)">0</span><small>Doğru</small></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
 
       <div id="quiz-active-view" style="display:none;">
         <button class="exit-quiz-btn" onclick="exitQuiz()">🚪 Çıkış</button>
@@ -1107,112 +1142,97 @@ function deleteDeckEntirely(deckName) {
 }
 
 /** ==========================================
- * BÖLÜM 11: ÖĞRETİCİ TEST MERKEZİ
+ * 11. ÖĞRETİCİ TEST MERKEZİ (YENİ MOBİL MANTIK)
  * ========================================== */
-function startAdvancedQuiz(isRetry = false) {
-  if(!requireAuth(1)) return; // Test = 1 Kredi
-  const mode = document.getElementById('quiz-mode-select').value;
-  if (!isRetry) {
-    const deckName = document.getElementById('quiz-deck-select').value; const deck = userDecks[deckName];
-    if (!deck || deck.length === 0) { showToastMessage("Seçilen destede kelime yok!"); return; }
-    let shuffledDeck = [...deck].sort(() => Math.random() - 0.5); const limit = document.getElementById('quiz-limit-select').value;
-    if (limit !== 'all') shuffledDeck = shuffledDeck.slice(0, parseInt(limit));
-    currentQuizPool = shuffledDeck; quizMistakes = []; correctCount = 0;
-  } else {
-    currentQuizPool = [...quizMistakes].map(m => ({gr: m.gr, tr: m.tr})).sort(() => Math.random() - 0.5); quizMistakes = []; correctCount = 0;
-  }
-  totalInitialWords = currentQuizPool.length; currentQuizIndex = 0;
-  document.body.classList.add('focus-mode'); document.getElementById('quiz-setup-view').style.display = 'none'; document.getElementById('quiz-result-view').style.display = 'none'; document.getElementById('quiz-active-view').style.display = 'block';
+function startAdvancedQuiz() {
+  const deckName = document.getElementById('quiz-deck-select').value;
+  const deck = userDecks[deckName];
+  if (!deck || deck.length === 0) { showToastMessage("Seçilen destede kelime yok!"); return; }
+  
+  // Kelimeleri karıştır
+  currentQuizPool = [...deck].sort(() => Math.random() - 0.5);
+  totalInitialWords = currentQuizPool.length;
+  currentQuizIndex = 0;
+  correctCount = 0;
+
+  document.getElementById('quiz-result-view').style.display = 'none';
+  document.getElementById('quiz-active-area').style.display = 'block';
+
   loadNextQuizQuestion();
 }
 
-function retryMistakes() { startAdvancedQuiz(true); }
-function updateQuizUI() {
-  let progressRatio = (correctCount / totalInitialWords) * 100; if (progressRatio > 100) progressRatio = 100;
-  document.getElementById('quiz-progress-text').textContent = `ÖĞRENİLEN: ${correctCount} / ${totalInitialWords}`;
-  document.getElementById('quiz-mistake-counter').textContent = `HATA: ${quizMistakes.length}`;
-  document.getElementById('quiz-progress-bar').style.width = `${progressRatio}%`;
-}
-
-let quizMistakes = []; let correctCount = 0; let totalInitialWords = 0;
-function recordMistake(wordObj, modeName) { if (!quizMistakes.some(w => w.gr === wordObj.gr)) quizMistakes.push({ gr: wordObj.gr, tr: wordObj.tr, type: modeName }); }
-function pushToPoolIfWrong(wordObj) { currentQuizPool.push(wordObj); }
-
-function finishQuiz() {
-  document.body.classList.remove('focus-mode'); document.getElementById('quiz-active-view').style.display = 'none'; document.getElementById('quiz-result-view').style.display = 'block';
-  document.getElementById('res-total').textContent = totalInitialWords;
-  let finalCorrect = totalInitialWords - quizMistakes.length; if(finalCorrect < 0) finalCorrect = 0;
-  document.getElementById('res-correct').textContent = finalCorrect; document.getElementById('res-wrong').textContent = quizMistakes.length;
-  let score = Math.round((finalCorrect / totalInitialWords) * 100) || 0; if (score > 100) score = 100;
-  document.getElementById('res-score').textContent = `%${score}`;
-
-  const table = document.getElementById('mistakes-table'); table.innerHTML = "";
-  if (quizMistakes.length > 0) {
-    document.getElementById('mistakes-container').style.display = 'block'; document.getElementById('retry-mistakes-btn').style.display = 'inline-flex';
-    table.innerHTML = `<tr><th>Yunanca</th><th>Türkçe</th></tr>` + quizMistakes.map(m => `<tr><td><b>${m.gr}</b></td><td>${m.tr}</td></tr>`).join('');
-  } else { document.getElementById('mistakes-container').style.display = 'none'; document.getElementById('retry-mistakes-btn').style.display = 'none'; }
-}
-
-let isQuestionActive = false;
 function loadNextQuizQuestion() {
-  if (correctCount >= totalInitialWords || currentQuizIndex >= currentQuizPool.length) { finishQuiz(); return; }
-  updateQuizUI(); isQuestionActive = true; currentQuizQuestion = currentQuizPool[currentQuizIndex];
-  const mode = document.getElementById('quiz-mode-select').value; const area = document.getElementById('quiz-work-area'); const feedback = document.getElementById('quiz-feedback');
-  feedback.innerHTML = ""; feedback.className = "";
-  const speakBtn = `<button class="quiz-speak-btn" onclick="speakGreek('${currentQuizQuestion.gr.replace(/'/g,"\\'")}', this)">🔊</button>`;
+  document.getElementById('q-next-btn').style.display = 'none';
+  
+  if (currentQuizIndex >= currentQuizPool.length) { 
+    finishQuiz(); 
+    return; 
+  }
+  
+  currentQuizQuestion = currentQuizPool[currentQuizIndex];
+  const mode = document.getElementById('quiz-mode-select').value;
+  
+  document.getElementById('q-word').textContent = currentQuizQuestion.gr;
+  
+  const optionsContainer = document.getElementById('q-options-container');
+  const flashAnswer = document.getElementById('q-flash-answer');
+  const flashShowBtn = document.getElementById('q-flash-show');
 
   if (mode === 'multi') {
+    optionsContainer.style.display = 'flex';
+    flashAnswer.style.display = 'none';
+    flashShowBtn.style.display = 'none';
+    
+    // Şıkları oluştur
     let allTr = Object.values(userDecks).flat().map(i => i.tr).filter(t => t !== currentQuizQuestion.tr);
     let opts = [currentQuizQuestion.tr, ...[...new Set(allTr)].sort(()=>Math.random()-0.5).slice(0,3)].sort(()=>Math.random()-0.5);
-    area.innerHTML = `<div class="quiz-word-row"><div class="quiz-big-word">${currentQuizQuestion.gr}</div>${speakBtn}</div><div class="quiz-options-grid">${opts.map(opt => `<button class="quiz-opt-btn" onclick="evalMulti('${opt.replace(/'/g, "\\'")}')">${opt}</button>`).join('')}</div>`;
-  } 
-  else if (mode === 'listen') {
-    let allTr = Object.values(userDecks).flat().map(i => i.tr).filter(t => t !== currentQuizQuestion.tr);
-    let opts = [currentQuizQuestion.tr, ...[...new Set(allTr)].sort(()=>Math.random()-0.5).slice(0,3)].sort(()=>Math.random()-0.5);
-    area.innerHTML = `<div style="color:var(--text-dim); margin-bottom:15px; font-size:1.1rem;">Duyduğunuz kelimenin anlamını seçin:</div><div class="quiz-word-row"><div class="quiz-big-word" style="filter: blur(12px); user-select:none;" id="hidden-gr-word">??????</div><button class="quiz-speak-btn" style="width:75px; height:75px; background:var(--accent); color:#fff;" onclick="speakGreek('${currentQuizQuestion.gr.replace(/'/g,"\\'")}', this)">▶️</button></div><div class="quiz-options-grid">${opts.map(opt => `<button class="quiz-opt-btn" onclick="evalListen('${opt.replace(/'/g, "\\'")}')">${opt}</button>`).join('')}</div>`;
-    setTimeout(()=>speakGreek(currentQuizQuestion.gr), 500); 
-  }
-  else if (mode === 'write') {
-    area.innerHTML = `<div class="quiz-word-row"><div class="quiz-big-word">${currentQuizQuestion.gr}</div>${speakBtn}</div><input type="text" id="quiz-write-input" placeholder="Türkçe karşılığı nedir?" autocomplete="off" onkeydown="if(event.key==='Enter') evalWrite()"><div style="display:flex; gap:10px; width:100%; max-width:450px;"><button class="main-btn" style="flex:2; padding:18px;" onclick="evalWrite()">Cevapla</button><button class="secondary-btn" style="flex:1;" onclick="giveWriteHint()">İpucu</button></div>`;
-    setTimeout(() => document.getElementById('quiz-write-input').focus(), 100);
-  }
-  else if (mode === 'flash') {
-    area.innerHTML = `<div class="quiz-word-row"><div class="quiz-big-word">${currentQuizQuestion.gr}</div>${speakBtn}</div><div id="flash-answer" style="display:none; font-size:2.2rem; color:var(--success); font-weight:bold; margin-bottom:30px; animation:fadeIn 0.3s;">${currentQuizQuestion.tr}</div><button class="main-btn" id="flash-show-btn" style="padding:20px 50px; font-size:1.2rem;" onclick="document.getElementById('flash-answer').style.display='block'; this.style.display='none'; document.getElementById('flash-controls').style.display='flex';">Anlamını Göster</button><div id="flash-controls" style="display:none; gap:15px; width:100%; max-width:450px; margin-top:10px;"><button class="main-btn" style="flex:1; background:var(--error); padding:18px;" onclick="evalFlash(false)">❌ Bilemedim</button><button class="main-btn" style="flex:1; background:var(--success); padding:18px;" onclick="evalFlash(true)">✅ Biliyordum</button></div>`;
+    
+    optionsContainer.innerHTML = opts.map(opt => 
+      `<button class="quiz-opt-btn-mobile" onclick="evalMulti('${opt.replace(/'/g, "\\'")}', this)">${opt}</button>`
+    ).join('');
+    
+  } else if (mode === 'flash') {
+    optionsContainer.style.display = 'none';
+    flashAnswer.style.display = 'none';
+    flashAnswer.textContent = currentQuizQuestion.tr;
+    flashShowBtn.style.display = 'block';
   }
 }
 
-function exitQuiz() { document.body.classList.remove('focus-mode'); document.getElementById('quiz-active-view').style.display = 'none'; document.getElementById('quiz-result-view').style.display = 'none'; document.getElementById('quiz-setup-view').style.display = 'block'; stopSpeech(); }
+function evalMulti(selected, btnElement) {
+  const btns = document.querySelectorAll('.quiz-opt-btn-mobile');
+  let isCorrect = (selected === currentQuizQuestion.tr);
 
-function showFeedback(isSuccess, msg) { const fb = document.getElementById('quiz-feedback'); fb.className = 'pop-anim'; fb.innerHTML = `<span style="color:var(--${isSuccess?'success':'error'}); background:rgba(${isSuccess?'74,222,128':'248,113,113'},0.1); padding:8px 20px; border-radius:20px;">${isSuccess?'✅':'❌'} ${msg}</span>`; }
+  // Tüm butonları devre dışı bırak
+  btns.forEach(btn => {
+    btn.disabled = true;
+    if (btn.textContent === currentQuizQuestion.tr) {
+      btn.classList.add('correct'); // Doğruyu her zaman yeşil yap
+    } else if (btn.textContent === selected && !isCorrect) {
+      btn.classList.add('wrong'); // Yanlış seçildiyse kırmızı yap
+    }
+  });
 
-function evalMulti(selected) {
-  if (!isQuestionActive) return; isQuestionActive = false; const btns = document.querySelectorAll('.quiz-opt-btn'); let isCorrect = (selected === currentQuizQuestion.tr);
-  btns.forEach(btn => { btn.disabled = true; if (btn.textContent === currentQuizQuestion.tr) btn.classList.add('correct'); else if (btn.textContent === selected && !isCorrect) btn.classList.add('wrong'); });
-  if (isCorrect) { if(!quizMistakes.some(w=>w.gr===currentQuizQuestion.gr)) correctCount++; showFeedback(true, "Harika!"); updateQuizUI(); currentQuizIndex++; setTimeout(loadNextQuizQuestion, 1000); } 
-  else { recordMistake(currentQuizQuestion, 'multi'); pushToPoolIfWrong(currentQuizQuestion); showFeedback(false, "Doğrusunu yeşil ile işaretledik."); currentQuizIndex++; setTimeout(loadNextQuizQuestion, 2000); }
+  if (isCorrect) correctCount++;
+  
+  currentQuizIndex++;
+  // Sıradaki kelime butonunu göster (Otomatik geçiş iptal edildi, kullanıcı tıklayacak)
+  document.getElementById('q-next-btn').style.display = 'block';
 }
 
-function evalListen(selected) { document.getElementById('hidden-gr-word').style.filter = 'none'; document.getElementById('hidden-gr-word').textContent = currentQuizQuestion.gr; evalMulti(selected); }
-
-function evalWrite() {
-  if (!isQuestionActive) return; const input = document.getElementById('quiz-write-input');
-  if (input.value.trim().toLowerCase() === currentQuizQuestion.tr.trim().toLowerCase()) {
-    isQuestionActive = false; input.style.borderColor = "var(--success)"; input.style.color = "var(--success)";
-    if(!quizMistakes.some(w=>w.gr===currentQuizQuestion.gr)) correctCount++; showFeedback(true, "Mükemmel!"); updateQuizUI(); currentQuizIndex++; setTimeout(loadNextQuizQuestion, 1000);
-  } else { recordMistake(currentQuizQuestion, 'write'); input.classList.remove('shake'); void input.offsetWidth; input.classList.add('shake'); showFeedback(false, "Hatalı. Tekrar dene veya ipucu al."); }
+function showFlashAnswer() {
+  document.getElementById('q-flash-show').style.display = 'none';
+  document.getElementById('q-flash-answer').style.display = 'block';
+  correctCount++; // Flashcard modunda gördüğü için doğru sayıyoruz
+  currentQuizIndex++;
+  document.getElementById('q-next-btn').style.display = 'block';
 }
 
-function giveWriteHint() {
-  if (!isQuestionActive) return; recordMistake(currentQuizQuestion, 'write'); pushToPoolIfWrong(currentQuizQuestion); 
-  const input = document.getElementById('quiz-write-input'); input.value = currentQuizQuestion.tr; input.style.borderColor = "var(--accent2)";
-  const fb = document.getElementById('quiz-feedback'); fb.className = 'pop-anim'; fb.innerHTML = `<span style="color:var(--accent2); background:rgba(232,201,109,0.1); padding:8px 20px; border-radius:20px;">💡 İpucu kullanıldı. Kelime daha sonra tekrar sorulacak.</span>`;
-  isQuestionActive = false; currentQuizIndex++; setTimeout(loadNextQuizQuestion, 2500);
-}
-
-function evalFlash(knewIt) {
-  if (!isQuestionActive) return; isQuestionActive = false;
-  if (knewIt) { if(!quizMistakes.some(w=>w.gr===currentQuizQuestion.gr)) correctCount++; updateQuizUI(); currentQuizIndex++; loadNextQuizQuestion(); } 
-  else { recordMistake(currentQuizQuestion, 'flash'); pushToPoolIfWrong(currentQuizQuestion); const fb = document.getElementById('quiz-feedback'); fb.className = 'pop-anim'; fb.innerHTML = `<span style="color:var(--accent2); background:rgba(232,201,109,0.1); padding:8px 20px; border-radius:20px;">Daha sonra tekrar sorulacak.</span>`; currentQuizIndex++; setTimeout(loadNextQuizQuestion, 1200); }
+function finishQuiz() {
+  document.getElementById('quiz-active-area').style.display = 'none';
+  document.getElementById('quiz-result-view').style.display = 'block';
+  document.getElementById('res-total').textContent = totalInitialWords;
+  document.getElementById('res-correct').textContent = correctCount;
 }
 
 /** ==========================================
