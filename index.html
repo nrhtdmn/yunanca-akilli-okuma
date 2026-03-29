@@ -116,7 +116,7 @@
   /* Kelime Tıklama Elementleri */
   .tok { cursor: pointer; display: inline; padding: 1px 3px; border-radius: 4px; transition: var(--transition); border-bottom: 1px solid transparent; }
   .tok:hover { background: rgba(79, 142, 247, 0.2); color: var(--accent); border-bottom-color: var(--accent); }
-  .tok.highlighted { background: rgba(232, 201, 109, 0.3); color: #fff; border-bottom-color: var(--accent2); }
+  .tok.highlighted { background: rgba(232, 201, 109, 0.3); color: inherit; border-bottom-color: var(--accent2); }
   .tok.tts-active { background: var(--tts-active-bg); color: #000; font-weight: bold; transform: scale(1.05); border-radius: 6px; box-shadow: 0 2px 8px rgba(232, 201, 109, 0.4); display: inline-block; }
   .tok.speaking { background: rgba(167, 139, 250, 0.35); color: #fff; border-bottom-color: var(--tts-color); }
 
@@ -528,6 +528,19 @@
   border-bottom: 2px solid #fbc02d !important; 
   border-radius: 4px; 
 }
+
+.osym-timer-desc {
+  font-size: 0.95rem;
+  color: #0e5d8e;
+  font-weight: bold;
+  background-color: rgba(31, 159, 233, .2); /* Yarı şeffaf hoş bir mavi */
+  padding: 12px 18px;
+  border-radius: 6px;
+  border-left: 4px solid #1f9fe9; /* Sol tarafa vurgu çizgisi */
+  flex-grow: 1; /* Yanındaki butona kadar alanı kaplar */
+  margin-right: 20px; /* Butonla arasına boşluk bırakır */
+  line-height: 1.4;
+}
 </style>
 </head>
 <body>
@@ -732,12 +745,55 @@
     </div>
   </div>
 <div id="section-exam" style="display:none; animation: fadeIn 0.4s ease;">
-  <div id="exam-library-view">
-    <div class="video-setup-box">
-      <h3 style="color:var(--accent); margin-bottom:10px; font-size: 1.6rem;">📝 YDS / YÖKDİL Sınav Simülatörü</h3>
-      <p style="color:var(--text-dim); margin-bottom:0; font-size:1rem;">Gerçek sınav arayüzü. Süre takibi, şık eleme ve metin boyama özellikleri ile kesintisiz odaklanın.</p>
+<div id="exam-library-view">
+    <div class="video-setup-box" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px;">
+      <div>
+        <h3 style="color:var(--accent); margin-bottom:10px; font-size: 1.6rem;">📝 YDS / YÖKDİL Sınav Simülatörü</h3>
+        <p style="color:var(--text-dim); margin-bottom:0; font-size:1rem;">Gerçek sınav arayüzü. Süre takibi, şık eleme ve metin boyama özellikleri ile kesintisiz odaklanın.</p>
+      </div>
+      <button class="main-btn" style="background:var(--tts-color); color:#fff; font-size:1.1rem; padding: 12px 25px;" onclick="openExamHistoryModal()">📊 Sınav Geçmişim</button>
     </div>
     <div id="exam-grid-container" style="margin-bottom: 40px;"></div>
+  </div>
+
+  <div id="exam-history-modal" class="osym-modal-overlay">
+    <div class="osym-modal" style="max-width: 900px; background:var(--surface); color:var(--text); border:1px solid var(--border);">
+      <div class="osym-modal-header" style="border-bottom:1px solid var(--border); padding-bottom:15px;">
+        <h2 style="color:var(--accent);">📊 Sınav Geçmişim ve İstatistikler</h2>
+        <button class="osym-modal-close" style="background:transparent; color:var(--text-dim); border:1px solid var(--border);" onclick="document.getElementById('exam-history-modal').style.display='none'">KAPAT</button>
+      </div>
+      
+      <div style="display:flex; gap:15px; margin-bottom:20px; margin-top:20px; flex-wrap:wrap;">
+         <div style="flex:1; background:#090b10; padding:15px; border-radius:8px; text-align:center; border:1px solid var(--border);">
+             <div style="font-size:2.2rem; color:var(--accent); font-weight:bold;" id="hist-total-exams">0</div>
+             <div style="color:var(--text-dim); font-size:0.95rem;">Çözülen Test</div>
+         </div>
+         <div style="flex:1; background:#090b10; padding:15px; border-radius:8px; text-align:center; border:1px solid var(--border);">
+             <div style="font-size:2.2rem; color:var(--success); font-weight:bold;" id="hist-avg-score">%0</div>
+             <div style="color:var(--text-dim); font-size:0.95rem;">Ortalama Başarı</div>
+         </div>
+         <div style="flex:1; background:#090b10; padding:15px; border-radius:8px; text-align:center; border:1px solid var(--border);">
+             <div style="font-size:2.2rem; color:var(--accent2); font-weight:bold;" id="hist-total-q">0</div>
+             <div style="color:var(--text-dim); font-size:0.95rem;">Çözülen Soru</div>
+         </div>
+      </div>
+
+      <div style="max-height:400px; overflow-y:auto; padding-right:5px;">
+        <table class="admin-table" style="width:100%; border-collapse:collapse; text-align:left;">
+          <thead>
+            <tr>
+              <th style="color:var(--text-dim); border-bottom:1px solid var(--border); padding:12px;">Tarih</th>
+              <th style="color:var(--text-dim); border-bottom:1px solid var(--border); padding:12px;">Sınav Adı</th>
+              <th style="color:var(--text-dim); border-bottom:1px solid var(--border); padding:12px;">D / Y / B</th>
+              <th style="color:var(--text-dim); border-bottom:1px solid var(--border); padding:12px;">Süre</th>
+              <th style="color:var(--text-dim); border-bottom:1px solid var(--border); padding:12px;">Puan</th>
+            </tr>
+          </thead>
+          <tbody id="exam-history-list">
+            </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <div id="exam-workspace" class="osym-theme" style="display:none;">
@@ -1066,14 +1122,19 @@ function loadUserData() {
 
 function syncCloudData() {
   if (!currentUsername) return;
+  
+  // Mevcut sınav geçmişini korumak için dbUserData'dan alıyoruz
+  const currentHistory = dbUserData[currentUsername]?.examHistory || [];
+
   dbUserData[currentUsername] = {
+    ...dbUserData[currentUsername], // Varsa diğer tüm verileri koru
     decks: userDecks,
     customDict: Object.fromEntries(userCustomDict),
-    lastActiveDeck: lastActiveDeck
+    lastActiveDeck: lastActiveDeck,
+    examHistory: currentHistory // Sınav geçmişini açıkça ekle
   };
   saveDb();
 }
-
 
 /** ==========================================
  * BÖLÜM 2: AUTH (ÜYELİK), KREDİ VE ADMİN SİSTEMİ
@@ -2334,12 +2395,12 @@ function startExamSession(examName, category) {
   currentQIndex = 0;
   examState = {};
   
-  // Her soru için hafıza oluştur (marked: false eklendi)
+  // Her soru için hafıza oluştur
   examSession.forEach(q => {
       examState[q.id] = { selected: null, eliminated: [], marked: false, qHtml: null, timeSpent: 0 };
   });
 
-  document.body.classList.add('focus-mode'); // Odak modunu aç (Menüleri gizler)
+  document.body.classList.add('focus-mode'); // Odak modunu aç
   document.getElementById('exam-library-view').style.display = 'none';
   document.getElementById('exam-result-view').style.display = 'none';
   document.getElementById('exam-workspace').style.display = 'block';
@@ -2352,6 +2413,7 @@ function startExamSession(examName, category) {
   }
   
   startRealClock();
+  startGlobalExamTimer(); // Sınavın global süresini başlat
   loadExamQuestion();
 }
 
@@ -2361,20 +2423,27 @@ function formatExamTime(seconds) {
   return `${m}:${s}`;
 }
 
-function startQuestionTimer() {
+// GEÇEN SÜREYİ SÜREKLİ HESAPLAYAN YENİ FONKSİYON
+function startGlobalExamTimer() {
   clearInterval(examTimerInterval);
-  const qId = examSession[currentQIndex].id;
-  document.getElementById('e-time').textContent = formatExamTime(examState[qId].timeSpent);
+  document.getElementById('e-time').textContent = "00:00"; // İlk saniye görünümü
   
   examTimerInterval = setInterval(() => {
-    examState[qId].timeSpent++;
-    document.getElementById('e-time').textContent = formatExamTime(examState[qId].timeSpent);
+    // 1. Tüm sınav için toplam geçen süreyi ekrana yazdır (Her soruda sıfırlanmaz)
+    const now = new Date();
+    const totalElapsedSec = Math.floor((now - examStartTime) / 1000);
+    document.getElementById('e-time').textContent = formatExamTime(totalElapsedSec);
+    
+    // 2. Analiz tablosu için o an çözülen sorunun süresini arka planda hesapla
+    if(examSession.length > 0 && examSession[currentQIndex]) {
+        const qId = examSession[currentQIndex].id;
+        examState[qId].timeSpent++;
+    }
   }, 1000);
 }
 
 function saveCurrentQuestionState() {
   const qId = examSession[currentQIndex].id;
-  // Soru metnindeki boyamaları hafızaya al
   examState[qId].qHtml = document.getElementById('exam-q-text').innerHTML;
 }
 
@@ -2411,7 +2480,7 @@ function loadExamQuestion() {
       document.getElementById('exam-q-text').innerHTML = `<strong>${currentQIndex + 1}.</strong> ` + tokenizeForExamInteractive(q.question);
   }
   
-  // Şıkları Bas (ÖSYM Yuvarlak Tasarımı + Tıklanabilir Kelimeler)
+  // Şıkları Bas
   let optsHtml = '';
   for (const [key, text] of Object.entries(q.options)) {
     const isSelected = state.selected === key ? 'selected' : '';
@@ -2426,8 +2495,6 @@ function loadExamQuestion() {
       </div>`;
   }
   document.getElementById('exam-options-container').innerHTML = optsHtml;
-  
-  startQuestionTimer();
 }
 
 function selectExamOption(key) {
@@ -2549,6 +2616,7 @@ function nextExamQ() {
 function exitExam() {
   if(confirm("Sınavdan çıkmak istediğinize emin misiniz? İlerlemeniz kaybolacaktır.")) {
       clearInterval(examTimerInterval);
+      clearInterval(clockInterval);
       document.body.classList.remove('focus-mode');
       document.getElementById('exam-workspace').style.display = 'none';
       document.getElementById('exam-library-view').style.display = 'block';
@@ -2590,11 +2658,13 @@ function tokenizeForExamInteractive(text) {
 }
 
 // Sınavı Bitirme ve Analiz Tablosu
+// Sınavı Bitirme ve Analiz Tablosu + Kayıt Sistemi
 function finishExam() {
   if(!confirm("Sınavı bitirmek istediğinize emin misiniz? Sınav sonucunuz hesaplanacak.")) return;
   
   saveCurrentQuestionState();
   clearInterval(examTimerInterval);
+  clearInterval(clockInterval);
   document.body.classList.remove('focus-mode');
   
   let correct = 0; let wrong = 0; let empty = 0;
@@ -2625,6 +2695,35 @@ function finishExam() {
       </tr>`;
   });
 
+  // ==== YENİ: SINAV SONUCUNU VERİTABANINA KAYDETME ====
+  if (currentUser) {
+      let score = Math.round((correct / examSession.length) * 100) || 0;
+      const now = new Date();
+      const totalElapsedSec = Math.floor((now - examStartTime) / 1000);
+      
+      const historyItem = {
+          id: Date.now(),
+          date: now.toLocaleDateString('tr-TR') + ' - ' + now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'}),
+          examName: examSession[0].exam + " (" + examSession[0].category + ")",
+          total: examSession.length,
+          correct: correct,
+          wrong: wrong,
+          empty: empty,
+          score: score,
+          timeSpent: formatExamTime(totalElapsedSec)
+      };
+
+      // Kullanıcının history dizisi yoksa oluştur
+      if (!dbUserData[currentUsername].examHistory) {
+          dbUserData[currentUsername].examHistory = [];
+      }
+      
+      // Yeni sınavı en başa ekle ve buluta eşitle
+      dbUserData[currentUsername].examHistory.unshift(historyItem);
+      syncCloudData(); 
+  }
+  // =====================================================
+
   document.getElementById('exam-res-total').textContent = examSession.length;
   document.getElementById('exam-res-correct').textContent = correct;
   document.getElementById('exam-res-wrong').textContent = wrong;
@@ -2635,10 +2734,57 @@ function finishExam() {
   document.getElementById('exam-workspace').style.display = 'none';
   document.getElementById('exam-result-view').style.display = 'block';
 }
-
 function closeExamResult() {
   document.getElementById('exam-result-view').style.display = 'none';
   document.getElementById('exam-library-view').style.display = 'block';
+}
+// ==== YENİ: SINAV GEÇMİŞİNİ OKUMA VE EKRANA YANSITMA ====
+function openExamHistoryModal() {
+  if (!currentUser) {
+      showToastMessage("⚠️ Sınav geçmişinizi görmek için giriş yapmalısınız.");
+      return;
+  }
+  
+  const history = dbUserData[currentUsername]?.examHistory || [];
+  const listEl = document.getElementById('exam-history-list');
+  listEl.innerHTML = "";
+  
+  if (history.length === 0) {
+      listEl.innerHTML = "<tr><td colspan='5' style='text-align:center; padding:30px; color:var(--text-dim);'>Henüz çözülmüş bir sınavınız bulunmuyor.</td></tr>";
+      document.getElementById('hist-total-exams').textContent = "0";
+      document.getElementById('hist-avg-score').textContent = "%0";
+      document.getElementById('hist-total-q').textContent = "0";
+  } else {
+      let totalScore = 0;
+      let totalQuestions = 0;
+      
+      history.forEach(item => {
+          totalScore += item.score;
+          totalQuestions += item.total;
+          
+          let scoreColor = item.score >= 70 ? 'var(--success)' : (item.score >= 50 ? 'var(--accent2)' : 'var(--error)');
+          
+          listEl.innerHTML += `
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+              <td style="padding:15px 12px; font-size:0.9rem; color:var(--text-dim);">${item.date}</td>
+              <td style="padding:15px 12px; color:var(--text); font-weight:bold;">${item.examName}</td>
+              <td style="padding:15px 12px;">
+                  <span style="color:var(--success); font-weight:bold;" title="Doğru">${item.correct}</span> / 
+                  <span style="color:var(--error); font-weight:bold;" title="Yanlış">${item.wrong}</span> / 
+                  <span style="color:var(--text-dim);" title="Boş">${item.empty}</span>
+              </td>
+              <td style="padding:15px 12px; color:var(--accent2);">${item.timeSpent}</td>
+              <td style="padding:15px 12px; font-weight:bold; font-size: 1.1rem; color:${scoreColor};">%${item.score}</td>
+          </tr>`;
+      });
+      
+      let avgScore = Math.round(totalScore / history.length);
+      document.getElementById('hist-total-exams').textContent = history.length;
+      document.getElementById('hist-avg-score').textContent = "%" + avgScore;
+      document.getElementById('hist-total-q').textContent = totalQuestions;
+  }
+  
+  document.getElementById('exam-history-modal').style.display = 'flex';
 }
 /** ==========================================
  * BÖLÜM 14: SÖZLÜK SİSTEMİ (TIKLANABİLİR YUNANCA KELİMELER İLE)
