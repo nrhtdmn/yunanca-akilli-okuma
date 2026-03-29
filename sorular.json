@@ -2,7 +2,8 @@
   {
     "id": 1,
     "exam": "2007 KPDS Kasım",
-    "category": "Kelime Soruları ",
+    "category": "Kelime Soruları",
+    "description": "1-15. sorularda, cümlede boş bırakılan yerlere uygun düşen sözcük veya ifadeyi bulunuz.",
     "question": "Τα παιχνίδια ----, κινητών τηλεφώνων και άλλων συσκευών υψηλής τεχνολογίας αποτελούν κοινή ασχολία τόσων ανθρώπων, δημιουργώντας μια νέα παγκόσμια κοινότητα. ",
     "options": {
       "A": "μηχανολογίας ",
@@ -16,7 +17,8 @@
   {
     "id": 2,
     "exam": "2007 KPDS Kasım",
-    "category": "Kelime Soruları ",
+    "category": "Kelime Soruları",
+    "description": "1-15. sorularda, cümlede boş bırakılan yerlere uygun düşen sözcük ή ifadeyi bulunuz.",
     "question": "Σας παρακαλώ, μου λέτε πού μπορώ να βρώ ένα γιατρό; Το παιδί μου είναι άρρωστο και πρέπει ---- να το δει αμέσως ένας παιδίατρος",
     "options": {
       "A": "κάπως",
@@ -30,7 +32,8 @@
   {
     "id": 3,
     "exam": "2007 KPDS Kasım",
-    "category": "Kelime Soruları ",
+    "category": "Kelime Soruları",
+    "description": "1-15. sorularda, cümlede boş bırakılan yerlere uygun düşen sözcük veya ifadeyi bulunuz.",
     "question": "Τα νέα διπλώματα θα έχουν τοποθετημένο ένα μικροτσίπ το οποίο ---- όλες τις απαραίτητες πληροφορίες για τον οδηγό, ακόμη και την ομάδα αίματος.",
     "options": {
       "A": "θα περιλαμβάνει",
@@ -44,7 +47,8 @@
   {
     "id": 4,
     "exam": "2007 KPDS Kasım",
-    "category": "Kelime Soruları ",
+    "category": "Kelime Soruları",
+    "description": "1-15. sorularda, cümlede boş bırakılan yerlere uygun düşen sözcük ή ifadeyi bulunuz.",
     "question": "Η μελοποίηση πολλών ποιημάτων του ποιητή έχει καταστήσει αρκετά γνωστή και ---- την ποίησή του. ",
     "options": {
       "A": "δημοφιλές",
@@ -58,7 +62,8 @@
   {
     "id": 5,
     "exam": "2007 KPDS Kasım",
-    "category": "Kelime Soruları ",
+    "category": "Kelime Soruları",
+    "description": "1-15. sorularda, cümlede boş bırakılan yerlere uygun düşen sözcük veya ifadeyi bulunuz.",
     "question": "Στον χώρο εργασίας, κάπου κάπου βλέπουμε ότι ορισμένοι εργαζόμενοι σκεφτόμενοι το προσωπικό τους συμφέρον θέτουν σε κίνδυνο την καριέρα τους, οι προϊστάμενοί τους σε τέτοιες περιπτώσεις δεν πρέπει να ----.",
     "options": {
       "A": "κάνουν χωρίς αυτούς  ",
@@ -72,7 +77,8 @@
   {
     "id": 6,
     "exam": "2007 KPDS Kasım",
-    "category": "Kelime Soruları ",
+    "category": "Kelime Soruları",
+    "description": "1-15. sorularda, cümlede boş bırakılan yerlere uygun düşen sözcük ή ifadeyi bulunuz.",
     "question": "Πλήθος κόσμου συμμετείχε στις εκδηλώσεις για την 30ή επέτειο από τον θάνατο της Μαρίας Κάλλας στο Δημαρχείο των Παρισίων. Η Κάλλας ---- ακόμα και σήμερα η πλέον γνωστή και αγαπητή τραγουδίστρια όπερας στον πλανήτη.",
     "options": {
       "A": "παραμένει ",
@@ -86,7 +92,8 @@
   {
     "id": 7,
     "exam": "2007 KPDS Kasım",
-    "category": "Kelime Soruları ",
+    "category": "Kelime Soruları",
+    "description": "1-15. sorularda, cümlede boş bırakılan yerlere uygun düşen sözcük ή ifadeyi bulunuz.",
     "question": "Σύμφωνα με έκθεση της εταιρείας Symantec το ηλεκτρονικό έγκλημα μέσω Διαδικτύου έχει καταστεί σημαντική οικονομική δραστηριότητα συνεπώς για την αντιμετώπιση του φαινομένου η ---- του νόμου είναι αναπόφευκτη.",
     "options": {
       "A": "αποβολή ",
@@ -100,7 +107,8 @@
   {
     "id": 8,
     "exam": "2007 KPDS Kasım",
-    "category": "Kelime Soruları ",
+    "category": "Kelime Soruları",
+    "description": "1-15. sorularda, cümlede boş bırakılan yerlere uygun düşen sözcük veya ifadeyi bulunuz.",
     "question": "Ο υπουργός οικονομικών ---- στη Βουλή το νέο νομοσχέδιο για τα νέα φορολογικά μέτρα, το οποίο αν ψηφιστεί θα γίνει νόμος του κράτους. ",
     "options": {
       "A": "διέθεσε ",
@@ -114,7 +122,8 @@
   {
     "id": 9,
     "exam": "2007 KPDS Kasım",
-    "category": "Kelime Soruları ",
+    "category": "Kelime Soruları",
+    "description": "1-15. sorularda, cümlede boş bırakılan yerlere uygun düşen sözcük ή ifadeyi bulunuz.",
     "question": "Η αγορά εργασίας είναι ευαίσθητη στις αλλαγές του περιβάλλοντος. Καθώς οι κλιματικές αλλαγές γίνονται ----, οι κυβερνήσεις, οι εργαζόμενοι και οι εργοδότες πρέπει να προσαρμοστούν στο νέο περιβάλλον. ",
     "options": {
       "A": "επιμελέστερες ",
@@ -128,7 +137,8 @@
   {
     "id": 10,
     "exam": "2007 KPDS Kasım",
-    "category": "Kelime Soruları ",
+    "category": "Kelime Soruları",
+    "description": "1-15. sorularda, cümlede boş bırakılan yerlere uygun düşen sözcük ή ifadeyi bulunuz.",
     "question": "Για μένα το τανγκό ---- ένα σταυροδρόμι για τη μουσική, την ποίηση, τον χορό. Το τανγκό συμβολίζει την ιδιοσυγκρασία του πολίτη του Μπουένος Αϊρες.",
     "options": {
       "A": "αποτελεί ",
@@ -142,7 +152,8 @@
   {
     "id": 11,
     "exam": "2007 KPDS Kasım",
-    "category": "Kelime Soruları ",
+    "category": "Kelime Soruları",
+    "description": "1-15. sorularda, cümlede boş bırakılan yerlere uygun düşen sözcük ή ifadeyi bulunuz.",
     "question": "Το εργοστάσιο ---- δερμάτων έκλεισε, γιατί η εταιρεία στην οποία ανήκε ήταν προβληματική και αντιμετώπιζε σοβαρά οικονομικά προβλήματα.",
     "options": {
       "A": "εργασίας ",
@@ -156,7 +167,8 @@
   {
     "id": 12,
     "exam": "2007 KPDS Kasım",
-    "category": "Kelime Soruları ",
+    "category": "Kelime Soruları",
+    "description": "1-15. sorularda, cümlede boş bırakılan yerlere uygun düşen sözcük ή ifadeyi bulunuz.",
     "question": "---- αιώνες ο περισσότερος κόσμος πίστευε ότι ο Άρης ήταν σαν τη Γη, θερμός, υγρός και γεμάτος ζωή.",
     "options": {
       "A": "επί",
@@ -170,7 +182,8 @@
   {
     "id": 13,
     "exam": "2007 KPDS Kasım",
-    "category": "Kelime Soruları ",
+    "category": "Kelime Soruları",
+    "description": "1-15. sorularda, cümlede boş bırakılan yerlere uygun düşen sözcük ή ifadeyi bulunuz.",
     "question": "Ο πολιτισμός των Μάγια αναπτύχτηκε στις περιοχές του Νότιου Μεξικού ---- και ζούν οι σημερινοί τους απόγονοι. Καλλιεργούσαν φασόλια, δημητριακά και κολοκύθες. ",
     "options": {
       "A": "εκεί ",
@@ -184,7 +197,8 @@
   {
     "id": 14,
     "exam": "2007 KPDS Kasım",
-    "category": "Kelime Soruları ",
+    "category": "Kelime Soruları",
+    "description": "1-25. sorularda, cümlede boş bırakılan yerlere uygun düşen sözcük ή ifadeyi bulunuz.",
     "question": "Σήμερα η βιοτεχνολογία έχει φέρει πραγματική επανάσταση στον τομέα της φαρμακευτικής βιομηχανίας, ---- ριζικά τον τρόπο με τον οποίο ανακαλύπτονται και παράγονται τα νέα φάρμακα.  ",
     "options": {
       "A": "αλλάζοντας ",
@@ -198,7 +212,8 @@
   {
     "id": 15,
     "exam": "2007 KPDS Kasım",
-    "category": "Kelime Soruları ",
+    "category": "Kelime Soruları",
+    "description": "1-35. sorularda, cümlede boş bırakılan yerlere uygun düşen sözcük veya ifadeyi bulunuz.",
     "question": "Όταν μελετούμε την ιστορία μιας χώρας, ενός λαού, δεν μπορούμε να περιοριστούμε μόνο στις πληροφορίες για τη ζωή, τη δράση και τον πολιτισμό των εκπροσώπων της ---- τάξης",
     "options": {
       "A": "πολιτιστικής ",
