@@ -1,0 +1,21 @@
+.container { max-width: 1000px; margin: 0 auto; transition: all 0.3s ease; }
+
+header { margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+.logo h1 { font-size: 1.6rem; color: var(--accent); letter-spacing: -0.5px; margin-bottom: 5px; }
+.logo span { color: var(--accent2); }
+.logo p { color: var(--text-dim); font-size: 0.9rem; }
+
+.user-profile-header { display: flex; gap: 10px; align-items: center; }
+.main-tabs { display: flex; gap: 10px; flex-wrap: wrap; width: 100%; }
+.category-filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 25px; justify-content: center; }
+.url-row { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+.btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.text-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; margin-top: 10px; margin-bottom: 15px; }
+.video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+
+@media (max-width: 768px) {
+  .quiz-options-grid { grid-template-columns: 1fr; }
+  .url-row { flex-direction: column; }
+  .video-grid, .text-grid { grid-template-columns: 1fr; }
+}

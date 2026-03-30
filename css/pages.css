@@ -1,0 +1,129 @@
+/* === READ SECTION === */
+.input-section { background: var(--surface); border: 1px solid var(--border); border-radius: 15px; padding: 25px; margin-bottom: 25px; box-shadow: var(--shadow); }
+.input-tabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 15px; flex-wrap: wrap; justify-content: center; }
+.input-panel { display: none; animation: fadeIn 0.4s ease; }
+.input-panel.active { display: block; }
+#reader { background: var(--surface); padding: 25px; border-radius: 15px; border: 1px solid var(--border); display: none; font-size: 1.15rem; margin-top: 25px; position: relative; line-height: 1.8; box-shadow: var(--shadow); }
+
+.tok { cursor: pointer; display: inline; padding: 1px 3px; border-radius: 4px; transition: var(--transition); border-bottom: 1px solid transparent; }
+.tok:hover { background: rgba(79, 142, 247, 0.2); color: var(--accent); border-bottom-color: var(--accent); }
+.tok.highlighted { background: rgba(232, 201, 109, 0.3); color: inherit; border-bottom-color: var(--accent2); }
+.tok.tts-active { background: var(--tts-active-bg); color: #000; font-weight: bold; transform: scale(1.05); border-radius: 6px; box-shadow: 0 2px 8px rgba(232, 201, 109, 0.4); display: inline-block; }
+.tok.speaking { background: rgba(167, 139, 250, 0.35); color: #fff; border-bottom-color: var(--tts-color); }
+.translated-word-highlight { background-color: rgba(232, 201, 109, 0.3); color: #e8c96d; border-bottom: 2px solid #e8c96d; padding: 0 4px; border-radius: 4px; font-weight: bold; display: inline-block; }
+
+/* Okuma Paneli Araç Çubuğu (Oku/Duraklat/Durdur Butonları) */
+.reader-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; padding-bottom: 15px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px; position: sticky; top: 0; background: var(--surface); z-index: 10; }
+.reader-toolbar-left { color: var(--text-dim); font-size: 0.85rem; }
+.reader-toolbar-right { display: flex; gap: 8px; }
+
+.toolbar-btn { background: var(--border); color: var(--text-dim); border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; transition: 0.2s; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.toolbar-btn:hover { background: #32384a; color: var(--text); }
+.toolbar-btn.tts-toolbar-btn { background: rgba(167,139,250,0.15); color: var(--tts-color); border: 1px solid rgba(167,139,250,0.3); }
+.toolbar-btn.tts-toolbar-btn:hover { background: rgba(167,139,250,0.25); color: #fff; border-color: var(--tts-color); }
+
+/* === VIDEO & MEDIA SECTION === */
+.video-setup-box { background: var(--surface); border: 1px solid var(--border); padding: 25px; border-radius: 15px; margin-bottom: 20px; box-shadow: var(--shadow); }
+.yt-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 15px; margin-bottom: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); background: #000; }
+.yt-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+.subtitle-container { background: var(--surface); border: 1px solid var(--border); padding: 20px; border-radius: 15px; text-align: center; min-height: 150px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: var(--shadow); transition: all 0.3s ease; }
+.sub-gr-text { font-size: 1.8rem; font-weight: bold; color: var(--accent2); margin-bottom: 10px; line-height: 1.4; transition: 0.2s;}
+.sub-tr-text { font-size: 1.1rem; color: var(--text); border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; width: 100%; transition: 0.2s;}
+.subtitle-container.active { border-color: var(--accent); box-shadow: 0 0 20px rgba(79, 142, 247, 0.2); background: linear-gradient(180deg, #13161e 0%, #1a1e29 100%);}
+.player-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+.active-video-title { color: var(--accent); font-size: 1.1rem; font-weight: 600; margin: 0; }
+
+/* === QUIZ (Öğretici Test) EKLENEN STİLLER === */
+.quiz-card { background: var(--surface); border: 1px solid var(--border); border-radius: 15px; padding: 30px; box-shadow: var(--shadow); text-align: center; position: relative; }
+.quiz-controls-top { display: flex; gap: 15px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap; }
+.quiz-controls-top select { background: #090b10; color: var(--text); border: 1px solid var(--border); padding: 12px 20px; border-radius: 8px; font-size: 1rem; outline: none; cursor: pointer; }
+.quiz-word-row { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 30px; }
+.quiz-big-word { font-size: 3.5rem; font-weight: 800; color: var(--accent2); letter-spacing: 1px; }
+.quiz-speak-btn { background: rgba(167, 139, 250, 0.15); border: 1px solid rgba(167, 139, 250, 0.4); color: var(--tts-color); border-radius: 50%; width: 50px; height: 50px; font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+.quiz-speak-btn:hover { background: rgba(167, 139, 250, 0.3); transform: scale(1.1); }
+.quiz-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; max-width: 600px; margin: 0 auto; }
+.quiz-opt-btn { background: #090b10; color: var(--text); border: 2px solid var(--border); padding: 18px 20px; border-radius: 12px; font-size: 1.2rem; cursor: pointer; transition: 0.2s; font-weight: 600; text-align: center; }
+.quiz-opt-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(79, 142, 247, 0.1); transform: translateY(-2px); }
+.quiz-opt-btn.correct { background: rgba(74, 222, 128, 0.15); border-color: var(--success); color: var(--success); }
+.quiz-opt-btn.wrong { background: rgba(248, 113, 113, 0.15); border-color: var(--error); color: var(--error); opacity: 0.6; }
+.progress-container { width: 100%; max-width: 600px; height: 8px; background: var(--border); border-radius: 4px; margin: 0 auto 30px auto; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s ease; }
+.result-stat-box { display: flex; justify-content: center; gap: 30px; margin-bottom: 20px; flex-wrap: wrap; }
+.stat-item { background: #090b10; border: 1px solid var(--border); padding: 15px 25px; border-radius: 12px; text-align: center; min-width: 120px; }
+.stat-item span { display: block; font-size: 2.2rem; font-weight: bold; line-height: 1.2; }
+.stat-item small { color: var(--text-dim); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; }
+.mistakes-table { width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse; background: #090b10; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+.mistakes-table th, .mistakes-table td { padding: 12px 15px; border-bottom: 1px solid var(--border); text-align: left; }
+.mistakes-table th { background: var(--surface); color: var(--text-dim); font-weight: bold; }
+.exit-quiz-btn { position: absolute; top: 20px; left: 20px; background: transparent; border: 1px solid var(--border); color: var(--text-dim); padding: 8px 15px; border-radius: 8px; cursor: pointer; transition: 0.2s; font-weight: bold; }
+.exit-quiz-btn:hover { background: rgba(248, 113, 113, 0.1); color: var(--error); border-color: var(--error); }
+#quiz-write-input { width: 100%; max-width: 450px; background: #090b10; color: #fff; border: 2px solid var(--border); padding: 18px 20px; border-radius: 12px; font-size: 1.3rem; text-align: center; outline: none; margin-bottom: 20px; transition: 0.2s; }
+#quiz-write-input:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(79,142,247,0.2); }
+
+
+/* === DICT SECTION === */
+#section-dict { display: none; animation: fadeIn 0.4s ease; }
+.dict-box { background: var(--surface); border: 1px solid var(--border); padding: 25px; border-radius: 15px; margin-bottom: 20px; box-shadow: var(--shadow); }
+.dict-result-card { background: #090b10; border: 1px solid var(--border); padding: 20px; border-radius: 12px; margin-top: 20px; display: none; animation: fadeIn 0.3s ease; }
+.dict-result-card.active { display: block; }
+.dict-main-word { font-size: 2.2rem; color: var(--accent); font-weight: bold; margin-bottom: 5px; }
+.dict-phonetic { color: var(--tts-color); font-size: 0.95rem; margin-bottom: 15px; font-family: monospace; }
+.dict-main-translation { font-size: 1.4rem; color: #fff; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
+.dict-pos-group { margin-bottom: 15px; }
+.dict-pos-title { color: var(--accent2); font-size: 1rem; font-weight: bold; font-style: italic; margin-bottom: 8px; text-transform: capitalize; }
+.dict-synonyms { display: flex; flex-wrap: wrap; gap: 8px; }
+.dict-syn-item { background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; color: var(--text-dim); }
+
+
+/* ÖSYM Tema Klonu */
+.osym-theme { background-color: #ffffff !important; color: #222222 !important; font-family: Arial, Helvetica, sans-serif !important; min-height: 100vh; padding: 0; border-radius: 8px; }
+.osym-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e0e0e0; padding: 15px 30px; background: #fff; }
+.osym-profile { display: flex; align-items: center; gap: 15px; }
+.osym-avatar { width: 80px; height: 80px; background: #8b9bb4; border-radius: 8px; clip-path: polygon(20% 100%, 20% 70%, 35% 55%, 35% 45%, 25% 40%, 25% 20%, 30% 5%, 70% 5%, 75% 20%, 75% 40%, 65% 45%, 65% 55%, 80% 70%, 80% 100%); }
+.osym-user-info h2 { font-size: 1.2rem; color: #555; margin-bottom: 5px; }
+.osym-user-info p { font-size: 0.9rem; color: #777; margin-bottom: 5px; }
+.osym-user-info strong { color: #003366; font-size: 1.1rem; }
+.osym-top-menu { display: flex; gap: 15px; flex-wrap: wrap; }
+.osym-top-btn { background: transparent; border: none; color: #555; font-weight: bold; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+.osym-top-btn:hover { color: #003366; }
+.osym-top-btn.border-btn { border: 1px solid #ccc; padding: 5px 15px; border-radius: 4px; }
+.osym-timer-box { border: 1px dashed #6c8ebf; padding: 10px 20px; margin: 20px 30px; display: flex; align-items: center; gap: 15px; color: #003366; border-radius: 4px; }
+.osym-timer-box span { font-size: 1.3rem; font-weight: bold; }
+.osym-timer-box small { color: #666; font-size: 0.9rem; font-weight: normal; }
+.osym-timer-desc { font-size: 0.95rem; color: #0e5d8e; font-weight: bold; background-color: rgba(31, 159, 233, .2); padding: 12px 18px; border-radius: 6px; border-left: 4px solid #1f9fe9; flex-grow: 1; margin-right: 20px; line-height: 1.4; }
+.osym-question-container { padding: 20px 30px; font-size: 1.1rem; line-height: 1.6; }
+.osym-question-text { font-weight: bold; margin-bottom: 25px; color: #002244; }
+.osym-options { display: flex; flex-direction: column; gap: 15px; }
+.osym-option-row { display: flex; align-items: center; gap: 15px; cursor: pointer; }
+.osym-circle { width: 40px; height: 40px; border: 2px solid #003366; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; color: #003366; font-size: 1.1rem; transition: all 0.2s; flex-shrink: 0; }
+.osym-option-text { font-size: 1.1rem; color: #333; transition: all 0.2s; flex-grow: 1; }
+.osym-option-row.selected .osym-circle { background: #003366; color: #fff; }
+.osym-option-row.eliminated .osym-option-text { text-decoration: line-through; color: #999; }
+.osym-option-row.eliminated .osym-circle { border-color: #ccc; color: #ccc; }
+.osym-bottom-bar { display: flex; justify-content: space-between; padding: 20px 30px; border-top: 1px solid #e0e0e0; margin-top: 30px; }
+.osym-nav-btn { background: #fff; border: 1px solid #ccc; color: #333; padding: 10px 30px; font-size: 1rem; font-weight: bold; cursor: pointer; border-radius: 4px; }
+.osym-nav-btn:hover { background: #f0f0f0; }
+.osym-exit-btn { background: transparent; border: none; color: #cc0000; cursor: pointer; font-weight: bold; text-decoration: underline; }
+
+.osym-theme .tok.exam-hl { background-color: rgba(255, 235, 59, 0.8) !important; color: #000000 !important; border-bottom: 2px solid #fbc02d !important; border-radius: 4px; }
+
+.osym-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 100000; }
+.osym-modal { background: #fff; width: 95%; max-width: 800px; border-radius: 4px; padding: 25px; color: #333; font-family: Arial, sans-serif; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+.osym-modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.osym-modal-header h2 { color: #003366; margin: 0; font-size: 1.5rem; }
+.osym-modal-close { background: #fff; border: 1px solid #ccc; padding: 8px 20px; cursor: pointer; color: #777; font-weight: bold; border-radius: 4px; }
+.osym-table-wrapper { border: 1px solid #b3c6e6; border-radius: 4px; margin-bottom: 25px; overflow: hidden; }
+.osym-table-title { background: #f4f7fb; color: #003366; padding: 12px; text-align: center; font-weight: bold; border-bottom: 1px solid #b3c6e6; }
+.osym-table { width: 100%; border-collapse: collapse; text-align: center; }
+.osym-table th, .osym-table td { border: 1px solid #b3c6e6; padding: 15px; width: 25%; }
+.osym-table th { background: #fff; color: #003366; font-weight: bold; font-size: 0.95rem; }
+.osym-table td { background: #fff; font-size: 1.2rem; font-weight: bold; color: #111; }
+.osym-tabs { display: flex; border-bottom: 1px solid #b3c6e6; gap: 5px; flex-wrap: wrap; margin-bottom: 20px; }
+.osym-tab { padding: 12px 20px; background: #f9f9f9; border: 1px solid transparent; border-bottom: none; cursor: pointer; color: #003366; font-weight: bold; }
+.osym-tab.active { background: #fff; border-color: #b3c6e6; border-top: 3px solid #003366; border-bottom: 1px solid #fff; margin-bottom: -1px; }
+.osym-q-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+.osym-q-btn { width: 45px; height: 45px; border: 1px solid #ccc; background: #fff; cursor: pointer; font-weight: bold; font-size: 1.1rem; color: #333; display: flex; justify-content: center; align-items: center; position: relative; }
+.osym-q-btn.answered { border-color: #aaa; }
+.osym-q-btn.answered::after { content: '○'; position: absolute; bottom: 0px; right: 3px; font-size: 12px; color: #666; }
+.osym-q-btn.marked { border-color: #d9534f; color: #d9534f; }
+.osym-q-btn:hover { background: #eef2f5; }

@@ -1,0 +1,68 @@
+{
+  "id": "/yunanca-akilli-okuma/",
+  "lang": "tr-TR",
+  "name": "Yunanca Akıllı Okuyucu",
+  "short_name": "YunancaOkuyucu",
+  "description": "Yunanca metinleri analiz eden, kelime anlamlarını anında sunan ve akıllı testlerle dil öğrenimini hızlandıran kapsamlı bir okuma asistanı.",
+  "start_url": "index.html",
+  "scope": "/yunanca-akilli-okuma/",
+  "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "minimal-ui",
+    "standalone"
+  ],
+  "background_color": "#0d0f14",
+  "theme_color": "#4f8ef7",
+  "orientation": "any",
+  "categories": [
+    "education",
+    "books",
+    "productivity",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "assets/images/screenshot-mobile1.png",
+      "sizes": "1080x1920",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Yunanca Akıllı Okuma Mobil Görünümü"
+    },
+    {
+      "src": "assets/images/screenshot-mobile2.png",
+      "sizes": "1080x1920",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Yunanca Akıllı Okuma Kelime Listesi"
+    },
+    {
+      "src": "assets/images/screenshot-mobile3.png",
+      "sizes": "1080x1920",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Yunanca Akıllı Okuma Test Ekranı"
+    },
+    {
+      "src": "assets/images/screenshot-desktop.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Yunanca Akıllı Okuma Masaüstü Paneli"
+    }
+  ]
+}
