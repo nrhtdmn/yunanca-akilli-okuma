@@ -16,15 +16,19 @@
 <body>
 
 <div class="container" id="main-container">
-  <header id="main-header" style="position: relative;">
-    <div class="logo">
-      <h1>Yunanca <span>Akıllı</span> Okuyucu</h1>
-      <p>v24.0 — Cloud & Premium Öğrenim Platformu</p>
-    </div>
-    
-    <div style="position: absolute; top: 20px; right: 20px; display: flex; align-items: center; gap: 15px;">
-        <button id="theme-toggle-btn" onclick="toggleTheme()" style="background: var(--surface); border: 1px solid var(--border); border-radius: 50%; width: 45px; height: 45px; font-size: 1.3rem; cursor: pointer; color: var(--text); display: flex; align-items: center; justify-content: center; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.2);" title="Temayı Değiştir">☀️</button>
-        <div class="user-profile-header" id="user-header-area"></div>
+  <header id="main-header">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; width: 100%; gap: 15px; margin-bottom: 20px;">
+      
+      <div class="logo">
+        <h1>Yunanca <span>Akıllı</span> Okuyucu</h1>
+        <p>v24.0 — Cloud & Premium Öğrenim Platformu</p>
+      </div>
+      
+      <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap; justify-content: flex-end;">
+          <div class="user-profile-header" id="user-header-area"></div>
+          <button id="theme-toggle-btn" onclick="toggleTheme()" style="background: var(--surface-alt); border: 1px solid var(--border); border-radius: 50%; width: 45px; height: 45px; font-size: 1.3rem; cursor: pointer; color: var(--text); display: flex; align-items: center; justify-content: center; transition: var(--transition); box-shadow: var(--shadow); flex-shrink: 0;" title="Temayı Değiştir">☀️</button>
+      </div>
+
     </div>
 
     <div class="main-tabs">
@@ -36,8 +40,6 @@
       <button class="main-tab-btn" id="mtab-exam" onclick="switchMainTab('exam')">📝 Soru Bankası</button>
       <button class="main-tab-btn" id="mtab-practice" onclick="switchMainTab('practice')">💪 Alıştırmalar</button>
     </div>
-
- 
   </header>
 
   <div class="modal-overlay" id="auth-modal">
