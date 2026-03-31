@@ -37,6 +37,8 @@ async function fetchFromFirebase() {
             db.collection("global").doc("announcements").set({list: dbAnnouncements});
         }
     });
+
+    
     finishInit();
   } catch(e) { console.error("Bulut okuma hatası", e); renderTVLibrary(); finishInit(); }
 }
@@ -148,14 +150,59 @@ async function translateFullContext() {
   } catch (e) { contextBox.innerHTML = `Çeviri alınamadı.`; }
 }
 
+/* ==========================================
+ * ÇOKLU SINAV (JSON) ÇEKME MOTORU
+ * ========================================== */
+
+// Sınav JSON dosyalarınızın listesi (Yeni sınav ekledikçe buraya yazın)
+const EXAM_FILES = [
+  'sinavlar/yds_2007_kasım.json',
+  'sinavlar/yds_2008.json',
+  'sinavlar/yokdil_2020.json'
+  // Yeni dosya eklemek isterseniz virgül koyup 'sinavlar/yeni_sinav.json' şeklinde ekleyebilirsiniz.
+];
+
 async function fetchExamData() {
   try {
-    const response = await fetch('sorular.json');
-    if (!response.ok) throw new Error("JSON yüklenemedi");
-    GLOBAL_SORU_BANKASI = await response.json();
+    GLOBAL_SORU_BANKASI = []; // Önceki verileri sıfırla
+    
+    // Listedeki tüm JSON dosyalarını aynı anda (paralel olarak) çek
+    const fetchPromises = EXAM_FILES.map(file => 
+      fetch(file)
+        .then(res => {
+            if (!res.ok) {
+                console.warn(`⚠️ ${file} bulunamadı veya yüklenemedi. (Atlanıyor)`);
+                return []; // Hata veren veya henüz yüklenmeyen dosyayı atla
+            }
+            return res.json();
+        })
+        .catch(err => {
+            console.error(`❌ ${file} çekilirken hata oluştu:`, err);
+            return [];
+        })
+    );
+
+    // Tüm dosyaların inmesini bekle
+    const results = await Promise.all(fetchPromises);
+    
+    // Gelen tüm sınav dizilerini tek bir dev "Soru Bankası" dizisinde birleştir
+    results.forEach(examData => {
+        if(Array.isArray(examData)) {
+            GLOBAL_SORU_BANKASI = GLOBAL_SORU_BANKASI.concat(examData);
+        }
+    });
+
+    // Eğer hiçbir soru yüklenemediyse uyarı ver
+    if (GLOBAL_SORU_BANKASI.length === 0) {
+        document.getElementById('exam-grid-container').innerHTML = "<p style='text-align:center; color:var(--text-dim); padding:20px;'>Henüz sınav yüklenmemiş veya JSON dosyaları bulunamadı.</p>";
+        return;
+    }
+
+    // Soruları ekrana çizdir (home.js içindeki fonksiyon)
     renderExamLibrary();
+
   } catch (error) {
-    console.warn("Soru Bankası JSON bulunamadı veya hata oluştu:", error);
-    document.getElementById('exam-grid-container').innerHTML = "<p style='text-align:center; color:var(--error);'>Sorular yüklenemedi. Lütfen sorular.json dosyasını kontrol edin.</p>";
+    console.error("Soru Bankası JSON'ları birleştirilirken kritik hata:", error);
+    document.getElementById('exam-grid-container').innerHTML = "<p style='text-align:center; color:var(--error); padding:20px;'>Sınav sistemi yüklenirken bir hata oluştu.</p>";
   }
 }

@@ -34,7 +34,6 @@ let currentTextCategory = "Tümü";
 let currentVideoCategory = "Tümü";
 
 const METIN_KATALOGU = [
-  { id: "hikaye-1", title: "n", level: "A1", category: "📖 Hikaye" },
   { id: "hikaye-2", title: "Ένα Απρόσμενο Ταξίδι στη Στάση Του Λεωφορείου", level: "A1", category: "📖 Hikaye" },
   { id: "hikaye-3", title: "Η Άσκηση στη Βροχή", level: "A1", category: "📖 Hikaye" },
   { id: "hikaye-4", title: "Η Δύσκολη Μέρα της Εύας", level: "A1", category: "📖 Hikaye" },
@@ -113,6 +112,11 @@ const GREEK_RADIO_CHANNELS = [
   { name: "Derti 98.6", url: "https://n02.radiojar.com/pr9r38w802hvv?rj-ttl=5&rj-tok=AAABnS7leDYAvFErD84b3zkuqg" }
 ];
 
+
+
+let activePracticeSession = null; // Aktif alıştırma oturumunu tutar
+
+
 // --- ORTAK FONKSİYONLAR ---
 function showToastMessage(msg) {
   const toast = document.getElementById('toast');
@@ -176,3 +180,29 @@ function tokenizeForExamInteractive(text) {
   });
   return html;
 }
+
+function tokenizePracHTML(text) {
+  if (!text) return "";
+  // [1], [2] gibi yapıları Kloze test için görsel dairelere çevir
+  let processedText = text.replace(/\[(\d+)\]/g, '<span style="display:inline-flex; align-items:center; justify-content:center; background-color:var(--accent); color:white; width:22px; height:22px; border-radius:50%; font-size:0.85rem; font-weight:bold; margin:0 4px; vertical-align:middle; box-shadow:0 2px 4px rgba(0,0,0,0.3); pointer-events:none;">$1</span>');
+  
+  let html = '';
+  let safeSentence = processedText.replace(/'/g, "\\'").replace(/"/g, '\\"'); 
+  
+  const parts = processedText.split(/(<[^>]*>|\s+)/);
+  
+  parts.forEach(token => {
+    if (!token) return;
+    if (token.startsWith('<')) {
+      html += token;
+    } else if (/[\u0370-\u03FF]/.test(token)) {
+      let safeWord = token.replace(/'/g, "\\'").replace(/"/g, '\\"');
+      html += `<span class="tok" onclick="event.stopPropagation(); triggerWordPopup(event, '${safeWord}', '${safeSentence}')">${token}</span>`;
+    } else {
+      html += token;
+    }
+  });
+  return html;
+}
+
+

@@ -1,3 +1,63 @@
+/* ==========================================
+ * DESTE VE SÖZLÜK KAYIT İŞLEMLERİ
+ * ========================================== */
+
+function populateDeckSelects() {
+  // Desteleri al ve HTML seçeneklerine çevir
+  const optionsHtml = Object.keys(userDecks).map(deckName => 
+    `<option value="${deckName}">${deckName} (${userDecks[deckName].length} kelime)</option>`
+  ).join('');
+  
+  // 1. Sözlük Popup içindeki menü
+  const popSelect = document.getElementById('wp-deck-select'); 
+  if(popSelect) {
+     popSelect.innerHTML = optionsHtml;
+     popSelect.value = lastActiveDeck || "Genel Kelimeler";
+  }
+  
+  // 2. Quiz sekmesindeki menü
+  const quizSelect = document.getElementById('quiz-deck-select'); 
+  if(quizSelect) quizSelect.innerHTML = optionsHtml;
+
+  // 3. Okuma Panelindeki Deste Görünümü Menüsü (Sorun yaşadığınız yer)
+  const viewSelect = document.getElementById('deck-view-select');
+  if(viewSelect) {
+     // Mevcut seçili değeri hafızada tut
+     let currentVal = viewSelect.value || lastActiveDeck || "Genel Kelimeler";
+     
+     // Seçenekleri içine bas
+     viewSelect.innerHTML = `<option value="all">Tüm Desteler</option>` + optionsHtml;
+     
+     // Seçili olanı tekrar ayarla (Eğer silinmişse Genel Kelimeler'e dön)
+     if(currentVal === 'all' || userDecks[currentVal]) {
+         viewSelect.value = currentVal;
+     } else {
+         viewSelect.value = "Genel Kelimeler";
+     }
+  }
+}
+
+
+
+function deleteDeckEntirely(event, deckName) {
+    if(event) event.stopPropagation(); 
+    if (confirm(`"${deckName}" destesini tamamen silmek istediğinize emin misiniz?`)) {
+        delete userDecks[deckName];
+        if (lastActiveDeck === deckName) lastActiveDeck = "Genel Kelimeler";
+        
+        const viewSelect = document.getElementById('deck-view-select');
+        if(viewSelect && viewSelect.value === deckName) viewSelect.value = "all";
+        
+        syncCloudData();
+        populateDeckSelects();
+        renderDecksAccordion();
+        showToastMessage(`🗑️ Deste başarıyla silindi.`);
+    }
+}
+
+
+
+
 function loadUserData() {
   if (!currentUsername) return;
   if (!dbUserData[currentUsername]) {
@@ -262,7 +322,9 @@ function processAndRenderText() {
       <button class="toolbar-btn tts-toolbar-btn" onclick="speakAllText()" title="Tüm metni sesli oku">🔊 Oku</button>
       <button class="toolbar-btn tts-toolbar-btn" onclick="togglePauseSpeech()" title="Duraklat/Devam Et">⏸ Duraklat</button>
       <button class="toolbar-btn" onclick="stopSpeech()" title="Seslendirmeyi durdur">⏹ Durdur</button>
-    </div>`;
+    <button class="secondary-btn" onclick="clearReader()" style="border-color:var(--error); color:var(--error); padding: 5px 10px; font-size: 0.85rem; margin-left: 5px;" title="Okuma alanını temizle">🗑️ Temizle</button>
+
+      </div>`;
   readerDiv.appendChild(toolbar);
 
   globalTextForTTS = ""; allWordSpans = [];
@@ -284,11 +346,7 @@ function processAndRenderText() {
 function clearTextInputs() { document.getElementById('input-text').value = ""; document.getElementById('reader').innerHTML = ""; document.getElementById('reader').style.display = "none"; stopSpeech(); }
 
 /* === SÖZLÜK && DESTE İŞLEMLERİ === */
-function populateDeckSelects() {
-  const optionsHtml = Object.keys(userDecks).map(deckName => `<option value="${deckName}" ${deckName === lastActiveDeck ? 'selected' : ''}>${deckName} (${userDecks[deckName].length} kelime)</option>`).join('');
-  const popSelect = document.getElementById('wp-deck-select'); if(popSelect) popSelect.innerHTML = optionsHtml;
-  const quizSelect = document.getElementById('quiz-deck-select'); if(quizSelect) quizSelect.innerHTML = optionsHtml;
-}
+
 
 function createNewDeck() {
   const newName = prompt("Yeni deste adı girin:");
@@ -313,33 +371,328 @@ function saveWordToCustomDict() {
   if(newMean) { userCustomDict.set(cleanWord, newMean); syncCloudData(); showToastMessage("💾 Sözlüğe geçici olarak işlendi."); }
 }
 
-function renderDecksAccordion() {
-  const displayContainer = document.getElementById('deck-display'); displayContainer.innerHTML = "";
-  for (let deckName in userDecks) {
-    const wordList = userDecks[deckName]; const safeId = deckName.replace(/[^a-zA-Z0-9]/g, '_'); let wordsHtml = "";
-    if (wordList.length === 0) { wordsHtml = `<p style="color:var(--text-dim); text-align:center;">Bu destede henüz kelime yok.</p>`; } 
-    else {
-      wordsHtml = wordList.map((item, index) => `
-        <div class="word-item"><span><b>${item.gr}</b> ${item.tr}</span>
-          <div style="display:flex; gap:6px; align-items:center;">
-            <button class="word-item-tts" onclick="speakGreek('${item.gr.replace(/'/g, "\\'")}'); event.stopPropagation();" title="Dinle">🔊</button>
-            <button class="del-btn" onclick="deleteWordFromDeck('${deckName}', ${index})" title="Sil">🗑️</button>
-          </div>
-        </div>`).join('');
+// 1. Desteyi Tamamen Silme (Event ve Hata Korumalı)
+function deleteDeckEntirely(event, deckName) {
+    if(event) event.stopPropagation(); // Tıklamanın klasörü açıp kapatmasını engeller
+    
+    if (confirm(`"${deckName}" destesini tamamen silmek istediğinize emin misiniz?`)) {
+        delete userDecks[deckName];
+        if (lastActiveDeck === deckName) lastActiveDeck = "Genel Kelimeler";
+        syncCloudData();
+        renderDecksAccordion();
+        populateDeckSelects();
+        showToastMessage(`🗑️ Deste başarıyla silindi.`);
     }
-    const deleteDeckBtn = deckName !== "Genel Kelimeler" ? `<button class="del-btn" onclick="event.stopPropagation(); deleteDeckEntirely('${deckName}')" style="margin-right:15px;" title="Desteyi Sil">Desteyi Sil</button>` : ``;
-    displayContainer.innerHTML += `
-      <div class="deck-section">
-        <div class="deck-header" onclick="toggleAccordion('deck-${safeId}')"><strong>📂 ${deckName} (${wordList.length} kelime)</strong>
-          <div style="display:flex; align-items:center;">${deleteDeckBtn}<span class="deck-arrow" id="arrow-deck-${safeId}">▼</span></div>
-        </div>
-        <div class="deck-content" id="content-deck-${safeId}">${wordsHtml}</div>
-      </div>`;
+}
+
+// 2. Desteden Tek Kelime Silme
+function deleteWordFromDeck(deckName, wordIndex) { 
+    if (confirm("Bu kelimeyi silmek istediğinize emin misiniz?")) { 
+        userDecks[deckName].splice(wordIndex, 1); 
+        syncCloudData(); 
+        renderDecksAccordion(); 
+        populateDeckSelects(); 
+    } 
+}
+
+// 3. Kelime Destelerini Ekrana Çizdirme (Akordiyon)
+/* ==========================================
+ * DESTE VE SÖZLÜK KAYIT İŞLEMLERİ (GÜNCELLENMİŞ)
+ * ========================================== */
+
+// Deste menülerini dolduran ana fonksiyon
+function populateDeckSelects() {
+  // Veriler henüz gelmediyse işlemi durdur
+  if (typeof userDecks === 'undefined' || !userDecks) return;
+
+  // Desteleri al ve HTML seçeneklerine çevir
+  const optionsHtml = Object.keys(userDecks).map(deckName => 
+    `<option value="${deckName}">${deckName} (${userDecks[deckName].length} kelime)</option>`
+  ).join('');
+  
+  // 1. Sözlük Popup içindeki menü
+  const popSelect = document.getElementById('wp-deck-select'); 
+  if(popSelect) {
+     popSelect.innerHTML = optionsHtml;
+     popSelect.value = lastActiveDeck || "Genel Kelimeler";
+  }
+  
+  // 2. Quiz sekmesindeki menü
+  const quizSelect = document.getElementById('quiz-deck-select'); 
+  if(quizSelect) quizSelect.innerHTML = optionsHtml;
+
+  // 3. Dışa Aktarma Menüsü
+  const exportSelect = document.getElementById('export-deck-select'); 
+  if(exportSelect) exportSelect.innerHTML = `<option value="all">Tüm Desteler</option>` + optionsHtml;
+
+  // 4. Okuma Panelindeki Ana Deste Görünümü Menüsü
+  const viewSelect = document.getElementById('deck-view-select');
+  if(viewSelect) {
+     let currentVal = viewSelect.value || lastActiveDeck || "all";
+     
+     // Seçenekleri içine bas
+     viewSelect.innerHTML = `<option value="all">Tüm Desteler</option>` + optionsHtml;
+     
+     // Seçili olanı tekrar ayarla
+     if(currentVal === 'all' || userDecks[currentVal]) {
+         viewSelect.value = currentVal;
+     } else {
+         viewSelect.value = "all"; // Hata önleyici: Deste yoksa tümünü seç
+     }
   }
 }
-function deleteWordFromDeck(deckName, wordIndex) { if (confirm("Bu kelimeyi silmek istediğinize emin misiniz?")) { userDecks[deckName].splice(wordIndex, 1); syncCloudData(); renderDecksAccordion(); populateDeckSelects(); } }
-function deleteDeckEntirely(deckName) { if (confirm(`"${deckName}" destesini silmek istediğinize emin misiniz?`)) { delete userDecks[deckName]; if (lastActiveDeck === deckName) lastActiveDeck = "Genel Kelimeler"; syncCloudData(); renderDecksAccordion(); populateDeckSelects(); } }
 
+// Desteleri Ekrana Çizen Fonksiyon
+function renderDecksAccordion() {
+  const displayContainer = document.getElementById('deck-display'); 
+  if (!displayContainer || typeof userDecks === 'undefined') return;
+  displayContainer.innerHTML = "";
+  
+  const viewSelect = document.getElementById('deck-view-select');
+  if (!viewSelect) return;
+  
+  const selectedDeckName = viewSelect.value;
+  
+  for (let deckName in userDecks) {
+    if (selectedDeckName !== "all" && deckName !== selectedDeckName) continue;
+
+    const wordList = userDecks[deckName]; 
+    const safeId = deckName.replace(/[^a-zA-Z0-9]/g, '_'); 
+    let wordsHtml = "";
+    
+    if (wordList.length === 0) { 
+        wordsHtml = `<p style="color:var(--text-dim); text-align:center;">Bu destede henüz kelime yok.</p>`; 
+    } else { 
+        wordsHtml = wordList.map((item, index) => `
+            <div class="word-item">
+                <span><b>${item.gr}</b> ${item.tr}</span>
+                <div style="display:flex; gap:6px; align-items:center;">
+                    <button class="word-item-tts" onclick="speakGreek('${item.gr.replace(/'/g, "\\'")}');" title="Dinle">🔊</button>
+                    <button class="del-btn" onclick="deleteWordFromDeck('${deckName.replace(/'/g, "\\'")}', ${index})" title="Sil">🗑️</button>
+                </div>
+            </div>`).join(''); 
+    }
+    
+    const safeDeckName = deckName.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    const deleteDeckBtn = deckName !== "Genel Kelimeler" 
+        ? `<button class="del-btn" onclick="deleteDeckEntirely(event, '${safeDeckName}')" style="margin-right:15px;" title="Desteyi Sil">Desteyi Sil</button>` 
+        : ``;
+        
+    displayContainer.innerHTML += `
+        <div class="deck-section" ${selectedDeckName !== 'all' ? 'style="border-color: var(--accent);"' : ''}>
+            <div class="deck-header" onclick="toggleAccordion('deck-${safeId}')" ${selectedDeckName !== 'all' ? 'style="background: #1c212d;"' : ''}>
+                <strong>📂 ${deckName} (${wordList.length} kelime)</strong>
+                <div style="display:flex; align-items:center;">
+                    ${deleteDeckBtn}
+                    <span class="deck-arrow ${selectedDeckName !== 'all' ? 'open' : ''}" id="arrow-deck-${safeId}">▼</span>
+                </div>
+            </div>
+            <div class="deck-content ${selectedDeckName !== 'all' ? 'open' : ''}" id="content-deck-${safeId}">${wordsHtml}</div>
+        </div>`;
+  }
+}
+
+function deleteDeckEntirely(event, deckName) {
+    if(event) event.stopPropagation(); 
+    if (confirm(`"${deckName}" destesini tamamen silmek istediğinize emin misiniz?`)) {
+        delete userDecks[deckName];
+        if (lastActiveDeck === deckName) lastActiveDeck = "Genel Kelimeler";
+        
+        const viewSelect = document.getElementById('deck-view-select');
+        if(viewSelect && viewSelect.value === deckName) viewSelect.value = "all";
+        
+        syncCloudData();
+        populateDeckSelects();
+        renderDecksAccordion();
+        showToastMessage(`🗑️ Deste başarıyla silindi.`);
+    }
+}
+
+/* ==========================================
+ * 🔥 AKILLI TETİKLEYİCİ (VERİ GELDİĞİNDE LİSTEYİ DOLDURUR)
+ * ========================================== */
+let deckCheckInterval = setInterval(() => {
+    // userDecks buluttan indiyse ve içi doluysa menüleri hemen güncelle
+    if (typeof userDecks !== 'undefined' && Object.keys(userDecks).length > 0) {
+        populateDeckSelects();
+        renderDecksAccordion();
+        clearInterval(deckCheckInterval); // Görev tamamlandı, tetikleyiciyi durdur
+    }
+}, 300); // Saniyede 3 kez verilerin inip inmediğini kontrol eder
+/* ==========================================
+ * CSV İÇE VE DIŞA AKTARMA MOTORU
+ * ========================================== */
+
+// Desteleri CSV Olarak İndirme (Dışa Aktar)
+// Desteleri Ekrana Çizen Fonksiyon
+function renderDecksAccordion() {
+  const displayContainer = document.getElementById('deck-display'); 
+  if (!displayContainer || typeof userDecks === 'undefined') return;
+  displayContainer.innerHTML = "";
+  
+  const viewSelect = document.getElementById('deck-view-select');
+  if (!viewSelect) return;
+  
+  const selectedDeckName = viewSelect.value;
+  
+  for (let deckName in userDecks) {
+    if (selectedDeckName !== "all" && deckName !== selectedDeckName) continue;
+
+    const wordList = userDecks[deckName]; 
+    const safeId = deckName.replace(/[^a-zA-Z0-9]/g, '_'); 
+    let wordsHtml = "";
+    
+    if (wordList.length === 0) { 
+        wordsHtml = `<p style="color:var(--text-dim); text-align:center;">Bu destede henüz kelime yok.</p>`; 
+    } else { 
+        wordsHtml = wordList.map((item, index) => `
+            <div class="word-item">
+                <span><b>${item.gr}</b> ${item.tr}</span>
+                <div style="display:flex; gap:6px; align-items:center;">
+                    <button class="word-item-tts" onclick="speakGreek('${item.gr.replace(/'/g, "\\'")}');" title="Dinle">🔊</button>
+                    <button class="del-btn" onclick="deleteWordFromDeck('${deckName.replace(/'/g, "\\'")}', ${index})" title="Sil">🗑️</button>
+                </div>
+            </div>`).join(''); 
+    }
+    
+    const safeDeckName = deckName.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    const deleteDeckBtn = deckName !== "Genel Kelimeler" 
+        ? `<button class="del-btn" onclick="deleteDeckEntirely(event, '${safeDeckName}')" style="margin-right:15px;" title="Desteyi Sil">Desteyi Sil</button>` 
+        : ``;
+        
+    // YENİ: ${selectedDeckName !== 'all' ? 'open' : ''} kısımları tamamen silindi. 
+    // Artık klasörler her durumda kapalı (katlanmış) olarak gelir.
+    displayContainer.innerHTML += `
+        <div class="deck-section" ${selectedDeckName !== 'all' ? 'style="border-color: var(--accent);"' : ''}>
+            <div class="deck-header" onclick="toggleAccordion('deck-${safeId}')" ${selectedDeckName !== 'all' ? 'style="background: #1c212d;"' : ''}>
+                <strong>📂 ${deckName} (${wordList.length} kelime)</strong>
+                <div style="display:flex; align-items:center;">
+                    ${deleteDeckBtn}
+                    <span class="deck-arrow" id="arrow-deck-${safeId}">▼</span>
+                </div>
+            </div>
+            <div class="deck-content" id="content-deck-${safeId}">${wordsHtml}</div>
+        </div>`;
+  }
+}
+
+// Desteleri CSV Olarak İndirme (Dışa Aktar)
+function exportDecksToCSV() {
+    if (!currentUser) { showToastMessage("⚠️ CSV indirmek için giriş yapmalısınız."); return; }
+    
+    // YENİ: Artık doğrudan yeni eklediğimiz deck-view-select menüsüne bakıyor.
+    const viewSelect = document.getElementById('deck-view-select');
+    if (!viewSelect) return;
+    
+    const selectedDeck = viewSelect.value;
+    
+    let csvContent = "Yunanca,Turkce,Deste Adi\n"; 
+    let exportCount = 0; 
+    
+    for (let deckName in userDecks) {
+        if (selectedDeck !== "all" && deckName !== selectedDeck) continue;
+
+        userDecks[deckName].forEach(word => {
+            let safeGr = `"${word.gr.replace(/"/g, '""')}"`;
+            let safeTr = `"${word.tr.replace(/"/g, '""')}"`;
+            let safeDeck = `"${deckName.replace(/"/g, '""')}"`;
+            
+            csvContent += `${safeGr},${safeTr},${safeDeck}\n`;
+            exportCount++;
+        });
+    }
+
+    if (exportCount === 0) {
+        showToastMessage("⚠️ İndirilecek kelime bulunamadı (Deste boş olabilir).");
+        return;
+    }
+
+    const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    
+    let fileName = selectedDeck === "all" 
+        ? `Tum_Desteler_${currentUsername}.csv` 
+        : `${selectedDeck.replace(/[^a-zA-Z0-9]/g, '_')}_${currentUsername}.csv`;
+        
+    link.setAttribute("download", fileName);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    showToastMessage(`✅ ${exportCount} kelime başarıyla indirildi.`);
+}
+
+
+
+// CSV Dosyasından Destelere Veri Yükleme (İçe Aktar)
+function importDecksFromCSV(event) {
+    if (!currentUser) { showToastMessage("⚠️ Veri yüklemek için giriş yapmalısınız."); return; }
+    
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const text = e.target.result;
+        const lines = text.split(/\r?\n/); // Satırları ayır
+        let importCount = 0;
+
+        // Satır satır okuma işlemi (İlk satır başlık olduğu için i=1'den başlıyoruz)
+        for (let i = 1; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (!line) continue;
+
+            // CSV Satırını güvenli bir şekilde sütunlara bölme (Tırnak içindeki virgülleri korur)
+            const pattern = /(?:^|,)("(?:[^"]|"")*"|[^,]*)/g;
+            let columns = [];
+            let match;
+            while ((match = pattern.exec(line))) {
+                let value = match[1];
+                if (value.startsWith('"') && value.endsWith('"')) {
+                    value = value.substring(1, value.length - 1).replace(/""/g, '"');
+                }
+                columns.push(value);
+            }
+
+            // Sütunların doğruluğunu kontrol et
+            if (columns.length >= 3) {
+                // YENİ: Okuma sırası Yunanca(0), Türkçe(1), Deste Adı(2) olarak güncellendi
+                let grWord = columns[0].trim();
+                let trMean = columns[1].trim();
+                let deckName = columns[2].trim();
+
+                if (deckName && grWord && trMean) {
+                    if (!userDecks[deckName]) {
+                        userDecks[deckName] = []; // Yeni deste oluştur
+                    }
+                    
+                    // Kelime o destede zaten yoksa ekle (Kopya kelimeleri engeller)
+                    if (!userDecks[deckName].some(w => w.gr === grWord)) {
+                        userDecks[deckName].push({ gr: grWord, tr: trMean });
+                        importCount++;
+                    }
+                }
+            }
+        }
+
+        if (importCount > 0) {
+            syncCloudData(); // Buluta kaydet
+            renderDecksAccordion(); // Ekranda göster
+            populateDeckSelects(); // Açılır menüleri güncelle
+            showToastMessage(`🎉 Tebrikler! ${importCount} yeni kelime destelerinize eklendi.`);
+        } else {
+            showToastMessage("⚠️ Eklenecek yeni kelime bulunamadı veya dosya formatı hatalı.");
+        }
+        
+        event.target.value = ""; // Inputu sıfırla ki aynı dosya tekrar seçilebilsin
+    };
+    
+    reader.readAsText(file, "UTF-8");
+}
 /* === QUIZ & E-YDS SİSTEMİ === */
 function startAdvancedQuiz(isRetry = false) {
   const mode = document.getElementById('quiz-mode-select').value;
@@ -661,5 +1014,635 @@ async function searchDictionary() {
     }
     resultsContainer.innerHTML = dictHtml;
   } catch(e) { resultsContainer.innerHTML = `<div style="text-align:center; color:var(--error); padding:20px;">❌ Çeviri sırasında bir hata oluştu.</div>`; }
+}
+
+
+/* ==========================================
+ * ALIŞTIRMALAR (PRACTICE) MOTORU
+ * ========================================== */
+
+function renderPracticeLibrary() {
+  const container = document.getElementById('practice-grid-container');
+  let html = "";
+
+  // 1. Veritabanındaki tüm "Seviyeleri" (A1, A2 vb.) otomatik bul
+  const levels = [...new Set(PRACTICE_CATALOG.map(p => p.level))].sort();
+
+  levels.forEach(level => {
+    const practicesInLevel = PRACTICE_CATALOG.filter(p => p.level === level);
+    const safeLevel = level.replace(/[^a-zA-Z0-9]/g, '_');
+    let levelContent = '';
+
+    // 2. O seviyedeki "Kategorileri" (Günlük Yaşam, Doğa vb.) otomatik bul
+    const categories = [...new Set(practicesInLevel.map(p => p.category))].sort();
+
+    categories.forEach(cat => {
+      const safeCat = safeLevel + "_" + cat.replace(/[^a-zA-Z0-9]/g, '_');
+      const practicesInCat = practicesInLevel.filter(p => p.category === cat);
+
+      // Kartları oluştur
+      let cardsHtml = `<div class="text-grid">`;
+      practicesInCat.forEach(prac => {
+        cardsHtml += `
+          <div class="text-card" onclick="openPractice('${prac.id}')" style="border-color: rgba(74, 222, 128, 0.4);">
+            <div class="text-card-title">${prac.title}</div>
+            <div class="text-card-play" style="color:var(--success);">✏️ Alıştırmaya Başla ➔</div>
+          </div>`;
+      });
+      cardsHtml += `</div>`;
+
+      // Kategori Klasörünü oluştur (Akordiyon)
+      levelContent += `
+        <div class="deck-section" style="margin: 10px 15px; border-left: 3px solid var(--success); border-radius: 0 8px 8px 0; background: rgba(0,0,0,0.2);">
+          <div class="deck-header" onclick="toggleAccordion('prac-cat-${safeCat}')" style="background:transparent; padding: 12px 15px;">
+            <strong style="color: var(--text); font-size: 1rem;">${cat} <span style="color:var(--text-dim); font-size:0.8rem; font-weight:normal;">(${practicesInCat.length} Alıştırma)</span></strong><span class="deck-arrow" id="arrow-prac-cat-${safeCat}">▼</span>
+          </div>
+          <div class="deck-content" id="content-prac-cat-${safeCat}" style="background:transparent; padding-top:5px; border-top: 1px solid rgba(255,255,255,0.05);">
+            ${cardsHtml}
+          </div>
+        </div>`;
+    });
+
+    // Seviye Ana Klasörünü oluştur (Akordiyon)
+    html += `
+      <div class="deck-section" style="margin-bottom:15px; border: 1px solid var(--border);">
+        <div class="deck-header" onclick="toggleAccordion('prac-lvl-${safeLevel}')" style="font-size: 1.15rem; padding: 18px 20px; background: linear-gradient(90deg, #1c212d 0%, #13161e 100%);">
+          <strong>🎓 ${level} Seviyesi</strong><span class="deck-arrow" id="arrow-prac-lvl-${safeLevel}">▼</span>
+        </div>
+        <div class="deck-content" id="content-prac-lvl-${safeLevel}" style="padding: 5px 0 15px 0;">
+          ${levelContent}
+        </div>
+      </div>`;
+  });
+
+  if (html === "") {
+    html = `<p style="color:var(--text-dim); text-align:center; padding: 20px;">Henüz alıştırma eklenmemiş.</p>`;
+  }
+
+  container.innerHTML = html;
+}
+
+
+
+
+function closePracticeWorkspace() {
+  document.getElementById('practice-workspace').style.display = 'none';
+  document.getElementById('practice-library-view').style.display = 'block';
+  activePracticeSession = null;
+}
+
+// Seçim Fonksiyonları (Butonların rengini ayarlamak için)
+function selectPracOpt(qId, val) {
+  document.getElementById(`btn-${qId}-true`).classList.remove('selected');
+  document.getElementById(`btn-${qId}-false`).classList.remove('selected');
+  document.getElementById(`btn-${qId}-${val}`).classList.add('selected');
+  document.getElementById(`ans-${qId}`).value = val;
+}
+
+function selectPracMCOpt(qId, optIdx) {
+  document.querySelectorAll(`.prac-mc-grp-${qId}`).forEach(b => b.classList.remove('selected'));
+  document.getElementById(`btn-${qId}-${optIdx}`).classList.add('selected');
+  document.getElementById(`ans-${qId}`).value = optIdx;
+}
+
+// Kontrol Fonksiyonu
+function checkPracticeAnswers() {
+  if(!activePracticeSession) return;
+  
+  let correctCount = 0;
+  let totalCount = activePracticeSession.questions.length;
+  
+  activePracticeSession.questions.forEach(q => {
+    let userAns = document.getElementById(`ans-${q.id}`).value.trim().toLowerCase();
+    let isCorrect = false;
+    let inputElem = document.getElementById(`ans-${q.id}`); // Gizli input veya gerçek input/select
+    
+    // Temizleme (Önceki renkleri kaldır)
+    if(q.type === 'fill-write' || q.type === 'fill-select') {
+        inputElem.classList.remove('prac-correct', 'prac-wrong');
+    }
+    if(q.type === 'tf') {
+        document.getElementById(`btn-${q.id}-true`).classList.remove('prac-correct', 'prac-wrong');
+        document.getElementById(`btn-${q.id}-false`).classList.remove('prac-correct', 'prac-wrong');
+    }
+    if(q.type === 'mc') {
+        document.querySelectorAll(`.prac-mc-grp-${q.id}`).forEach(b => b.classList.remove('prac-correct', 'prac-wrong'));
+    }
+
+    // Değerlendirme
+    if(q.type === 'tf') {
+      isCorrect = (userAns === String(q.answer));
+      if(userAns) {
+         if(isCorrect) document.getElementById(`btn-${q.id}-${userAns}`).classList.add('prac-correct');
+         else document.getElementById(`btn-${q.id}-${userAns}`).classList.add('prac-wrong');
+      }
+    } 
+    else if(q.type === 'mc') {
+      isCorrect = (userAns === String(q.answer));
+      if(userAns !== "") {
+         if(isCorrect) document.getElementById(`btn-${q.id}-${userAns}`).classList.add('prac-correct');
+         else {
+             document.getElementById(`btn-${q.id}-${userAns}`).classList.add('prac-wrong');
+             document.getElementById(`btn-${q.id}-${q.answer}`).classList.add('prac-correct'); // Doğruyu göster
+         }
+      }
+    }
+    else if(q.type === 'fill-write' || q.type === 'fill-select') {
+      isCorrect = (userAns === q.answer.toLowerCase());
+      if(userAns !== "") {
+         if(isCorrect) inputElem.classList.add('prac-correct');
+         else inputElem.classList.add('prac-wrong');
+      }
+    }
+
+    if(isCorrect) correctCount++;
+  });
+  
+  // Sonuç Gösterimi
+  const fb = document.getElementById('practice-result-feedback');
+  fb.style.display = 'block';
+  
+  if(correctCount === totalCount) {
+    fb.innerHTML = `🎉 Muazzam! Tüm soruları doğru cevapladınız (${correctCount}/${totalCount}).`;
+    fb.style.color = "var(--success)";
+  } else {
+    fb.innerHTML = `Gelişim var! ${totalCount} sorudan ${correctCount} tanesini doğru yaptınız. Kırmızı olanları tekrar inceleyin.`;
+    fb.style.color = "var(--accent2)";
+  }
+}
+
+/* ==========================================
+ * YÖNETİCİ ALIŞTIRMA (PRACTICE) EKLEME MOTORU
+ * ========================================== */
+/* ==========================================
+ * YÖNETİCİ ALIŞTIRMA FORMU (FORM TO JSON MOTORU)
+ * ========================================== */
+let adminQCount = 0;
+
+// YENİ: Soru ekle butonuna basınca ekrana soru kutucuğu çizen fonksiyon
+function addAdminQuestionField() {
+    adminQCount++;
+    const qId = adminQCount;
+    const container = document.getElementById('admin-prac-questions');
+    
+    const div = document.createElement('div');
+    div.className = 'admin-q-block';
+    div.style.cssText = 'background: #151923; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #252a38; position: relative;';
+    
+    div.innerHTML = `
+        <button type="button" onclick="this.parentElement.remove()" style="position:absolute; top:10px; right:15px; background:none; border:none; color:var(--error); cursor:pointer; font-weight:bold;">✕ Sil</button>
+        <label style="color:var(--accent); font-size:0.9rem; font-weight:bold;">Soru ${qId} Tipi:</label>
+        <select class="prac-q-type auth-input" style="padding:8px; margin-bottom:15px; margin-top:5px;" onchange="changeAdminQType(this, ${qId})">
+            <option value="mc">Çoktan Seçmeli (Görseldeki gibi)</option>
+            <option value="tf">Doğru / Yanlış</option>
+            <option value="fill-write">Yazmalı Boşluk</option>
+            <option value="fill-select">Seçmeli Boşluk (Açılır Menü)</option>
+        </select>
+        <div id="q-fields-${qId}" class="q-dynamic-fields">
+            <input type="text" class="auth-input q-text" style="padding:10px; margin-bottom:10px;" placeholder="Soru başlığı (Opsiyonel)...">
+            <input type="text" class="auth-input q-opts" style="padding:10px; margin-bottom:10px;" placeholder="Şıklar (A, B, C, D için virgülle ayırın)">
+            <input type="number" class="auth-input q-ans-mc" style="padding:10px; margin-bottom:0;" placeholder="Doğru şık sırası (0=A, 1=B...)">
+        </div>
+    `;
+    container.appendChild(div);
+}
+
+// YENİ: Soru tipi seçildiğinde altındaki kutucukları ona göre değiştiren fonksiyon
+/* ==========================================
+ * YÖNETİCİ ALIŞTIRMA FORMU VE ÖĞRENCİ EKRANI GÜNCELLEMESİ
+ * ========================================== */
+
+// Soru Tiplerine Göre Formu Değiştirme
+
+
+// Buluta Kaydetme Fonksiyonu (Hata Çözüldü)
+
+
+// Öğrenci Ekranı (Boşluk Doldurmaların Yeni Görünümü)
+// Öğrenci Ekranı (Okuma ve Çözme Arayüzü)
+function openPractice(id) {
+  if(!requireAuth(1)) return; 
+  
+  const prac = PRACTICE_CATALOG.find(p => p.id === id);
+  if(!prac) return;
+  activePracticeSession = prac;
+
+  document.getElementById('practice-library-view').style.display = 'none';
+  document.getElementById('practice-workspace').style.display = 'block';
+  document.getElementById('active-practice-title').textContent = prac.title;
+  
+  // Metni Çiz
+  document.getElementById('practice-text-content').innerHTML = tokenizePracHTML(prac.text);
+  
+  const qContainer = document.getElementById('practice-questions-content');
+  let qHtml = "";
+  
+  prac.questions.forEach((q, index) => {
+    qHtml += `<div class="prac-q-box" id="prac-box-${q.id}">`;
+    
+    if(q.type === 'tf') {
+      qHtml += `<div class="prac-q-title">${index+1}. ${tokenizePracHTML(q.question)}</div>`;
+      qHtml += `<button class="prac-tf-btn" id="btn-${q.id}-true" onclick="selectPracOpt('${q.id}', 'true')">🟢 Σωστό (Doğru)</button>`;
+      qHtml += `<button class="prac-tf-btn" id="btn-${q.id}-false" onclick="selectPracOpt('${q.id}', 'false')">🔴 Λάθος (Yanlış)</button>`;
+      qHtml += `<input type="hidden" id="ans-${q.id}" value="">`;
+    }
+    else if(q.type === 'mc') {
+      qHtml += `<div class="prac-q-title">${index+1}. ${tokenizePracHTML(q.question)}</div>`;
+      if(q.options) {
+        q.options.forEach((opt, optIdx) => {
+          qHtml += `<button class="prac-mc-btn prac-mc-grp-${q.id}" id="btn-${q.id}-${optIdx}" onclick="selectPracMCOpt('${q.id}', '${optIdx}')">${tokenizePracHTML(opt)}</button>`;
+        });
+      }
+      qHtml += `<input type="hidden" id="ans-${q.id}" value="">`;
+    }
+    else if(q.type === 'fill-write') {
+      qHtml += `<div class="prac-q-title">${index+1}. ${tokenizePracHTML(q.question)}</div>`;
+      
+      // Flex yapısı eklendi, yan yana düzgün durması için
+      qHtml += `<div style="font-size:1.15rem; margin-top:10px; display:flex; align-items:center; flex-wrap:wrap; gap:10px;">`;
+      if(q.before) qHtml += `<span>${tokenizePracHTML(q.before)}</span>`; 
+      qHtml += `<input type="text" class="prac-input" id="ans-${q.id}" autocomplete="off" placeholder="Cevabı yazın...">`;
+      if(q.after) qHtml += `<span>${tokenizePracHTML(q.after)}</span>`; 
+      
+      // YENİ: CEVABI GÖR BUTONU
+      const safeAns = q.answer ? q.answer.replace(/'/g, "\\'") : "";
+      qHtml += `<button class="secondary-btn" style="padding:6px 12px; font-size:0.85rem; border:1px solid var(--accent2); color:var(--accent2); background:transparent; border-radius:6px; cursor:pointer;" onclick="document.getElementById('ans-${q.id}').value = '${safeAns}'; this.style.opacity='0.5';">👁️ Cevabı Gör</button>`;
+      
+      qHtml += `</div>`;
+    }
+    else if(q.type === 'fill-select') {
+      qHtml += `<div class="prac-q-title">${index+1}. ${tokenizePracHTML(q.question)}</div>`;
+      let opts = `<option value="" disabled selected>Seçiniz...</option>`;
+      if(q.options) q.options.forEach(opt => { opts += `<option value="${opt}">${opt}</option>`; });
+      
+      qHtml += `<div style="font-size:1.15rem; margin-top:10px; display:flex; align-items:center; flex-wrap:wrap; gap:10px;">`;
+      if(q.before) qHtml += `<span>${tokenizePracHTML(q.before)}</span>`; 
+      qHtml += `<select class="prac-select" id="ans-${q.id}">${opts}</select>`;
+      if(q.after) qHtml += `<span>${tokenizePracHTML(q.after)}</span>`; 
+      qHtml += `</div>`;
+    }
+    
+    qHtml += `</div>`; 
+  });
+  
+  qContainer.innerHTML = qHtml;
+  document.getElementById('practice-result-feedback').style.display = 'none';
+}
+
+// YENİ: Tüm kutucukları okuyup, tek bir JSON haline getirip buluta kaydeden fonksiyon
+/* ==========================================
+ * YÖNETİCİ ALIŞTIRMA LİSTELEME, DÜZENLEME VE SİLME
+ * ========================================== */
+
+// 1. Yönetici Paneline Alıştırmaları Çizdirme
+function renderAdminPracticeList() {
+    const container = document.getElementById('admin-prac-list-container');
+    if(!container) return;
+    
+    if(PRACTICE_CATALOG.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-dim); font-size:0.85rem;">Sistemde henüz alıştırma bulunmuyor.</p>';
+        return;
+    }
+
+    let html = '<table class="admin-table"><thead><tr><th>ID</th><th>Başlık</th><th>İşlem</th></tr></thead><tbody>';
+    PRACTICE_CATALOG.forEach(p => {
+        html += `<tr>
+            <td style="font-size:0.85rem; color:var(--text-dim);">${p.id}</td>
+            <td style="font-size:0.85rem; font-weight:bold;">${p.title}</td>
+            <td style="display:flex; gap:5px;">
+                <button class="secondary-btn" style="padding:4px 8px; font-size:0.8rem; border-color:var(--accent); color:var(--accent); background:transparent;" onclick="loadPracticeToAdminForm('${p.id}')">✏️</button>
+                <button class="secondary-btn" style="padding:4px 8px; font-size:0.8rem; border-color:var(--error); color:var(--error); background:transparent;" onclick="deletePracticeFromAdmin('${p.id}')">🗑️</button>
+            </td>
+        </tr>`;
+    });
+    html += '</tbody></table>';
+    container.innerHTML = html;
+}
+
+// 2. Alıştırmayı Kalıcı Olarak Silme
+function deletePracticeFromAdmin(id) {
+    if(confirm(`"${id}" ID'li alıştırmayı KALICI OLARAK silmek istediğinize emin misiniz?`)) {
+        // Alıştırmayı listeden filtrele (çıkar)
+        PRACTICE_CATALOG = PRACTICE_CATALOG.filter(p => p.id !== id);
+        
+        // Buluta ve yerel hafızaya kaydet
+        localStorage.setItem('y_practices_db', JSON.stringify(PRACTICE_CATALOG));
+        if (useFirebase && db) {
+            db.collection("global").doc("practices").set({list: PRACTICE_CATALOG});
+        }
+        
+        // Arayüzleri yenile
+        renderPracticeLibrary();
+        renderAdminPracticeList();
+        showToastMessage("🗑️ Alıştırma başarıyla silindi.");
+    }
+}
+
+// 3. Düzenlemek İçin Alıştırmayı Forma Doldurma
+
+
+/* ==========================================
+ * ALIŞTIRMA (PRACTICE) METİN İÇİ MOTORU (CLOZE TEST)
+ * ========================================== */
+
+// 1. Akıllı Metin ve Boşluk Motoru
+
+
+/* ==========================================
+ * ALIŞTIRMA (PRACTICE) METİN İÇİ MOTORU (CLOZE TEST)
+ * ========================================== */
+
+// Düz metinleri ve şıkları tokenize etmek için
+function tokenizePracHTML(text) {
+  if (!text) return "";
+  let html = '';
+  let safeSentence = text.replace(/'/g, "\\'").replace(/"/g, '\\"'); 
+  const parts = text.split(/(<[^>]*>|\s+)/);
+  parts.forEach(token => {
+    if (!token) return;
+    if (token.startsWith('<')) { html += token; } 
+    else if (/[\u0370-\u03FF]/.test(token)) {
+      let safeWord = token.replace(/'/g, "\\'").replace(/"/g, '\\"');
+      html += `<span class="tok" onclick="event.stopPropagation(); triggerWordPopup(event, '${safeWord}', '${safeSentence}')">${token}</span>`;
+    } else { html += token; }
+  });
+  return html;
+}
+
+// 1. Akıllı Metin ve Boşluk Motoru (Inputlar Metin İçinde)
+function tokenizePracText(text, questionsArray = null) {
+  if (!text) return "";
+  let html = '';
+  let safeSentence = text.replace(/'/g, "\\'").replace(/"/g, '\\"'); 
+  
+  // Metni etiketlere, boşluklara ([1], [2] vb.) göre ayır
+  const parts = text.split(/(<[^>]*>|\s+|\[\d+\])/);
+  
+  parts.forEach(token => {
+    if (!token) return;
+    
+    let clozeMatch = token.match(/^\[(\d+)\]$/);
+    
+    if (clozeMatch) {
+        let num = parseInt(clozeMatch[1]);
+        let qIdx = num - 1;
+        let q = (questionsArray && questionsArray.length > qIdx) ? questionsArray[qIdx] : null;
+        
+        // Boşluk Doldurma - YAZMALI ise Metnin içine INPUT ve GÖZ İKONU göm
+        if (q && q.type === 'fill-write') {
+            q.isRenderedInline = true;
+            const safeAns = q.answer ? q.answer.replace(/'/g, "\\'") : "";
+            
+            html += `<span style="white-space: nowrap; display:inline-flex; align-items:center;">
+                        <input type="text" class="prac-input cloze-inline-input" id="ans-${q.id}" autocomplete="off" placeholder="..." onclick="event.stopPropagation()">
+                        <button class="secondary-btn" style="padding:2px 6px; font-size:0.9rem; border:1px solid var(--accent2); color:var(--accent2); background:transparent; border-radius:4px; cursor:pointer; margin-left:4px;" onclick="event.stopPropagation(); document.getElementById('ans-${q.id}').value = '${safeAns}'; this.style.opacity='0.5';" title="Cevabı Gör">👁️</button>
+                     </span>`;
+        } 
+        // Boşluk Doldurma - SEÇMELİ ise Metnin içine SELECT göm
+        else if (q && q.type === 'fill-select') {
+            q.isRenderedInline = true;
+            let opts = `<option value="" disabled selected>Seç...</option>`;
+            if(q.options) q.options.forEach(opt => { opts += `<option value="${opt}">${opt}</option>`; });
+            html += `<select class="prac-select cloze-inline-select" id="ans-${q.id}" onclick="event.stopPropagation()">${opts}</select>`;
+        } 
+        // Soru Çoktan seçmeli veya Doğru/Yanlış ise sadece Numara dairesini göster
+        else {
+            html += `<span class="cloze-number">${num}</span>`;
+        }
+    } 
+    else if (token.startsWith('<')) {
+      html += token;
+    } 
+    else if (/[\u0370-\u03FF]/.test(token)) {
+      let safeWord = token.replace(/'/g, "\\'").replace(/"/g, '\\"');
+      html += `<span class="tok" onclick="event.stopPropagation(); triggerWordPopup(event, '${safeWord}', '${safeSentence}')">${token}</span>`;
+    } else {
+      html += token;
+    }
+  });
+  
+  return html;
+}
+
+// 2. Öğrenci Ekranı (Okuma ve Çözme Arayüzü)
+function openPractice(id) {
+  if(!requireAuth(1)) return; 
+  
+  const prac = PRACTICE_CATALOG.find(p => p.id === id);
+  if(!prac) return;
+  activePracticeSession = prac;
+
+  // İnline bayraklarını sıfırla
+  if(prac.questions) prac.questions.forEach(q => q.isRenderedInline = false);
+
+  document.getElementById('practice-library-view').style.display = 'none';
+  document.getElementById('practice-workspace').style.display = 'block';
+  document.getElementById('active-practice-title').textContent = prac.title;
+  
+  // METNİ VE İÇİNDEKİ BOŞLUKLARI ÇİZ
+  document.getElementById('practice-text-content').innerHTML = tokenizePracText(prac.text, prac.questions);
+  
+  const qContainer = document.getElementById('practice-questions-content');
+  let qHtml = "";
+  let hasBottomQuestions = false;
+  
+  prac.questions.forEach((q, index) => {
+    // Eğer soru metnin içine gömüldüyse (Yazmalı/Seçmeli boşluk), aşağıdaki soru paneline tekrar çizme!
+    if (q.isRenderedInline) return; 
+
+    hasBottomQuestions = true;
+    qHtml += `<div class="prac-q-box" id="prac-box-${q.id}">`;
+    
+    if(q.type === 'tf') {
+      qHtml += `<div class="prac-q-title">${index+1}. ${tokenizePracHTML(q.question)}</div>`;
+      qHtml += `<button class="prac-tf-btn" id="btn-${q.id}-true" onclick="selectPracOpt('${q.id}', 'true')">🟢 Σωστό (Doğru)</button>`;
+      qHtml += `<button class="prac-tf-btn" id="btn-${q.id}-false" onclick="selectPracOpt('${q.id}', 'false')">🔴 Λάθος (Yanlış)</button>`;
+      qHtml += `<input type="hidden" id="ans-${q.id}" value="">`;
+    }
+    else if(q.type === 'mc') {
+      qHtml += `<div class="prac-q-title">${index+1}. ${tokenizePracHTML(q.question)}</div>`;
+      if(q.options) {
+          q.options.forEach((opt, optIdx) => {
+            qHtml += `<button class="prac-mc-btn prac-mc-grp-${q.id}" id="btn-${q.id}-${optIdx}" onclick="selectPracMCOpt('${q.id}', '${optIdx}')">${tokenizePracHTML(opt)}</button>`;
+          });
+      }
+      qHtml += `<input type="hidden" id="ans-${q.id}" value="">`;
+    }
+    qHtml += `</div>`; 
+  });
+  
+  // Eğer tüm sorular metnin içindeyse, Sorular panelinde bilgilendirme göster
+  if(!hasBottomQuestions) {
+      qContainer.innerHTML = `<div style="text-align:center; color:var(--text-dim); font-style:italic; padding:20px;">Tüm sorular metnin içine yerleştirilmiştir. Lütfen boşlukları yukarıdaki metin üzerinden doldurun.</div>`;
+  } else {
+      qContainer.innerHTML = qHtml;
+  }
+  
+  document.getElementById('practice-result-feedback').style.display = 'none';
+}
+
+
+/* ==========================================
+ * YÖNETİCİ PANELİ KONTROLLERİ (FORM VE KAYIT)
+ * ========================================== */
+
+function changeAdminQType(selectElem, qId) {
+    const type = selectElem.value;
+    const container = document.getElementById(`q-fields-${qId}`);
+    
+    if(type === 'tf') {
+        container.innerHTML = `
+            <input type="text" class="auth-input q-text" style="padding:10px; margin-bottom:10px;" placeholder="Soru cümlesi...">
+            <select class="auth-input q-ans-tf" style="padding:10px; margin-bottom:0;"><option value="true">Doğru (Σωστό)</option><option value="false">Yanlış (Λάθος)</option></select>
+        `;
+    } else if (type === 'mc') {
+        container.innerHTML = `
+            <input type="text" class="auth-input q-text" style="padding:10px; margin-bottom:10px;" placeholder="Soru cümlesi...">
+            <input type="text" class="auth-input q-opts" style="padding:10px; margin-bottom:10px;" placeholder="Şıklar (Virgülle ayırın: Elma,Armut,Muz)">
+            <input type="number" class="auth-input q-ans-mc" style="padding:10px; margin-bottom:0;" placeholder="Doğru şıkkın sırası (0'dan başlar: 0, 1, 2...)">
+        `;
+    } else if (type === 'fill-write') {
+         container.innerHTML = `
+            <div style="color:var(--text-dim); font-size:0.85rem; margin-bottom:10px;">💡 Bu soru doğrudan metin içindeki boşlukta gösterilecektir.</div>
+            <input type="text" class="auth-input q-ans-fw" style="padding:10px; margin-bottom:0;" placeholder="Doğru Cevap (Yazılacak kelime)">
+        `;
+    } else if (type === 'fill-select') {
+         container.innerHTML = `
+            <div style="color:var(--text-dim); font-size:0.85rem; margin-bottom:10px;">💡 Bu soru doğrudan metin içindeki boşlukta açılır menü olarak gösterilecektir.</div>
+            <input type="text" class="auth-input q-opts" style="padding:10px; margin-bottom:10px;" placeholder="Şıklar (Virgülle ayırın: είναι, έχει, κάνει)">
+            <input type="text" class="auth-input q-ans-fs" style="padding:10px; margin-bottom:0;" placeholder="Doğru Cevap (Kelimenin aynısı)">
+        `;
+    }
+}
+
+function savePracticeFromForm() {
+    const id = document.getElementById('admin-prac-id').value.trim();
+    const title = document.getElementById('admin-prac-title').value.trim();
+    const level = document.getElementById('admin-prac-level').value;
+    const category = document.getElementById('admin-prac-cat').value.trim();
+    const text = document.getElementById('admin-prac-text').value.trim();
+
+    if(!id || !title || !category || !text) {
+        showToastMessage("❌ Lütfen temel alanları (ID, Başlık, Kategori, Metin) doldurun.");
+        return;
+    }
+
+    const questions = [];
+    const qBlocks = document.querySelectorAll('.admin-q-block');
+    let hasError = false;
+
+    qBlocks.forEach((block, idx) => {
+        const type = block.querySelector('.prac-q-type').value;
+        let qObj = { id: "q" + (idx + 1), type: type };
+
+        if(type === 'tf') {
+            qObj.question = block.querySelector('.q-text').value.trim();
+            qObj.answer = block.querySelector('.q-ans-tf').value;
+            if(!qObj.question) hasError = true;
+        } 
+        else if(type === 'mc') {
+            qObj.question = block.querySelector('.q-text').value.trim();
+            const optsStr = block.querySelector('.q-opts').value.trim();
+            qObj.options = optsStr.split(',').map(s => s.trim()).filter(s => s);
+            qObj.answer = block.querySelector('.q-ans-mc').value.trim();
+            if(!qObj.question || qObj.options.length < 2 || qObj.answer === "") hasError = true;
+        } 
+        else if(type === 'fill-write') {
+            qObj.question = ""; // Metin içinde olacağı için yönergeye gerek yok
+            qObj.answer = block.querySelector('.q-ans-fw').value.trim();
+            if(!qObj.answer) hasError = true;
+        } 
+        else if(type === 'fill-select') {
+            qObj.question = ""; // Metin içinde olacağı için yönergeye gerek yok
+            const optsStr = block.querySelector('.q-opts').value.trim();
+            qObj.options = optsStr.split(',').map(s => s.trim()).filter(s => s);
+            qObj.answer = block.querySelector('.q-ans-fs').value.trim();
+            if(qObj.options.length < 2 || !qObj.answer) hasError = true;
+        }
+        questions.push(qObj);
+    });
+
+    if(hasError) { showToastMessage("❌ Soru alanlarında eksiklik var. Lütfen kontrol edin."); return; }
+
+    const newPrac = { id, title, level, category, text, questions };
+    const existsIndex = PRACTICE_CATALOG.findIndex(p => p.id === newPrac.id);
+    
+    if(existsIndex > -1) { PRACTICE_CATALOG[existsIndex] = newPrac; showToastMessage("✅ Mevcut alıştırma güncellendi!"); } 
+    else { PRACTICE_CATALOG.unshift(newPrac); showToastMessage("✅ Yeni alıştırma sisteme eklendi!"); }
+
+    localStorage.setItem('y_practices_db', JSON.stringify(PRACTICE_CATALOG));
+    if (useFirebase && db) { db.collection("global").doc("practices").set({list: PRACTICE_CATALOG}); }
+
+    document.getElementById('admin-prac-id').value = ''; document.getElementById('admin-prac-title').value = '';
+    document.getElementById('admin-prac-text').value = ''; document.getElementById('admin-prac-questions').innerHTML = '';
+    adminQCount = 0; 
+    
+    renderPracticeLibrary();
+    if(typeof renderAdminPracticeList === 'function') renderAdminPracticeList();
+}
+
+function loadPracticeToAdminForm(id) {
+    const p = PRACTICE_CATALOG.find(x => x.id === id);
+    if(!p) return;
+
+    document.getElementById('admin-prac-id').value = p.id;
+    document.getElementById('admin-prac-title').value = p.title;
+    document.getElementById('admin-prac-level').value = p.level;
+    document.getElementById('admin-prac-cat').value = p.category;
+    document.getElementById('admin-prac-text').value = p.text;
+    document.getElementById('admin-prac-questions').innerHTML = '';
+    adminQCount = 0;
+
+    if(p.questions) {
+        p.questions.forEach(q => {
+            addAdminQuestionField(); 
+            const blocks = document.querySelectorAll('.admin-q-block');
+            const currentBlock = blocks[blocks.length - 1]; 
+            
+            const typeSelect = currentBlock.querySelector('.prac-q-type');
+            typeSelect.value = q.type;
+            changeAdminQType(typeSelect, adminQCount); 
+
+            if(q.type === 'tf') {
+                currentBlock.querySelector('.q-text').value = q.question || "";
+                currentBlock.querySelector('.q-ans-tf').value = q.answer || "true";
+            } else if(q.type === 'mc') {
+                currentBlock.querySelector('.q-text').value = q.question || "";
+                currentBlock.querySelector('.q-opts').value = (q.options || []).join(', ');
+                currentBlock.querySelector('.q-ans-mc').value = q.answer || "0";
+            } else if(q.type === 'fill-write') {
+                currentBlock.querySelector('.q-ans-fw').value = q.answer || "";
+            } else if(q.type === 'fill-select') {
+                currentBlock.querySelector('.q-opts').value = (q.options || []).join(', ');
+                currentBlock.querySelector('.q-ans-fs').value = q.answer || "";
+            }
+        });
+    }
+
+    showToastMessage("✏️ Alıştırma düzenleme moduna alındı. Değişiklikleri yapıp Kaydet'e basın.");
+    document.getElementById('admin-modal').querySelector('.modal-box').scrollTo({ top: 0, behavior: 'smooth' });
+}
+/* ==========================================
+ * OKUMA PANELİ TEMİZLEME MOTORU
+ * ========================================== */
+function clearReader() {
+    const readerDiv = document.getElementById('reader');
+    if (readerDiv) {
+        // Eğer o an okunan bir ses varsa anında sustur
+        if (typeof stopTTS === "function") {
+            stopTTS(); 
+        } else if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+        }
+        
+        // Ekrana basılan metni tamamen sil
+        readerDiv.innerHTML = ''; 
+        
+        // (İsteğe bağlı) Eğer "Kendi Metnimi Gir" kutusunu da silsin isterseniz:
+        // const inputText = document.getElementById('input-text');
+        // if(inputText) inputText.value = '';
+        
+        showToastMessage("🧹 Okuma alanı temizlendi.");
+    }
 }
 

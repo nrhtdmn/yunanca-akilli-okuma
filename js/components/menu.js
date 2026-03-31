@@ -5,12 +5,16 @@ function switchMainTab(tabName) {
   document.getElementById('section-media').style.display = tabName === 'media' ? 'block' : 'none';
   document.getElementById('section-dict').style.display = tabName === 'dict' ? 'block' : 'none';
   document.getElementById('section-exam').style.display = tabName === 'exam' ? 'block' : 'none';
+  document.getElementById('section-practice').style.display = tabName === 'practice' ? 'block' : 'none'; // YENİ
   
   document.querySelectorAll('.main-tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('mtab-'+tabName).classList.add('active');
+  const activeBtn = document.getElementById('mtab-'+tabName);
+  if(activeBtn) activeBtn.classList.add('active');
   
   if(tabName === 'quiz') populateDeckSelects();
+  if(tabName === 'practice') renderPracticeLibrary(); // YENİ
 }
+
 
 function switchInputTab(tabName, btnElement) {
   document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
@@ -32,3 +36,21 @@ function toggleAccordion(safeId) {
   const arrow = document.getElementById('arrow-' + safeId);
   if (content) { content.classList.toggle('open'); arrow.classList.toggle('open'); }
 }
+
+/* === YÖNETİCİ PANELİ SEKME GEÇİŞİ === */
+function switchAdminTab(tabName, btnElement) {
+  // Önce tüm sekme butonlarının 'active' sınıfını kaldır
+  const buttons = document.getElementById('admin-modal').querySelectorAll('.sub-tab-btn');
+  buttons.forEach(btn => btn.classList.remove('active'));
+  
+  // Tıklanan butonu 'active' yap (rengini değiştir)
+  btnElement.classList.add('active');
+  
+  // Tüm panelleri gizle
+  const panels = document.getElementById('admin-modal').querySelectorAll('.admin-panel');
+  panels.forEach(panel => panel.style.display = 'none');
+  
+  // Sadece seçilen paneli göster
+  document.getElementById('admin-panel-' + tabName).style.display = 'block';
+}
+

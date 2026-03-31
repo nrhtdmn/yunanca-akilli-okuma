@@ -19,6 +19,12 @@ function openAdminPanel() {
     let premiumOpt = `<select class="action-select" onchange="updateUserAdmin('${username}', 'isPremium', this.value)"><option value="false" ${!user.isPremium?'selected':''}>Normal</option><option value="true" ${user.isPremium?'selected':''}>Premium</option></select>`;
     tbody.innerHTML += `<tr><td><b>${username}</b></td><td>${statusOpt}</td><td>${user.isPremium ? 'Sınırsız' : user.credits}</td><td>${premiumOpt}</td></tr>`;
   }
+  
+  // YENİ: Panel açılırken alıştırma listesini de çizdir
+  if(typeof renderAdminPracticeList === 'function') {
+      renderAdminPracticeList();
+  }
+
   document.getElementById('admin-modal').style.display = 'flex';
 }
 

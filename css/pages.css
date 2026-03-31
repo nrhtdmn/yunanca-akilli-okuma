@@ -127,3 +127,102 @@
 .osym-q-btn.answered::after { content: '○'; position: absolute; bottom: 0px; right: 3px; font-size: 12px; color: #666; }
 .osym-q-btn.marked { border-color: #d9534f; color: #d9534f; }
 .osym-q-btn:hover { background: #eef2f5; }
+/* === PRACTICE (ALIŞTIRMALAR) EKLENEN STİLLER === */
+.practice-split-layout { display: flex; gap: 20px; align-items: flex-start; }
+.practice-text-panel { flex: 1; background: var(--surface); padding: 25px; border-radius: 12px; border: 1px solid var(--border); position: sticky; top: 20px; box-shadow: var(--shadow); }
+.practice-questions-panel { flex: 1.2; background: var(--surface); padding: 25px; border-radius: 12px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+
+@media (max-width: 900px) {
+  .practice-split-layout { flex-direction: column; }
+  .practice-text-panel { position: static; }
+}
+
+.prac-q-box { margin-bottom: 25px; padding: 15px; background: #090b10; border-radius: 8px; border: 1px solid var(--border); }
+.prac-q-title { font-size: 1.1rem; color: var(--text); margin-bottom: 12px; font-weight: bold; }
+
+/* Doğru/Yanlış & Çoktan Seçmeli Butonları */
+.prac-tf-btn, .prac-mc-btn { display: block; width: 100%; text-align: left; background: var(--surface); color: var(--text); border: 2px solid var(--border); padding: 12px 15px; border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: 0.2s; font-size: 1.05rem; }
+.prac-tf-btn:hover, .prac-mc-btn:hover { background: rgba(79, 142, 247, 0.1); border-color: var(--accent); }
+.prac-tf-btn.selected, .prac-mc-btn.selected { background: rgba(79, 142, 247, 0.2); border-color: var(--accent); color: #fff; box-shadow: inset 0 0 0 1px var(--accent); }
+
+/* Boşluk Doldurma (Input ve Select) */
+.prac-fill-inline { display: inline-block; margin: 0 5px; }
+.prac-input { background: var(--surface); color: #fff; border: 2px solid var(--border); padding: 6px 12px; border-radius: 6px; font-size: 1.05rem; outline: none; transition: 0.2s; width: 150px; text-align: center; }
+.prac-input:focus { border-color: var(--accent); }
+.prac-select { background: var(--surface); color: #fff; border: 2px solid var(--border); padding: 6px 12px; border-radius: 6px; font-size: 1.05rem; outline: none; cursor: pointer; }
+
+/* Durum Renkleri (Kontrol Sonrası) */
+.prac-correct { border-color: var(--success) !important; background: rgba(74, 222, 128, 0.15) !important; color: var(--success) !important; }
+.prac-wrong { border-color: var(--error) !important; background: rgba(248, 113, 113, 0.15) !important; color: var(--error) !important; }
+
+
+/* Cloze Test Numaralandırma Stili */
+.cloze-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--accent);
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-size: 0.85rem;
+    font-weight: bold;
+    margin: 0 4px;
+    vertical-align: middle;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Seçenekler Paneli Düzenlemesi */
+.practice-questions-panel {
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.prac-q-box {
+    border-left: 4px solid var(--accent2);
+    transition: transform 0.2s;
+}
+
+.prac-q-box:hover {
+    transform: translateX(5px);
+}
+
+
+/* === METİN İÇİ BOŞLUK DOLDURMA (CLOZE TEST) STİLLERİ === */
+.cloze-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    background-color: var(--accent); color: white;
+    width: 24px; height: 24px; border-radius: 50%;
+    font-size: 0.85rem; font-weight: bold; margin: 0 4px;
+    vertical-align: middle; box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.cloze-inline-input {
+    width: 120px; padding: 4px 10px; margin: 0 5px;
+    font-size: 1.1rem; color: #fff; background: #090b10;
+    border: 2px dashed var(--accent); border-radius: 6px;
+    outline: none; text-align: center; transition: 0.2s;
+}
+.cloze-inline-input:focus { border-style: solid; box-shadow: 0 0 10px rgba(79,142,247,0.3); }
+
+.cloze-inline-select {
+    width: auto; padding: 4px 10px; margin: 0 5px;
+    font-size: 1.1rem; color: #fff; background: #090b10;
+    border: 2px dashed var(--accent); border-radius: 6px;
+    outline: none; cursor: pointer; transition: 0.2s;
+}
+.cloze-inline-select:focus { border-style: solid; }
+
+/* Doğru/Yanlış Renklendirmeleri */
+.cloze-inline-input.prac-correct, .cloze-inline-select.prac-correct {
+    border: 2px solid var(--success) !important;
+    background: rgba(74, 222, 128, 0.15) !important;
+    color: var(--success) !important;
+}
+.cloze-inline-input.prac-wrong, .cloze-inline-select.prac-wrong {
+    border: 2px solid var(--error) !important;
+    background: rgba(248, 113, 113, 0.15) !important;
+    color: var(--error) !important;
+}
+
