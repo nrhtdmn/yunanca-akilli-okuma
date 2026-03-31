@@ -2,3 +2,5 @@
 @import url('layout.css');
 @import url('components.css');
 @import url('pages.css');
+
+/* Gerekirse buraya sonradan eklenecek genel sınıflar yazılabilir. Tema kodları artık reset.css içinde. */

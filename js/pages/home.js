@@ -1646,3 +1646,41 @@ function clearReader() {
     }
 }
 
+/* ==========================================
+ * ☀️/🌙 TEMA (DARK/LIGHT MODE) MOTORU
+ * ========================================== */
+
+// Sayfa yüklendiğinde kullanıcının tercihini hafızadan çek ve uygula
+function initTheme() {
+    const savedTheme = localStorage.getItem('y_theme') || 'dark'; // Varsayılan: Karanlık
+    const themeBtn = document.getElementById('theme-toggle-btn');
+    
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+        if (themeBtn) themeBtn.textContent = '🌙'; // Açık temadaysa Ay ikonu göster
+    } else {
+        document.body.classList.remove('light-theme');
+        if (themeBtn) themeBtn.textContent = '☀️'; // Karanlık temadaysa Güneş ikonu göster
+    }
+}
+
+// Butona tıklandığında temayı değiştir
+function toggleTheme() {
+    const isLight = document.body.classList.toggle('light-theme');
+    const themeBtn = document.getElementById('theme-toggle-btn');
+    
+    if (isLight) {
+        localStorage.setItem('y_theme', 'light');
+        if (themeBtn) themeBtn.textContent = '🌙';
+        showToastMessage("☀️ Açık temaya geçildi.");
+    } else {
+        localStorage.setItem('y_theme', 'dark');
+        if (themeBtn) themeBtn.textContent = '☀️';
+        showToastMessage("🌙 Karanlık temaya geçildi.");
+    }
+}
+
+// Sistemi başlattığımızda temayı kontrol etmesini sağla
+document.addEventListener('DOMContentLoaded', initTheme);
+// Eğer script defer/async yükleniyorsa doğrudan da çağırabiliriz:
+initTheme();

@@ -1,6 +1,8 @@
 :root {
+  /* KOYU TEMA (VARSAYILAN) */
   --bg: #0d0f14;
   --surface: #13161e;
+  --surface-alt: #090b10; /* Kartlar ve inputlar için daha koyu zemin */
   --border: #252a38;
   --accent: #4f8ef7;
   --accent-hover: #3b76db;
@@ -15,6 +17,24 @@
   --tts-active-bg: #e8c96d;
 }
 
+body.light-theme {
+  /* AÇIK TEMA DEĞİŞKENLERİ */
+  --bg: #f0f2f5;
+  --surface: #ffffff;
+  --surface-alt: #f8f9fa; /* Açık temada input ve kart zeminleri */
+  --border: #dee2e6;
+  --accent: #0d6efd;
+  --accent-hover: #0b5ed7;
+  --accent2: #d4af37;
+  --text: #1a1d20;
+  --text-dim: #6c757d;
+  --success: #198754;
+  --error: #dc3545;
+  --shadow: 0 4px 15px rgba(0,0,0,0.05);
+  --tts-color: #6f42c1;
+  --tts-active-bg: #ffe066;
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body { 
@@ -22,11 +42,69 @@ body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
   padding: 20px; line-height: 1.6; padding-bottom: 240px;
   min-height: 100vh; font-size: 15px;
-  transition: background 0.3s ease;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
-body.focus-mode { background: #050608; }
+body.focus-mode { background: var(--surface-alt); }
 body.focus-mode header, 
 body.focus-mode .cloud-sync-panel, 
 body.focus-mode .tts-panel,
 body.focus-mode .user-profile-header { display: none !important; }
+
+/* ==========================================
+ * JS İLE OLUŞTURULAN AÇILIR MENÜLERİ (SELECT/OPTION) TEMAYA ZORLA
+ * ========================================== */
+
+select, 
+select option, 
+option,
+optgroup {
+    background-color: var(--surface-alt) !important;
+    color: var(--text) !important;
+}
+
+/* Kimlik (ID) bazlı inatçı dropdown'ları kesin olarak ezmek için */
+#wp-deck-select,
+#wp-deck-select option,
+#admin-prac-level,
+#admin-prac-level option,
+#quiz-deck-select,
+#quiz-limit-select,
+#quiz-mode-select,
+#deck-view-select {
+    background-color: var(--surface-alt) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+    background-image: none !important;
+}
+
+/* Seçili (hover/focus) option elemanının okunabilir olması için */
+select:focus,
+#wp-deck-select:focus,
+#admin-prac-level:focus {
+    border-color: var(--accent) !important;
+    outline: none !important;
+}
+
+/* ==========================================
+ * JS İLE HTML İÇİNE (INLINE) YAZILMIŞ SABİT RENKLERİ EZME
+ * ========================================== */
+
+/* 1. Akordiyon Başlıkları (A1, A2, Genel Kelimeler vb.) */
+.deck-header, 
+.deck-header[style] {
+    background: var(--surface-alt) !important;
+}
+
+/* 2. Sınav Kartları ve JS ile #090b10 basılmış tüm kutular */
+div[style*="background:#090b10"],
+div[style*="background: #090b10"] {
+    background: var(--surface-alt) !important;
+}
+
+/* Koyu temada hover efekti için ufak bir dokunuş */
+.deck-header:hover, 
+.deck-header[style]:hover {
+    filter: brightness(1.2);
+}
+

@@ -11,18 +11,21 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
-<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/main.css?v=2">
 </head>
 <body>
 
 <div class="container" id="main-container">
-  <header id="main-header">
+  <header id="main-header" style="position: relative;">
     <div class="logo">
       <h1>Yunanca <span>Akıllı</span> Okuyucu</h1>
       <p>v24.0 — Cloud & Premium Öğrenim Platformu</p>
     </div>
     
-    <div class="user-profile-header" id="user-header-area"></div>
+    <div style="position: absolute; top: 20px; right: 20px; display: flex; align-items: center; gap: 15px;">
+        <button id="theme-toggle-btn" onclick="toggleTheme()" style="background: var(--surface); border: 1px solid var(--border); border-radius: 50%; width: 45px; height: 45px; font-size: 1.3rem; cursor: pointer; color: var(--text); display: flex; align-items: center; justify-content: center; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.2);" title="Temayı Değiştir">☀️</button>
+        <div class="user-profile-header" id="user-header-area"></div>
+    </div>
 
     <div class="main-tabs">
       <button class="main-tab-btn active" id="mtab-read" onclick="switchMainTab('read')">📖 Okuma Paneli</button>
@@ -61,7 +64,7 @@
       </div>
 
       <div class="admin-panel" id="admin-panel-announcements" style="display: block; animation: fadeIn 0.3s ease;">
-        <div style="background:#090b10; padding:15px; border-radius:10px; border:1px solid var(--border);">
+        <div style="background:var(--surface-alt); padding:15px; border-radius:10px; border:1px solid var(--border);">
            <h3 style="color:var(--accent); margin-bottom:10px; font-size:1.1rem;">📢 Yeni Duyuru Yayınla</h3>
            <textarea id="admin-ann-text" class="auth-input" style="height:70px; resize:vertical; padding:10px; margin-bottom:10px;" placeholder="Üyelerin ekranına düşecek haberi/mesajı yazın..."></textarea>
            <input type="text" id="admin-ann-link" class="auth-input" style="padding:10px; margin-bottom:10px;" placeholder="Link (İsteğe bağlı) - Örn: https://... veya sekme adı: video, quiz">
@@ -70,7 +73,7 @@
       </div>
 
       <div class="admin-panel" id="admin-panel-practices" style="display: none; animation: fadeIn 0.3s ease;">
-        <div style="background:#090b10; padding:15px; border-radius:10px; border:1px solid var(--success);">
+        <div style="background:var(--surface-alt); padding:15px; border-radius:10px; border:1px solid var(--success);">
            <h3 style="color:var(--success); margin-bottom:15px; font-size:1.1rem;">💪 Alıştırma Ekle / Güncelle</h3>
            
            <input type="text" id="admin-prac-id" class="auth-input" style="padding:10px; margin-bottom:10px;" placeholder="Benzersiz ID (Örn: prac-15)">
@@ -102,7 +105,7 @@
       </div>
 
       <div class="admin-panel" id="admin-panel-users" style="display: none; animation: fadeIn 0.3s ease;">
-        <div style="max-height: 400px; overflow-y:auto; background:#090b10; border-radius:10px; border:1px solid var(--border); padding: 10px;">
+        <div style="max-height: 400px; overflow-y:auto; background:var(--surface-alt); border-radius:10px; border:1px solid var(--border); padding: 10px;">
           <table class="admin-table">
             <thead><tr><th>Kullanıcı</th><th>Durum</th><th>Kredi</th><th>İşlem</th></tr></thead>
             <tbody id="admin-user-list"></tbody>
@@ -136,7 +139,7 @@
       <button class="modal-close" onclick="document.getElementById('profile-modal').style.display='none'">✕</button>
       <h2 class="modal-title" style="color:var(--accent); margin-bottom:10px;">👤 Profilim</h2>
       <div style="text-align: center; margin-bottom: 20px;"><h3 id="profile-username" style="font-size: 1.8rem; color: var(--text); letter-spacing: 1px;">Kullanıcı</h3><div id="profile-role-badge" style="margin-top: 8px;"></div></div>
-      <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;"><div style="flex:1; background:#090b10; padding:15px; border-radius:8px; text-align:center; border:1px solid var(--border);"><div style="font-size:1.8rem; color:var(--accent2); font-weight:bold;" id="profile-total-words">0</div><div style="color:var(--text-dim); font-size:0.85rem;">Kayıtlı Kelime</div></div><div style="flex:1; background:#090b10; padding:15px; border-radius:8px; text-align:center; border:1px solid var(--border);"><div style="font-size:1.8rem; color:var(--success); font-weight:bold;" id="profile-total-exams">0</div><div style="color:var(--text-dim); font-size:0.85rem;">Çözülen Sınav</div></div><div style="flex:1; background:#090b10; padding:15px; border-radius:8px; text-align:center; border:1px solid var(--border);"><div style="font-size:1.8rem; color:var(--tts-color); font-weight:bold;" id="profile-avg-score">%0</div><div style="color:var(--text-dim); font-size:0.85rem;">Başarı Oranı</div></div></div>
+      <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;"><div style="flex:1; background:var(--surface-alt); padding:15px; border-radius:8px; text-align:center; border:1px solid var(--border);"><div style="font-size:1.8rem; color:var(--accent2); font-weight:bold;" id="profile-total-words">0</div><div style="color:var(--text-dim); font-size:0.85rem;">Kayıtlı Kelime</div></div><div style="flex:1; background:var(--surface-alt); padding:15px; border-radius:8px; text-align:center; border:1px solid var(--border);"><div style="font-size:1.8rem; color:var(--success); font-weight:bold;" id="profile-total-exams">0</div><div style="color:var(--text-dim); font-size:0.85rem;">Çözülen Sınav</div></div><div style="flex:1; background:var(--surface-alt); padding:15px; border-radius:8px; text-align:center; border:1px solid var(--border);"><div style="font-size:1.8rem; color:var(--tts-color); font-weight:bold;" id="profile-avg-score">%0</div><div style="color:var(--text-dim); font-size:0.85rem;">Başarı Oranı</div></div></div>
       <div style="background: rgba(79, 142, 247, 0.05); border: 1px solid rgba(79, 142, 247, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 20px;"><h4 style="color:var(--accent); margin-bottom: 5px;">💳 Üyelik Durumu</h4><p id="profile-status-text" style="color:var(--text); font-size: 1rem;"></p></div>
       <div style="display: flex; gap: 10px; flex-wrap:wrap;"><button class="main-btn" style="flex: 2; min-width:150px; background:var(--tts-color);" onclick="document.getElementById('profile-modal').style.display='none'; openExamHistoryModal();">📊 Sınav Geçmişi</button><button class="secondary-btn" style="flex: 1; border: 1px solid var(--error); color: var(--error); background: transparent;" onclick="document.getElementById('profile-modal').style.display='none'; logout();">🚪 Çıkış Yap</button></div>
     </div>
@@ -194,7 +197,7 @@
         <h3 style="color:var(--accent); font-size: 1.3rem; margin:0;">📚 Kelime Destelerim</h3>
         <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
           
-          <select id="deck-view-select" onchange="renderDecksAccordion()" style="padding: 8px 12px; font-size: 0.9rem; border: 1px solid var(--border); border-radius: 6px; background: #151923; color: #fff; cursor: pointer; outline: none; min-width: 150px; font-weight:bold;">
+          <select id="deck-view-select" onchange="renderDecksAccordion()" style="padding: 8px 12px; font-size: 0.9rem; border: 1px solid var(--border); border-radius: 6px; background: var(--surface-alt); color: var(--text); cursor: pointer; outline: none; min-width: 150px; font-weight:bold;">
           </select>
         
           
@@ -276,7 +279,7 @@
           <h3 style="color:var(--accent); margin-bottom:10px; font-size: 1.6rem;">📝 YDS / YÖKDİL Sınav Simülatörü</h3>
           <p style="color:var(--text-dim); margin-bottom:0; font-size:1rem;">Gerçek sınav arayüzü. Süre takibi, şık eleme και metin boyama özellikleri ile kesintisiz odaklanın.</p>
         </div>
-        <button class="main-btn" style="background:var(--tts-color); color:#fff; font-size:1.1rem; padding: 12px 25px;" onclick="openExamHistoryModal()">📊 Sınav Geçmişim</button>
+        <button class="main-btn" style="background:var(--tts-color); color:var(--text); font-size:1.1rem; padding: 12px 25px;" onclick="openExamHistoryModal()">📊 Sınav Geçmişim</button>
       </div>
       <div id="exam-grid-container" style="margin-bottom: 40px;"></div>
     </div>
@@ -288,15 +291,15 @@
           <button class="osym-modal-close" style="background:transparent; color:var(--text-dim); border:1px solid var(--border);" onclick="document.getElementById('exam-history-modal').style.display='none'">KAPAT</button>
         </div>
         <div style="display:flex; gap:15px; margin-bottom:20px; margin-top:20px; flex-wrap:wrap;">
-           <div style="flex:1; background:#090b10; padding:15px; border-radius:8px; text-align:center; border:1px solid var(--border);">
+           <div style="flex:1; background:var(--surface-alt); padding:15px; border-radius:8px; text-align:center; border:1px solid var(--border);">
                <div style="font-size:2.2rem; color:var(--accent); font-weight:bold;" id="hist-total-exams">0</div>
                <div style="color:var(--text-dim); font-size:0.95rem;">Çözülen Test</div>
            </div>
-           <div style="flex:1; background:#090b10; padding:15px; border-radius:8px; text-align:center; border:1px solid var(--border);">
+           <div style="flex:1; background:var(--surface-alt); padding:15px; border-radius:8px; text-align:center; border:1px solid var(--border);">
                <div style="font-size:2.2rem; color:var(--success); font-weight:bold;" id="hist-avg-score">%0</div>
                <div style="color:var(--text-dim); font-size:0.95rem;">Ortalama Başarı</div>
            </div>
-           <div style="flex:1; background:#090b10; padding:15px; border-radius:8px; text-align:center; border:1px solid var(--border);">
+           <div style="flex:1; background:var(--surface-alt); padding:15px; border-radius:8px; text-align:center; border:1px solid var(--border);">
                <div style="font-size:2.2rem; color:var(--accent2); font-weight:bold;" id="hist-total-q">0</div>
                <div style="color:var(--text-dim); font-size:0.95rem;">Çözülen Soru</div>
            </div>
