@@ -1,0 +1,1503 @@
+[
+  {
+    "id": "2008_1_1",
+    "description": "1. - 15. sorularda, cümlede boş bırakılan\nyerlere uygun düşen sözcük ya da ifadeyi\n bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Kelime",
+    "question": "Ο προϊστάμενος της Αρχαιολογικής Υπηρεσίας ---- την πρόοδο των εργασιών αποκαταστάσεως των ζημιν των αρχαιολογικών μνημείων της πόλης μας.",
+    "options": {
+      "A": "πρόσβλεψε",
+      "B": "παρέβλεψε",
+      "C": "διέβλεψε",
+      "D": "επέβλεψε",
+      "E": "πρόβλεψε"
+    },
+    "answer": "D"
+  },
+  {
+    "id": "2008_1_2",
+    "description": "1. - 15. sorularda, cümlede boş bırakılan\nyerlere uygun düşen sözcük ya da ifadeyi\n bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Kelime",
+    "question": "Οι επιστήμονες από την Βρετανία μπόρεσαν\nνα ---- το 99% των καρκινικών κυττάρων σε\nεργαστηριακά πειράματα.",
+    "options": {
+      "A": "πολεμήσουν",
+      "B": "ξεριζώσουν",
+      "C": "εξοντώσουν",
+      "D": "υποβιβάσουν",
+      "E": "εξορίσουν"
+    },
+    "answer": "C"
+  },
+  {
+    "id": "2008_1_3",
+    "description": "1. - 15. sorularda, cümlede boş bırakılan\nyerlere uygun düşen sözcük ya da ifadeyi\n bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Kelime",
+    "question": "Από τα στοιχεία που ανακοινώθηκαν από\nτην τροχαία προκύπτει ότι σε 2.743\nπεριπτώσεις ---- οι πινακίδες κυκλοφορίας ή\nτα διπλώματα οδήγησης.",
+    "options": {
+      "A": "εξαιρέθηκαν",
+      "B": "αφαιρέθηκαν",
+      "C": "διαιρέθηκαν",
+      "D": "προστέθηκαν",
+      "E": "συσσωρεύθηκαν"
+    },
+    "answer": "B"
+  },
+  {
+    "id": "2008_1_4",
+    "description": "1. - 15. sorularda, cümlede boş bırakılan\nyerlere uygun düşen sözcük ya da ifadeyi\n bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Kelime",
+    "question": "Οι οικονομολόγοι επισημαίνουν ότι τα\nτελευταία 30 χρόνια κάθε μεγάλη πετρελαϊκή\nκρίση έχει οδηγήσει την παγκόσμια\nοικονομία σε ----.",
+    "options": {
+      "A": "μεγέθυνση",
+      "B": "ανάπτυξη",
+      "C": "εκτόνωση",
+      "D": "έπαρση",
+      "E": "ύφεση"
+    },
+    "answer": "E"
+  },
+  {
+    "id": "2008_1_5",
+    "description": "1. - 15. sorularda, cümlede boş bırakılan\nyerlere uygun düşen sözcük ya da ifadeyi\n bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Kelime",
+    "question": "Η 1η διεθνής φιέστα αερόστατου θερμού\nαέρα ---- να ολοκληρωθεί το μεσημέρι του\nΣαββάτου, οπότε και θα ανακοινωθούν οι\nνικητές, οι οποίοι θα παραλάβουν τα\nέπαθλα.",
+    "options": {
+      "A": "αναμένεται",
+      "B": "σκέφτεται",
+      "C": "καταβάλλεται",
+      "D": "υποτίθεται",
+      "E": "δυσκολεύεται"
+    },
+    "answer": "A"
+  },
+  {
+    "id": "2008_1_6",
+    "description": "1. - 15. sorularda, cümlede boş bırakılan\nyerlere uygun düşen sözcük ya da ifadeyi\n bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Kelime",
+    "question": "Με τη λήξη του ακαδημαϊκού έτους όλοι οι\nφοιτητές της Φιλοσοφικής Σχολής ----.",
+    "options": {
+      "A": "ήρθαν απ’έξω",
+      "B": "έπεσαν έξω",
+      "C": "χτύπησαν έξω",
+      "D": "τά’μαθαν απ’έξω",
+      "E": "τό’ριξαν έξω"
+    },
+    "answer": "E"
+  },
+  {
+    "id": "2008_1_7",
+    "description": "1. - 15. sorularda, cümlede boş bırakılan\nyerlere uygun düşen sözcük ya da ifadeyi\n bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Kelime",
+    "question": "Η ιστορία του θερμόμετρου είναι η ιστορία\nτης αναζήτησης ενός αντικειμενικού και ----\nτρόπου μέτρησης της θερμοκρασίας.",
+    "options": {
+      "A": "απρόσιτου",
+      "B": "ακριβούς",
+      "C": "εικονικού",
+      "D": "ατελείωτου",
+      "E": "ψευδούς"
+    },
+    "answer": "B"
+  },
+  {
+    "id": "2008_1_8",
+    "description": "1. - 15. sorularda, cümlede boş bırakılan\nyerlere uygun düşen sözcük ya da ifadeyi\n bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Kelime",
+    "question": "Πολλοί γιατροί δε συνιστούν τις βιταμίνες\nκαι τα συμπληρώματα ---- και λένε πως\nπρέπει να τρώμε πολλά φρούτα",
+    "options": {
+      "A": "διατροφής",
+      "B": "φαγητού",
+      "C": "ποτού",
+      "D": "φαγωμού",
+      "E": "χυμού"
+    },
+    "answer": "A"
+  },
+  {
+    "id": "2008_1_9",
+    "description": "1. - 15. sorularda, cümlede boş bırakılan\n yerlere uygun düşen sözcük ya da ifadeyi\n bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Kelime",
+    "question": "Συνάντησα προχτές στο δρόμο έναν παλιό\nσυμμαθητή μου που μου έκανε φριχτά\nπαράπονα, ότι ---- τον βλέπω στο δρόμο και\nδεν τον χαιρετάω.",
+    "options": {
+      "A": "όπου",
+      "B": "πότε",
+      "C": "ύστερα",
+      "D": "τάχα",
+      "E": "τόσο"
+    },
+    "answer": "D"
+  },
+  {
+    "id": "2008_1_10",
+    "description": "1. - 15. sorularda, cümlede boş bırakılan\n yerlere uygun düşen sözcük ya da ifadeyi\n bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Kelime",
+    "question": "---- την ηγεσία του Καποδίστρια, του\nπρώτου κυβερνήτη της Ελλάδας,\nπραγματατοποιήθηκαν σημαντικές\nμεταρρυθμίσεις.",
+    "options": {
+      "A": "αντί",
+      "B": "δια",
+      "C": "περί",
+      "D": "προς",
+      "E": "υπό"
+    },
+    "answer": "E"
+  },
+  {
+    "id": "2008_1_11",
+    "description": "1. - 15. sorularda, cümlede boş bırakılan\n yerlere uygun düşen sözcük ya da ifadeyi\n bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Kelime",
+    "question": "Σ’αυτόν τον αγώνα όλοι οι ποδοσφαιριστές\nθα έχουν την ευκαιρία να δείξουν τις ----\nικανότητές τους.",
+    "options": {
+      "A": "αδέξιες",
+      "B": "σκοτεινές",
+      "C": "ατομικές",
+      "D": "κριτικές",
+      "E": "υποθετικές"
+    },
+    "answer": "C"
+  },
+  {
+    "id": "2008_1_12",
+    "description": "1. - 15. sorularda, cümlede boş bırakılan\n yerlere uygun düşen sözcük ya da ifadeyi\n bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Kelime",
+    "question": "Σύμφωνα με τον καινούργιο νόμο οι\nδανειολήπτες πρέπει να κάνουν επίσημη\nαίτηση στις τράπεζες για ρύθμιση ----.",
+    "options": {
+      "A": "πόρων",
+      "B": "χρημάτων",
+      "C": "εισόδων",
+      "D": "χρεών",
+      "E": "εκπτώσεων"
+    },
+    "answer": "D"
+  },
+  {
+    "id": "2008_1_13",
+    "description": "1. - 15. sorularda, cümlede boş bırakılan\n yerlere uygun düşen sözcük ya da ifadeyi\n bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Kelime",
+    "question": "Ο Θανάσης αγαπάει το κολύμπι και πηγαίνει\nστην πισίνα ---- μπορεί.",
+    "options": {
+      "A": "εκεί",
+      "B": "όποτε",
+      "C": "τότε",
+      "D": "πάντα",
+      "E": "κάπου"
+    },
+    "answer": "B"
+  },
+  {
+    "id": "2008_1_14",
+    "description": "1. - 15. sorularda, cümlede boş bırakılan\n yerlere uygun düşen sözcük ya da ifadeyi\n bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Kelime",
+    "question": "Την επόμενη δεκαετία τα τρένα θα συνδέουν\nμεταξύ τους τις ---- πόλεις της Ευρώπης",
+    "options": {
+      "A": "κυριότερες",
+      "B": "ανωτέρες",
+      "C": "εργατικότερες",
+      "D": "συχνότερες",
+      "E": "γρηγορότερες"
+    },
+    "answer": "A"
+  },
+  {
+    "id": "2008_1_15",
+    "description": "1. - 15. sorularda, cümlede boş bırakılan yerlere uygun düşen sözcük ya da ifadeyi bulunuz.\"",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Kelime",
+    "paragraph": "",
+    "question": "Οι υποψήφιοι ---- τα έντυπα δεν θα πρέπει\nνα ξεχάσουν να σημειώσουν τον αριθμό\nταυτότητάς τους.",
+    "options": {
+      "A": "διαγράφοντας",
+      "B": "αναφέροντας",
+      "C": "συμπληρώνοντας",
+      "D": "περνώντας",
+      "E": "υπογραμμίζοντας"
+    },
+    "answer": "C"
+  },
+  {
+    "id": "2008_1_16",
+    "description": "16. - 20. sorularda, aşağıdaki parçada\nnumaralandırılmış yerlere uygun düşen\nsözcük ya da ifadeyi bulunuz",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Kelime",
+    "question": "Από τότε που τολμηροί επιχειρηματίες έβαλαν\nσκοπό (16) ---- με εκατοντάδες δορυφόρους το\nΊντερνετ και τις ραδιοτηλεπικοινωνίες στον\nουρανό, οι ειδικοί του Διαστήματος έχουν κάθε\nλόγο να ανησυχούν. Η γήινη τροχιά έχει ήδη\nαποκτήσει ένα «σκουπιδότοπο» με πάνω από\n10.000 (17) ---- αντικείμενα: τμήματα\nπυραύλων, κομμάτια από ντεπόζιτα που έχουν\nεκραγεί, δορυφόρους εκτός (18) ---- , ακόμα και\nεργαλεία παρατημένα από τους αστροναύτες,\nχωρίς να έχουν υπολογιστεί τα 50.000 με\n100.000 συντρίμια κάθε (19) ---- (μικρότερα του\nενός εκατοστού) τα οποία κινούνται με μερικά\nχιλıόμετρα την ώρα. Στο μεταξύ, ένα καινούριο\nκύμα κατοίκων έχει καταβάλει την ουράνια\n«γειτονιά». Πρόκειται για δορυφόρους\nδιαφόρων επιχειρήσεων, καθένας από τους\nοποίους είναι (20) ---- με δεκάδες εώς και\nεκατοντάδες εξαρτήματα",
+    "options": {
+      "A": "να προωθήσουν",
+      "B": "να αποθήσουν",
+      "C": "να προσελκύσουν",
+      "D": "να αποθέσουν",
+      "E": "να προσθέσουν"
+    },
+    "answer": "A"
+  },
+  {
+    "id": "2008_1_17",
+    "description": "16. - 20. sorularda, aşağıdaki parçada\nnumaralandırılmış yerlere uygun düşen\nsözcük ya da ifadeyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Kelime",
+    "question": "Από τότε που τολμηροί επιχειρηματίες έβαλαν\nσκοπό (16) ---- με εκατοντάδες δορυφόρους το\nΊντερνετ και τις ραδιοτηλεπικοινωνίες στον\nουρανό, οι ειδικοί του Διαστήματος έχουν κάθε\nλόγο να ανησυχούν. Η γήινη τροχιά έχει ήδη\nαποκτήσει ένα «σκουπιδότοπο» με πάνω από\n10.000 (17) ---- αντικείμενα: τμήματα\nπυραύλων, κομμάτια από ντεπόζιτα που έχουν\nεκραγεί, δορυφόρους εκτός (18) ---- , ακόμα και\nεργαλεία παρατημένα από τους αστροναύτες,\nχωρίς να έχουν υπολογιστεί τα 50.000 με\n100.000 συντρίμια κάθε (19) ---- (μικρότερα του\nενός εκατοστού) τα οποία κινούνται με μερικά\nχιλıόμετρα την ώρα. Στο μεταξύ, ένα καινούριο\nκύμα κατοίκων έχει καταβάλει την ουράνια\n«γειτονιά». Πρόκειται για δορυφόρους\nδιαφόρων επιχειρήσεων, καθένας από τους\nοποίους είναι (20) ---- με δεκάδες εώς και\nεκατοντάδες εξαρτήματα.",
+    "options": {
+      "A": "διατιθέμενα",
+      "B": "παραφερόμενα",
+      "C": "προσφερόμενα",
+      "D": "επιτιθέμενα",
+      "E": "περιφερόμενα"
+    },
+    "answer": "E"
+  },
+  {
+    "id": "2008_1_18",
+    "description": "16. - 20. sorularda, aşağıdaki parçada\nnumaralandırılmış yerlere uygun düşen\nsözcük ya da ifadeyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Kelime",
+    "question": "Από τότε που τολμηροί επιχειρηματίες έβαλαν\nσκοπό (16) ---- με εκατοντάδες δορυφόρους το\nΊντερνετ και τις ραδιοτηλεπικοινωνίες στον\nουρανό, οι ειδικοί του Διαστήματος έχουν κάθε\nλόγο να ανησυχούν. Η γήινη τροχιά έχει ήδη\nαποκτήσει ένα «σκουπιδότοπο» με πάνω από\n10.000 (17) ---- αντικείμενα: τμήματα\nπυραύλων, κομμάτια από ντεπόζιτα που έχουν\nεκραγεί, δορυφόρους εκτός (18) ---- , ακόμα και\nεργαλεία παρατημένα από τους αστροναύτες,\nχωρίς να έχουν υπολογιστεί τα 50.000 με\n100.000 συντρίμια κάθε (19) ---- (μικρότερα του\nενός εκατοστού) τα οποία κινούνται με μερικά\nχιλıόμετρα την ώρα. Στο μεταξύ, ένα καινούριο\nκύμα κατοίκων έχει καταβάλει την ουράνια\n«γειτονιά». Πρόκειται για δορυφόρους\nδιαφόρων επιχειρήσεων, καθένας από τους\nοποίους είναι (20) ---- με δεκάδες εώς και\nεκατοντάδες εξαρτήματα.",
+    "options": {
+      "A": "σχεδίου",
+      "B": "πτήσης",
+      "C": "χρήσης",
+      "D": "ωραρίου",
+      "E": "περιμέτρου"
+    },
+    "answer": "C"
+  },
+  {
+    "id": "2008_1_19",
+    "description": "16. - 20. sorularda, aşağıdaki parçada\nnumaralandırılmış yerlere uygun düşen\nsözcük ya da ifadeyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Kelime",
+    "question": "Από τότε που τολμηροί επιχειρηματίες έβαλαν\nσκοπό (16) ---- με εκατοντάδες δορυφόρους το\nΊντερνετ και τις ραδιοτηλεπικοινωνίες στον\nουρανό, οι ειδικοί του Διαστήματος έχουν κάθε\nλόγο να ανησυχούν. Η γήινη τροχιά έχει ήδη\nαποκτήσει ένα «σκουπιδότοπο» με πάνω από\n10.000 (17) ---- αντικείμενα: τμήματα\nπυραύλων, κομμάτια από ντεπόζιτα που έχουν\nεκραγεί, δορυφόρους εκτός (18) ---- , ακόμα και\nεργαλεία παρατημένα από τους αστροναύτες,\nχωρίς να έχουν υπολογιστεί τα 50.000 με\n100.000 συντρίμια κάθε (19) ---- (μικρότερα του\nενός εκατοστού) τα οποία κινούνται με μερικά\nχιλıόμετρα την ώρα. Στο μεταξύ, ένα καινούριο\nκύμα κατοίκων έχει καταβάλει την ουράνια\n«γειτονιά». Πρόκειται για δορυφόρους\nδιαφόρων επιχειρήσεων, καθένας από τους\nοποίους είναι (20) ---- με δεκάδες εώς και\nεκατοντάδες εξαρτήματα.",
+    "options": {
+      "A": "χρήστη",
+      "B": "είδους",
+      "C": "διαστημοπλοίου",
+      "D": "έκρηξης",
+      "E": "δορυφόρου"
+    },
+    "answer": "B"
+  },
+  {
+    "id": "2008_1_20",
+    "description": "16. - 20. sorularda, aşağıdaki parçada\nnumaralandırılmış yerlere uygun düşen\n sözcük ya da ifadeyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Kelime",
+    "question": "Από τότε που τολμηροί επιχειρηματίες έβαλαν\nσκοπό (16) ---- με εκατοντάδες δορυφόρους το\nΊντερνετ και τις ραδιοτηλεπικοινωνίες στον\nουρανό, οι ειδικοί του Διαστήματος έχουν κάθε\nλόγο να ανησυχούν. Η γήινη τροχιά έχει ήδη\nαποκτήσει ένα «σκουπιδότοπο» με πάνω από\n10.000 (17) ---- αντικείμενα: τμήματα\nπυραύλων, κομμάτια από ντεπόζιτα που έχουν\nεκραγεί, δορυφόρους εκτός (18) ---- , ακόμα και\nεργαλεία παρατημένα από τους αστροναύτες,\nχωρίς να έχουν υπολογιστεί τα 50.000 με\n100.000 συντρίμια κάθε (19) ---- (μικρότερα του\nενός εκατοστού) τα οποία κινούνται με μερικά\nχιλıόμετρα την ώρα. Στο μεταξύ, ένα καινούριο\nκύμα κατοίκων έχει καταβάλει την ουράνια\n«γειτονιά». Πρόκειται για δορυφόρους\nδιαφόρων επιχειρήσεων, καθένας από τους\nοποίους είναι (20) ---- με δεκάδες εώς και\nεκατοντάδες εξαρτήματα.",
+    "options": {
+      "A": "αφοπλισμένος",
+      "B": "προορισμένος",
+      "C": "διεστραμμένος",
+      "D": "ορισμένος",
+      "E": "εξοπλισμένος"
+    },
+    "answer": "E"
+  },
+  {
+    "id": "2008_1_21",
+    "description": "21. - 25. sorularda, aşağıdaki parçada\nnumaralandırılmış yerlere uygun düşen\nsözcük ya da ifadeyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Kelime",
+    "question": "«Μια καλή διαφήμιση πρέπει να περιέχει τα\n(21) ---- σημαντικά στοιχεία: την επικεφαλίδα, το\nκυρίως κείμενο, την εικόνα και τα στοιχεία της\nδιαφημιζόμενης εταιρείας». Η επικεφαλίδα πρέπει\nνα προκαλεί το ενδιαφέρον του κοινού και να\n(22) ---- εύκολα. Το κυρίως κείμενο πρέπει να\nείναι σύντομο, περιεκτικό, ακριβές και σαφές.\nΣυχνά απευθύνεται στο κοινό στο β’ πρόσωπο\nκαι έτσι η διαφήμιση γίνεται πιο (23) ----. Η εικόνα\nπρέπει (24) ---- την προσοχή, να προκαλεί\nενδιαφέρον και να τονίζει το προϊόν. Η ταυτότητα\nτης εταιρείας πρέπει να δίνεται (25) ----, με μικρά\nγράμματα αλλά πλήρη και ακριβή στοιχεία. Αυτή\nείναι η άποψη των ειδικών σε ότι αφορά τα\nστοιχεία που πρέπει να έχει μια σύγχρονη\nδιαφήμιση.",
+    "options": {
+      "A": "εν μέρει",
+      "B": "καθεξής",
+      "C": "πλήρη",
+      "D": "εξής",
+      "E": "εφεξής"
+    },
+    "answer": "D"
+  },
+  {
+    "id": "2008_1_22",
+    "description": "21. - 25. sorularda, aşağıdaki parçada\nnumaralandırılmış yerlere uygun düşen\nsözcük ya da ifadeyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Kelime",
+    "question": "«Μια καλή διαφήμιση πρέπει να περιέχει τα\n(21) ---- σημαντικά στοιχεία: την επικεφαλίδα, το\nκυρίως κείμενο, την εικόνα και τα στοιχεία της\nδιαφημιζόμενης εταιρείας». Η επικεφαλίδα πρέπει\nνα προκαλεί το ενδιαφέρον του κοινού και να\n(22) ---- εύκολα. Το κυρίως κείμενο πρέπει να\nείναι σύντομο, περιεκτικό, ακριβές και σαφές.\nΣυχνά απευθύνεται στο κοινό στο β’ πρόσωπο\nκαι έτσι η διαφήμιση γίνεται πιο (23) ----. Η εικόνα\nπρέπει (24) ---- την προσοχή, να προκαλεί\nενδιαφέρον και να τονίζει το προϊόν. Η ταυτότητα\nτης εταιρείας πρέπει να δίνεται (25) ----, με μικρά\nγράμματα αλλά πλήρη και ακριβή στοιχεία. Αυτή\nείναι η άποψη των ειδικών σε ότι αφορά τα\nστοιχεία που πρέπει να έχει μια σύγχρονη\nδιαφήμιση.",
+    "options": {
+      "A": "αποβλέπεται",
+      "B": "απομνημονεύεται",
+      "C": "αποδεικνύεται",
+      "D": "αποδεσμεύεται",
+      "E": "αποδοκιμάζεται"
+    },
+    "answer": "B"
+  },
+  {
+    "id": "2008_1_23",
+    "description": "21. - 25. sorularda, aşağıdaki parçada\nnumaralandırılmış yerlere uygun düşen\nsözcük ya da ifadeyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Kelime",
+    "question": "«Μια καλή διαφήμιση πρέπει να περιέχει τα\n(21) ---- σημαντικά στοιχεία: την επικεφαλίδα, το\nκυρίως κείμενο, την εικόνα και τα στοιχεία της\nδιαφημιζόμενης εταιρείας». Η επικεφαλίδα πρέπει\nνα προκαλεί το ενδιαφέρον του κοινού και να\n(22) ---- εύκολα. Το κυρίως κείμενο πρέπει να\nείναι σύντομο, περιεκτικό, ακριβές και σαφές.\nΣυχνά απευθύνεται στο κοινό στο β’ πρόσωπο\nκαι έτσι η διαφήμιση γίνεται πιο (23) ----. Η εικόνα\nπρέπει (24) ---- την προσοχή, να προκαλεί\nενδιαφέρον και να τονίζει το προϊόν. Η ταυτότητα\nτης εταιρείας πρέπει να δίνεται (25) ----, με μικρά\nγράμματα αλλά πλήρη και ακριβή στοιχεία. Αυτή\nείναι η άποψη των ειδικών σε ότι αφορά τα\nστοιχεία που πρέπει να έχει μια σύγχρονη\nδιαφήμιση.",
+    "options": {
+      "A": "άμεση",
+      "B": "έμμεση",
+      "C": "σημαντική",
+      "D": "αξιόλογη",
+      "E": "διαυγής"
+    },
+    "answer": "A"
+  },
+  {
+    "id": "2008_1_24",
+    "description": "21. - 25. sorularda, aşağıdaki parçada\nnumaralandırılmış yerlere uygun düşen\nsözcük ya da ifadeyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Kelime",
+    "question": "«Μια καλή διαφήμιση πρέπει να περιέχει τα\n(21) ---- σημαντικά στοιχεία: την επικεφαλίδα, το\nκυρίως κείμενο, την εικόνα και τα στοιχεία της\nδιαφημιζόμενης εταιρείας». Η επικεφαλίδα πρέπει\nνα προκαλεί το ενδιαφέρον του κοινού και να\n(22) ---- εύκολα. Το κυρίως κείμενο πρέπει να\nείναι σύντομο, περιεκτικό, ακριβές και σαφές.\nΣυχνά απευθύνεται στο κοινό στο β’ πρόσωπο\nκαι έτσι η διαφήμιση γίνεται πιο (23) ----. Η εικόνα\nπρέπει (24) ---- την προσοχή, να προκαλεί\nενδιαφέρον και να τονίζει το προϊόν. Η ταυτότητα\nτης εταιρείας πρέπει να δίνεται (25) ----, με μικρά\nγράμματα αλλά πλήρη και ακριβή στοιχεία. Αυτή\nείναι η άποψη των ειδικών σε ότι αφορά τα\nστοιχεία που πρέπει να έχει μια σύγχρονη\nδιαφήμιση.",
+    "options": {
+      "A": "να προαφαιρεί",
+      "B": "να προαναγγέλνει",
+      "C": "να προαπαιτεί",
+      "D": "να προσελκύει",
+      "E": "να προεκτείνει"
+    },
+    "answer": "D"
+  },
+  {
+    "id": "2008_1_25",
+    "description": "21. - 25. sorularda, aşağıdaki parçada\nnumaralandırılmış yerlere uygun düşen\nsözcük ya da ifadeyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Kelime",
+    "question": "«Μια καλή διαφήμιση πρέπει να περιέχει τα\n(21) ---- σημαντικά στοιχεία: την επικεφαλίδα, το\nκυρίως κείμενο, την εικόνα και τα στοιχεία της\nδιαφημιζόμενης εταιρείας». Η επικεφαλίδα πρέπει\nνα προκαλεί το ενδιαφέρον του κοινού και να\n(22) ---- εύκολα. Το κυρίως κείμενο πρέπει να\nείναι σύντομο, περιεκτικό, ακριβές και σαφές.\nΣυχνά απευθύνεται στο κοινό στο β’ πρόσωπο\nκαι έτσι η διαφήμιση γίνεται πιο (23) ----. Η εικόνα\nπρέπει (24) ---- την προσοχή, να προκαλεί\nενδιαφέρον και να τονίζει το προϊόν. Η ταυτότητα\nτης εταιρείας πρέπει να δίνεται (25) ----, με μικρά\nγράμματα αλλά πλήρη και ακριβή στοιχεία. Αυτή\nείναι η άποψη των ειδικών σε ότι αφορά τα\nστοιχεία που πρέπει να έχει μια σύγχρονη\nδιαφήμιση.",
+    "options": {
+      "A": "αξεχώριστα",
+      "B": "αδιάκριτα",
+      "C": "διακριτικά",
+      "D": "δυσδιάκριτα",
+      "E": "αμετανόητα"
+    },
+    "answer": "C"
+  },
+  {
+    "id": "2008_1_26",
+    "description": "26. - 35. sorularda, verilen cümleyi uygun \nşekilde tamamlayan ifadeyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Cümle Tamamlama",
+    "question": "Πολλοί πιστεύουν πως οι εφευρέτες είναι\nγεννημένοι, ----.",
+    "options": {
+      "A": "γιατί χωρίς αυτόν δεν θα είχαμε την\nσημερινή πρόοδο ούτε τη δυνατότητα για\nμετάδοση γνώσεων",
+      "B": "αφού ο άνθρωπος κατέληξε σε κάποια\nεφεύρεση για να αντιμετωπίσει κάποιο\nκαθημερινό πρόβλημα",
+      "C": "γιατί μια εφεύρεση για να τελειοποιηθεί\nχρειάζεται μια μακρά περίοδο με πειράματα",
+      "D": "διότι η εφεύρεση στάθηκε μια πραγματική\nεπανάσταση για την πνευματική προκοπή\nτου ανθρώπου",
+      "E": "γιατί από πολύ μικροί δείχνουν μια ισχυρή\nτάση προς την μελέτη, την έρευνα και το\nπείραμα"
+    },
+    "answer": "E"
+  },
+  {
+    "id": "2008_1_27",
+    "description": "26. - 35. sorularda, verilen cümleyi uygun \nşekilde tamamlayan ifadeyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Cümle Tamamlama",
+    "question": "Ένας φυσιολάτρης αγαπούσε τόσο τη φύση,\n----.",
+    "options": {
+      "A": "που μάζεψε σπόρους φοινικιάς για να τους\nφυτέψει στο κτήμα του",
+      "B": "όταν είχε επηρεαστεί από τα βιβλία που\nδιάβαζε ενώ ήταν ακόμα μικρός",
+      "C": "επειδή έβλεπε καθημερινά ότι η ευαισθησία\nτου κόσμου μειώνεται προς τη φύση",
+      "D": "ώστε αναρωτήθηκε πως έπρεπε να είχε\nβοηθήσει με κάθε τρόπο τους οικολόγους",
+      "E": "ώστε παρακολουθούσε με απάθεια την\nαλλοίωση του περιβάλλοντος στην περιοχή\nτου"
+    },
+    "answer": "A"
+  },
+  {
+    "id": "2008_1_28",
+    "description": "26. - 35. sorularda, verilen cümleyi uygun \nşekilde tamamlayan ifadeyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Cümle Tamamlama",
+    "question": "Πολλοί ποταμοί σε ανεπτυγμένες χώρες\nχρησιμοποιούνται για την απομάκρυνση\nτων βιομηχανικών λυμάτων, ----.",
+    "options": {
+      "A": "τα οποία αφού καταβάλλονται σε βιολογικό\nκαθαρισμό γίνονται κατάλληλα για πόση\nχωρίς κανένα κίνδυνο",
+      "B": "με αποτέλεσμα την ρύπανση της θάλασσας\nκαι τη μόλυνση του οικοσυστήματος σε\nμεγάλο κλίμακα",
+      "C": "διότι είναι δυνατόν σήμερα να μιλάμε για\nοικονομική ανάπτυξη και περιβαλλοντική\nευαισθησία",
+      "D": "αφού οι ποταμοί είναι κατάλληλοι δίοδοι και\nδεν υπάρχει άλλος τρόπος για την\nαπομάκρυνση των λυμάτων",
+      "E": "με αποτέλεσμα την οικονομική ανάπτυξη\nμιας χώρας χωρίς τη λήψη μέτρων για την\nπροστασία των υπόγειων υδάτων"
+    },
+    "answer": "B"
+  },
+  {
+    "id": "2008_1_29",
+    "description": "26. - 35. sorularda, verilen cümleyi uygun \nşekilde tamamlayan ifadeyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Cümle Tamamlama",
+    "question": "Μια και υπάρχουν ειδικοί κάδοι για την\nανακύκλωση του χαρτιού, ----.",
+    "options": {
+      "A": "γιατί λείπουν τα κίνητρα για τους πολίτες και\nτις εταιρίες να συμμετέχουν σε\nπρογράμματα ανακύκλωσης",
+      "B": "που μειώνουν την κατανάλωση πρώτων\nυλών σε χαρτί και την χρήση άσκοπης\nενέργειας σε πρώτες ύλες",
+      "C": "πρέπει να ρίχνουμε σ’αυτούς τις εφημερίδες\nκαι τα περιοδικά που έχουμε διαβάσει",
+      "D": "δημιουργούνται νέες θέσεις εργασίας σε\nτομείς θετικών ενεργειών για την διάσωση\nτου πλανήτη",
+      "E": "μειώνεται η ρύπανση της ατμόσφαιρας, του\nεδάφους και των υπόγειων νερών, σώζεται\nτο περιβάλλον"
+    },
+    "answer": "C"
+  },
+  {
+    "id": "2008_1_30",
+    "description": "26. - 35. sorularda, verilen cümleyi uygun \nşekilde tamamlayan ifadeyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Cümle Tamamlama",
+    "question": "Οι γεωργοί έπαθαν μεγάλη οικονομική\nκαταστροφή διότι τα δέντρα άνθισαν νωρίς,\n----.",
+    "options": {
+      "A": "αν και αυτό το φαινόμενο θα επαναληφτεί\nμελλοντικά πιο συχνά",
+      "B": "αλλά αυτό δεν είχε και τόσο σοβαρές\nεπιπτώσεις στην ετήσια παραγωγή",
+      "C": "και προκλήθηκαν μεγάλες απώλειες στην\nβλάστηση του περιβάλλοντος",
+      "D": "με αποτέλεσμα την καταστροφή της σοδειάς\nαπό τα όψιμα κρύα",
+      "E": "και οι αρμόδιες γεωργικές υπηρεσίες\nπροχώρησαν σε καταγραφή των ζημιών"
+    },
+    "answer": "D"
+  },
+  {
+    "id": "2008_1_31",
+    "description": "26. - 35. sorularda, verilen cümleyi uygun \nşekilde tamamlayan ifadeyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Cümle Tamamlama",
+    "question": "Μετά το θάνατο ενός ανθρώπου από τη\n«γρίπη των πτηνών» οι ειδικοί έθεσαν\nαμέσως σε συναγερμό τις ομάδες\nπαρακολούθησης της δημόσιας υγείας ----.",
+    "options": {
+      "A": "ώστε να επαγρυπνούν στο ενδεχόμενο\nέξαρσης της επιδημίας",
+      "B": "αν σε περίπτωση της επιδημίας δεν\nυπάρχουν κατάλληλα φάρμακα",
+      "C": "ώστε να λάβουν τα απαραίτητα μέτρα στην\nπερίπτωση εξασθένησης της επιδημίας",
+      "D": "μήπως δεν καταφέρουν να\nκαταπολεμήσουν την επιδημία",
+      "E": "να μη χάνουν τη ζωή τους και άλλοι\nάνθρωποι εξαιτίας της επιδημίας"
+    },
+    "answer": "A"
+  },
+  {
+    "id": "2008_1_32",
+    "description": "26. - 35. sorularda, verilen cümleyi uygun \nşekilde tamamlayan ifadeyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Cümle Tamamlama",
+    "question": "Στην περιοχή του Περσικού Κόλπου και της\nΚεντρικής Ασίας βρίσκονται τα μεγαλύτερα\nαποθέματα πετρελαίου στον κόσμο, ----.",
+    "options": {
+      "A": "που αποτελεί τη σημαντικότερη αιτία\nπολέμου",
+      "B": "η οποία όμως δεν έχει αποθέματα νερού",
+      "C": "δηλαδή μεγάλες πηγές επίγειων αγαθών",
+      "D": "αν και υπάρχουν πολλές πετρελαιοπηγές\nστην Αμερική και τη Σιβηρία",
+      "E": "καθώς και τεράστια αποθέματα φυσικού\nαερίου"
+    },
+    "answer": "E"
+  },
+  {
+    "id": "2008_1_33",
+    "description": "26. - 35. sorularda, verilen cümleyi uygun \nşekilde tamamlayan ifadeyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Cümle Tamamlama",
+    "question": "Μετά το σκάνδαλο η θέση του υπουργού\nθεωρείται πλέον αβέβαιη, ----.",
+    "options": {
+      "A": "γιατί μπορεί να συναντηθεί με τον\nπρωθυπουργό ή τα στελέχη του κόμματος",
+      "B": "αφού δεν αποκλείεται να οδηγηθεί σε\nπαραίτηση ή και αποπομπή από το\nκυβερνητικό σχήμα",
+      "C": "επειδή δεν αποκλείεται να συμφωνεί με το\nκυβερνητικό πρόγραμμα",
+      "D": "αφού πιθανότατα μετά την παραίτηση του\nθα εδραιωθεί η θέση του",
+      "E": "αφού υποτίθεται να μην παραιτηθεί ή και να\nζητήσει δημόσια συγνώμη από το λαό"
+    },
+    "answer": "B"
+  },
+  {
+    "id": "2008_1_34",
+    "description": "26. - 35. sorularda, verilen cümleyi uygun \nşekilde tamamlayan ifadeyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Cümle Tamamlama",
+    "question": "επιστημονική ομάδα από το\nΜητροπολιτικό Πανεπιστήμιο του\nΜάντσεστερ χρειάστηκε πέντε χρόνια ----.",
+    "options": {
+      "A": "εφόσον ανακοινωθούν τα αποτελέσματα της\nέρευνάς του με τη συσκευή παροχής\nοξυγόνου",
+      "B": "επειδή δεν μπορούσε να σταματήσει την\nέρευνά του πάνω στην παροχή οξυγόνου",
+      "C": "επειδή μπορούσε να κατασκευάσει τη\nσυσκευή παροχής μέσα σε πέντε μήνες",
+      "D": "ώσπου να τελειοποιήσει πλήρως τη\nσυσκευή παροχής οξυγόνου",
+      "E": "δεν μπορούσε να τελειοποιήσει τη συσκευή\nπαροχής οξυγόνου"
+    },
+    "answer": "D"
+  },
+  {
+    "id": "2008_1_35",
+    "description": "26. - 35. sorularda, verilen cümleyi uygun \nşekilde tamamlayan ifadeyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Cümle Tamamlama",
+    "question": "Για τον μέσο Έλληνα εργαζόμενο με\nμηνιαίες αποδοχές 680 ευρώ η θεατρική\nέξοδος παραμένει είδος πολυτελείας ----.",
+    "options": {
+      "A": "και γι’αυτό αποφεύγει τις νυχτερινές\nεξόδους στα κέντρα διασκέδασης",
+      "B": "μολονότι οι περισσότεροι Έλληνες θεωρούν\nτα θεατρικά εισιτήρια ακριβά",
+      "C": "και επομένως είναι το πρώτο που περικόβει\nαπό τα έξοδά του",
+      "D": "ώστε να μην περιορίζει τα έξοδα του για το\nθέατρο",
+      "E": "άρα η πολυτέλεια δεν είναι συνυφασμένη με\nτο μισθό"
+    },
+    "answer": "C"
+  },
+  {
+    "id": "2008_1_36",
+    "description": "36. - 40. sorularda, verilen Yunanca\ncümleye anlamca en yakın Türkçe\ncümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Gr-Tr Yakın Anlam",
+    "question": "Για να διατηρούμε το κανονικό βάρος του\nσώματός μας, δεν αρκεί μόνο να τρώμε\nλιγότερα και να κινούμαστε περισσότερο\nαλλά πρέπει να κοιμούμαστε κανονικά κάθε\nνύχτα από εφτά έως εννιά ώρες.",
+    "options": {
+      "A": "Vücut ağırlığını normal düzeyde tutabilmek\niçin daha az yemek yemek ve daha çok\nhareket etmenin yanı sıra her gece 7 ile 9\nsaat arasında uyku uyumamız gerekir.",
+      "B": "Ortalama vücut ağırlığına sahip olabilmek\niçin az yemek ve daha çok hareketli\nolmamız yetmez, her gece yedi ila dokuz\nsaat uyumamız da gerekir.",
+      "C": "Kilosunu normal düzeyde korumak\nisteyenlerin yediklerine dikkat ettikleri, spor\nyaptıkları, ayrıca düzenli olarak 7 ila 9 saat\nuyuduklarını unutmamak gerekir.",
+      "D": "Sahip olduğumuz normal vücut ağırlığını\nkorumak için sadece az yemek ve daha çok\nhareket etmek yetmez, her gece düzenli\nolarak 7 ila 9 saat uyumamız gerekir.",
+      "E": "Normal vücut ağırlığını korumayı\nbaşaranların az yemek yedikleri, daha çok\nhareket ettikleri ve her gece 7 ila 9 saat\narasında uyudukları biliniyor."
+    },
+    "answer": "D"
+  },
+  {
+    "id": "2008_1_37",
+    "description": "36. - 40. sorularda, verilen Yunanca\ncümleye anlamca en yakın Türkçe\n cümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Gr-Tr Yakın Anlam",
+    "question": "H χρήση της νέας τεχνολογίας της\nπληροφορικής στο σπίτι και στο σχολείο\nέχει μια ιστορία περίπου δύο δεκαετιών σε\nτεχνολογικά προηγμένες χώρες.",
+    "options": {
+      "A": "Gelişmiş ülkelerde, okullarda ve evlerde\nyeni bilgisayar teknolojilerinden yararlanma\nyaklaşık yirmi yıllık geçmişi olan bir\nkonudur",
+      "B": "Yeni bilgisayar teknolojisinin okullarda ve\nevlerde kullanımı gelişmiş ülkelerde yirmi\nyılı aşkın bir süredir devam etmektedir.",
+      "C": "Bilgi çağı teknolojilerinin evde ve okulda\nkullanımı, gelişmiş ülkelerde yaklaşık olarak\nyirmi yıllık bir geçmişe sahiptir.",
+      "D": "Gelişmiş ülkelerde bilgisayar ve yeni\nteknolojilerden yararlanma evde ve okulda\nyaklaşık yirmi yıldan beri sürmektedir.",
+      "E": "Teknolojik açıdan gelişmiş olan ülkelerde\nyeni bilişim teknolojisinin evde ve okulda\nkullanılmasının yaklaşık yirmi yıllık bir\ngeçmişi vardır."
+    },
+    "answer": "E"
+  },
+  {
+    "id": "2008_1_38",
+    "description": "36. - 40. sorularda, verilen Yunanca\ncümleye anlamca en yakın Türkçe\n cümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Gr-Tr Yakın Anlam",
+    "question": "Στην κατασκευή των διδακτικών\nπρογραμμάτων μέσω ηλεκτρονικών\nυπολογιστών, μπορεί να ειπωθεί άνετα ότι η\nεμπειρία του διδάσκοντος είναι πολύ\nσημαντική.",
+    "options": {
+      "A": "Bilgisayar aracılığıyla derslerde kullanılacak\nmateryallerin hazırlanmasında hiç şüphesiz\nöğretmenin deneyiminin çok önemli olduğu\nsöylenebilir.",
+      "B": "Bilgisayar yardımıyla eğitici programların\nyapılmasında, öğretmen faktörünün ve onun\ndeneyiminin çok önemli olduğu konusunda\nşüphe yoktur.",
+      "C": "Hiç şüpheye yer bırakmayan bir gerçek de\nbilgisayar yardımıyla yapılan öğretim\nprogramlarının öğretmen deneyimiyle önem\nkazandığı konusudur.",
+      "D": "Bilgisayarlar aracılığıyla eğitim programları\noluşturulmasında öğretmen deneyiminin çok\nönemli olduğu rahatlıkla söylenebilir.",
+      "E": "Bilgisayar kullanımı ve eğitim\nprogramlarının hazırlandığı konusunda\nöğretmen deneyiminin yarar sağladığı rahat\nbir şekilde söylenebilir."
+    },
+    "answer": "D"
+  },
+  {
+    "id": "2008_1_39",
+    "description": "36. - 40. sorularda, verilen Yunanca\ncümleye anlamca en yakın Türkçe\n cümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Gr-Tr Yakın Anlam",
+    "question": "H πειρατεία μέσω του Διαδυκτίου έχει\nκαταστεί ανεξέλεγκτη, διότι μέσα από\nχιλιάδες διαφορετικές διευθύνσεις ο καθένας\nμπορεί να μεταφέρει στον υπολογιστή του\nεκατομμύρια τραγούδια, χωρίς να καταβάλει\nτίποτε στους δημιουργούς του.",
+    "options": {
+      "A": "İnternet aracılığıyla korsanlık kontrol\nedilemez bir hal almıştır, çünkü herhangi bir\nkişi birbirinden farklı binlerce adresten, eser\nsahiplerine hiçbir ücret ödemeden\nmilyonlarca şarkıyı bilgisayarına indirebilir.",
+      "B": "İnternette korsanlık kontrolden çıkmış ve\nherhangi bir kullanıcı, farklı adreslerden,\neser sahiplerine ücret ödemeksizin\nmilyonlarca şarkıyı bilgisayarına aktarıp\nkopyalayabiliyor.",
+      "C": "Bilişim suçları kontrol edilemez bir hal\nalmakta çünkü herhangi bir kullanıcı eser\nsahibine bir ücret ödemeden milyonlarca\nşarkıyı farklı adreslerden bilgisayarına\nkopyalayabilir.",
+      "D": "Eser sahiplerine hiçbir ücret ödemeden\nmilyonlarca şarkıyı birbirinden farklı\nadreslerden bilgisayarlarına indiren sıradan\nkullanıcılar kontrol edilemeyen internet\nkorsanlığının bir parçası olmuştur.",
+      "E": "Eğer sıradan internet kullanıcıları\nbirbirinden farklı binlerce adresten eser\nsahiplerine herhangi bir ücret ödemeden\nmilyonlarca şarkıyı bilgisayarlarına\nindirebiliyorlarsa kontrol edilemeyen bir\ninternet korsanlığı söz konusudur."
+    },
+    "answer": "A"
+  },
+  {
+    "id": "2008_1_40",
+    "description": "36. - 40. sorularda, verilen Yunanca\ncümleye anlamca en yakın Türkçe\n cümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Gr-Tr Yakın Anlam",
+    "question": "Οι περισσότεροι άνθρωποι πιστεύουν ότι ο\nσημαντικότερος πόρος σε κάποια χώρα\nείναι το πετρέλαιο αλλά στο μέλλον το νερό\nθα είναι ο στρατηγικότερος πόρος.",
+    "options": {
+      "A": "Bir ülke için petrolün önemi çoğu kişi\ntarafından kabul edilse de gelecekte suyun\ndaha stratejik bir kaynak olacağı göz ardı\nedilmemelidir",
+      "B": "Pek çok kişi, bir ülkede petrolün en önemli\nkaynak olduğuna inanmakta ancak su\ngelecekte stratejik açıdan en önemli kaynak\nolacaktır.",
+      "C": "Bir ülkede petrolün önemli bir kaynak\nolduğu konusunda pek çok insan aynı\ngörüşte; ancak suyun gelecekteki stratejik\nönemi unutulmamalıdır",
+      "D": "Pek çok insan bir ülkede en önemli\nkaynağın petrol olduğunun farkındadır fakat\ngelecekte su en stratejik kaynak olacaktır.",
+      "E": "Su gelecekte en önemli kaynak olacaktır\nfakat bugün için pek çoğumuz petrolün\ndaha önemli olduğuna inanıyoruz."
+    },
+    "answer": "B"
+  },
+  {
+    "id": "2008_1_41",
+    "description": "41. - 45. sorularda, verilen Türkçe\n cümleye anlamca en yakın Yunanca\n cümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Tr-Gr Yakın Anlam",
+    "question": "Gazetelerde yayınlanan haberlerin aksine, iki\nbankanın birleşmesinin yönetim kurullarının\nonayından sonra gerçekleşeceği açıklandı.",
+    "options": {
+      "A": "Αντίθετα με τις δημοσιεύσεις των\nεφημερίδων, ανακοινώθηκε ότι η\nσυγχώνευση των δύο τραπεζών θα\nπραγματοποιηθεί μετά την έγκριση των\nδιοικητικών συμβουλίων τους.",
+      "B": "Σε αντίθεση με τις δημοσιεύσεις, τα\nδιοικητικά συμβούλια ανακοίνωσαν ότι οι\nδύο τράπεζες θα συγχωνευθούν μετά την\nαπόφασή τους.",
+      "C": "Αντίθετα με τις εφημερίδες, ανακοινώθηκε\nότι οι δύο τράπεζες θα συγχωνευθούν μετά\nτην απόφαση των διοικητικών συμβουλίων\nτους.",
+      "D": "Αντίθετα με τις δημοσιεύσεις των\nεφημερίδων, ανακοινώθηκε ότι μετά την\nέγκρισή της τα διοικητικά συμβούλια των\nδύο τραπεζών θα ανακοινώσουν την\nσυγχώνευση.",
+      "E": "Σε αντίθεση μ’όσα δημοσιεύτηκαν,\nανακοινώνεται ότι συγχώνευση των δύο\nτραπεζών θα πραγματοποιηθεί αφού\nεγκριθεί από τα διοικητικά συμβούλια."
+    },
+    "answer": "A"
+  },
+  {
+    "id": "2008_1_42",
+    "description": "41. - 45. sorularda, verilen Türkçe\n cümleye anlamca en yakın Yunanca\n cümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Tr-Gr Yakın Anlam",
+    "question": "Anadolu’nun çeşitli yerlerinde yapılan\nkazılar, Hititlerin M.Ö. XIV. yüzyılda yüksek\nbir uygarlık düzeyine sahip olduğunu ortaya\nçıkarmıştır.",
+    "options": {
+      "A": "Οι επιστήμονες στις ανασκαφές που έκαναν\nσε διάφορα μέρη της Ανατολίας\nαποκάλυψαν ότι οι Χετταίοι κατά τον δέκατο\nτέταρτο αιώνα είχαν αναπτύξει ένα υψηλό\nεπίπεδο πολιτισμού.",
+      "B": "Οι ανασκαφές που πραγματοποιήθηκαν σε\nδιάφορα μέρη της Ανατολίας έχουν\nαποκαλύψει ότι οι Χετταίοι κατά τον δέκατο\nτέταρτο αιώνα είχαν ένα υψηλό επίπεδο\nπολιτισμού.",
+      "C": "Οι επιστήμονες πραγματοποίησαν\nανασκαφές σε διάφορα μέρη της Ανατολίας\nκαι αποκάλυψαν ότι οι Χετταίοι κατά τον\nδέκατο τέταρτο αιώνα είχαν ένα επίπεδο\nπολιτισμού.",
+      "D": "Οι ανασκαφές που πραγματοποιήθηκαν σε\nδιάφορα μέρη της Ανατολίας έχουν\nανακαλύψει ότι οι Χετταίοι κατά τον δέκατο\nτέταρτο αιώνα είχαν φτάσει σ’ένα επίπεδο\nυψηλού πολιτισμού.",
+      "E": "Οι ανασκαφές που έκαναν οι επιστήμονες\nσε διάφορα μέρη της Ανατολίας\nαποκαλύπτουν το υψηλό επίπεδο\nπολιτισμού που οι Χετταίοι κατά τον δέκατο\nτέταρτο αιώνα είχαν."
+    },
+    "answer": "B"
+  },
+  {
+    "id": "2008_1_43",
+    "description": "41. - 45. sorularda, verilen Türkçe\n cümleye anlamca en yakın Yunanca\n cümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Tr-Gr Yakın Anlam",
+    "question": "Geleneksel donanımın kullanımına arazinin\nelverişli olmadığı ülkelerde, gübre atmak için\nuçaklar kullanılmaktadır.",
+    "options": {
+      "A": "Σε χώρες στις οποίες προτιμούνται τα\nαεροσκάφη για λίπανση δεν υπάρχουν\nκατάλληλα εδάφη για τη χρήση των\nπαραδοσιακών εξοπλισμών.",
+      "B": "Σε χώρες, των οποίων τα εδάφη δεν είναι\nκατάλληλα για τη χρήση των παραδοσιακών\nμεθόδων, χρησιμοποιούνται τα αεροσκάφη\nγια λίπανση.",
+      "C": "Σε χώρες, όπου το έδαφος δεν είναι\nακατάλληλο για τη χρήση των\nπαραδοσιακών εξοπλισμών,\nχρησιμοποιούνται επίσης τα αεροσκάφη για\nλίπανση.",
+      "D": "Σε χώρες, όπου χρησιμοποιούνται τα\nαεροσκάφη για λίπανση υπάρχουν\nκατάλληλα εδάφη για τη χρήση των\nπαραδοσιακών εξοπλισμών.",
+      "E": "Σε χώρες, στις οποίες το έδαφος δεν είναι\nκατάλληλο για τη χρήση των παραδοσιακών\nεξοπλισμών, χρησιμοποιούνται τα\nαεροσκάφη για λίπανση."
+    },
+    "answer": "E"
+  },
+  {
+    "id": "2008_1_44",
+    "description": "41. - 45. sorularda, verilen Türkçe\n cümleye anlamca en yakın Yunanca\n cümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Tr-Gr Yakın Anlam",
+    "question": "Dünya tarihindeki büyük değişimlerden\nhiçbiri, sömürgeciliğin sona ermesinden\ndaha çarpıcı ve daha hızlı olmamıştır.",
+    "options": {
+      "A": "Καμία αλλαγή απ’όλες της παγκόσμιας\nιστορίας δεν ήταν πιο δραματική και πιο\nραγδαία από την αποικιοκρατία.",
+      "B": "Το τέλος της αποικιοκρατίας υπήρξε πιο\nδραματική και πιο ραγδαία αλλαγή απ’ όλες\nτις μεγάλες μεταρρυθμίσεις στην παγκόσμια\nιστορία.",
+      "C": "Από όλες τις μεγάλες αλλαγές στην\nπαγκόσμια ιστορία καμία δεν υπήρξε πιο\nδραματική και πιο ραγδαία από το τέλος της\nαποικιοκρατίας.",
+      "D": "Καμία δραματική και ραγδαία αλλαγή απ’\nόλες τις μεγάλες αλλαγές στην παγκόσμια\nιστορία δεν υπήρξε από την αποικιοκρατία.",
+      "E": "Από όλες τις μεγάλες αλλαγές στην\nπαγκόσμια ιστορία καμία άλλη αλλαγή από\nτο τέλος της αποικιοκρατίας δεν υπήρξε πιο\nδραματική και πιο ραγδαία."
+    },
+    "answer": "C"
+  },
+  {
+    "id": "2008_1_45",
+    "description": "41. - 45. sorularda, verilen Türkçe\n cümleye anlamca en yakın Yunanca\n cümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Tr-Gr Yakın Anlam",
+    "question": "Sürdürülebilir gelişme, dünyadaki az\ngelişmiş ülkelerce uygulanmadan önce,\nirdelenmesi ve tartışılması gereken temel bir\nkavramdır.",
+    "options": {
+      "A": "Η βιώσιμη ανάπτυξη είναι μια βασική έννοια\nπου πρέπει να αναλυθεί και να συζητηθεί\nπροτού εφαρμοστεί από τις υπανάπτυκτες\nχώρες στον κόσμο.",
+      "B": "Μια βασική έννοια που πρέπει να αναλυθεί\nκαι να συζητηθεί αφού εφαρμοστεί από τις\nυπανάπτυκτες χώρες στον κόσμο είναι η\nβιώσιμη ανάπτυξη.",
+      "C": "Η βιώσιμη ανάπτυξη είναι μια βασική έννοια\nπου πρέπει να αναλυθεί και να συζητηθεί\nστις υπανάπτυκτες χώρες στον κόσμο\nεφόσον εφαρμοστεί.",
+      "D": "Η βιώσιμη ανάπτυξη αφού εφαρμοστεί\nπρέπει να αναλυθεί και να συζητηθεί ως μια\nβασική έννοια από τις υπανάπτυκτες χώρες\nστον κόσμο.",
+      "E": "Μια βασική έννοια που πρέπει να αναλυθεί\nκαι να συζητηθεί είναι η βιώσιμη ανάπτυξη\nαφού εφαρμόζεται από τις υπανάπτυκτες\nχώρες στον κόσμο."
+    },
+    "answer": "A"
+  },
+  {
+    "id": "2008_1_46",
+    "description": "46. - 51. sorularda, parçanın anlam\nbütünlüğünü sağlamak için boş bırakılan\nyere gelebilecek cümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Anlam Bütünlüğü",
+    "question": "Αρχικά, η θέρμανση και το μαγείρεμα,\nκατόπιν η μεταλλουργία και η κεραμική ήταν\nγια πολλούς αιώνες οι σημαντικότεροι\nτομείς στους οποίους ο άνθρωπος\nχρησιμοποίησε τη θερμότητα. Πολύ\nαργότερα, αντιλήφθηκε ότι η θερμότητα\nσυνδέεται με την κίνηση και τον 18° αιώνα\nκατασκεύασε τη πρώτη ατμομηχανή. ----. Με\nτην εκτεταμένη χρήση των μηχανών στην\nπαραγωγή αγαθών, ξεκινά η βιομηχανική\nεπανάσταση.",
+    "options": {
+      "A": "Τότε οι γυναίκες άρχισαν να χρησιμοποιούν\nτον ατμό για να σιδερώνουν τα ρούχα των\nπαιδιών τους",
+      "B": "Τότε κατασκευάστηκαν σιδηρόδρομοι\nσ’όλες τις χώρες του κόσμου και οι\nάνθρωποι άρχισαν να ταξιδεύουν με το\nτρένο",
+      "C": "Με τη χρήση της ατμομηχανής άλλαξε η\nιστορία του ανθρώπινου γένους και\nδημιουργήθηκαν πολλές βιομηχανίες\nπαραγωγής ατμού",
+      "D": "Από τότε, πολλές εργασίες έπαψαν να\nγίνονται χειρονακτικά ή με τη βοήθεια ζώων\nκαι αναπτύχθηκαν οι πρώτες βιομηχανίες",
+      "E": "Εκείνη την εποχή πολλοί άνθρωποι άρχισαν\nνα εργάζονται στις βιομηχανίες και να\nπαράγονται περισσότερα προϊόντα"
+    },
+    "answer": "D"
+  },
+  {
+    "id": "2008_1_47",
+    "description": "46. - 51. sorularda, parçanın anlam \nbütünlüğünü sağlamak için boş bırakılan\n yere gelebilecek cümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Anlam Bütünlüğü",
+    "question": "Λέγοντας αθλητισμό σε ευρύ κοινωνικό\nεπίπεδο εννοούμε τους αγώνες που\nγίνονται μεταξύ πόλεων ή κρατών. Στην\nεποχή μας έχουμε εθνικούς αγώνες,\nπανευρωπαϊκούς καθώς και τους\nπερίφημους Ολυμπιακούς, που\nσυμμετέχουν αθλητές απ’όλο σχεδόν τον\nκόσμο. ----. Έτσι δημιουργήθηκε η\nΟλυμπιακή ιδέα, που αποτελεί κάλεσμα\nσ’όλους τους ανθρώπους για ειρηνική\nάμιλλα και καταξίωση της ανθρώπινης\nδύναμης.",
+    "options": {
+      "A": "Ο αθλητισμός έχει πολύ μεγάλη σημασία\nγια την οικονομία, γιατί δίνει τη δυνατότητα\nσε πολλούς άνεργους να βρούν δουλειά",
+      "B": "Η αξία αυτού του είδους του αθλητισμού\nείναι πολύ μεγάλη, γιατί δημιουργεί\nσπουδαία κίνητρα για την ειρηνική\nσυμβίωση και αλληλεγγύη των λαών",
+      "C": "Η αξία των αθλητών γίνεται όλο και\nπερισσότερη, γιατί προβάλλουν την εικόνα\nτων χωρών που αγωνίζονται",
+      "D": "Αυτού του είδους οι αγώνες δε\nδιοργανώνονται κάθε χρόνο επειδή δεν\nυπάρχουν κατάλληλα στάδια σ’όλες τις\nχώρες του κόσμου",
+      "E": "Η αξία αυτών των αγώνων είναι πολύ\nμεγάλη, γιατί δημιουργεί μεγάλες\nδυνατότητες για την αλληλογνωριμία των\nαθλητών"
+    },
+    "answer": "B"
+  },
+  {
+    "id": "2008_1_48",
+    "description": "46. - 51. sorularda, parçanın anlam \nbütünlüğünü sağlamak için boş bırakılan\n yere gelebilecek cümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Anlam Bütünlüğü",
+    "question": "Ανασφάλεια για το μέλλον. Αυτό νιώθουν οι\nπερισσότεροι Έλληνες όσον αφορά την\nοικονομική τους κατάσταση. Η πλειονότητα\nδηλώνει ότι θα σφίξει τον επόμενο χρόνο το\nζωνάρι, μειώνοντας τα έξοδα και αυξάνοντας\nτην αποταμίευση. ----.",
+    "options": {
+      "A": "Γι’αυτό οι περισσότεροι Έλληνες δε θέλουν\nνα νιώθουν ανασφαλείς λόγω της\nοικονομικής τους κατάστασης",
+      "B": "Έτσι πολλοί Έλληνες άρχισαν να πιστεύουν\nπως τον επόμενο χρόνο θα έχουν μια\nπλουσιοπάροχη ζωή",
+      "C": "Δεν είναι τυχαίο ότι οι περισσότεροι\nΈλληνες νομίζουν πως θα μπορέσουν να\nμειώσουν τα έξοδα και τις αποταμιεύσεις\nτους",
+      "D": "Δεν είναι τυχαίο ότι οι περισσότεροι\nΈλληνες πιστεύουν πως η ζωή, μετά την\nκυκλοφορία του κοινού ευρωπαϊκού\nνομίσματος, έγινε πιο ακριβή",
+      "E": "Έτσι η οικονομική κατάσταση της\nπλειονότητας των Ελλήνων θα\nκαλυτερεύσει και θα δημιουργηθούν νέες\nθέσεις εργασίας"
+    },
+    "answer": "D"
+  },
+  {
+    "id": "2008_1_49",
+    "description": "46. - 51. sorularda, parçanın anlam \nbütünlüğünü sağlamak için boş bırakılan\n yere gelebilecek cümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Anlam Bütünlüğü",
+    "question": "----. Μεγαλύτερη χαρά απ’αυτήν, σίγουρα\nδεν υπάρχει στη ζωή. Αρκετοί όμως\nδιαφωνούν μ’αυτήν την άποψη και\nυποστηρίζουν πως η εργασία καταπιέζει την\nανθρώπινη προσωπικότητα. Αυτό δεν είναι\nτελείως αβάσιμο και εξαρτάται από τη στάση\nπου κρατάει καθένας απέναντι στη ζωή και\nτη δημιουργικότητα.",
+    "options": {
+      "A": "Όσοι άνθρωποι εργάζονται λιγότερο\nαισθάνονται μεγαλύτερη χαρά",
+      "B": "Τα έργα τέχνης κάνουν τους ανθρώπους\nπερισσότερο χαρούμενους",
+      "C": "Με την πολύωρη εργασία ο άνθρωπος\nκουράζεται αλλά παίρνει περισσότερα\nχρήματα",
+      "D": "Με τα έργα τέχνης ο άνθρωπος εκφράζει τα\nσυναισθήματά του",
+      "E": "Με την εργασία ο άνθρωπος αισθάνεται τη\nχαρά της δημιουργίας"
+    },
+    "answer": "E"
+  },
+  {
+    "id": "2008_1_50",
+    "description": "46. - 51. sorularda, parçanın anlam \nbütünlüğünü sağlamak için boş bırakılan\n yere gelebilecek cümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Anlam Bütünlüğü",
+    "question": "Ο Γάλλος φιλόσοφος Ζαν Πωλ Σαρτρ είπε\nκάποτε πως «η ζωή είναι άγχος και\nαγωνία». ----. Κάθε άνθρωπος διαπιστώνει\nκαθημερινά πως η επιβίωση είναι δύσκολο\nεπίτευγμα. Πραγματικά οι σύγχρονοι καιροί\nείναι δύσκολοι, γιατί το παρόν και το μέλλον\nείναι θολό.",
+    "options": {
+      "A": "Στην εποχή μας αυτή η διαπίστωση κερδίζει\nμεγαλύτερη σημασία",
+      "B": "Στις μέρες μας τα λόγια του Γάλλου\nφιλοσόφου έχουν χάσει τη σημασία τους",
+      "C": "Στην εποχή μας ελάχιστοι άνθρωποι\nσυμφωνούν με το Γάλλο φιλόσοφο",
+      "D": "Στην εποχή μας πρέπει να\nεπαναλαμβάνουμε τα λόγια του Γάλλου\nφιλοσόφου",
+      "E": "Στις μέρες αυτή η διαπίστωση είναι\nφαινομενική"
+    },
+    "answer": "A"
+  },
+  {
+    "id": "2008_1_51",
+    "description": "46. - 51. sorularda, parçanın anlam \nbütünlüğünü sağlamak için boş bırakılan\n yere gelebilecek cümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Anlam Bütünlüğü",
+    "question": "Όλοι οι νέοι, σ’όλο το κόσμο, έχουν το\nδικαίωμα να μορφωθούν. Οι πηγές απ’όπου\nμπορούν να αντλήσουν γνώσεις είναι\nπολλές όπως η οικογένεια, το σχολείο, τα\nβιβλία, τα περιοδικά, ο τύπος, η τηλεόραση,\nο κινηματογράφος. ----. και αγωνίζονται με\nμόχθο να πραγματοποιήσουν αυτό το\nόνειρό τους.",
+    "options": {
+      "A": "Αρκετοί νέοι που δε διαβάζουν πολύ\nμπορούν να σπουδάσουν σε ιδιωτικά\nπανεπιστήμια",
+      "B": "Γι’αυτό οι νέοι πρέπει να μελετάνε πολύ\nσκληρά για να σπουδάσουν στα\nπανεπιστήμια",
+      "C": "Αρκετοί νέοι πέρα απ’αυτή τη μόρφωση,\nεπιθυμούν να σπουδάσουν στα\nπανεπιστήμια",
+      "D": "Όμως αρκετοί νέοι αν και είναι πτυχιούχοι\nπανεπιστημίου δεν έχουν πάρει σωστή\nμόρφωση",
+      "E": "Οι νέοι δεν επιθυμούν μια καλύτερη\nεκπαίδευση στα δημόσια πανεπιστήμια"
+    },
+    "answer": "C"
+  },
+  {
+    "id": "2008_1_52",
+    "description": "52. - 57. sorularda, verilen durumda \nsöylenmiş olabilecek sözü bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Anlam Çıkarma",
+    "question": "Eίστε σε μια υπεύθυνη κυβερνητική θέση και\nδίνετε συνέντευξη τύπου σε μια ομάδα\nδημοσιογράφων με θέμα την πολιτική της\nκυβέρνησης σε θέματα περιβάλλοντος. Ένας\nδημοσιογράφος που εργάζεται σε μια\nεφημερίδα που αντιπολιτεύεται την\nκυβέρνηση φαίνεται ότι είναι\nαποφασισμένος να σας στριμώξει. Είστε\nαποφασισμένος να διατηρήσετε την\nψυχραμία σας στις απαντήσεις σας. Έτσι,\nόταν ζητάει να μάθει την άποψη σας για τον\nτρόπο αντιμετώπισης εκ μέρους της\nκυβέρνησης των αυθαίρετων που χτίστηκαν\nπρόσφατα σε δασική περιοχή, λέτε:",
+    "options": {
+      "A": "Η πολιτική μας αποσκοπεί στην\nενδυνάμωση της ευαισθησίας του κοινού\nστα θέματα που θίγετε.",
+      "B": "Είμαστε αποφασισμένοι να μην\nεπιτρέψουμε τις καταπατήσεις και όλα τα\nαυθαίρετα επρόκειτο να κατεδαφιστούν.",
+      "C": "Δεν νομίζω πως είμαι σε θέση να εκφέρω\nγνώμη σε θέματα που σχετίζονται με την\nαναπτυξιακή πολιτική.",
+      "D": "Εχετε απόλυτα δίκιο στις επικρίσεις σας,\nείμαστε αποφασισμένοι να πατάξουμε την\nδιαφθορά.",
+      "E": "Μάλλον είστε λίγο προκατειλημμένος και\nδεν βλέπετε το οικονομικό όφελος που θα\nπροκύψει."
+    },
+    "answer": "B"
+  },
+  {
+    "id": "2008_1_53",
+    "description": "52. - 57. sorularda, verilen durumda \nsöylenmiş olabilecek sözü bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Anlam Çıkarma",
+    "question": "Ζείτε σε μια πολυκατοικία και εργάζεστε σε\nένα εργοστάσιο με βάρδια. Συνεπώς οι ώρες\nπου πηγαίνετε στη δουλειά εναλλάσονται.\nΣτο πάνω διαμέρισμα μένει μια πολύτεκνη\nοικογένεια και ο θόρυβος μαζί με τις φωνές\nτων παιδών είναι πλέον καθημερινό\nφαινόμενο. Όταν έχετε βάρδια τη νύχτα\nπρέπει να ξεκουραστείτε και να κοιμηθείτε\nτην ημέρα κάτι που είναι αδύνατο εξαιτίας\nτης φασαρίας. Ένα βράδυ ανεβαίνετε πάνω\nγια να εκφράσετε το παράπονό σας,\nχτυπάτε την πόρτα και στον κύριο που\nβγαίνει, λέτε το εξής:",
+    "options": {
+      "A": "Συγνώμη που σας ενοχλώ αλλά ο θόρυβος\nπου δημιουργείται στο διαμέρισμά σας είναι\nανεπίτρεπτος και αν συνεχιστεί θα\nαπευθυνθώ στον διαχειριστή.",
+      "B": "Με συγχωρείτε κύριε η αναίδεια σας έχει\nφτάσει στο απροχώρητο, είστε ανάγωγος, τι\nείναι αυτά που λέτε, μάθετε να φέρεστε.",
+      "C": "Πιστεύω ότι θα έπρεπε να γνωρίζετε τους\nκανόνες που πρέπει να τηρείτε σε έναν\nχώρο που πρέπει να επικρατήσει απόλυτη\nησυχία.",
+      "D": "Λυπάμαι κύριε αλλά δεν υπάρχει τρόπος\nσυννενοήσεως μαζί σας και θα αναγκαστώ\nνα καταφύγω σε μέτρα για να επιτείνετε το\nθόρυβο.",
+      "E": "Συγνώμη που σας ενοχλώ, όταν αγοράζετε\nπαιδικά παιχνίδια να ελέγχετε τον θόρυβο\nπου δημιουργούν."
+    },
+    "answer": "A"
+  },
+  {
+    "id": "2008_1_54",
+    "description": "52. - 57. sorularda, verilen durumda \nsöylenmiş olabilecek sözü bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Anlam Çıkarma",
+    "question": "Είστε ιδιοκτήτης ενός νεοκλασικού σπιτιού.\nΤο σπίτι αυτό έχει κριθεί διατηρητέο. Δεν\nέχει γίνει όμως σ’αυτό καμιά επισκευή. Η\nαρμόδια κρατική υπηρεσία, σας δίνει ένα\nποσό χρημάτων για την αναπαλαίωσή του,\nαλλά δεν επαρκούν. Αν μπορούσατε να το\nκατεδαφίσετε και να χτίσετε στην θέση του\nένα σύγχρονο κτίριο θα είχατε αναμφίβολα\nμεγαλύτερες προσόδους, εντούτοις επειδή\nείστε λάτρης τέτοιων κτισμάτων θέλετε\nπάση θυσία να το διατηρήσετε και\nαπευθύνεστε στην αρμόδια υπηρεσία για να\nζητήσετε κάποιο επιπρόσθετο κονδύλιο και\nλέτε στον υπεύθυνο:",
+    "options": {
+      "A": "Πρέπει να κάνουμε τα πάντα για την\nδιάσωση της πολιτιστικής κληρονομιάς αλλά\nτο κτίριο αυτό είναι ετοιμόρροπο και\nπιστεύω πως είναι παράλογο να\nεπιμείνουμε στην αναπαλαίωση.",
+      "B": "Η αναπαλαίωση τέτοιων κτιρίων έχει μεγάλη\nσημασία για τον αρχιτεκτονικό ιστό της\nπόλης μας αλλά θα προτιμούσα να βρεθεί\nκάποιος τρόπος να δοθεί άδεια για την\nκατεδάφισή του επειδή είναι σε\nσεισμόπληκτη ζώνη.",
+      "C": "Πρέπει να καταβληθεί προσπάθεια εκ\nμέρους όλων μας για την ευαισθητοποίηση\nτης κοινής γνώμης αλλά αυτό από μόνο του\nδεν αρκεί για την εύρεση των απαραίτητων\nχρημάτων.",
+      "D": "Είναι αδιανόητο να μην υπάρχει η\nδυνατότητα να βρεθεί κάποια λύση από\nμέρους της πολιτείας. Εγώ δεν είμαι\nδιατεθειμένος να ασχοληθώ άλλο με το\nζήτημα.",
+      "E": "Το κόστος αναπαλαίωσης υπερβαίνει κατά\nπολύ την επιδότηση, υπολογίζω ότι θα\nχρειαστώ το διπλάσιο από το ποσό που\nδιατίθεται, για αυτό θα ήθελα να μου δοθεί\nκάποια ενίσχυση από τα ευρωπαϊκά\nπρογράμματα."
+    },
+    "answer": "E"
+  },
+  {
+    "id": "2008_1_55",
+    "description": "52. - 57. sorularda, verilen durumda \nsöylenmiş olabilecek sözü bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Anlam Çıkarma",
+    "question": "Ο ξάδερφός σας δούλευε ως εποχικός\nεργάτης στο δήμο της περιοχής σας. Ήταν\nχειριστής εκσκαπτικού μηχανήματος. Ενώ\nχειριζόταν το μηχάνημα έσκασε το\nμπροστινό δεξιό λάστιχο του μηχανήματος\nκαι κατέβηκε να δει τι ακρβώς είχε συμβεί.\nΔεν πρόλαβε να κάνει δύο βήματα και\nαντίκρισε μπροστά του ένα πορτοφόλι\nγεμάτο με ευρώ. Όταν τελείωσε τη δουλειά\nτου ήρθε στο γραφείο σας και ανέφερε το\nπεριστατικό και εσείς με τη σειρά σας, του\nείπατε:",
+    "options": {
+      "A": "Για να γίνουν δικά σου τα χρήματα θα\nπρέπει να μην τα αναζητήσει κανείς για ένα\nχρόνο, γι΄αυτό κράτησέ τα.",
+      "B": "Πρέπει να παραδοθείς στην αστυνομία\nχωρίς χρονοτριβή αλλιώς θα έχεις\nμπλεξίματα.",
+      "C": "Ηταν η τυχερή σου μέρα σήμερα δεν θα\nπρέπει να νιώθεις τύψεις, έκανες το\nκαθήκον σου.",
+      "D": "Το καλύτερο που έχεις να κάνεις είναι να\nπας και να το παραδώσεις στην αστυνομία.",
+      "E": "Είναι θέμα ήθους, η πράξη σου σίγουρα θα\nτιμηθεί και δεν θα νιώθεις καμιά ενόχληση\nπου το κάνεις αυτό."
+    },
+    "answer": "D"
+  },
+  {
+    "id": "2008_1_56",
+    "description": "52. - 57. sorularda, verilen durumda \nsöylenmiş olabilecek sözü bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Anlam Çıkarma",
+    "question": "Ήσασταν διευθυντής σε ένα σχολείο που\nβρισκόταν σε μια υποβαθμισμένη περιοχή\nτης πόλης σας. Μια μέρα ήρθε ένας\nσυνταξιούχος γιατρός που έμενε εκεί κοντά\nκαι είπε ότι ήθελε να προσφέρει εθελοντικά\nτις υπηρεσίες του σε ό,τι είχε σχέση με την\nειδικότητά του. Ήθελε να βοηθήσει το\nσχολείο σας. Δεν είχε συγγενείς να\nφροντίσει ούτε κάποιο υλικό συμφέρον για\nνα κάνει αυτή την προσφορά.\nΣυγκινηθήκατε πολύ και του είπατε:",
+    "options": {
+      "A": "Προσφέρετε τον εαυτό σας χωρίς να\nπεριμένετε ανταλλάγματα, είναι ό,τι\nευγενικότερο μπορεί να κάνει ένα\nανθρώπινο πλάσμα για ένα άλλο.",
+      "B": "Θα θέλατε να δουλέψετε σαν βοηθός ή\nεπόπτης και να μοιραστείτε τις γνώσεις σας\nμε τους συναδέλφους σας;",
+      "C": "Βλέπω ότι είστε αποφασισμένος να είστε\nχρήσιμος στους ανθρώπους που την έχουν\nανάγκη ειδικά στην προχωρημένη αυτή\nηλικία τους.",
+      "D": "Συνέχεια μας μαθαίνουν ότι τίποτε δεν είναι\nδωρεάν ότι κάθε προσφορά πρέπει να έχει\nκάποιο αντάλλαγμα έστω και μικρό.",
+      "E": "Είμαι πραγματικά έκπληκτος και δεν ξέρω\nπώς να σας ευχαριστήσω για τις υπηρεσίες\nπου έχετε προσφέρει μέχρι σήμερα στο\nσχολείο μας."
+    },
+    "answer": "A"
+  },
+  {
+    "id": "2008_1_57",
+    "description": "52. - 57. sorularda, verilen durumda \nsöylenmiş olabilecek sözü bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Anlam Çıkarma",
+    "question": "Σ’ ένα περιοδικό βλέπετε ένα άρθρο με τίτλο\n«Τέρμα στην παχυσαρκία» και από κάτω μια\nολόσωμη κοντινή φωτογραφία σας η οποία\nτραβήχτηκε εν αγνοία σας. Απεικονίζεστε με\nτο μαγιό σας στην παραλία σε μια καθόλου\nκολακευτική στάση. Το αίμα ανεβαίνει στο\nκεφάλι σας, γίνεστε έξω φρενών και μέσω\nκινητού παίρνετε αμέσως τον αρχισυντάκτη\nτου περιοδικού και του λέτε:",
+    "options": {
+      "A": "Εφόσον δεν αναφέρεται πουθενά το όνομά\nμου, οποιοσδήποτε έχει το δικαίωμα όχι\nμόνο να με φωτογραφίσει αλλά και να τις\nδημοσιεύσει.",
+      "B": "Φαντάζομαι ότι επειδή εμφανίζομαι με μαγιό\nδημοσίως, οποιοσδήποτε έχει το δικαίωμα\nνα με φωτογραφίσει αλλά εσείς δεν\nζητήσατε την άδειά μου.",
+      "C": "Η φωτογράφιση μου και η δημοσίευση της\nχωρίς την άδειά μου αποτελεί παράνομη\nπροσβολή της προσωπικότητας μου και θα\nασκήσω αγωγή εναντίον σας.",
+      "D": "Η φωτογράφιση έγινε χωρίς την άδειά μου,\nθα απευθυνθώ στο Εθνικό Συμβούλιο\nΡαδιοτηλεόρασης, θα ζητήσω επανόρθωση\nκαι θα πάω στο δικαστήριο.",
+      "E": "Μπορείτε να μου πείτε ποιος ήταν ο\nρεπόρτερ που ετοίμασε το συγκεκριμένο\nρεπορτάζ διότι σκέφτομαι να τον συγχαρώ\nεπειδή με έκανε διάσημο."
+    },
+    "answer": "C"
+  },
+  {
+    "id": "2008_1_58",
+    "description": "58. - 63. sorularda, cümleler sırasıyla \nokunduğunda parçanın anlam \nbütünlüğünü bozan cümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Anlam Bütünlüğünü Bozan",
+    "question": "(I) Ένα αξιοσημείωτο περιστατικό στη μακρά\nιστορία επιθέσεων ενάντια του διαδικτύου\nσυνέβη το Μάρτιο του '99. (II) Ο ιός \"Μελίσα\"\nπροσέβαλε χιλιάδες μηχανήματα εταιρειών και\nχρηστών, προκαλώντας μεγάλες καταστροφές.\n(III) Τον Μάιο του 2000, ένας άλλος ιός\nεπεκτάθηκε σε χιλιάδες υπολογιστές μέσω\nηλεκτρονικών μηνυμάτων, διαγράφοντας όλα τα\nαρχεία μουσικής και φωτογραφιών στον\nυπολογιστή. (IV) Λέγεται ότι η \"τρύπα\" στην\nασφάλεια του λογισμικού είχε εντοπιστεί καιρό\nπριν από τους τεχνικούς της Microsoft.\n(V) Αυτός ο ιός εξαπλώθηκε ταχύτατα γιατί\nέστελνε αυτόματα εκατοντάδες μηνύματα με το\nεπικίνδυνο πρόγραμμα χωρίς να το ξέρει ο\nκάτοχος του υπολογιστή.",
+    "options": {
+      "A": "Ι",
+      "B": "IΙ",
+      "C": "IIΙ",
+      "D": "IV",
+      "E": "V"
+    },
+    "answer": "D"
+  },
+  {
+    "id": "2008_1_59",
+    "description": "58. - 63. sorularda, cümleler sırasıyla \nokunduğunda parçanın anlam \nbütünlüğünü bozan cümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Anlam Bütünlüğünü Bozan",
+    "question": "(I) Οι άνθρωποι του Μεσαίωνα θεωρούσαν τη\nγυναίκα κατώτερη από τον άνδρα. (II) Οι\nσχέσεις των δύο φύλων περιορίζονταν στο\nπλαίσιο του γάμου. (III) Πίστευαν ότι αυτό έδινε\nστους άνδρες το δικαίωμα να επιβάλουν σ’αυτές\nσωματικές ποινές. (IV) Η θέση της άλλαζε όχι\nμόνο από αιώνα σε αιώνα, αλλά πολύ\nπερισσότερο, από τάξη σε τάξη. (V) Η μοίρα της\nαριστοκράτισσας ήταν καλύτερη από τη μοίρα\nτης γυναίκας του πλούσιου εμπόρου και η θέση\nτων δύο αυτών ήταν πολύ διαφορετική από τη\nθέση των γυναικών των χωρικών.",
+    "options": {
+      "A": "I",
+      "B": "II",
+      "C": "III",
+      "D": "IV",
+      "E": "V"
+    },
+    "answer": "B"
+  },
+  {
+    "id": "2008_1_60",
+    "description": "58. - 63. sorularda, cümleler sırasıyla \nokunduğunda parçanın anlam \nbütünlüğünü bozan cümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Anlam Bütünlüğünü Bozan",
+    "question": "(I) Η ζωή του ανθρώπου είναι ένας αδιάκοπος\nαγώνας, σε πολλά πεδία, για την κατάκτηση της\nευτυχίας. (II) Πολλές φορές, στον αγώνα αυτό,\nαναγκάζεται να συγκρουσθεί τόσο με τον εαυτό\nτου, όσο και με τους γύρω του. (III) Αρκετά\nσυχνά, αυτές οι συγκρούσεις και η κούραση που\nτις συνοδεύει, διαταράσσουν την ισορροπία του,\nτου δημιουργούν άγχος και ζητάει μέσα απ’τη\nψυχαγωγία να βρει διεξόδους, να κάνει\nπράγματα που θα τον ευχαριστήσουν. (IV) Αυτό\nτο θέμα είναι βασικό για τους ανθρώπους και\nιδιαίτερα για τους νέους. (V) Η ψυχαγωγία,\nλοιπόν επιδρά στον ψυχολογικό κόσμο του\nανθρώπου και αποτελεί αναγκαίο μέσο για την\nεπιβίωση και την κατάκτηση της ζωής.",
+    "options": {
+      "A": "I",
+      "B": "II",
+      "C": "III",
+      "D": "IV",
+      "E": "V"
+    },
+    "answer": "D"
+  },
+  {
+    "id": "2008_1_61",
+    "description": "58. - 63. sorularda, cümleler sırasıyla \nokunduğunda parçanın anlam \nbütünlüğünü bozan cümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Anlam Bütünlüğünü Bozan",
+    "question": "(I) Τα τελευταία χρόνια παρατηρείται στην\nΕλλάδα μια σταδιακή αλλοίωση των\nπαραδόσεων. (II) Η αμφισβήτηση συμβαίνει\nπερισσότερο στους νέους ανθρώπους, επειδή\nαισθάνονταν ότι ο παραδοσιακός τρόπος ζωής\nτους δεσμεύει την ελευθερία. (III) Η νοοτροπία\nτου Έλληνα γρήγορα αλλάζει και αρκετές φορές\nμιμείται έναν τρόπο ζωής που δεν είναι στα\nμέτρα του. (IV) Αυτός ο μιμιτισμός τού αφαιρεί\nτη δημιουργική του ζωντάνια, με αποτέλεσμα να\nμην εξελίσσεται. (V) Το κακό είναι ότι\nεπηρεάζεται τόσο πολύ από τον ξενόφερτο\nτρόπο ζωής, ώστε δεν έχει τη δυνατότητα να\nδεχτεί δημιουργικά αυτές τις επιρροές.",
+    "options": {
+      "A": "I",
+      "B": "II",
+      "C": "III",
+      "D": "IV",
+      "E": "V"
+    },
+    "answer": "B"
+  },
+  {
+    "id": "2008_1_62",
+    "description": "58. - 63. sorularda, cümleler sırasıyla \nokunduğunda parçanın anlam \nbütünlüğünü bozan cümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Anlam Bütünlüğünü Bozan",
+    "question": "(I) Μία απ’τις κοινωνικές πληγές, που μαστίζουν\nτην εποχή μας, είναι το πρόβλημα της βίας και\nτης εγκληματικότητας. (II) Μολονότι το βιοτικό\nεπίπεδο ανέβηκε και οι άνθρωποι μορφώθηκαν\nπερισσότερο, η βία όχι μόνο δε σταμάτησε,\nαλλά βρίσκεται σε έξαρση. (III) Οργανωμένες μη\nκυβερνητικές ομάδες κάνουν τρομοκρατικές\nενέργειες, καίνε, σκοτώνουν πολιτικά πρόσωπα\nκαι δημιουργούν κοινωνικές αναταραχές. (IV) Τα\nτελευταία ιδίως χρόνια, όπως\nπληροφορούμαστε απ’τα μέσα μαζικής\nενημέρωσης έγινε καθημερινό φαινόμενο και\nθύματα της είναι ανύποπτοι άνθρωποι, που δεν\nέφταιξαν σε τίποτε. (V) Οι συνέπειες της για τη\nζωή μας είναι άσχημες και δείχνουν, ότι το\nκοινωνικό μας σύστημα νοσεί.",
+    "options": {
+      "A": "I",
+      "B": "II",
+      "C": "III",
+      "D": "IV",
+      "E": "V"
+    },
+    "answer": "C"
+  },
+  {
+    "id": "2008_1_63",
+    "description": "58. - 63. sorularda, cümleler sırasıyla \nokunduğunda parçanın anlam \nbütünlüğünü bozan cümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Anlam Bütünlüğünü Bozan",
+    "question": "(I) Ο άνθρωπος, το τελειότερο πλάσμα της\nδημιουργίας, γεννήθηκε ελεύθερος για να ζει\nευτυχισμένος και να δημιουργεί. (II) Σταδιακά\nσυγκρότησε κοινωνίες και προσπάθησε με\nδιάφορους τρόπους να κατοχυρώσει τα φυσικά\nδικαιώματά του. (III) Πολλές φορές όμως η\nελευθερία του και τα δικαιώματά του\nκατακερματίστηκαν απ’τους πιο ισχυρούς\nσυνανθρώπους του. (IV) Η ιστορία του\nανθρώπινου γένους είναι γεμάτη από τέτοια\nπαραδείγματα. (V) Έτσι πολλοί μιλούν για\nδικαιώματα και υποστηρίζουν πως σαν σκοπό\nτους έχουν να τα αλλοιώσουν.",
+    "options": {
+      "A": "I",
+      "B": "II",
+      "C": "III",
+      "D": "IV",
+      "E": "V"
+    },
+    "answer": "E"
+  },
+  {
+    "id": "2008_1_64",
+    "description": "64. - 69. sorularda, verilen cümleye\n anlamca en yakın olan cümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Yakın Anlam",
+    "question": "Η τέχνη αποτελεί ένα από τα κορυφαία\nεπιτεύγματα του ανθρώπινου πνεύματος και\nίσως το μόνο μέσα στο οποίο ο άνθρωπος\nμπορεί να επιτύχει την τελειότητα.",
+    "options": {
+      "A": "Η τέχνη για τους ανθρώπους του\nπνεύματος αποτελεί μια κορυφαία επιτυχία\nκαι μέσω της τέχνης η τελειότητα είναι\nεφικτή.",
+      "B": "Η τέχνη είναι μια μεγάλη επιτυχία του\nανθρώπινου πνεύματος και ίσως είναι ο\nμόνος τρόπος με τον οποίον ο άνθρωπος\nφτάνει στην τελειότητα.",
+      "C": "Το ανθρώπινο πνεύμα μπορεί να φτάσει\nστην τελειότητα με τη βοήθεια της τέχνης η\nοποία είναι κατορθωτή ως ένα κορυφαίο\nεπίτευγμα.",
+      "D": "Η δημιουργία έργων με καλλιτεχνική αξία\nαποτελεί ένα πολύ μεγάλο κατόρθωμα του\nανθρώπου που οδηγεί στην τελειότητα.",
+      "E": "Η τέχνη ως ένα κορυφαίο κατόρθωμα του\nανθρώπου και του πνεύματος του μέσω\nτης οποίας ο άνθρωπος μπορεί να επιτύχει\nτην τελειότητα."
+    },
+    "answer": "B"
+  },
+  {
+    "id": "2008_1_65",
+    "description": "64. - 69. sorularda, verilen cümleye\n anlamca en yakın olan cümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Yakın Anlam",
+    "question": "Η παγκόσμια κοινωνία παρά τα\nπροβλήματα της μπορεί να προσβλέπει στο\nμέλλον με αισιοδοξία, αρκεί να πιστέψει\nστον άνθρωπο και την δύναμη του\nπνεύματος.",
+    "options": {
+      "A": "Η παγκόσμια κοινωνία παρά τα\nπροβλήματα της μπορεί να προσβλέπει στο\nμέλλον με αισιοδοξία, αρκεί να πιστέψει\nστον άνθρωπο και την δύναμη του\nπνεύματος. Η διεθνής κοινότητα εφόσον αντιμετωπίζει\nπροβλήματα μπορεί να ατενίζει το αύριο με\nθετικά αισθήματα αν πιστεύει στον\nάνθρωπο και τις πνευματικές του\nδυνατότητες.",
+      "B": "Η διεθνής κοινότητα εφόσον αντιμετωπίζει\nπροβλήματα μπορεί να ατενίζει το αύριο με\nθετικά αισθήματα αν πιστεύει στον\nάνθρωπο και τις πνευματικές του\nδυνατότητες.",
+      "C": "Όλα τα κράτη του κόσμου αν παραβλέψουν\nτα προβλήματά τους μπορούν να κοιτάζουν\nστο μέλλον με αισιοδοξία με τον όρο ότι\nβασίζονται στις δυνατότητες του\nανθρώπινου πνεύματος.",
+      "D": "Όλοι οι λαοί του κόσμου, έστω κι αν\nαντιμετωπίζουν προβλήματα, μπορούν να\nβλέπουν αισιόδοξα το μέλλον, αρκεί να\nπιστέψουν στον άνθρωπο και στην\nπνευματική του δύναμη.",
+      "E": "Η διεθνής κοινωνία αντιμετωπίζει\nπροβλήματα αλλά σε περίπτωση που\nπιστεύει στην δύναμη του πνεύματος του\nανθρώπου μπορεί να διατηρεί αισιόδοξα\nαισθήματα."
+    },
+    "answer": "D"
+  },
+  {
+    "id": "2008_1_66",
+    "description": "64. - 69. sorularda, verilen cümleye\n anlamca en yakın olan cümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Yakın Anlam",
+    "question": "Δεν υπάρχει αμφιβολία ότι το μεγαλύτερο\nεπίτευγμα, που μπορεί να πραγματοποιήσει\nο άνθρωπος είναι η κατάκτηση του εαυτού\nτου.",
+    "options": {
+      "A": "Είναι σίγουρο ότι ο άνθρωπος μπορεί να\nπραγματοποιήσει πολλά επιτεύγματα αλλά\nη κυριαρχία του πάνω στον εαυτό του είναι\nανέφικτη.",
+      "B": "Χωρίς αμφιβολία ο άνθρωπος μπορεί να\nκατακτήσει τον εαυτό του και αυτό\nμπορούσε να θεωρηθεί μεγάλη προσπάθεια\nμε επιτεύγματα",
+      "C": "Δεν μπορεί να φέρει κανείς αντίρρηση στο\nγεγονός ότι η κυριαρχία του ανθρώπου\nπάνω του είναι η κατάκτηση του εαυτού του",
+      "D": "Ο άνθρωπος μπορεί να σημειώσει μεγάλη\nεπιτυχία σε διάφορους τομείς αλλά η\nκατάκτηση του εαυτού του είναι το\nμεγαλύτερο επίτευγμα.",
+      "E": "Αναμφισβήτητα, η πιο μεγάλη επιτυχία που\nμπορεί να σημειώσει ο άνθρωπος, είναι η\nκυριαρχία στον εαυτό του"
+    },
+    "answer": ""
+  },
+  {
+    "id": "2008_1_67",
+    "description": "64. - 69. sorularda, verilen cümleye\n anlamca en yakın olan cümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Yakın Anlam",
+    "question": "Ο ρόλος της διαφήμισης είναι να μεταδώσει\nμια πληροφορία με σκοπό να\nπραγματοποιηθεί στο μυαλό του αναγνώστη\nή θεατή μια αλλαγή της στάσης απέναντι\nστο διαφημιζόμενο προϊόν.",
+    "options": {
+      "A": "Ο σκοπός της διαφήμισης είναι να λανσάρει\nμια πληροφορία προκειμένου να συντελέσει\nσε μια διαφοροποίηση της στάσης του\nαναγνώστη ή θεατή προς το προϊόν που\nδιαφημίζεται.",
+      "B": "Η διαφοροποίηση της στάσης του\nαναγνώστη ή θεατή προς το προϊόν που\nδιαφημίζεται μπορεί να αλλάξει μόνο αν\nπραγματοποιηθεί ο σκοπός του διαφημιστή. \nΗ διαφήμιση έχει ως σκοπό να αλλάξει την\nσκέψη του θεατή ή του αναγνώστη για ένα\nπροϊόν που διαφημίζεται προκειμένου να\nαποτελέσει αντικείμενο αγοράς.",
+      "C": "Η διαφήμιση έχει ως σκοπό να αλλάξει την\nσκέψη του θεατή ή του αναγνώστη για ένα\nπροϊόν που διαφημίζεται προκειμένου να\nαποτελέσει αντικείμενο αγοράς.",
+      "D": "Η διαφήμιση για να θεωρηθεί πετυχημένη\nπρέπει να αλλάξει την θέση του αναγνώστη\nή του θεατή προς το προϊόν που\nδιαφημίζεται με την πληροφορία που\nμεταδίδει.",
+      "E": "Ο σκοπός της διαφήμισης είναι η\nπληροφόρηση για ένα προϊόν που\nδιαφημίζεται και αποβλέπει στην αλλαγή της\nστάσης του θεατή ή του αναγνώστη."
+    },
+    "answer": "A"
+  },
+  {
+    "id": "2008_1_68",
+    "description": "64. - 69. sorularda, verilen cümleye\n anlamca en yakın olan cümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Yakın Anlam",
+    "question": "Οι ζωντανές τηλεοπτικές συζητήσεις\nσυμβάλλουν στην αφύπνιση της κοινωνικής\nκαι πολιτικής συνείδησης των ανθρώπων.",
+    "options": {
+      "A": "Ο ζωντανός διάλογος που γίνεται μπροστά\nστις τηλεοπτικές κάμερες δημιουργεί\nσυνείδηση στους ανθρώπους σε θέματα\nπου σχετίζονται με το κοινωνικό και\nπολιτικό περιβάλλον τους.Οι απευθείας συζητήσεις στη τηλεόραση\nβοηθούν τους ανθρώπους να\nενημερώνονται πάνω σε θέματα κοινωνικά\nκαι πολιτικά και αποκτούν συνείδηση.",
+      "B": "Οι απευθείας συζητήσεις στη τηλεόραση\nβοηθούν τους ανθρώπους να\nενημερώνονται πάνω σε θέματα κοινωνικά\nκαι πολιτικά και αποκτούν συνείδηση.",
+      "C": "Οι συζητήσεις στη μικρή οθόνη που\nπραγματοποιούνται ζωντανά παίζουν\nσημαντικό ρόλο στο να αφυπνίσουν τη\nσυνείδηση των ανθρώπων απέναντι στην\nκοινωνία και την πολιτική.",
+      "D": "Η τηλεόραση η οποία αποτελεί έναν πομπό\nγια τη μετάδοση των ζωντανών\nτηλεοπτικών συζητήσεων αναφέρεται\nσυνειδητά σε θέματα κοινωνικού και\nπολιτικού περιεχομένου.",
+      "E": "Οι συζητήσεις που γίνονται στην τηλεόραση\nδημιουργούν συνειδητούς πολίτες με\nευαισθησία σε θέματα κοινωνικά και\nπολιτικά."
+    },
+    "answer": "C"
+  },
+  {
+    "id": "2008_1_69",
+    "description": "64. - 69. sorularda, verilen cümleye\n anlamca en yakın olan cümleyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Yakın Anlam",
+    "question": "Η επιστημονική γνώση, με τις\nκαταπληκτικές προόδους της, συνέβαλε\nστην εξύψωση του πνευματικού επιπέδου\nτων ατόμων και των λαών.",
+    "options": {
+      "A": "Η γνώση μας σε θέματα επιστήμης,\nπαρουσιάζει εκπληκτική ανάπτυξη με\nαποτέλεσμα την ανύψωση του πολιτιστικού\nεπιπέδου των κοινωνιών.",
+      "B": "Η γνώση που παρέχει η επιστήμη, με την\nεξαιρετική της πρόοδο, συντέλεσε ώστε να\nεξυψωθεί το επίπεδο του πνεύματος του\nανθρώπου ατομικά και μαζικά",
+      "C": "Η επιστήμη με την γνώση που μας παρέχει\nέχει καταφέρει εξαιρετική πρόοδο στην\nέξαρση της πνευματικής στάθμης σε\nατομικό και κοινωνικό επίπεδο.",
+      "D": "Το πνευματικό επίπεδο των ανθρώπων\nαλλά και των λαών ευρύτερα αναπτύχτηκε\nμε τις γνώσεις που μας παρέχει η επιστήμη\nκαι η κοινωνία.",
+      "E": "Η εξύψωση του πολιτιστικού επίπεδου των\nατόμων και των κοινωνιών κατέστη δυνατό\nχάρη στη γνώση που αποκτήσαμε στο\nεπιστημονικό επίπεδο."
+    },
+    "answer": "B"
+  },
+  {
+    "id": "2008_1_70",
+    "description": "70. - 75. sorularda, karşılıklı konuşmanın \nboş bırakılan kısmını tamamlayabilecek \nifadeyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Boşluk Doldurma",
+    "question": "Δημοσιογράφος :\n- Κατ' αρχάς θα θέλαμε να ακούσουμε από\nτην πλευρά ενός στελέχους του κόμματος\nτις βασικές θέσεις.\nΟ καλεσμένος :\n- Δηλαδή όλο το πρόγραμμα θέλετε να\nμάθετε; Το πιο λογικό σαν\nδημοσιογράφοι είναι να ξεκινήσετε με μια\nέρευνα στο Ίντερνετ, να κατεβάσετε όλο\nτο πρόγραμμα…\nΔημοσιογράφος :\n- ----\nΟ καλεσμένος :\n- Καταρχήν αυτή τη στιγμή υπάρχει\nκοινοποιημένο στις ιστοσελίδες του\nκόμματος μας. Εφόσον, όμως έχετε\nμελετήσει αυτό το πρόγραμμα, θέλω να\nμου πείτε πού έχετε ενστάσεις;",
+    "options": {
+      "A": "Για όλα αυτά χρειάζονται χρήματα,\nυπάρχουν αυτά τα χρήματα για την έρευνα;",
+      "B": "Είπατε πριν ότι έχετε τροποποιήσει κάποιες\nθέσεις, ένα παράδειγμα;",
+      "C": "Και εμείς δεν κάναμε καμιά έρευνα και\nπαραχωρήσαμε τα πάντα.",
+      "D": "Την κάναμε την έρευνα! Απλά θα θέλαμε να\nμας τα πείτε και εσείς.",
+      "E": "Πάνω στο θέμα της λαθρομετανάστευσης η\nδικιά σας άποψη μας ενδιαφέρει."
+    },
+    "answer": "D"
+  },
+  {
+    "id": "2008_1_71",
+    "description": "70. - 75. sorularda, karşılıklı konuşmanın \nboş bırakılan kısmını tamamlayabilecek \nifadeyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Boşluk Doldurma",
+    "question": "Πωλητής :\n\n- Καλημέρα σας. Πώς μπορώ να σας\nβοηθήσω;\n\nΠελάτης :\n\n- Καλημέρα σας, ενδιαφέρομαι για μια\nτηλεόραση.\n\nΠωλητής :\n\n- Βεβαίως ενδιαφέρεστε για κάποιο\nσυγκεκριμένο μοντέλο;\n\nΠελάτης :\n\n- ----\n\nΠωλητής :\n\n- Φυσικά. Ελάτε μαζί μου. Εδώ είναι όλες οι\nτηλεοράσεις που έχουμε.",
+    "options": {
+      "A": "Τα καινούρια μοντέλα πόσα χρόνια εγγύηση\nέχουν;",
+      "B": "Απλώς ήθελα να πάρω κάποιες\nπληροφορίες για το συγκεκριμένο μοντέλο.",
+      "C": "Όχι ακριβώς. Μπορώ να ρίξω μια ματιά;",
+      "D": "Είναι δυνατόν να μου το φέρετε στο σπίτι\nχωρίς κάποια επιβάρυνση;",
+      "E": "Αν πληρώσω τοις μετρητοίς θα έχω κάποια\nέκπτωση;"
+    },
+    "answer": "C"
+  },
+  {
+    "id": "2008_1_72",
+    "description": "70. - 75. sorularda, karşılıklı konuşmanın \nboş bırakılan kısmını tamamlayabilecek \nifadeyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Boşluk Doldurma",
+    "question": "Κύριος :\n- Χαίρετε. Θέλω να εξαργυρώσω αυτή την\nεπιταγή.\nΥπάλληλος :\n- Λυπάμαι, αλλά η επιταγή σας έχει κάποιο\nπρόβλημα.\nΚύριος :\n- Πρόβλημα; Τι πρόβλημα. Δεν\nκαταλαβαίνω. Μόλις μου την έδωσε ο\nλογιστής μας.\nΥπάλληλος :\n- ----\nΚύριος :\n- Μα δεν είναι δυνατόν. Πρώτη φορά\nσυμβαίνει αυτό.",
+    "options": {
+      "A": "Θα θέλατε να εισπράξετε το αναγραφόμενο\nποσό ή θα το καταθέσετε;",
+      "B": "Θα σας παρακαλέσω να πάτε στην θυρίδα\nπου γράφει επιταγές, το ταμείο έκλεισε.",
+      "C": "Η τράπεζά μας δεν εξαργυρώνει επιταγές,\nλυπάμαι δεν μπορώ να σας εξυπηρετήσω.",
+      "D": "Πηγαίνετε σας παρακαλώ να την\nεξαργυρώσετε στο χρηματιστήριο αξιών.",
+      "E": "Δεν υπάρχουν αρκετά χρήματα στο\nλογαριασμό του κυρίου που σας την έδωσε."
+    },
+    "answer": "E"
+  },
+  {
+    "id": "2008_1_73",
+    "description": "70. - 75. sorularda, karşılıklı konuşmanın \nboş bırakılan kısmını tamamlayabilecek \nifadeyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Boşluk Doldurma",
+    "question": "Δημοσιογράφος :\n- Κύριε διευθυντά, έχει περάσει μόλις ένας\nμήνας από την επέμβαση στην οποία\nυποβληθήκατε και δείχνετε σαν να μην\nυπάρχουν ίχνη της επάνω σας.\n-Διευθυντής :\n ----\n-Δημοσιογράφος :\n- Ηταν ασφαλώς μια δύσκολη στιγμή για\nεσάς αλλά και την οικογένειά σας και\nεπιδείξατε μεγάλο θάρρος\n-Διευθυντής :\n- Εχετε δίκιο και το πρόβλημα προέκυψε\nαπότομα. Επρεπε να πάρω μια απόφαση\nτην οποία δεν δίστασα καθόλου να\nπάρω.",
+    "options": {
+      "A": "Πιστεύω ότι όλοι μας έστω και μια φορά στη\nζωή μας αντιμετωπίζουμε δυσκολίες.",
+      "B": "Διανύω εν τούτοις ακόμη την περίοδο της\nανάρρωσης. Ανακτώ σταδιακά τις δυνάμεις\nμου.",
+      "C": "Δυσκολευτήκα να αποδεχτώ το πρόβλημα\nαυτό που με ταλαιπώρησε ιδιαίτερα.",
+      "D": "Όλοι στο περιβάλλον μου, εκτιμούν τον\nτρόπο αντιμετώπισης του προβλήματος\nαπό μέρους μου.",
+      "E": "Πέρασα δύσκολες μέρες αλλά αποδείχτηκε\nτελικά ότι δεν είχα κανένα σοβαρό\nπρόβλημα"
+    },
+    "answer": "B"
+  },
+  {
+    "id": "2008_1_74",
+    "description": "70. - 75. sorularda, karşılıklı konuşmanın \nboş bırakılan kısmını tamamlayabilecek \nifadeyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Boşluk Doldurma",
+    "question": "Ανδρέας :\n- Γεια σου, Στέφανε, καλωσήρθες! Σε\nπαίρνω από το γραφείο, πώς ήταν το\nταξίδι σου;\nΣτέφανος :\n- Γεια σου, ξάδελφε. Είχα πολύ καλό ταξίδι,\nευχαριστώ. Πότε θα σε δω;\nΑνδρέας :\n- ----\nΣτέφανος :\n- Ωραία, αύριο θα δω την πόλη. Μπορείς\nνα μου πεις τι μπορώ να κάνω αύριο που\nθα είμαι μόνος;\nΑνδρέας :\n- Βέβαια. Σου ετοίμασα πρόγραμμα.",
+    "options": {
+      "A": "Δυστυχώς αύριο έχω πολύ δουλειά όλη τη\nμέρα. Θα τα πούμε μεθαύριο.",
+      "B": "Αύριο θα σε περιμένω στο γραφείο. Έλα\nκατά το μεσημέρι και θα κανονίσουμε τι θα\nκάνουμε.",
+      "C": "Μετά το φαγητό μπορείς να πας απέναντι\nόπου είναι η βιβλιοθήκη της πόλης.",
+      "D": "Ευτυχώς που ήρθες, θα περάσεις καλά το\nδιάστημα που θα είσαι εδώ.",
+      "E": "Θέλεις να βγάλω εισιτήριο και για την\nεπιστροφή σου;"
+    },
+    "answer": "A"
+  },
+  {
+    "id": "2008_1_75",
+    "description": "70. - 75. sorularda, karşılıklı konuşmanın \nboş bırakılan kısmını tamamlayabilecek \nifadeyi bulunuz.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Boşluk Doldurma",
+    "question": "Δημοσιογράφος :\n- Πότε και πώς ξεκίνησε η σχέση σας με\nτην ζωγραφική;\nΚαλλιτέχνης :\n- Για να είμαι ειλικρινής από όταν θυμάμαι\nτον εαυτό μου.\nΔημοσιογράφος :\n- Από πού αντλείτε τα θέματα σας; Τι σας\nεμπνέει;\nΚαλλιτέχνης :\n- Τα πάντα μπορούν να με εμπνεύσουν.\nΌτι βλέπω γύρω μου, οι αναμνήσεις,\nαλλά και η φαντασία μου.\nΔημοσιογράφος :\n- ----\nΚαλλιτέχνης :\n- Είναι μια βασική ανθρώπινη ανάγκη.\nΕίναι έκφραση και δημιουργία. Συγκινεί,\nπροβληματίζει, εξυψώνει. Είναι\nαπαραίτητο συμπλήρωμα της ζωής του\nανθρώπου.",
+    "options": {
+      "A": "Πώς συμπορεύονται οι ιδιοτήτες της\nζωγράφου και της καθηγήτριας;",
+      "B": "Ποιος είναι ο ρόλος των καλλιτεχνών στη\nζωή σας;",
+      "C": "Πόσο μεγάλη σημασία έχουν οι πίνακες για\nσας μιας και είστε ζωγράφος;",
+      "D": "Πώς θα ορίζατε την τέχνη και τι σημαίνει για\nεσάς;",
+      "E": "Ποια είναι η προσωπική σας εκτίμηση για τα\nέργα τέχνης;"
+    },
+    "answer": "D"
+  },
+  {
+    "id": "2008_1_76",
+    "description": "76. - 80. soruları aşağıdaki parçaya göre\ncevaplayınız.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Paragraf",
+    "question": "Επιστήμονες πανεπιστημίου της Ιαπωνίας\nανακοίνωσαν ότι πιθανότατα εντόπισαν\nπλανήτη σε τροχιά γύρω από τον Ήλιο στις\nπαρυφές του ηλιακού μας συστήματος.Οι\nερευνητές του πανεπιστήμιου Κόμπε της\nΙαπωνίας δήλωσαν ότι με βάση θεωρητικούς\nυπολογισμούς και προσομοιώσεις σε\nηλεκτρονικούς υπολογιστές, ο μυστηριώδης\nπλανήτης θα εντοπισθεί και αναγνωρισθεί στο\nάμεσο χρονικό διάστημα.«Υπάρχει μεγάλη\nπιθανότητα για την ύπαρξη ενός ουράνιου\nσώματος μάζας ίσης με το τριάντα έως\nεβδομήντα τοις εκατό της Γης στις παρυφές του\nηλιακού συστήματος», αναφέρεται στην\nανακοίνωση του Πανεπιστημίου. «Εφόσον η\nέρευνα συνεχιστεί σε ευρεία κλίμακα, ο\nπλανήτης θα ανακαλυφθεί σε λιγότερο από\nδέκα χρόνια».Η έρευνα, επικεφαλής της οποίας\nήταν ο καθηγητής του πανεπιστημίου Κόμπε,\nΤαντάσι Μουκάι, θα δημοσιευθεί τον Απρίλιο σε\nαμερικανικό επιστημονικό περιοδικό. Ένα από\nτα ειρωνικά στοιχεία της, όπως αναφέρουν οι\nεπιστήμονες, είναι ότι η ανακάλυψη συμβαίνει\nδύο μόλις χρόνια αφότου πραγματοποιήθηκαν\nαλλαγές στα σχολικά βιβλία για την αφαίρεση\nτου Πλούτωνα από το ηλιακό σύστημα.Ο\nπλανήτης «Χ» όπως αποκαλείται προς το\nπαρόν, θα έχει ελλειπτική ηλιακή τροχιά όπως η\nΓη, με ακτίνα που κυμαίνεται από 15 έως 26\nδισεκατομμύρια χιλιόμετρα.\n\nΤο κείμενο αναφέρεται:",
+    "options": {
+      "A": "Στο πανεπιστήμιο του Κόμπε της Ιαπωνίας.",
+      "B": "Σε μια επιστημονική έρευνα που διεξάγεται\nαπό τα ιαπωνικά πανεπιστήμια.",
+      "C": "Στον πλανήτη «Χ» που εφευρέθηκε από\nτους Ιάπωνες επιστήμονες.",
+      "D": "Στη σχέση ενός καινούριου πλανήτη με το\nηλιακό σύστημα και τη γη.",
+      "E": "Σε μια καινούρια ανακάλυψη που έχει να\nκάνει με ένα πλανήτη."
+    },
+    "answer": "E"
+  },
+  {
+    "id": "2008_1_77",
+    "description": "76. - 80. soruları aşağıdaki parçaya göre\ncevaplayınız.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Paragraf",
+    "question": "Επιστήμονες πανεπιστημίου της Ιαπωνίας\nανακοίνωσαν ότι πιθανότατα εντόπισαν\nπλανήτη σε τροχιά γύρω από τον Ήλιο στις\nπαρυφές του ηλιακού μας συστήματος.Οι\nερευνητές του πανεπιστήμιου Κόμπε της\nΙαπωνίας δήλωσαν ότι με βάση θεωρητικούς\nυπολογισμούς και προσομοιώσεις σε\nηλεκτρονικούς υπολογιστές, ο μυστηριώδης\nπλανήτης θα εντοπισθεί και αναγνωρισθεί στο\nάμεσο χρονικό διάστημα.«Υπάρχει μεγάλη\nπιθανότητα για την ύπαρξη ενός ουράνιου\nσώματος μάζας ίσης με το τριάντα έως\nεβδομήντα τοις εκατό της Γης στις παρυφές του\nηλιακού συστήματος», αναφέρεται στην\nανακοίνωση του Πανεπιστημίου. «Εφόσον η\nέρευνα συνεχιστεί σε ευρεία κλίμακα, ο\nπλανήτης θα ανακαλυφθεί σε λιγότερο από\nδέκα χρόνια».Η έρευνα, επικεφαλής της οποίας\nήταν ο καθηγητής του πανεπιστημίου Κόμπε,\nΤαντάσι Μουκάι, θα δημοσιευθεί τον Απρίλιο σε\nαμερικανικό επιστημονικό περιοδικό. Ένα από\nτα ειρωνικά στοιχεία της, όπως αναφέρουν οι\nεπιστήμονες, είναι ότι η ανακάλυψη συμβαίνει\nδύο μόλις χρόνια αφότου πραγματοποιήθηκαν\nαλλαγές στα σχολικά βιβλία για την αφαίρεση\nτου Πλούτωνα από το ηλιακό σύστημα.Ο\nπλανήτης «Χ» όπως αποκαλείται προς το\nπαρόν, θα έχει ελλειπτική ηλιακή τροχιά όπως η\nΓη, με ακτίνα που κυμαίνεται από 15 έως 26\nδισεκατομμύρια χιλιόμετρα.\n\n>>> Σύμφωνα με τον αρθρογράφο:",
+    "options": {
+      "A": "Οι επιστήμονες δεν μιλάνε με απόλυτη\nβεβαιότητα για την καινούρια τους\nανακάλυψη.",
+      "B": "Οι επιστήμονες εργάζονται για λογαριασμό\nενός ερευνητικού κέντρου.",
+      "C": "Ο καινούριος πλανήτης βρίσκεται στο\nκέντρο του ηλιακού συστήματος.",
+      "D": "Ο υποτιθέμενος πλανήτης βρίσκεται σε ένα\nσταθερό σημείο μέσα στο ηλιακό σύστημα.",
+      "E": "Οι έρευνες πάνω στο θέμα αυτό\nδιεξάγονταν με απόλυτη μυστικότητα εδώ\nκαι καιρό."
+    },
+    "answer": "A"
+  },
+  {
+    "id": "2008_1_78",
+    "description": "76. - 80. soruları aşağıdaki parçaya göre\ncevaplayınız.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Paragraf",
+    "question": "Επιστήμονες πανεπιστημίου της Ιαπωνίας\nανακοίνωσαν ότι πιθανότατα εντόπισαν\nπλανήτη σε τροχιά γύρω από τον Ήλιο στις\nπαρυφές του ηλιακού μας συστήματος.Οι\nερευνητές του πανεπιστήμιου Κόμπε της\nΙαπωνίας δήλωσαν ότι με βάση θεωρητικούς\nυπολογισμούς και προσομοιώσεις σε\nηλεκτρονικούς υπολογιστές, ο μυστηριώδης\nπλανήτης θα εντοπισθεί και αναγνωρισθεί στο\nάμεσο χρονικό διάστημα.«Υπάρχει μεγάλη\nπιθανότητα για την ύπαρξη ενός ουράνιου\nσώματος μάζας ίσης με το τριάντα έως\nεβδομήντα τοις εκατό της Γης στις παρυφές του\nηλιακού συστήματος», αναφέρεται στην\nανακοίνωση του Πανεπιστημίου. «Εφόσον η\nέρευνα συνεχιστεί σε ευρεία κλίμακα, ο\nπλανήτης θα ανακαλυφθεί σε λιγότερο από\nδέκα χρόνια».Η έρευνα, επικεφαλής της οποίας\nήταν ο καθηγητής του πανεπιστημίου Κόμπε,\nΤαντάσι Μουκάι, θα δημοσιευθεί τον Απρίλιο σε\nαμερικανικό επιστημονικό περιοδικό. Ένα από\nτα ειρωνικά στοιχεία της, όπως αναφέρουν οι\nεπιστήμονες, είναι ότι η ανακάλυψη συμβαίνει\nδύο μόλις χρόνια αφότου πραγματοποιήθηκαν\nαλλαγές στα σχολικά βιβλία για την αφαίρεση\nτου Πλούτωνα από το ηλιακό σύστημα.Ο\nπλανήτης «Χ» όπως αποκαλείται προς το\nπαρόν, θα έχει ελλειπτική ηλιακή τροχιά όπως η\nΓη, με ακτίνα που κυμαίνεται από 15 έως 26\nδισεκατομμύρια χιλιόμετρα.\n\nΤι δεν μπορούμε να πούμε για τον καινούριο\nπλανήτη:",
+    "options": {
+      "A": "Η τροχιά του καινούριου πλανήτη είναι ίδια\nμε εκείνη της γης δηλαδή έχει το γεωμετρικό\nσχήμα της έλλειψης.",
+      "B": "Η αναγνώριση και ο εντοπισμός του\nμυστηριώδους πλανήτη θα γίνει σε χρονικό\nδιάστημα που ενδέχεται να ξεπεράσει μια\nδεκαετία.",
+      "C": "Σύμφωνα με τους επιστήμονες η μάζα του\nκαινούριου πλανήτη είναι μικρότερη από τη\nγη.",
+      "D": "Ο πλανήτης προς το παρόν δεν έχει μια\nσυγκεκριμένη ονομασία και αποκαλείται\nπλανήτης «Χ»",
+      "E": "Οι ερευνητές ανήκουν στην πανεπιστημιακή\nκοινότητα και συγκεκριμένα είναι από το\nπανεπιστήμιο του Κόμπε"
+    },
+    "answer": "B"
+  },
+  {
+    "id": "2008_1_79",
+    "description": "76. - 80. soruları aşağıdaki parçaya göre\ncevaplayınız.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Paragraf",
+    "question": "Επιστήμονες πανεπιστημίου της Ιαπωνίας\nανακοίνωσαν ότι πιθανότατα εντόπισαν\nπλανήτη σε τροχιά γύρω από τον Ήλιο στις\nπαρυφές του ηλιακού μας συστήματος.Οι\nερευνητές του πανεπιστήμιου Κόμπε της\nΙαπωνίας δήλωσαν ότι με βάση θεωρητικούς\nυπολογισμούς και προσομοιώσεις σε\nηλεκτρονικούς υπολογιστές, ο μυστηριώδης\nπλανήτης θα εντοπισθεί και αναγνωρισθεί στο\nάμεσο χρονικό διάστημα.«Υπάρχει μεγάλη\nπιθανότητα για την ύπαρξη ενός ουράνιου\nσώματος μάζας ίσης με το τριάντα έως\nεβδομήντα τοις εκατό της Γης στις παρυφές του\nηλιακού συστήματος», αναφέρεται στην\nανακοίνωση του Πανεπιστημίου. «Εφόσον η\nέρευνα συνεχιστεί σε ευρεία κλίμακα, ο\nπλανήτης θα ανακαλυφθεί σε λιγότερο από\nδέκα χρόνια».Η έρευνα, επικεφαλής της οποίας\nήταν ο καθηγητής του πανεπιστημίου Κόμπε,\nΤαντάσι Μουκάι, θα δημοσιευθεί τον Απρίλιο σε\nαμερικανικό επιστημονικό περιοδικό. Ένα από\nτα ειρωνικά στοιχεία της, όπως αναφέρουν οι\nεπιστήμονες, είναι ότι η ανακάλυψη συμβαίνει\nδύο μόλις χρόνια αφότου πραγματοποιήθηκαν\nαλλαγές στα σχολικά βιβλία για την αφαίρεση\nτου Πλούτωνα από το ηλιακό σύστημα.Ο\nπλανήτης «Χ» όπως αποκαλείται προς το\nπαρόν, θα έχει ελλειπτική ηλιακή τροχιά όπως η\nΓη, με ακτίνα που κυμαίνεται από 15 έως 26\nδισεκατομμύρια χιλιόμετρα.\n\nΣύμφωνα με τον αρθρογράφο:",
+    "options": {
+      "A": "Η έρευνα διεξάγεται δέκα χρόνια τώρα και\nμόλις κατέστη δυνατόν ο εντοπισμός του\nκαινούριου πλανήτη.",
+      "B": "Η έρευνα θα αποτελέσει αντικείμενο\nεισήγησης σε ένα επιστημονικό συνέδριο\nπου θα διεξαχθεί στην Αμερική.",
+      "C": "Η ερευνητική ομάδα θα μεταβεί στην\nΑμερική τον Απρίλιο για την δημοσίευση της\nέρευνας",
+      "D": "Τα πορίσματα της εν λόγω έρευνας θα\nανακοινωθούν στο κοινό με ένα έντυπο\nμέσο.",
+      "E": "Η έρευνα διεξαγόταν για λογαριασμό ενός\nαμερικανικού επιστημονικού περιοδικού\nόπου και θα δημοσιευτεί."
+    },
+    "answer": "D"
+  },
+  {
+    "id": "2008_1_80",
+    "description": "76. - 80. soruları aşağıdaki parçaya göre\ncevaplayınız.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Paragraf",
+    "question": "Επιστήμονες πανεπιστημίου της Ιαπωνίας\nανακοίνωσαν ότι πιθανότατα εντόπισαν\nπλανήτη σε τροχιά γύρω από τον Ήλιο στις\nπαρυφές του ηλιακού μας συστήματος.Οι\nερευνητές του πανεπιστήμιου Κόμπε της\nΙαπωνίας δήλωσαν ότι με βάση θεωρητικούς\nυπολογισμούς και προσομοιώσεις σε\nηλεκτρονικούς υπολογιστές, ο μυστηριώδης\nπλανήτης θα εντοπισθεί και αναγνωρισθεί στο\nάμεσο χρονικό διάστημα.«Υπάρχει μεγάλη\nπιθανότητα για την ύπαρξη ενός ουράνιου\nσώματος μάζας ίσης με το τριάντα έως\nεβδομήντα τοις εκατό της Γης στις παρυφές του\nηλιακού συστήματος», αναφέρεται στην\nανακοίνωση του Πανεπιστημίου. «Εφόσον η\nέρευνα συνεχιστεί σε ευρεία κλίμακα, ο\nπλανήτης θα ανακαλυφθεί σε λιγότερο από\nδέκα χρόνια».Η έρευνα, επικεφαλής της οποίας\nήταν ο καθηγητής του πανεπιστημίου Κόμπε,\nΤαντάσι Μουκάι, θα δημοσιευθεί τον Απρίλιο σε\nαμερικανικό επιστημονικό περιοδικό. Ένα από\nτα ειρωνικά στοιχεία της, όπως αναφέρουν οι\nεπιστήμονες, είναι ότι η ανακάλυψη συμβαίνει\nδύο μόλις χρόνια αφότου πραγματοποιήθηκαν\nαλλαγές στα σχολικά βιβλία για την αφαίρεση\nτου Πλούτωνα από το ηλιακό σύστημα.Ο\nπλανήτης «Χ» όπως αποκαλείται προς το\nπαρόν, θα έχει ελλειπτική ηλιακή τροχιά όπως η\nΓη, με ακτίνα που κυμαίνεται από 15 έως 26\nδισεκατομμύρια χιλιόμετρα.\n\nΣύμφωνα με το κείμενο ποιο είναι λάθος:",
+    "options": {
+      "A": "Οι επιστήμονες χαρακτηρίζουν τον\nκαινούριο πλανήτη μυστηριώδη επειδή οι\nγνώσεις μας γι’αυτήν είναι ακόμα ελλειπείς.",
+      "B": "Ο πλανήτης θα ανακαλυφτεί με την\nπροϋπόθεση ότι οι έρευνες δεν θα\nσταματήσουν και επιπλέον πρέπει να έχουν\nευρεία μορφή.",
+      "C": "Η αφαίρεση του Πλούτωνα από το ηλιακό\nσύστημα πραγματοποιήθηκε μετά την\nανακάλυψη του καινούριου πλανήτη.",
+      "D": "Οι επιστήμονες δεν βασίζονται μόνο σε\nθεωρητικούς υπολογισμούς αλλά και σε\nεκείνους που γίνονται μέσω υπολογιστών.",
+      "E": "Η επιστημονική κοινότητα είναι σε θέση να\nπροσδιορίσει κατά προσέγγιση το μέγεθος\nτου υποτιθέμενου πλανήτη."
+    },
+    "answer": "C"
+  },
+  {
+    "id": "2008_1_81",
+    "description": "81. - 85. soruları aşağıdaki parçaya göre\n cevaplayınız.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Paragraf",
+    "question": "Οι συντάκτες της φιλόδοξης διαδικτυακής\n«Εγκυκλοπαίδειας της Ζωής», που έχει ως\nστόχο να καταλέξει κάθε ένα από τα 1,8\nεκατομμύρια καταγεγραμμένα είδη έμβιων\nοργανισμών του πλανήτη, παρουσίασαν τις\nπρώτες 30.000 σελίδες του εγχειρήματος.Οι\nδημιουργοί αυτής της τεράστιας και αναλυτικής\nβάσης δεδομένων για τους ζώντες οργανισμούς\nυποστηρίζουν ότι η σημασία της για τον\nεμπλουτισμό των γνώσεων του ανθρώπου θα\nείναι ανάλογη της ανακάλυψης του\nμικροσκοπίου στις αρχές του 17ου αιώνα. Η\nεγκυκλοπαίδεια θα μπορεί να χρησιμοποιείται\nτόσο από επιστήμονες όσο και από απλούς\nαναγνώστες και φιλοδοξεί να συμπεριλάβει στις\nιστοσελίδες της όλα τα είδη και των έξι\nβασιλείων του έμβιου κόσμου. Οι υπεύθυνοι του\nεγχειρήματος σημειώνουν ότι μπορεί να\nσυνδράμει τους επιστήμονες στην αποτίμηση\nτων επιπτώσεων των κλιματικών αλλαγών επί\nτων ζώων και των φυτών. Το εγχείρημα\nξεκίνησε την άνοιξη του 2007. Υπολογίζεται ότι\nθα χρειαστούν δέκα χρόνια μέχρι να\nσυμπεριληφθούν στη διαδικτυακή\nεγκυκλοπαίδεια και τα 1,8 εκατομμύρια\nκαταγεγραμμένα είδη ζώντων οργανισμών. Η\nσελίδα κάθε είδους θα περιέχει φωτογραφίες,\nβίντεο, ήχους και χάρτες. Παράλληλα θα\nυπάρχει ενημέρωση για το επίπεδο κινδύνου\nαφανισμού του κάθε είδους. Προβλέπεται\nεπίσης η καταχώριση νέων ειδών όταν\nανακαλύπτονται, ενώ ο κάθε αναγνώστης\nμπορεί να στέλνει φωτογραφίες και\nπληροφορίες περί νέων ειδών η αυθεντικότητα\nτων οποίων θα ελέγχεται από ειδικούς\nεπιστήμονες.\n\n>>> Η διαδικτυακή «Εγκυκλοπαίδεια της Ζωής»:",
+    "options": {
+      "A": "Είναι μια βάση δεδομένων που\nσυμπεριλαμβάνει μια μεγάλη μερίδα του\nέμβιου κόσμου.",
+      "B": "Παράλληλα με την διαδυκτιακή έχει και\nέντυπη μορφή.",
+      "C": "Είναι ένα μεγαλεπίβολο και πολύ σημαντικό\nεγχείρημα που πήρε τελική μορφή.",
+      "D": "Η σύνταξή της έχει ολοκληρωθεί και είναι\n30.000 σελίδες.",
+      "E": "Δεν περιορίζεται μόνο στα καταγεγραμμένα\nείδη έμβιων οργανισμών."
+    },
+    "answer": "E"
+  },
+  {
+    "id": "2008_1_82",
+    "description": "81. - 85. soruları aşağıdaki parçaya göre\n cevaplayınız.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Paragraf",
+    "question": "Οι συντάκτες της φιλόδοξης διαδικτυακής\n«Εγκυκλοπαίδειας της Ζωής», που έχει ως\nστόχο να καταλέξει κάθε ένα από τα 1,8\nεκατομμύρια καταγεγραμμένα είδη έμβιων\nοργανισμών του πλανήτη, παρουσίασαν τις\nπρώτες 30.000 σελίδες του εγχειρήματος.Οι\nδημιουργοί αυτής της τεράστιας και αναλυτικής\nβάσης δεδομένων για τους ζώντες οργανισμούς\nυποστηρίζουν ότι η σημασία της για τον\nεμπλουτισμό των γνώσεων του ανθρώπου θα\nείναι ανάλογη της ανακάλυψης του\nμικροσκοπίου στις αρχές του 17ου αιώνα. Η\nεγκυκλοπαίδεια θα μπορεί να χρησιμοποιείται\nτόσο από επιστήμονες όσο και από απλούς\nαναγνώστες και φιλοδοξεί να συμπεριλάβει στις\nιστοσελίδες της όλα τα είδη και των έξι\nβασιλείων του έμβιου κόσμου. Οι υπεύθυνοι του\nεγχειρήματος σημειώνουν ότι μπορεί να\nσυνδράμει τους επιστήμονες στην αποτίμηση\nτων επιπτώσεων των κλιματικών αλλαγών επί\nτων ζώων και των φυτών. Το εγχείρημα\nξεκίνησε την άνοιξη του 2007. Υπολογίζεται ότι\nθα χρειαστούν δέκα χρόνια μέχρι να\nσυμπεριληφθούν στη διαδικτυακή\nεγκυκλοπαίδεια και τα 1,8 εκατομμύρια\nκαταγεγραμμένα είδη ζώντων οργανισμών. Η\nσελίδα κάθε είδους θα περιέχει φωτογραφίες,\nβίντεο, ήχους και χάρτες. Παράλληλα θα\nυπάρχει ενημέρωση για το επίπεδο κινδύνου\nαφανισμού του κάθε είδους. Προβλέπεται\nεπίσης η καταχώριση νέων ειδών όταν\nανακαλύπτονται, ενώ ο κάθε αναγνώστης\nμπορεί να στέλνει φωτογραφίες και\nπληροφορίες περί νέων ειδών η αυθεντικότητα\nτων οποίων θα ελέγχεται από ειδικούς\nεπιστήμονες.\n\n>>> Σύμφωνα με τον συντάκτη του άρθρου:",
+    "options": {
+      "A": "Η εγκυκλοπαίδεια όπως υποδηλώνει και ο\nτίτλος της θα συμπεριλαμβάνει και σελίδες\nγια τον άνθρωπο.",
+      "B": "Ο αριθμός των καταγεγραμμένων έμβιων\nειδών ανέρχεται στα 1,8 εκατομμύρια αλλά\nκαινούριες καταχωρήσεις δεν αποκλείονται",
+      "C": "Οι αναγνώστες μπορούν να συμμετέχουν\nστη συλλογή και την καταγραφή του υλικού\nχωρίς κανένα περιορισμό.",
+      "D": "Επειδή ο αριθμός των ειδών είναι\nκαθορισμένος με την ολοκλήρωση του\nέργου θα σταματήσει και η καταχώρηση\nνέων ειδών.",
+      "E": "Η εγκυκλοπαίδεια απευθύνεται στον\nεπιστημονικό κόσμο και στους ειδικούς που\nασχολούνται με θέματα φυσικής ιστορίας."
+    },
+    "answer": "B"
+  },
+  {
+    "id": "2008_1_83",
+    "description": "81. - 85. soruları aşağıdaki parçaya göre\n cevaplayınız.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Paragraf",
+    "question": "Οι συντάκτες της φιλόδοξης διαδικτυακής\n«Εγκυκλοπαίδειας της Ζωής», που έχει ως\nστόχο να καταλέξει κάθε ένα από τα 1,8\nεκατομμύρια καταγεγραμμένα είδη έμβιων\nοργανισμών του πλανήτη, παρουσίασαν τις\nπρώτες 30.000 σελίδες του εγχειρήματος.Οι\nδημιουργοί αυτής της τεράστιας και αναλυτικής\nβάσης δεδομένων για τους ζώντες οργανισμούς\nυποστηρίζουν ότι η σημασία της για τον\nεμπλουτισμό των γνώσεων του ανθρώπου θα\nείναι ανάλογη της ανακάλυψης του\nμικροσκοπίου στις αρχές του 17ου αιώνα. Η\nεγκυκλοπαίδεια θα μπορεί να χρησιμοποιείται\nτόσο από επιστήμονες όσο και από απλούς\nαναγνώστες και φιλοδοξεί να συμπεριλάβει στις\nιστοσελίδες της όλα τα είδη και των έξι\nβασιλείων του έμβιου κόσμου. Οι υπεύθυνοι του\nεγχειρήματος σημειώνουν ότι μπορεί να\nσυνδράμει τους επιστήμονες στην αποτίμηση\nτων επιπτώσεων των κλιματικών αλλαγών επί\nτων ζώων και των φυτών. Το εγχείρημα\nξεκίνησε την άνοιξη του 2007. Υπολογίζεται ότι\nθα χρειαστούν δέκα χρόνια μέχρι να\nσυμπεριληφθούν στη διαδικτυακή\nεγκυκλοπαίδεια και τα 1,8 εκατομμύρια\nκαταγεγραμμένα είδη ζώντων οργανισμών. Η\nσελίδα κάθε είδους θα περιέχει φωτογραφίες,\nβίντεο, ήχους και χάρτες. Παράλληλα θα\nυπάρχει ενημέρωση για το επίπεδο κινδύνου\nαφανισμού του κάθε είδους. Προβλέπεται\nεπίσης η καταχώριση νέων ειδών όταν\nανακαλύπτονται, ενώ ο κάθε αναγνώστης\nμπορεί να στέλνει φωτογραφίες και\nπληροφορίες περί νέων ειδών η αυθεντικότητα\nτων οποίων θα ελέγχεται από ειδικούς\nεπιστήμονες.\n\n>>> Ποια πρόταση δε συμφωνεί με το περιεχόμενο του κειμένου;",
+    "options": {
+      "A": "Η εγκυκλοπαίδεια συγκαταλέγει στις σελίδες\nτης όλα τα είδη και των έξι βασιλείων του\nέμβιου κόσμου.",
+      "B": "Ο συγγραφέας του άρθρου μάλλον\nσυγκαταλέγεται στη συντακτική ομάδα και\nγνωρίζει το θέμα από πρώτο χέρι.",
+      "C": "Οι προσπάθειες για την δημιουργία μιας\nτέτοιας σημαντικής εγκυκλοπαίδειας\nξεκίνησαν πολύ πρόσφατα.",
+      "D": "Θα υπάρχει πληροφορία και ενημέρωση για\nτο πότε εξαφανίστηκε κάθε είδους.",
+      "E": "Η εγκυκλοπαίδεια μπορεί να βοηθήσει τους\nεπιστήμονες να εξακριβώσουν τις\nεπιπτώσεις των κλιματικών αλλαγών."
+    },
+    "answer": "D"
+  },
+  {
+    "id": "2008_1_84",
+    "description": "81. - 85. soruları aşağıdaki parçaya göre\n cevaplayınız.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Paragraf",
+    "question": "Οι συντάκτες της φιλόδοξης διαδικτυακής\n«Εγκυκλοπαίδειας της Ζωής», που έχει ως\nστόχο να καταλέξει κάθε ένα από τα 1,8\nεκατομμύρια καταγεγραμμένα είδη έμβιων\nοργανισμών του πλανήτη, παρουσίασαν τις\nπρώτες 30.000 σελίδες του εγχειρήματος.Οι\nδημιουργοί αυτής της τεράστιας και αναλυτικής\nβάσης δεδομένων για τους ζώντες οργανισμούς\nυποστηρίζουν ότι η σημασία της για τον\nεμπλουτισμό των γνώσεων του ανθρώπου θα\nείναι ανάλογη της ανακάλυψης του\nμικροσκοπίου στις αρχές του 17ου αιώνα. Η\nεγκυκλοπαίδεια θα μπορεί να χρησιμοποιείται\nτόσο από επιστήμονες όσο και από απλούς\nαναγνώστες και φιλοδοξεί να συμπεριλάβει στις\nιστοσελίδες της όλα τα είδη και των έξι\nβασιλείων του έμβιου κόσμου. Οι υπεύθυνοι του\nεγχειρήματος σημειώνουν ότι μπορεί να\nσυνδράμει τους επιστήμονες στην αποτίμηση\nτων επιπτώσεων των κλιματικών αλλαγών επί\nτων ζώων και των φυτών. Το εγχείρημα\nξεκίνησε την άνοιξη του 2007. Υπολογίζεται ότι\nθα χρειαστούν δέκα χρόνια μέχρι να\nσυμπεριληφθούν στη διαδικτυακή\nεγκυκλοπαίδεια και τα 1,8 εκατομμύρια\nκαταγεγραμμένα είδη ζώντων οργανισμών. Η\nσελίδα κάθε είδους θα περιέχει φωτογραφίες,\nβίντεο, ήχους και χάρτες. Παράλληλα θα\nυπάρχει ενημέρωση για το επίπεδο κινδύνου\nαφανισμού του κάθε είδους. Προβλέπεται\nεπίσης η καταχώριση νέων ειδών όταν\nανακαλύπτονται, ενώ ο κάθε αναγνώστης\nμπορεί να στέλνει φωτογραφίες και\nπληροφορίες περί νέων ειδών η αυθεντικότητα\nτων οποίων θα ελέγχεται από ειδικούς\nεπιστήμονες.\n\n>>> Σύμφωνα με τον συγγραφέα του άρθρου",
+    "options": {
+      "A": "Ο κάθε αναγνώστης μπορεί να δίνει\nπληροφορίες και να στέλνει φωτογραφίες\nγια τα είδη που κινδυνεύουν με αφανισμό.",
+      "B": "Για κάθε είδος θα υπάρχει ξεχωριστή σελίδα\nόπου θα αναφέρονται και οι λόγοι του\nαφανισμού τους.",
+      "C": "Η «Εγκυκλοπαίδεια της Ζωής» θα\nαναφέρεται αποκλειστικά στο επίπεδο\nκινδύνου αφανισμού του κάθε είδους.",
+      "D": "Το υλικό θα είναι προσβάσιμο στους\nερευνητές και στο κοινό αφού ολοκληρωθεί\nτο έργο, δηλαδή σε δέκα χρόνια.",
+      "E": "Η σημασία της εγκυκλοπαίδειας για τον\nεμπλουτισμό των γνώσεων του ανθρώπου\nείναι θα είναι αναμφίβολα μεγάλη."
+    },
+    "answer": "E"
+  },
+  {
+    "id": "2008_1_85",
+    "description": "81. - 85. soruları aşağıdaki parçaya göre\n cevaplayınız.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Paragraf",
+    "question": "Οι συντάκτες της φιλόδοξης διαδικτυακής\n«Εγκυκλοπαίδειας της Ζωής», που έχει ως\nστόχο να καταλέξει κάθε ένα από τα 1,8\nεκατομμύρια καταγεγραμμένα είδη έμβιων\nοργανισμών του πλανήτη, παρουσίασαν τις\nπρώτες 30.000 σελίδες του εγχειρήματος.Οι\nδημιουργοί αυτής της τεράστιας και αναλυτικής\nβάσης δεδομένων για τους ζώντες οργανισμούς\nυποστηρίζουν ότι η σημασία της για τον\nεμπλουτισμό των γνώσεων του ανθρώπου θα\nείναι ανάλογη της ανακάλυψης του\nμικροσκοπίου στις αρχές του 17ου αιώνα. Η\nεγκυκλοπαίδεια θα μπορεί να χρησιμοποιείται\nτόσο από επιστήμονες όσο και από απλούς\nαναγνώστες και φιλοδοξεί να συμπεριλάβει στις\nιστοσελίδες της όλα τα είδη και των έξι\nβασιλείων του έμβιου κόσμου. Οι υπεύθυνοι του\nεγχειρήματος σημειώνουν ότι μπορεί να\nσυνδράμει τους επιστήμονες στην αποτίμηση\nτων επιπτώσεων των κλιματικών αλλαγών επί\nτων ζώων και των φυτών. Το εγχείρημα\nξεκίνησε την άνοιξη του 2007. Υπολογίζεται ότι\nθα χρειαστούν δέκα χρόνια μέχρι να\nσυμπεριληφθούν στη διαδικτυακή\nεγκυκλοπαίδεια και τα 1,8 εκατομμύρια\nκαταγεγραμμένα είδη ζώντων οργανισμών. Η\nσελίδα κάθε είδους θα περιέχει φωτογραφίες,\nβίντεο, ήχους και χάρτες. Παράλληλα θα\nυπάρχει ενημέρωση για το επίπεδο κινδύνου\nαφανισμού του κάθε είδους. Προβλέπεται\nεπίσης η καταχώριση νέων ειδών όταν\nανακαλύπτονται, ενώ ο κάθε αναγνώστης\nμπορεί να στέλνει φωτογραφίες και\nπληροφορίες περί νέων ειδών η αυθεντικότητα\nτων οποίων θα ελέγχεται από ειδικούς\nεπιστήμονες.\n\n>>> Λαμβάνοντας υπόψη το περιεχόμενο του\nκειμένου τι δεν μπορεί να ειπωθεί:",
+    "options": {
+      "A": "Το έργο ήδη έχει ολοκληρωθεί σε γενικές\nγραμμές αφού συντάχθηκαν ήδη 30.000\nσελίδες.",
+      "B": "Εφόσον η εγκυκλοπαίδεια θα είναι\nδιαδικτυακή θα είναι δυνατή η πρόσβαση\nαπό οποιοδήποτε σημείο του κόσμου μέσω\nτου Ίντερνετ.",
+      "C": "Η καταχώρηση των 1,8 εκατομμυρίων\nκαταγεγραμμένων ειδών ζώντων\nοργανισμών, θα απαιτήσει αρκετά μεγάλο\nχρόνο.",
+      "D": "Στις ιστοσελίδες της εγκυκλοπαίδειας θα\nσυμπεριλαμβάνονται φωτογραφίες, των\nοργανισμών, βίντεο, ήχοι και χάρτες.",
+      "E": "Το έργο αυτό όταν ολοκληρωθεί θα είναι μια\nπολύτιμη πηγή τόσο για τους ερευνητές όσο\nκαι για τους απλούς αναγνώστες."
+    },
+    "answer": "A"
+  },
+  {
+    "id": "2008_1_86",
+    "description": "86. - 90. soruları aşağıdaki parçaya göre \ncevaplayınız.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Paragraf",
+    "question": "Ανεκτίμητες υπηρεσίες στη δικαιοσύνη\nπροσφέρουν οι μαγνητικές τομογραφίες\nεγκεφάλων, καθώς μπορούν να αποδείξουν ότι\nκάποιος κατηγορούμενος πάσχει από\nνευρολογικές ασθένειες, που με τη σειρά τους\nμπορούν να οδηγήσουν σε εγκληματικές\nσυμπεριφορές. Οι ειδικοί εκτιμούν μάλιστα ότι\nμέσα στα ερχόμενα χρόνια, οι μαγνητικές\nτομογραφίες θα μπορούν να δείχνουν εάν\nκάποιος ψεύδεται. Αντίστοιχα τεστ θα μπορούν\nνα βεβαιώσουν εάν κάποιο θύμα ατυχήματος,\nπου επιζητεί αποζημίωση, πονάει πράγματι ή\nψεύδεται, σε μία προσπάθεια να συγκινήσει το\nδικαστήριο, ενώ οι τομογραφίες θα μπορούν\nκάποια ημέρα να κρίνουν την αξιοπιστία της\nμνήμης κάποιου μάρτυρα.Άλλοι ειδικοί\nθεωρούν, ωστόσο, ότι οι νομικοί βιάζονται\nυπερβολικά να υιοθετήσουν τα συστήματα αυτά,\nπου βρίσκονται ακόμη σε πειραματικό στάδιο.\nΦιλόδοξη μελέτη, που χρηματοδότησε το\nΊδρυμα John MacArthur, έφερε σε επαφή\nνομικούς και εκπροσώπους του ιατρικού\nκόσμου, που θα εξετάσουν το ρόλο που μπορεί\nνα διαδραματίσει η νευρολογία στο νομικό\nσύστημα.Μία από τις ομάδες της μελέτης θα\nεξετάσει τι αποκαλύπτει η εξέταση του\nεγκεφάλου για τον εθισμό στα ναρκωτικά, σε μία\nπροσπάθεια βελτίωσης των προγραμμάτων\nαπεξάρτησης. Άλλη ομάδα εξετάζει τις θεωρίες,\nπου θέλουν τις εγκεφαλικές δυσλειτουργίες να\nευθύνονται για συμπεριφορές, που παλιότερα\nαποδίδονταν στην προσωπικότητα του δράστη.\n\n>>> Το κείμενο αναφέρεται:",
+    "options": {
+      "A": "σε μια υπηρεσία του υπουργείου\nδικαιοσύνης που ειδικεύεται σε γιατρικά\nθέματα.",
+      "B": "στις πρόσφατες εξελίξεις στον τομέα της\nθεραπείας των διαφόρων μεταδοτικών\nασθενειών.",
+      "C": "στο πώς μπορεί να βοηθήσει η μαγνητική\nτομογραφία εγκεφάλου στο έργο απονομής\nτης δικαιοσύνης.",
+      "D": "στην καινούρια μέθοδο που χρησιμοποιούν\nοι γιατροί για την καταπολέμηση με τον\nεθισμό στα ναρκωτικά.",
+      "E": "κατά πόσο μπορεί να συνεργαστεί η νομική\nεπιστήμη με την γιατρική σε θέματα\nγιατρικής δεοντολογίας."
+    },
+    "answer": "C"
+  },
+  {
+    "id": "2008_1_87",
+    "description": "86. - 90. soruları aşağıdaki parçaya göre \ncevaplayınız.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Paragraf",
+    "question": "Ανεκτίμητες υπηρεσίες στη δικαιοσύνη\nπροσφέρουν οι μαγνητικές τομογραφίες\nεγκεφάλων, καθώς μπορούν να αποδείξουν ότι\nκάποιος κατηγορούμενος πάσχει από\nνευρολογικές ασθένειες, που με τη σειρά τους\nμπορούν να οδηγήσουν σε εγκληματικές\nσυμπεριφορές. Οι ειδικοί εκτιμούν μάλιστα ότι\nμέσα στα ερχόμενα χρόνια, οι μαγνητικές\nτομογραφίες θα μπορούν να δείχνουν εάν\nκάποιος ψεύδεται. Αντίστοιχα τεστ θα μπορούν\nνα βεβαιώσουν εάν κάποιο θύμα ατυχήματος,\nπου επιζητεί αποζημίωση, πονάει πράγματι ή\nψεύδεται, σε μία προσπάθεια να συγκινήσει το\nδικαστήριο, ενώ οι τομογραφίες θα μπορούν\nκάποια ημέρα να κρίνουν την αξιοπιστία της\nμνήμης κάποιου μάρτυρα.Άλλοι ειδικοί\nθεωρούν, ωστόσο, ότι οι νομικοί βιάζονται\nυπερβολικά να υιοθετήσουν τα συστήματα αυτά,\nπου βρίσκονται ακόμη σε πειραματικό στάδιο.\nΦιλόδοξη μελέτη, που χρηματοδότησε το\nΊδρυμα John MacArthur, έφερε σε επαφή\nνομικούς και εκπροσώπους του ιατρικού\nκόσμου, που θα εξετάσουν το ρόλο που μπορεί\nνα διαδραματίσει η νευρολογία στο νομικό\nσύστημα.Μία από τις ομάδες της μελέτης θα\nεξετάσει τι αποκαλύπτει η εξέταση του\nεγκεφάλου για τον εθισμό στα ναρκωτικά, σε μία\nπροσπάθεια βελτίωσης των προγραμμάτων\nαπεξάρτησης. Άλλη ομάδα εξετάζει τις θεωρίες,\nπου θέλουν τις εγκεφαλικές δυσλειτουργίες να\nευθύνονται για συμπεριφορές, που παλιότερα\nαποδίδονταν στην προσωπικότητα του δράστη.\n\n>>> Ο συγγραφέας πιστεύει ότι η προσφορά της\nμαγνητικής τομογραφίας εγκεφάλου στη\nδικαιοσύνη:",
+    "options": {
+      "A": "έχει ανυπολόγιστη αξία.",
+      "B": "έχει αμφισβητούμενες συνέπειες.",
+      "C": "είναι απευκταίο.",
+      "D": "είναι μη διακριτή.",
+      "E": "δεν εμπνέει αισιοδοξία."
+    },
+    "answer": "A"
+  },
+  {
+    "id": "2008_1_88",
+    "description": "86. - 90. soruları aşağıdaki parçaya göre \ncevaplayınız.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Paragraf",
+    "question": "Ανεκτίμητες υπηρεσίες στη δικαιοσύνη\nπροσφέρουν οι μαγνητικές τομογραφίες\nεγκεφάλων, καθώς μπορούν να αποδείξουν ότι\nκάποιος κατηγορούμενος πάσχει από\nνευρολογικές ασθένειες, που με τη σειρά τους\nμπορούν να οδηγήσουν σε εγκληματικές\nσυμπεριφορές. Οι ειδικοί εκτιμούν μάλιστα ότι\nμέσα στα ερχόμενα χρόνια, οι μαγνητικές\nτομογραφίες θα μπορούν να δείχνουν εάν\nκάποιος ψεύδεται. Αντίστοιχα τεστ θα μπορούν\nνα βεβαιώσουν εάν κάποιο θύμα ατυχήματος,\nπου επιζητεί αποζημίωση, πονάει πράγματι ή\nψεύδεται, σε μία προσπάθεια να συγκινήσει το\nδικαστήριο, ενώ οι τομογραφίες θα μπορούν\nκάποια ημέρα να κρίνουν την αξιοπιστία της\nμνήμης κάποιου μάρτυρα.Άλλοι ειδικοί\nθεωρούν, ωστόσο, ότι οι νομικοί βιάζονται\nυπερβολικά να υιοθετήσουν τα συστήματα αυτά,\nπου βρίσκονται ακόμη σε πειραματικό στάδιο.\nΦιλόδοξη μελέτη, που χρηματοδότησε το\nΊδρυμα John MacArthur, έφερε σε επαφή\nνομικούς και εκπροσώπους του ιατρικού\nκόσμου, που θα εξετάσουν το ρόλο που μπορεί\nνα διαδραματίσει η νευρολογία στο νομικό\nσύστημα.Μία από τις ομάδες της μελέτης θα\nεξετάσει τι αποκαλύπτει η εξέταση του\nεγκεφάλου για τον εθισμό στα ναρκωτικά, σε μία\nπροσπάθεια βελτίωσης των προγραμμάτων\nαπεξάρτησης. Άλλη ομάδα εξετάζει τις θεωρίες,\nπου θέλουν τις εγκεφαλικές δυσλειτουργίες να\nευθύνονται για συμπεριφορές, που παλιότερα\nαποδίδονταν στην προσωπικότητα του δράστη.\n\n>>>Σύμφωνα με τις εκτιμήσεις μιας μερίδας\nειδικών:",
+    "options": {
+      "A": "Οι μαγνητικές τομογραφίες σήμερα\nμπορούν να κρίνουν την αξιοπιστία της\nμνήμης κάποιου μάρτυρα.",
+      "B": "Με την βοήθεια κάποιων τεστ μπορεί να\nεπιβεβαιωθεί αν κάποιος είναι θύμα\nατυχήματος.",
+      "C": "Με την μαγνητική τομογραφία τα θύματα\nατυχημάτων στο εξής θα μπορούν να\nσυγκινούν το δικαστήριο.",
+      "D": "Οι μαγνητικές τομογραφίες θα έχουν την\nδυνατότητα να φανερώσουν αν κάποιος\nψευδολογεί.",
+      "E": "Χάρη στην μαγνητική τομογραφία τα\nθύματα των ατυχημάτων μπορούν να\nζητήσουν αποζημίωση."
+    },
+    "answer": "D"
+  },
+  {
+    "id": "2008_1_89",
+    "description": "86. - 90. soruları aşağıdaki parçaya göre \ncevaplayınız.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Paragraf",
+    "question": "Ανεκτίμητες υπηρεσίες στη δικαιοσύνη\nπροσφέρουν οι μαγνητικές τομογραφίες\nεγκεφάλων, καθώς μπορούν να αποδείξουν ότι\nκάποιος κατηγορούμενος πάσχει από\nνευρολογικές ασθένειες, που με τη σειρά τους\nμπορούν να οδηγήσουν σε εγκληματικές\nσυμπεριφορές. Οι ειδικοί εκτιμούν μάλιστα ότι\nμέσα στα ερχόμενα χρόνια, οι μαγνητικές\nτομογραφίες θα μπορούν να δείχνουν εάν\nκάποιος ψεύδεται. Αντίστοιχα τεστ θα μπορούν\nνα βεβαιώσουν εάν κάποιο θύμα ατυχήματος,\nπου επιζητεί αποζημίωση, πονάει πράγματι ή\nψεύδεται, σε μία προσπάθεια να συγκινήσει το\nδικαστήριο, ενώ οι τομογραφίες θα μπορούν\nκάποια ημέρα να κρίνουν την αξιοπιστία της\nμνήμης κάποιου μάρτυρα.Άλλοι ειδικοί\nθεωρούν, ωστόσο, ότι οι νομικοί βιάζονται\nυπερβολικά να υιοθετήσουν τα συστήματα αυτά,\nπου βρίσκονται ακόμη σε πειραματικό στάδιο.\nΦιλόδοξη μελέτη, που χρηματοδότησε το\nΊδρυμα John MacArthur, έφερε σε επαφή\nνομικούς και εκπροσώπους του ιατρικού\nκόσμου, που θα εξετάσουν το ρόλο που μπορεί\nνα διαδραματίσει η νευρολογία στο νομικό\nσύστημα.Μία από τις ομάδες της μελέτης θα\nεξετάσει τι αποκαλύπτει η εξέταση του\nεγκεφάλου για τον εθισμό στα ναρκωτικά, σε μία\nπροσπάθεια βελτίωσης των προγραμμάτων\nαπεξάρτησης. Άλλη ομάδα εξετάζει τις θεωρίες,\nπου θέλουν τις εγκεφαλικές δυσλειτουργίες να\nευθύνονται για συμπεριφορές, που παλιότερα\nαποδίδονταν στην προσωπικότητα του δράστη.\n\n>> Σύμφωνα με το κείμενο άλλοι ειδικοί\nχαρακτηρίζουν τους νομικούς υπερβολικά\nβιαστικούς στην υιοθέτηση των συστημάτων\nαυτών επειδή:",
+    "options": {
+      "A": "δεν έχουν τελειοποιηθεί ακόμα.",
+      "B": "βιάζονται να αποδώσουν τη δικαιοσύνη.",
+      "C": "πιστεύουν στα οφέλη του συστήματος\nαυτού.",
+      "D": "βρίσκονται σε αδιέξοδο.",
+      "E": "η δικαιοσύνη αργεί σε πολλές περιπτώσεις."
+    },
+    "answer": "A"
+  },
+  {
+    "id": "2008_1_90",
+    "description": "86. - 90. soruları aşağıdaki parçaya göre \ncevaplayınız.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Paragraf",
+    "question": "Ανεκτίμητες υπηρεσίες στη δικαιοσύνη\nπροσφέρουν οι μαγνητικές τομογραφίες\nεγκεφάλων, καθώς μπορούν να αποδείξουν ότι\nκάποιος κατηγορούμενος πάσχει από\nνευρολογικές ασθένειες, που με τη σειρά τους\nμπορούν να οδηγήσουν σε εγκληματικές\nσυμπεριφορές. Οι ειδικοί εκτιμούν μάλιστα ότι\nμέσα στα ερχόμενα χρόνια, οι μαγνητικές\nτομογραφίες θα μπορούν να δείχνουν εάν\nκάποιος ψεύδεται. Αντίστοιχα τεστ θα μπορούν\nνα βεβαιώσουν εάν κάποιο θύμα ατυχήματος,\nπου επιζητεί αποζημίωση, πονάει πράγματι ή\nψεύδεται, σε μία προσπάθεια να συγκινήσει το\nδικαστήριο, ενώ οι τομογραφίες θα μπορούν\nκάποια ημέρα να κρίνουν την αξιοπιστία της\nμνήμης κάποιου μάρτυρα.Άλλοι ειδικοί\nθεωρούν, ωστόσο, ότι οι νομικοί βιάζονται\nυπερβολικά να υιοθετήσουν τα συστήματα αυτά,\nπου βρίσκονται ακόμη σε πειραματικό στάδιο.\nΦιλόδοξη μελέτη, που χρηματοδότησε το\nΊδρυμα John MacArthur, έφερε σε επαφή\nνομικούς και εκπροσώπους του ιατρικού\nκόσμου, που θα εξετάσουν το ρόλο που μπορεί\nνα διαδραματίσει η νευρολογία στο νομικό\nσύστημα.Μία από τις ομάδες της μελέτης θα\nεξετάσει τι αποκαλύπτει η εξέταση του\nεγκεφάλου για τον εθισμό στα ναρκωτικά, σε μία\nπροσπάθεια βελτίωσης των προγραμμάτων\nαπεξάρτησης. Άλλη ομάδα εξετάζει τις θεωρίες,\nπου θέλουν τις εγκεφαλικές δυσλειτουργίες να\nευθύνονται για συμπεριφορές, που παλιότερα\nαποδίδονταν στην προσωπικότητα του δράστη.\n\nΟι νομικοί και οι εκπρόσωποι του γιατρικού\nκόσμου συναντήθηκαν :",
+    "options": {
+      "A": "για να διοργανώσουν ένα συνέδριο με θέμα\nτον ρόλο και τις σχέσεις της νευρολογίας και\nνομικού συστήματος.",
+      "B": "με σκοπό να διερευνήσουν κατά πόσο\nμπορεί να συμβάλλει η νευρολογία στο\nνομικό σύστημα.",
+      "C": "για να λύσουν τα ζητήματα που έχουν\nσχέση με τον ρόλο που μπορεί να\nδιαδραματίσει η νομική στο χώρο της\nγιατρικής.",
+      "D": "αν και δεν τους τους υποχρέωσε το Ίδρυμα\nJohn MacArthur που χρηματοδότησε τη\nμελέτη.",
+      "E": "επειδή στο θέμα του ρόλου της νευρολογίας\nστο νομικό σύστημα οι νομικοί είχαν\nδιαφορετική τοποθέτηση."
+    },
+    "answer": "B"
+  },
+  {
+    "id": "2008_1_91",
+    "description": "91. - 95. soruları aşağıdaki parçaya göre\ncevaplayınız.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Paragraf",
+    "question": "Η διακίνηση ναρκωτικών ουσιών αποτελεί\nσημαντικό πρόβλημα για τις αρχές, όπως\nεπίσης για τους γονείς και τους δασκάλους\nλόγω της ανησυχητικής αύξησης στον αριθμό\nτων νέων εξαρτημένων. Ο εθισμός στα\nναρκωτικά και ως αποτέλεσμα αυτού η απώλεια\nτου αυτοελέγχου του χρήστη δεν είναι\nεπιβλαβής μόνο για το ίδιο το άτομο, αλλά και\nγια την κοινωνία. Η ανάγκη για τη χρήση της\nουσίας πολλές φορές γίνεται τόσο επιτακτική\nπου οι τοξικομανείς για να προμηθευτούν τη\nδόση τους δεν υπολογίζουν το κόστος, το οποίο\nσυχνά είναι το έγκλημα, η βία ή και η\nδολοφονία. Με τον καιρό οι χρήστες αποκτούν\nαντοχή, η οποία κατάσταση αναπτύσσεται με τις\nεπαναλαμβανόμενες δόσεις της ναρκωτικής\nουσίας. Όσο αναπτύσσεται η αντοχή, μικραίνει\nη διάρκεια της δράσεως της ουσίας με\nαποτέλεσμα να αυξάνονται οι δόσεις για να έχει\nη ουσία το ίδιο αποτέλεσμα. Οι εξαρτημένοι\nόταν δε βρίσκονται κάτω από την επήρεια των\nναρκωτικών παρουσιάζουν το σύνδρομο της\nστέρησης, δηλαδή ορισμένα συμπτώματα τα\nοποία παρατηρούνται ύστερα από τη στέρηση\nτου οργανισμού από την ουσία προς την οποία\nέχει αναπτυχθεί η εξάρτηση. Τότε ο ναρκομανής\nγίνεται οξύθυμος, ανήσυχος και ανίκανος να\nχαλαρώσει και να κοιμηθεί.\n\n>>> Η διακίνηση ναρκωτικών χαρακτηρίζεται ως\n----.",
+    "options": {
+      "A": "πρόβλημα των νέων",
+      "B": "οικογενειακό πρόβλημα",
+      "C": "πρόβλημα για τις αρχές",
+      "D": "προσωπικό πρόβλημα",
+      "E": "κοινωνικό πρόβλημα"
+    },
+    "answer": "E"
+  },
+  {
+    "id": "2008_1_92",
+    "description": "91. - 95. soruları aşağıdaki parçaya göre\ncevaplayınız.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Paragraf",
+    "question": "Η διακίνηση ναρκωτικών ουσιών αποτελεί\nσημαντικό πρόβλημα για τις αρχές, όπως\nεπίσης για τους γονείς και τους δασκάλους\nλόγω της ανησυχητικής αύξησης στον αριθμό\nτων νέων εξαρτημένων. Ο εθισμός στα\nναρκωτικά και ως αποτέλεσμα αυτού η απώλεια\nτου αυτοελέγχου του χρήστη δεν είναι\nεπιβλαβής μόνο για το ίδιο το άτομο, αλλά και\nγια την κοινωνία. Η ανάγκη για τη χρήση της\nουσίας πολλές φορές γίνεται τόσο επιτακτική\nπου οι τοξικομανείς για να προμηθευτούν τη\nδόση τους δεν υπολογίζουν το κόστος, το οποίο\nσυχνά είναι το έγκλημα, η βία ή και η\nδολοφονία. Με τον καιρό οι χρήστες αποκτούν\nαντοχή, η οποία κατάσταση αναπτύσσεται με τις\nεπαναλαμβανόμενες δόσεις της ναρκωτικής\nουσίας. Όσο αναπτύσσεται η αντοχή, μικραίνει\nη διάρκεια της δράσεως της ουσίας με\nαποτέλεσμα να αυξάνονται οι δόσεις για να έχει\nη ουσία το ίδιο αποτέλεσμα. Οι εξαρτημένοι\nόταν δε βρίσκονται κάτω από την επήρεια των\nναρκωτικών παρουσιάζουν το σύνδρομο της\nστέρησης, δηλαδή ορισμένα συμπτώματα τα\nοποία παρατηρούνται ύστερα από τη στέρηση\nτου οργανισμού από την ουσία προς την οποία\nέχει αναπτυχθεί η εξάρτηση. Τότε ο ναρκομανής\nγίνεται οξύθυμος, ανήσυχος και ανίκανος να\nχαλαρώσει και να κοιμηθεί.\n\n>>> Οι χρήστες ναρκωτικών ουσιών ----.",
+    "options": {
+      "A": "πληρώνουν μεγάλα ποσά για να αγοράσουν\nναρκωτικά",
+      "B": "βλάπτουν τους ίδιους τους εαυτούς τους\nαλλά και την κοινωνία",
+      "C": "τελικά είναι δολοφόνοι",
+      "D": "θεωρούνται ξεχωριστοί άνθρωποι",
+      "E": "είναι οφέλιμοι άνθρωποι για την κοινωνία"
+    },
+    "answer": "B"
+  },
+  {
+    "id": "2008_1_93",
+    "description": "91. - 95. soruları aşağıdaki parçaya göre\ncevaplayınız.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Paragraf",
+    "question": "Η διακίνηση ναρκωτικών ουσιών αποτελεί\nσημαντικό πρόβλημα για τις αρχές, όπως\nεπίσης για τους γονείς και τους δασκάλους\nλόγω της ανησυχητικής αύξησης στον αριθμό\nτων νέων εξαρτημένων. Ο εθισμός στα\nναρκωτικά και ως αποτέλεσμα αυτού η απώλεια\nτου αυτοελέγχου του χρήστη δεν είναι\nεπιβλαβής μόνο για το ίδιο το άτομο, αλλά και\nγια την κοινωνία. Η ανάγκη για τη χρήση της\nουσίας πολλές φορές γίνεται τόσο επιτακτική\nπου οι τοξικομανείς για να προμηθευτούν τη\nδόση τους δεν υπολογίζουν το κόστος, το οποίο\nσυχνά είναι το έγκλημα, η βία ή και η\nδολοφονία. Με τον καιρό οι χρήστες αποκτούν\nαντοχή, η οποία κατάσταση αναπτύσσεται με τις\nεπαναλαμβανόμενες δόσεις της ναρκωτικής\nουσίας. Όσο αναπτύσσεται η αντοχή, μικραίνει\nη διάρκεια της δράσεως της ουσίας με\nαποτέλεσμα να αυξάνονται οι δόσεις για να έχει\nη ουσία το ίδιο αποτέλεσμα. Οι εξαρτημένοι\nόταν δε βρίσκονται κάτω από την επήρεια των\nναρκωτικών παρουσιάζουν το σύνδρομο της\nστέρησης, δηλαδή ορισμένα συμπτώματα τα\nοποία παρατηρούνται ύστερα από τη στέρηση\nτου οργανισμού από την ουσία προς την οποία\nέχει αναπτυχθεί η εξάρτηση. Τότε ο ναρκομανής\nγίνεται οξύθυμος, ανήσυχος και ανίκανος να\nχαλαρώσει και να κοιμηθεί.\n\n>>> Η ανάγκη ενός τοξικομανή για να\nπρομηθευτεί ναρκωτικά ----.",
+    "options": {
+      "A": "μπορεί να ξεπεραστεί αν πάρει μια δόση",
+      "B": "τον οδηγεί στον θάνατο",
+      "C": "πολλές φορές τον οδηγεί στο έγκλημα",
+      "D": "του δίνει τη δυνατότητα αυτοελέγχου",
+      "E": "δημιουργεί οικονομικά προβλήματα"
+    },
+    "answer": "C"
+  },
+  {
+    "id": "2008_1_94",
+    "description": "91. - 95. soruları aşağıdaki parçaya göre\ncevaplayınız.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Paragraf",
+    "question": "Η διακίνηση ναρκωτικών ουσιών αποτελεί\nσημαντικό πρόβλημα για τις αρχές, όπως\nεπίσης για τους γονείς και τους δασκάλους\nλόγω της ανησυχητικής αύξησης στον αριθμό\nτων νέων εξαρτημένων. Ο εθισμός στα\nναρκωτικά και ως αποτέλεσμα αυτού η απώλεια\nτου αυτοελέγχου του χρήστη δεν είναι\nεπιβλαβής μόνο για το ίδιο το άτομο, αλλά και\nγια την κοινωνία. Η ανάγκη για τη χρήση της\nουσίας πολλές φορές γίνεται τόσο επιτακτική\nπου οι τοξικομανείς για να προμηθευτούν τη\nδόση τους δεν υπολογίζουν το κόστος, το οποίο\nσυχνά είναι το έγκλημα, η βία ή και η\nδολοφονία. Με τον καιρό οι χρήστες αποκτούν\nαντοχή, η οποία κατάσταση αναπτύσσεται με τις\nεπαναλαμβανόμενες δόσεις της ναρκωτικής\nουσίας. Όσο αναπτύσσεται η αντοχή, μικραίνει\nη διάρκεια της δράσεως της ουσίας με\nαποτέλεσμα να αυξάνονται οι δόσεις για να έχει\nη ουσία το ίδιο αποτέλεσμα. Οι εξαρτημένοι\nόταν δε βρίσκονται κάτω από την επήρεια των\nναρκωτικών παρουσιάζουν το σύνδρομο της\nστέρησης, δηλαδή ορισμένα συμπτώματα τα\nοποία παρατηρούνται ύστερα από τη στέρηση\nτου οργανισμού από την ουσία προς την οποία\nέχει αναπτυχθεί η εξάρτηση. Τότε ο ναρκομανής\nγίνεται οξύθυμος, ανήσυχος και ανίκανος να\nχαλαρώσει και να κοιμηθεί.\n\n>>> Όταν οι χρήστες αναπτύσσουν αντοχή ----.",
+    "options": {
+      "A": "πρέπει να μειώσουν δόση",
+      "B": "έχουν προβλήματα υγείας",
+      "C": "πρέπει να παίρνουν μικρές δόσεις σε μικρά\nχρονικά διαστήματα",
+      "D": "πρέπει να παίρνουν μεγαλύτερη δόση",
+      "E": "η ουσία έχει το ίδιο αποτέλεσμα"
+    },
+    "answer": "D"
+  },
+  {
+    "id": "2008_1_95",
+    "description": "91. - 95. soruları aşağıdaki parçaya göre\ncevaplayınız.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Paragraf",
+    "question": "Η διακίνηση ναρκωτικών ουσιών αποτελεί\nσημαντικό πρόβλημα για τις αρχές, όπως\nεπίσης για τους γονείς και τους δασκάλους\nλόγω της ανησυχητικής αύξησης στον αριθμό\nτων νέων εξαρτημένων. Ο εθισμός στα\nναρκωτικά και ως αποτέλεσμα αυτού η απώλεια\nτου αυτοελέγχου του χρήστη δεν είναι\nεπιβλαβής μόνο για το ίδιο το άτομο, αλλά και\nγια την κοινωνία. Η ανάγκη για τη χρήση της\nουσίας πολλές φορές γίνεται τόσο επιτακτική\nπου οι τοξικομανείς για να προμηθευτούν τη\nδόση τους δεν υπολογίζουν το κόστος, το οποίο\nσυχνά είναι το έγκλημα, η βία ή και η\nδολοφονία. Με τον καιρό οι χρήστες αποκτούν\nαντοχή, η οποία κατάσταση αναπτύσσεται με τις\nεπαναλαμβανόμενες δόσεις της ναρκωτικής\nουσίας. Όσο αναπτύσσεται η αντοχή, μικραίνει\nη διάρκεια της δράσεως της ουσίας με\nαποτέλεσμα να αυξάνονται οι δόσεις για να έχει\nη ουσία το ίδιο αποτέλεσμα. Οι εξαρτημένοι\nόταν δε βρίσκονται κάτω από την επήρεια των\nναρκωτικών παρουσιάζουν το σύνδρομο της\nστέρησης, δηλαδή ορισμένα συμπτώματα τα\nοποία παρατηρούνται ύστερα από τη στέρηση\nτου οργανισμού από την ουσία προς την οποία\nέχει αναπτυχθεί η εξάρτηση. Τότε ο ναρκομανής\nγίνεται οξύθυμος, ανήσυχος και ανίκανος να\nχαλαρώσει και να κοιμηθεί.\n\n>>> Το σύνδρομο της στέρησης παρουσιάζεται\nόταν ---- .",
+    "options": {
+      "A": "οι εξαρτημένοι γίνονται νευρικοί",
+      "B": "οι εξαρτημένοι στερούνται από υπερβολική\nδόση",
+      "C": "οι εξαρτημένοι παίρνουν υπερβολική δόση",
+      "D": "οι εξαρτημένοι πάσχουν από αϋπνία",
+      "E": "οι εξαρτημένοι παύουν να χρησιμοποιούν\nναρκωτικές ουσίες"
+    },
+    "answer": "E"
+  },
+  {
+    "id": "2008_1_96",
+    "description": "96. - 100. soruları aşağıdaki parçaya göre\n cevaplayınız.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Paragraf",
+    "question": "Η κλεπτομανία είναι μια αρκετά γνωστή\nψυχιατρική ασθένεια που παρουσιάζεται συχνά\nστους ανήλικους και στους ενήλικες\nανεξαρτήτως ηλικίας. Οι παθόντες, όταν\nβρίσκονται σε καταστήματα ή σε σπίτια άλλων\nανθρώπων, δεν μπορούν να κρατήσουν τα\nχέρια τους μακριά από διάφορα πράγματα.\nΣυχνά κλέβουν αυτά που στην πραγματικότητα\nείναι σε θέση να αγοράσουν. Όπως και νά’χει\nείναι μια κατάσταση δύσκολη για όλους. Το\nεύλογο είναι ότι μπορεί να ξεπεραστεί έστω και\nπροσωρινά με ψυχιατρική θεραπεία. Η υπόθεση\nμιας πρόσφατης δίκης αποτελεί παράδειγμα στα\nπαραπάνω. Την προηγούμενη εβδομάδα\nπαρουσιάστηκε ενώπιον του δικαστηρίου ένας\nμεσήλικας κατηγορούμενος για κλοπή. Αυτός ο\nάντρας, πλην τα τελευταία δέκα έτη, στο\nπαρελθόν είχε καταδικαστεί πολλές φορές με\nτην ίδια κατηγορία. Τώρα είχε έναν ευτυχισμένο\nγάμο, μια καλή δουλειά και έναν εργοδότη που\nτου είχε δώσει συστατική επιστολή. Ο\nμεσήλικας, κατά τη διάρκεια της δίκης, είχε μια\nανήσυχη έκφραση αλλά φαινόταν αρκετά\nευφυής. Καθώς περίμενε την απόφαση του\nδικαστή ήταν πολύ στεναχωρημένος από το\nαποτέλεσμα αυτής της ανεξέλεγκτης\nπαρόρμησής του. Τελικώς όμως τέθηκε σε\nδικαστική επιτήρηση και του συστάθηκε\nψυχιατρική θεραπεία.\n\n>>>  κλεπτομανία ----.",
+    "options": {
+      "A": "είναι μια σοβαρή ψυχοπάθεια",
+      "B": "παρουσιάζεται σε άνεργους ενήλικες",
+      "C": "δεν παρουσιάζεται σε φτωχούς ανθρώπους",
+      "D": "παρουσιάζεται σε άτομα που έχουν την ίδια\nηλικία",
+      "E": "είναι λίγο γνωστή και αρκετά συχνή"
+    },
+    "answer": "A"
+  },
+  {
+    "id": "2008_1_97",
+    "description": "96. - 100. soruları aşağıdaki parçaya göre\n cevaplayınız.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Paragraf",
+    "question": "Η κλεπτομανία είναι μια αρκετά γνωστή\nψυχιατρική ασθένεια που παρουσιάζεται συχνά\nστους ανήλικους και στους ενήλικες\nανεξαρτήτως ηλικίας. Οι παθόντες, όταν\nβρίσκονται σε καταστήματα ή σε σπίτια άλλων\nανθρώπων, δεν μπορούν να κρατήσουν τα\nχέρια τους μακριά από διάφορα πράγματα.\nΣυχνά κλέβουν αυτά που στην πραγματικότητα\nείναι σε θέση να αγοράσουν. Όπως και νά’χει\nείναι μια κατάσταση δύσκολη για όλους. Το\nεύλογο είναι ότι μπορεί να ξεπεραστεί έστω και\nπροσωρινά με ψυχιατρική θεραπεία. Η υπόθεση\nμιας πρόσφατης δίκης αποτελεί παράδειγμα στα\nπαραπάνω. Την προηγούμενη εβδομάδα\nπαρουσιάστηκε ενώπιον του δικαστηρίου ένας\nμεσήλικας κατηγορούμενος για κλοπή. Αυτός ο\nάντρας, πλην τα τελευταία δέκα έτη, στο\nπαρελθόν είχε καταδικαστεί πολλές φορές με\nτην ίδια κατηγορία. Τώρα είχε έναν ευτυχισμένο\nγάμο, μια καλή δουλειά και έναν εργοδότη που\nτου είχε δώσει συστατική επιστολή. Ο\nμεσήλικας, κατά τη διάρκεια της δίκης, είχε μια\nανήσυχη έκφραση αλλά φαινόταν αρκετά\nευφυής. Καθώς περίμενε την απόφαση του\nδικαστή ήταν πολύ στεναχωρημένος από το\nαποτέλεσμα αυτής της ανεξέλεγκτης\nπαρόρμησής του. Τελικώς όμως τέθηκε σε\nδικαστική επιτήρηση και του συστάθηκε\nψυχιατρική θεραπεία.\n\n>>> Η κλεπτομανία θεωρείται ----.",
+    "options": {
+      "A": "η κλοπή διαφόρων πραγμάτων από τα\nσπίτια των άλλων ανθρώπων",
+      "B": "μια ανεξέλεγκτη συνήθεια",
+      "C": "η κλοπή διαφόρων πραγμάτων από τα\nκαταστήματα",
+      "D": "η κλοπή διαφόρων πραγμάτων που οι\nάνθρωποι μπορούν να αγοράσουν",
+      "E": "η συνήθεια των κλεφτών"
+    },
+    "answer": "B"
+  },
+  {
+    "id": "2008_1_98",
+    "description": "96. - 100. soruları aşağıdaki parçaya göre\n cevaplayınız.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Paragraf",
+    "question": "Η κλεπτομανία είναι μια αρκετά γνωστή\nψυχιατρική ασθένεια που παρουσιάζεται συχνά\nστους ανήλικους και στους ενήλικες\nανεξαρτήτως ηλικίας. Οι παθόντες, όταν\nβρίσκονται σε καταστήματα ή σε σπίτια άλλων\nανθρώπων, δεν μπορούν να κρατήσουν τα\nχέρια τους μακριά από διάφορα πράγματα.\nΣυχνά κλέβουν αυτά που στην πραγματικότητα\nείναι σε θέση να αγοράσουν. Όπως και νά’χει\nείναι μια κατάσταση δύσκολη για όλους. Το\nεύλογο είναι ότι μπορεί να ξεπεραστεί έστω και\nπροσωρινά με ψυχιατρική θεραπεία. Η υπόθεση\nμιας πρόσφατης δίκης αποτελεί παράδειγμα στα\nπαραπάνω. Την προηγούμενη εβδομάδα\nπαρουσιάστηκε ενώπιον του δικαστηρίου ένας\nμεσήλικας κατηγορούμενος για κλοπή. Αυτός ο\nάντρας, πλην τα τελευταία δέκα έτη, στο\nπαρελθόν είχε καταδικαστεί πολλές φορές με\nτην ίδια κατηγορία. Τώρα είχε έναν ευτυχισμένο\nγάμο, μια καλή δουλειά και έναν εργοδότη που\nτου είχε δώσει συστατική επιστολή. Ο\nμεσήλικας, κατά τη διάρκεια της δίκης, είχε μια\nανήσυχη έκφραση αλλά φαινόταν αρκετά\nευφυής. Καθώς περίμενε την απόφαση του\nδικαστή ήταν πολύ στεναχωρημένος από το\nαποτέλεσμα αυτής της ανεξέλεγκτης\nπαρόρμησής του. Τελικώς όμως τέθηκε σε\nδικαστική επιτήρηση και του συστάθηκε\nψυχιατρική θεραπεία.\n\n>>> Η ασθένεια ----.",
+    "options": {
+      "A": "είναι μια δύσκολη κατάσταση για τον\nπαθόντα",
+      "B": "δεν θεραπεύεται ποτέ",
+      "C": "μπορεί να μην ξεπεραστεί με ψυχιατρική\nθεραπεία",
+      "D": "μπορεί να θεραπευθεί μόνο προσωρινά με\nψυχιατρική βοήθεια",
+      "E": "όπως και νά’χει είναι δύσκολη και\nπροσωρινή"
+    },
+    "answer": "D"
+  },
+  {
+    "id": "2008_1_99",
+    "description": "96. - 100. soruları aşağıdaki parçaya göre\n cevaplayınız.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Paragraf",
+    "question": "Η κλεπτομανία είναι μια αρκετά γνωστή\nψυχιατρική ασθένεια που παρουσιάζεται συχνά\nστους ανήλικους και στους ενήλικες\nανεξαρτήτως ηλικίας. Οι παθόντες, όταν\nβρίσκονται σε καταστήματα ή σε σπίτια άλλων\nανθρώπων, δεν μπορούν να κρατήσουν τα\nχέρια τους μακριά από διάφορα πράγματα.\nΣυχνά κλέβουν αυτά που στην πραγματικότητα\nείναι σε θέση να αγοράσουν. Όπως και νά’χει\nείναι μια κατάσταση δύσκολη για όλους. Το\nεύλογο είναι ότι μπορεί να ξεπεραστεί έστω και\nπροσωρινά με ψυχιατρική θεραπεία. Η υπόθεση\nμιας πρόσφατης δίκης αποτελεί παράδειγμα στα\nπαραπάνω. Την προηγούμενη εβδομάδα\nπαρουσιάστηκε ενώπιον του δικαστηρίου ένας\nμεσήλικας κατηγορούμενος για κλοπή. Αυτός ο\nάντρας, πλην τα τελευταία δέκα έτη, στο\nπαρελθόν είχε καταδικαστεί πολλές φορές με\nτην ίδια κατηγορία. Τώρα είχε έναν ευτυχισμένο\nγάμο, μια καλή δουλειά και έναν εργοδότη που\nτου είχε δώσει συστατική επιστολή. Ο\nμεσήλικας, κατά τη διάρκεια της δίκης, είχε μια\nανήσυχη έκφραση αλλά φαινόταν αρκετά\nευφυής. Καθώς περίμενε την απόφαση του\nδικαστή ήταν πολύ στεναχωρημένος από το\nαποτέλεσμα αυτής της ανεξέλεγκτης\nπαρόρμησής του. Τελικώς όμως τέθηκε σε\nδικαστική επιτήρηση και του συστάθηκε\nψυχιατρική θεραπεία.\n\n>>> Ο άντρας της ιστορίας ----.",
+    "options": {
+      "A": "τα τελευταία δέκα χρόνια έκλεβε, αλλά τώρα\nπιάστηκε",
+      "B": "τα τελευταία δέκα χρόνια είχε καταδικαστεί\nπολλές φορές για κλοπή",
+      "C": "στο παρελθόν είχε καταδικαστεί για άλλα\nεγκλήματα",
+      "D": "στο παρελθόν δεν είχε κλέψει πολλά\nπράγματα",
+      "E": "είχε καταδικαστεί και προηγουμένως για\nκλοπή"
+    },
+    "answer": "E"
+  },
+  {
+    "id": "2008_1_100",
+    "description": "96. - 100. soruları aşağıdaki parçaya göre\n cevaplayınız.",
+    "exam": "2008 KPDS Mayıs",
+    "category": "Paragraf",
+    "question": "Η κλεπτομανία είναι μια αρκετά γνωστή\nψυχιατρική ασθένεια που παρουσιάζεται συχνά\nστους ανήλικους και στους ενήλικες\nανεξαρτήτως ηλικίας. Οι παθόντες, όταν\nβρίσκονται σε καταστήματα ή σε σπίτια άλλων\nανθρώπων, δεν μπορούν να κρατήσουν τα\nχέρια τους μακριά από διάφορα πράγματα.\nΣυχνά κλέβουν αυτά που στην πραγματικότητα\nείναι σε θέση να αγοράσουν. Όπως και νά’χει\nείναι μια κατάσταση δύσκολη για όλους. Το\nεύλογο είναι ότι μπορεί να ξεπεραστεί έστω και\nπροσωρινά με ψυχιατρική θεραπεία. Η υπόθεση\nμιας πρόσφατης δίκης αποτελεί παράδειγμα στα\nπαραπάνω. Την προηγούμενη εβδομάδα\nπαρουσιάστηκε ενώπιον του δικαστηρίου ένας\nμεσήλικας κατηγορούμενος για κλοπή. Αυτός ο\nάντρας, πλην τα τελευταία δέκα έτη, στο\nπαρελθόν είχε καταδικαστεί πολλές φορές με\nτην ίδια κατηγορία. Τώρα είχε έναν ευτυχισμένο\nγάμο, μια καλή δουλειά και έναν εργοδότη που\nτου είχε δώσει συστατική επιστολή. Ο\nμεσήλικας, κατά τη διάρκεια της δίκης, είχε μια\nανήσυχη έκφραση αλλά φαινόταν αρκετά\nευφυής. Καθώς περίμενε την απόφαση του\nδικαστή ήταν πολύ στεναχωρημένος από το\nαποτέλεσμα αυτής της ανεξέλεγκτης\nπαρόρμησής του. Τελικώς όμως τέθηκε σε\nδικαστική επιτήρηση και του συστάθηκε\nψυχιατρική θεραπεία.\n\n>>> Ο κατηγορούμενος ----.",
+    "options": {
+      "A": "δεν μπορούσε να καταλάβει γιατί τον είχαν\nσυλλάβει",
+      "B": "ήταν αρκετά ενοχλημένος από τη δικαστική\nαπόφαση",
+      "C": "προφανώς ήταν καταβεβλημένος από το\nαποτέλεσμα της πράξης του",
+      "D": "ήταν ανήσυχος επειδή φοβόταν πως θα\nπάει φυλακή",
+      "E": "φαινόταν ευφυής και προσπαθούσε να\nκαταλάβει τη δικαστική απόφαση"
+    },
+    "answer": "C"
+  }
+]
