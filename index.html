@@ -39,6 +39,7 @@
       <button class="main-tab-btn" id="mtab-dict" onclick="switchMainTab('dict')">📚 Sözlük</button>
       <button class="main-tab-btn" id="mtab-exam" onclick="switchMainTab('exam')">📝 Soru Bankası</button>
       <button class="main-tab-btn" id="mtab-practice" onclick="switchMainTab('practice')">💪 Alıştırmalar</button>
+    <button class="main-tab-btn" id="mtab-chat" onclick="switchMainTab('chat')">🤖 AI Sohbet</button>
     </div>
   </header>
 
@@ -462,6 +463,33 @@
     </div>
   </div> 
 </div> 
+<div id="section-chat" style="display:none; animation: fadeIn 0.4s ease;">
+  <div class="video-setup-box" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px; border-color: var(--accent2);">
+    <div>
+      <h3 style="color:var(--accent2); margin-bottom:10px; font-size: 1.6rem;">🤖 Yunanca AI Konuşma Partneri</h3>
+      <p style="color:var(--text-dim); margin-bottom:0; font-size:1rem;">Mikrofonu açın ve Yunanca pratik yapın. Hatalarınız düzeltilecek ve doğal bir sohbet akışı sağlanacaktır.</p>
+    </div>
+    
+    <div style="display: flex; gap: 10px;">
+      <input type="password" id="ai-api-key" class="auth-input" style="margin-bottom:0; width: 150px;" placeholder="Gemini/OpenAI Key">
+      <button class="main-btn" style="background:var(--accent2);" onclick="startAIChat()">Sohbeti Başlat</button>
+    </div>
+  </div>
+
+  <div id="chat-messages-container" style="background: var(--surface-alt); border: 1px solid var(--border); border-radius: 12px; height: 400px; overflow-y: auto; padding: 20px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 15px;">
+    <div style="text-align: center; color: var(--text-dim); margin-top: auto; margin-bottom: auto;">
+      Sohbete başlamak için yukarıdan "Sohbeti Başlat" butonuna tıklayın...
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 10px; align-items: center; background: var(--surface); padding: 15px; border-radius: 12px; border: 1px solid var(--border);">
+    <button id="mic-btn" class="main-btn" style="border-radius: 50%; width: 55px; height: 55px; font-size: 1.5rem; background: var(--error); transition: all 0.3s ease;" onclick="toggleMicrophone()" title="Bas ve Konuş">🎤</button>
+    
+    <input type="text" id="chat-text-input" class="auth-input" style="flex: 1; margin-bottom: 0; padding: 15px;" placeholder="Veya mesajınızı Yunanca olarak buraya yazın..." onkeydown="if(event.key==='Enter') sendChatMessage()">
+    
+    <button class="main-btn" style="padding: 15px 25px;" onclick="sendChatMessage()">Gönder ➔</button>
+  </div>
+</div>
 
 <div id="wpop">
   <div class="wpop-header">
@@ -510,6 +538,8 @@
 <script src="js/pages/login.js"></script>
 <script src="js/pages/home.js"></script>
 <script src="js/main.js"></script>
+<script src="js/pages/chat.js"></script> 
+
 
 </body>
 </html>

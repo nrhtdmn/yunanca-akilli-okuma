@@ -159,7 +159,6 @@ const EXAM_FILES = [
   'sinavlar/yds_2007_kasım.json',
   'sinavlar/yds_2008_mayis.json',
   'sinavlar/yds_sinavlari.json',
-  'sinavlar/yokdil_2020.json',
 
   // Yeni dosya eklemek isterseniz virgül koyup 'sinavlar/yeni_sinav.json' şeklinde ekleyebilirsiniz.
 ];

@@ -6,6 +6,8 @@ function switchMainTab(tabName) {
   document.getElementById('section-dict').style.display = tabName === 'dict' ? 'block' : 'none';
   document.getElementById('section-exam').style.display = tabName === 'exam' ? 'block' : 'none';
   document.getElementById('section-practice').style.display = tabName === 'practice' ? 'block' : 'none'; // YENİ
+  document.getElementById('section-chat').style.display = tabName === 'chat' ? 'block' : 'none'; // YENİ
+
   
   document.querySelectorAll('.main-tab-btn').forEach(b => b.classList.remove('active'));
   const activeBtn = document.getElementById('mtab-'+tabName);
