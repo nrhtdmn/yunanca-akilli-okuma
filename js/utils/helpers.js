@@ -218,8 +218,9 @@ const METIN_KATALOGU = [
 
 
 const VIDEO_KATALOGU = [
-  { id: "42X-sVfNclI", title: "Easy Greek - Yunanistan'da Günlük Hayat", level: "A2 - B1", category: "🎬 Sokak Röportajı" },
-  { id: "M7lc1UVf-VE", title: "Örnek Eğitim Videosu", level: "A1", category: "📚 Temel Eğitim" }
+  { id: "0HbdNP29F-o", title: " İşte kolay hamurla mükemmel morina balığı nasıl yapılır – Patatesli veya ekmekli kolay Skordalia", level: "A2 - B1", category: "🎬 Yemek Tarifleri" },
+  { id: "FY-oS0pGm1s", title: "Dil - Tekrar: Yazma ve Okuma - 1. Sınıf Seviye 16", level: "A1", category: "📚 Yunanca" },
+  { id: "Ydbk96cqtvQ", title: "Matematik - 50'ye Kadar Sayılar, Onlar ve Birler Basamağı, Toplama - 1. Sınıf Seviye 22", level: "A1", category: "📚 Yunanca" }
 ];
 
 const HUGE_RAW_DICTIONARY = [
