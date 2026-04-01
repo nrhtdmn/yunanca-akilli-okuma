@@ -1,0 +1,1610 @@
+[
+  {
+    "start": 21.026,
+    "end": 22.461,
+    "gr": "Γεια σας παιδιά",
+    "tr": "! Πώς είστε σήμερα; Merhaba arkadaşlar! Bugün nasılsın?"
+  },
+  {
+    "start": 24.041,
+    "end": 30.149,
+    "gr": "Είμαι η Κωνσταντίνα και σήμερα θα κάνουμε μία μικρή επανάληψη στα Μαθηματικά μας",
+    "tr": ". Ben Konstantina ve bugün şunları yapacağız: Matematik bilgimizin kısa bir tekrarı."
+  },
+  {
+    "start": 30.714,
+    "end": 33.713,
+    "gr": "Θα δούμε τους αριθμούς μέχρι το",
+    "tr": "50. 50'ye kadar olan sayılara bakacağız."
+  },
+  {
+    "start": 33.957,
+    "end": 40.309,
+    "gr": "Θα δούμε λίγο τις μονάδες και τις δεκάδες και φυσικά πρόσθεση",
+    "tr": ". Üniteleri biraz inceleyelim ve Onlar basamağı ve elbette toplama."
+  },
+  {
+    "start": 40.843,
+    "end": 44.573,
+    "gr": "Για να δούμε εδώ πέρα τι θα καταφέρουμε σήμερα",
+    "tr": ", Bakalım burada neler oluyor. Bugün başaracağız,"
+  },
+  {
+    "start": 44.776,
+    "end": 46.501,
+    "gr": "μέσα από αυτή τη μικρή μας επανάληψη",
+    "tr": ". Bu küçük tekrarımız sayesinde."
+  },
+  {
+    "start": 47.84,
+    "end": 52.413,
+    "gr": "Πρώτον",
+    "tr": ", θα πρέπει να μπορούμε να αναγνωρίζουμε τους αριθμούς μέχρι το 50. Öncelikle, şunları yapabilmeliyiz: 50'ye kadar olan sayıları tanıyoruz."
+  },
+  {
+    "start": 55.175,
+    "end": 64.698,
+    "gr": "Δεύτερον",
+    "tr": ", θα προσπαθήσουμε να μάθουμε πώς γράφονται με λέξεις οι αριθμοί, μέχρι το 20. İkinci olarak, nasıl olduğunu bulmaya çalışacağız. 20'ye kadar olan sayılar kelimelerle yazılır."
+  },
+  {
+    "start": 66.748,
+    "end": 75.588,
+    "gr": "Μετά θα ξαναδούμε",
+    "tr": ", πώς αναλύουμε τους διψήφιους αριθμούς σε μονάδες και σε δεκάδες. O zaman tekrar göreceğiz, nasıl analiz ettiğimizi. Birler ve onlar basamağındaki iki basamaklı sayılar."
+  },
+  {
+    "start": 77.341,
+    "end": 83.44,
+    "gr": "Θα δούμε διάφορα είδη άβακα και θα δούμε και τι είναι ένας άβακας",
+    "tr": ". Farklı abaküs türlerini göreceğiz ve Ayrıca abaküsün ne olduğunu da göreceğiz."
+  },
+  {
+    "start": 85.536,
+    "end": 91.107,
+    "gr": "Και τέλος θα θυμηθούμε",
+    "tr": ", πώς κάνουμε πρόσθεση με πολλούς αριθμούς. Ve sonunda nasıl olduğunu hatırlayacağız. Birçok sayıyla toplama işlemi yapıyoruz."
+  },
+  {
+    "start": 91.107,
+    "end": 99.005,
+    "gr": "Πριν λοιπόν τα κάνουμε όλα αυτά",
+    "tr": ", θέλω να έρθετε στο δωμάτιό σας, εκεί στη μέση, Öyleyse tüm bunlara başlamadan önce şunu söylemek istiyorum: Odanıza gelin, işte ortada,"
+  },
+  {
+    "start": 99.894,
+    "end": 103.149,
+    "gr": "και να κάνουμε κάτι για να θυμόμαστε τους αριθμούς",
+    "tr": ". ve bir şeyler yapmak Sayıları hatırlıyoruz."
+  },
+  {
+    "start": 103.572,
+    "end": 106.488,
+    "gr": "Θα μετρήσουμε μέχρι το",
+    "tr": "50, αλλά δεν θα μετρήσουμε απλά. 50'ye kadar sayacağız, Ama sadece saymakla kalmayacağız."
+  },
+  {
+    "start": 106.788,
+    "end": 108.406,
+    "gr": "Θα κάνουμε και κάποιες κινήσεις",
+    "tr": ". Biz de bazı adımlar atacağız."
+  },
+  {
+    "start": 108.824,
+    "end": 112.428,
+    "gr": "Λοιπόν δείτε με μία φορά και μετά θα το κάνουμε μαζί",
+    "tr": ". Şimdi bir kez bana bakın. ve sonra bunu birlikte yapacağız."
+  },
+  {
+    "start": 112.916,
+    "end": 115.418,
+    "gr": "Εγώ",
+    "tr": ", εσείς, οι γάτες, οι σκύλοι, οι παπαγάλοι, Ben, sen, kediler, köpekler, papağanlar,"
+  },
+  {
+    "start": 117.686,
+    "end": 120.905,
+    "gr": "άντε και μπορεί και κανένα λαγουδάκι",
+    "tr": ". Tamam, belki de fazla. Tavşan yok."
+  },
+  {
+    "start": 121.571,
+    "end": 123.077,
+    "gr": "Για πάμε λοιπόν να δούμε",
+    "tr": ". O halde gidip görelim."
+  },
+  {
+    "start": 123.215,
+    "end": 125.648,
+    "gr": "1 - ένα 2 - δύο 1 - bir 2 - iki",
+    "tr": "1 - bir 2 - iki 1 - bir 2 - iki"
+  },
+  {
+    "start": 126.515,
+    "end": 128.984,
+    "gr": "3 - τρία 4 - τέσσερα 3 - üç 4 - dört",
+    "tr": "3 - üç 4 - dört 3 - üç 4 - dört"
+  },
+  {
+    "start": 129.27,
+    "end": 131.718,
+    "gr": "5 - πέντε 6 - έξι 5 - beş 6 - altı",
+    "tr": "5 - beş 6 - altı 5 - beş 6 - alti"
+  },
+  {
+    "start": 132.076,
+    "end": 134.383,
+    "gr": "7 - εφτά 8 - οχτώ 7 - yedi 8 - sekiz",
+    "tr": "7 - yedi 8 - sekiz 7 - yedi 8 - sekiz"
+  },
+  {
+    "start": 134.738,
+    "end": 136.988,
+    "gr": "9 - εννέα Κατεβαίνω χαμηλά. 9 - dokuz Aşağı iniyorum.",
+    "tr": "9 - dokuz azalıyorum. 9 - dokuz aşağı iniyorum."
+  },
+  {
+    "start": 137.379,
+    "end": 139.126,
+    "gr": "10 - δέκα Σηκώνομαι ψηλά. 10 - on Kendimi çok iyi hissediyorum.",
+    "tr": "10-10 kafayı buluyorum. 10 - Kendi kendime çok iyi kılışım."
+  },
+  {
+    "start": 139.382,
+    "end": 142.32,
+    "gr": "Και μετά κάνω μία στροφή",
+    "tr": ". Sonra da bir dönüş yapıyorum."
+  },
+  {
+    "start": 142.629,
+    "end": 148.886,
+    "gr": "Κάθε φορά δηλαδή που κατεβαίνω κάτω",
+    "tr": ", σημαίνει ότι πρέπει να αλλάξω δεκάδα. Yani her aşağı indiğimde, Bu, on tanesini değiştirmem gerektiği anlamına geliyor."
+  },
+  {
+    "start": 149.36,
+    "end": 155.202,
+    "gr": "Στο",
+    "tr": "9 κατεβαίνω, στο 10 ανεβαίνω ψηλά και αλλάζω μία δεκάδα. Saat 9'da aşağı inerim, saat 10'da yukarı çıkarım. yüksek ve ben onluk bir değişiklik yapıyorum."
+  },
+  {
+    "start": 155.547,
+    "end": 157.079,
+    "gr": "Και μετά προχωράμε",
+    "tr": ". Ve sonra yolumuza devam ederiz."
+  },
+  {
+    "start": 157.079,
+    "end": 159.885,
+    "gr": "11 - έντεκα 12 - δώδεκα Με τις ίδιες κινήσεις. 11 - on bir 12 - on iki Aynı hareketlerle.",
+    "tr": "11 - on bir 12 - on iki Aynı hareketlerle. 11 - bir 12 - iki Ainy gekilerle."
+  },
+  {
+    "start": 160.18,
+    "end": 163.141,
+    "gr": "Εντάξει παιδάκια",
+    "tr": "; Ξέρω, δεν είναι πάρα πολύ Tamam çocuklar? Bilmek, Çok fazla değil"
+  },
+  {
+    "start": 163.354,
+    "end": 166.035,
+    "gr": "εύκολο",
+    "tr": ", αλλά σιγά σιγά, άμα το μάθουμε αυτό, Kolay ama yavaş, Eğer bunu öğrenirsek,"
+  },
+  {
+    "start": 166.409,
+    "end": 168.882,
+    "gr": "θα μάθουμε να μετράμε πολύ γρήγορα",
+    "tr": ". Çok hızlı bir şekilde saymayı öğreneceğiz."
+  },
+  {
+    "start": 169.123,
+    "end": 173.648,
+    "gr": "και θα μείνουμε και γυμνασμένοι",
+    "tr": ", γιατί θα κάνουμε πολλές επικύψεις και ψηλά. ve formda kalacağız, çünkü Birçok iniş ve çıkış yapacağız."
+  },
+  {
+    "start": 173.766,
+    "end": 174.989,
+    "gr": "Για πάμε ξανά",
+    "tr": ": Tekrar deneyelim:"
+  },
+  {
+    "start": 175.16,
+    "end": 177.386,
+    "gr": "1 - ένα 2 - δύο 1 - bir 2 - iki",
+    "tr": "1 - bir 2 - iki 1 - bir 2 - iki"
+  },
+  {
+    "start": 177.55,
+    "end": 179.788,
+    "gr": "3 - τρία 4 - τέσσερα 3 - üç 4 - dört",
+    "tr": "3 - üç 4 - dört 3 - üç 4 - dört"
+  },
+  {
+    "start": 179.94,
+    "end": 182.012,
+    "gr": "5 - πέντε 6 - έξι 5 - beş 6 - altı",
+    "tr": "5 - beş 6 - altı 5 - beş 6 - alti"
+  },
+  {
+    "start": 182.179,
+    "end": 184.276,
+    "gr": "7 - εφτά 8 - οχτώ 7 - yedi 8 - sekiz",
+    "tr": "7 - yedi 8 - sekiz 7 - yedi 8 - sekiz"
+  },
+  {
+    "start": 184.442,
+    "end": 187.552,
+    "gr": "9 - εννέα 10 - δέκα. Και ψηλά! 9 - dokuz 10 - on. Ve çok yüksek!",
+    "tr": "9 - dokuz 10 - on. Ve yüksek! 9 - dokuz 10 - açık. Çok yüksek!"
+  },
+  {
+    "start": 187.618,
+    "end": 190.524,
+    "gr": "Δεν μπορώ να πηδήξω πολύ ψηλά σήμερα",
+    "tr": ". Για να συνεχίσουμε. Çok uzağa zıplayamıyorum. Bugün yüksek. Devam etmek için."
+  },
+  {
+    "start": 190.915,
+    "end": 192.763,
+    "gr": "11 - έντεκα 12 - δώδεκα 11 - on bir 12 - on iki",
+    "tr": "11 - onbir 12 - on iki 11 - bir 12 - ikide"
+  },
+  {
+    "start": 192.928,
+    "end": 195.03,
+    "gr": "13 - δεκατρία 14 - δεκατέσσερα 13 - on üç 14 - on dört",
+    "tr": "13 - on üç 14 - on dört 13 - üç 14 - dört"
+  },
+  {
+    "start": 195.235,
+    "end": 197.045,
+    "gr": "15 - δεκαπέντε 16 - δεκαέξι 15 - on beş 16 - on altı",
+    "tr": "15 - on beş 16 - on altı 15 - beş 16 - alti üzerinde"
+  },
+  {
+    "start": 197.275,
+    "end": 199.379,
+    "gr": "17 - δεκαεφτά 18 - δεκαοχτώ 17 - on yedi 18 - on sekiz",
+    "tr": "17 - on yedi 18 - on sekiz 17 - yedi 18 - sekizde"
+  },
+  {
+    "start": 199.562,
+    "end": 202.882,
+    "gr": "19 - δεκαεννέα - Χαμηλά! 20! 19 - on dokuz - Düşük! 20!",
+    "tr": "19 - on dokuz - Aşağı! 20! 19 - dokuzda - Düşük! 20!"
+  },
+  {
+    "start": 203.243,
+    "end": 206.028,
+    "gr": "20 - είκοσι. Αλλάζουμε δεκάδα και πάμε ξανά. 20 - yirmi. Değişiyoruz On ve tekrar başlıyoruz.",
+    "tr": "20 - yirmi. On değiştirip tekrar gidiyoruz. 20 - yirmi. Değişiyoruz ve yeniden başlıyoruz."
+  },
+  {
+    "start": 206.208,
+    "end": 208.683,
+    "gr": "21 - εικοσιένα 22 - εικοσιδύο 21 - yirmi bir 22 - yirmi iki",
+    "tr": "21 - yirmi bir 22 - yirmi iki 21 - yirmi bir 22 - yirmi iki"
+  },
+  {
+    "start": 208.858,
+    "end": 211.081,
+    "gr": "23 - εικοσι τρία 24 - εικοσιτέσσερα 23 - yirmi üç 24 - yirmi dört",
+    "tr": "23 - yirmi üç 24 - yirmi dört 23 - yirmi üç 24 - yirmi dört"
+  },
+  {
+    "start": 211.258,
+    "end": 213.094,
+    "gr": "25 - εικοσιπέντε 26 - είκοσι έξι 25 - yirmi beş 26 - yirmi altı",
+    "tr": "25 - yirmi beş 26 - yirmi altı 25 - yirmi beş 26 - yirmi alti"
+  },
+  {
+    "start": 213.265,
+    "end": 215.508,
+    "gr": "27 - είκοσι εφτά 28 - είκοσι οχτώ 27 - yirmi yedi 28 - yirmi sekiz",
+    "tr": "27 - yirmi yedi 28 - yirmi sekiz 27 - yirmi yedi 28 - yirmi sekiz"
+  },
+  {
+    "start": 215.681,
+    "end": 218.456,
+    "gr": "29 - εικοσιεννιά 30 - τριάντα. Πηδάμε ψηλά! 29 - yirmi dokuz 30 - otuz. Haydi yükseğe zıplayalım!",
+    "tr": "29 - yirmi dokuz 30 - otuz. Haydi yükseğe zıplayalım! 29 - yirmi dokuz 30 - otuz. Haydi yükseğe zıplayalım!"
+  },
+  {
+    "start": 218.456,
+    "end": 219.858,
+    "gr": "Πιο ψηλά πρέπει να πηδήξετε εσείς",
+    "tr": ". Daha yükseğe zıplamalısın."
+  },
+  {
+    "start": 220.018,
+    "end": 222.506,
+    "gr": "Εγώ δεν μπορώ να πηδήξω ψηλά",
+    "tr": ", είμαι και γριά γυναίκα. Zıplayamıyorum. Merhaba, ben de yaşlı bir kadınım."
+  },
+  {
+    "start": 222.506,
+    "end": 225.525,
+    "gr": "Πάμε",
+    "tr": "! Πού ήμουνα; 30; 30. Πάμε! Haydi gidelim! Nerede kalmıştım? 30; 30. Haydi gidelim!"
+  },
+  {
+    "start": 225.547,
+    "end": 227.096,
+    "gr": "31 - τριάντα ένα 32 - τριάντα δύο 31 - otuz bir 32 - otuz iki",
+    "tr": "31 - otuz bir 32 - otuz iki 31 - otuz bir 32 - otuz iki"
+  },
+  {
+    "start": 227.284,
+    "end": 229.467,
+    "gr": "33 - τριάντα τρία 34 - τριάντα τέσσερα 33 - otuz üç 34 - otuz dört",
+    "tr": "33 - otuz üç 34 - otuz dört 33 - otuz üç 34 - otuz dört"
+  },
+  {
+    "start": 229.632,
+    "end": 231.699,
+    "gr": "35 - τριάντα πέντε 36 - τριάντα έξι 35 - otuz beş 36 - otuz altı",
+    "tr": "35 - otuz beş 36 - otuz altı 35 - otuz beş 36 - otuz alti"
+  },
+  {
+    "start": 231.872,
+    "end": 233.785,
+    "gr": "37 - τριάντα εφτά 38 - τριάντα οχτώ 37 - otuz yedi 38 - otuz sekiz",
+    "tr": "37 - otuz yedi 38 - otuz sekiz 37 - otuz yedi 38 - otuz sekiz"
+  },
+  {
+    "start": 233.954,
+    "end": 236.89,
+    "gr": "39 - τριάντα εννιά 40 - σαράντα! 39 - otuz dokuz 40 - kırk!",
+    "tr": "39 - otuz dokuz 40 - kırk! 39 - otuz dokuz 40 - kırk!"
+  },
+  {
+    "start": 237.052,
+    "end": 239.457,
+    "gr": "Εντάξει παιδάκια",
+    "tr": "; Βλέπουμε και τους αριθμούς από εκεί. Tamam çocuklar? Görüyoruz ve oradan gelen sayılar."
+  },
+  {
+    "start": 239.694,
+    "end": 241.919,
+    "gr": "41 - σαράντα ένα 42 - σαράντα δύο 41 - kırk bir 42 - kırk iki",
+    "tr": "41 - kırk bir 42 - kırk iki 41 - kırk bir 42 - kırk iki"
+  },
+  {
+    "start": 242.075,
+    "end": 244.36,
+    "gr": "43 - σαράντα τρία 44 - σαράντα τέσσερα 43 - kırk üç 44 - kırk dört",
+    "tr": "43 - kırk üç 44 - kırk dört 43 - kırk üç 44 - kırk dört"
+  },
+  {
+    "start": 244.556,
+    "end": 246.606,
+    "gr": "45 - σαράντα πέντε 46 - σαράντα έξι 45 - kırk beş 46 - kırk altı",
+    "tr": "45 - kırk beş 46 - kırk altı 45 - kırk beş 46 - kırk altı"
+  },
+  {
+    "start": 246.646,
+    "end": 250.181,
+    "gr": "47 - σαράντα εφτά, 48 - σαράντα οχτώ Ουφ! Λαχάνιασα… 47 - kırk yedi, 48 - kırk sekiz Of! Nefesim kesildi…",
+    "tr": "47 - kırk yedi, 48 - kırk sekiz Ah! Nefesim kesildi… 47 - kırk yedi, 48 - kırk sekiz Of! Nefesim kesildi…"
+  },
+  {
+    "start": 250.375,
+    "end": 252.484,
+    "gr": "49 - σαράντα εννιά 50 - πενήντα 49 - kırk dokuz 50 - elli",
+    "tr": "49 - kırk dokuz 50 - elli 49 - kırk dokuz 50 - elli"
+  },
+  {
+    "start": 252.845,
+    "end": 256.912,
+    "gr": "Παιδιά",
+    "tr": ", ωχ παιδιά, λαχάνιασα πάρα πολύ. Δεν είμαι για τέτοια. Arkadaşlar, vay canına, diye haykırdım. fazla. Ben o tür şeylerden yana değilim."
+  },
+  {
+    "start": 257.115,
+    "end": 260.323,
+    "gr": "Πού να φτάσουμε στο",
+    "tr": "100. Δε θέλω να μιλήσω για το 1000. 100'e nasıl ulaşacağız? 1000'den bahsetmek istemiyorum."
+  },
+  {
+    "start": 260.489,
+    "end": 266.002,
+    "gr": "Εντάξει",
+    "tr": "; Θα βρείτε δηλαδή διάφορες κινήσεις, για να μετράτε πάρα πολλές φορές. Tamam; Çeşitli şeyler bulacaksınız. hareketleri çok fazla kez saymak."
+  },
+  {
+    "start": 266.189,
+    "end": 270.581,
+    "gr": "Όμως δεν μας φτάνει μόνο να μετράμε",
+    "tr": ", έτσι, έτσι, έτσι και να τα λέμε. Ama sadece saymak bize yetmez, Bu yüzden,"
+  },
+  {
+    "start": 270.75,
+    "end": 277.382,
+    "gr": "Θα πρέπει να ξέρουμε",
+    "tr": ", όταν βλέπουμε αυτόν τον αριθμό στον δρόμο, ποιος αριθμός είναι. Onu gördüğümüzde anlamalıyız. Sokaktaki numara, kaç numara?"
+  },
+  {
+    "start": 278.648,
+    "end": 282.175,
+    "gr": "Ε",
+    "tr": "; Μην τον βλέπουμε και λέμε: Α τι να είναι αυτό τώρα; Ha? Ona bakıp da şöyle demeyelim: Bu da ne şimdi?"
+  },
+  {
+    "start": 282.333,
+    "end": 285.925,
+    "gr": "Να είναι",
+    "tr": "5, να είναι 8, να είναι 4, να είναι κάτι ανάμεσα; Beş olsun, sekiz olsun, dört olsun, İkisinin arasında bir şey olabilir mi?"
+  },
+  {
+    "start": 286.143,
+    "end": 289.794,
+    "gr": "Να ξέρουμε ποιος αριθμός είναι",
+    "tr": ". Σύμφωνοι παιδάκια; Μπράβο! Hangi numara olduğunu öğrenelim. Öyle. Anlaştık mı çocuklar? Tebrikler!"
+  },
+  {
+    "start": 290.0,
+    "end": 293.642,
+    "gr": "Τώρα θα σας πω ένα ανέκδοτο",
+    "tr": ". Όχι. Δύο ανέκδοτα. Şimdi size bir anekdot anlatacağım. Hayır. İki anekdot."
+  },
+  {
+    "start": 293.834,
+    "end": 297.842,
+    "gr": "Έτσι λίγο για να μη σας κουράσω πάρα πολύ σήμερα",
+    "tr": ". Yani birazcık, böylece siz de yapmazsınız. Bugün çok yorgunum."
+  },
+  {
+    "start": 298.015,
+    "end": 308.993,
+    "gr": "Λοιπόν έχω το",
+    "tr": "0, έχω το 6 και έχω και το 8. Τι λέει το 0 στο 6; Έλα, είναι αστείο. Yani bende 0 var, bende 6 var ve ayrıca bende de var. 8. 0 / 6 ne anlama gelir? Hadi ama, komik değil mi?"
+  },
+  {
+    "start": 309.564,
+    "end": 313.376,
+    "gr": "Ακόμα δεν το βρήκατε",
+    "tr": "; Πάλι ο σκύλος το βρήκε. Hâlâ bulamadınız mı? Köpek onu tekrar buldu."
+  },
+  {
+    "start": 313.735,
+    "end": 317.562,
+    "gr": "Ξέρετε τι του λέει",
+    "tr": "; Γελάω μόνη μου με τα αστεία μου! Ona ne söylediğini biliyor musun? Gülüyorum. Şakalarımla baş başa kaldım!"
+  },
+  {
+    "start": 317.776,
+    "end": 320.02,
+    "gr": "«Πετάνε τα μαλλιά σου! Σου πετάει μία τρίχα.» \"Saçların uçuşuyor!\" \"Bir saç teliniz eksik.\"",
+    "tr": "\"Saçların uçuşuyor! Bir kıl kadar uzaktasın.\" \"Saçalın volutuyor!\" \"Bir saç teliniz eşik.\""
+  },
+  {
+    "start": 321.452,
+    "end": 326.38,
+    "gr": "Τι λέει τώρα το",
+    "tr": "0 στο 8; Για σκεφτείτε τι μπορεί να του λέει. 0, 8'de şimdi ne diyor? Onun ona neler söyleyebileceğini bir düşünün."
+  },
+  {
+    "start": 327.689,
+    "end": 332.827,
+    "gr": "Του λέει",
+    "tr": ": «Μμμ… ζωνίτσα σήμερα;» Ποιος το κατάλαβε; Ona şöyle diyor: \"Hım... bugün keyifsiz misin?\" Bunu kim anladı?"
+  },
+  {
+    "start": 333.006,
+    "end": 335.539,
+    "gr": "Δεν το καταλάβατε",
+    "tr": "; Κανένας δεν γελάει μου φαίνεται. Anlamadın mı? Hiçbiri Güldüğüne benzemiyor."
+  },
+  {
+    "start": 335.722,
+    "end": 337.681,
+    "gr": "Κι ο σκύλος έφυγε",
+    "tr": ". Πάει κι αυτός. Ve köpek gitti. O da gidiyor."
+  },
+  {
+    "start": 337.854,
+    "end": 343.538,
+    "gr": "Τώρα",
+    "tr": ", αφού μετρήσαμε τους αριθμούς, Şimdi, sayıları saydıktan sonra,"
+  },
+  {
+    "start": 343.721,
+    "end": 346.738,
+    "gr": "στο βιβλία μας λέει να μάθουμε και να τους γράφουμε",
+    "tr": ". Kitaplarda bize öğrenmemiz gerektiği söyleniyor. ve onlara yazın."
+  },
+  {
+    "start": 346.939,
+    "end": 352.665,
+    "gr": "Θα μου πεις",
+    "tr": ": «Κυρία γιατί να τους γράφουμε, αφού μπορώ να γράψω το 8 έτσι». Bana şöyle diyeceksiniz: \"Hanımefendi, neden böyle bir şey yapsınlar ki?\" \"Yazıyoruz, çünkü ben bu şekilde 8 tane yazabiliyorum.\""
+  },
+  {
+    "start": 352.897,
+    "end": 358.85,
+    "gr": "«Γιατί να σπάω το κεφάλι μου να δω πώς γράφεται. \"ο\" ή \"ω\". Άστο καλύτερα». \"Bunu görmek için neden kafamı yormalıyım ki?\" Nasıl yazılıyor? \"o\" veya \"ω\". \"Bu daha iyi.\"",
+    "tr": "\"Neden bunun nasıl yazıldığını bulmaya uğraşmaya gerek var mı? \"o\" mu yoksa \"o\" mu? Böylesi daha iyi.\" \"Bunu görmek için neden kafamı yormaliyim ki?\" Nasıl yazılır? \"o\" veya \"ah\". \"Bu daha iyi.\""
+  },
+  {
+    "start": 359.362,
+    "end": 363.277,
+    "gr": "Για να δούμε πώς γράφονται",
+    "tr": ". Έχετε τετραδιάκι μαζί; Bakalım nasıl yazılmışlar. Yanınızda not defteri var mı?"
+  },
+  {
+    "start": 363.672,
+    "end": 366.685,
+    "gr": "Έχετε φέρει το αγαπημένο σας τετράδιο",
+    "tr": "; Ξέχασα να σας το πω. En sevdiğinizi getirdiniz mi? defter; Sana söylemeyi unuttum."
+  },
+  {
+    "start": 366.871,
+    "end": 369.09,
+    "gr": "Για τρέξτε",
+    "tr": "! Προλαβαίνετε δεν προλαβαίνετε. Koşmak! Ya zamanında yetişirsiniz ya da yetişmezsiniz."
+  },
+  {
+    "start": 369.294,
+    "end": 372.322,
+    "gr": "Πήρατε κι ένα πολύ ωραίο μολυβάκι να γράφετε",
+    "tr": "; Yazmak için gerçekten güzel bir kalem de aldın mı?"
+  },
+  {
+    "start": 372.437,
+    "end": 375.421,
+    "gr": "Ωραία",
+    "tr": ". Αρχίζουμε. Güzel. Başlıyoruz."
+  },
+  {
+    "start": 375.421,
+    "end": 379.443,
+    "gr": "1 και γράφουμε δίπλα τη λεξούλα. 1 ve kelimeyi yanına yazın.",
+    "tr": "1 ve yanındaki kelimeyi yazın. 1."
+  },
+  {
+    "start": 379.904,
+    "end": 383.646,
+    "gr": "2 ξέρετε να το γράφετε; 2. Bunu nasıl yazacağınızı biliyor musunuz?",
+    "tr": "2 Nasıl yazılacağını biliyor musun? 2. Nasıl yapılacağını biliyor musun?"
+  },
+  {
+    "start": 384.629,
+    "end": 389.524,
+    "gr": "Ξέρουν περίπου",
+    "tr": "8452 παιδιά, ο σκύλος και η γάτα. Αυτά είναι σταθερά. 8452 çocuk hakkında bilgi sahibiler. köpek ve kedi. Bunlar sabittir."
+  },
+  {
+    "start": 390.099,
+    "end": 392.603,
+    "gr": "3 πολύ ωραία. 3 çok güzel.",
+    "tr": "3 çok güzel. 3 çok güzel."
+  },
+  {
+    "start": 392.919,
+    "end": 400.186,
+    "gr": "4 ωχ! κάτσε γιατί εδώ το 4 θέλει δύο \"-σ\". (τέσσερα) 4 oh! Bekle, çünkü burada 4'e iki \"-s\" gerekiyor. (dört)",
+    "tr": "4 ah! oturun çünkü burada 4'ün iki \"-s\"ye ihtiyacı var. (dört) 4 ah! Bekle, çünkü burada 4'e iki \"-s\" gerekiyor. (dört)"
+  },
+  {
+    "start": 400.367,
+    "end": 406.958,
+    "gr": "5 Το πέντε όταν ήμουν μικρή θα σας πω μία πολύ θλιβερή ιστορία. 5 Küçükken, ben Size çok üzücü bir hikaye anlatacağım.",
+    "tr": "5 Beş yaşındayken size çok üzücü bir hikaye anlatacağım. 5 Küçükken, ben Size çok üzücü bir hikaye anlatacağım."
+  },
+  {
+    "start": 407.46,
+    "end": 412.973,
+    "gr": "Το έκανα ανάποδα",
+    "tr": ". Δεν μπορούσα ποτέ να το κάνω ίσια. Κι έκλαιγα, έκλαιγα, έκλαιγα… Ters çevirerek yaptım. Ben asla Doğrudan yapıyorum. Ve ağladım, ağladım, ağladım..."
+  },
+  {
+    "start": 413.762,
+    "end": 418.28,
+    "gr": "Το θυμάμαι ακόμα δηλαδή μετά από περίπου",
+    "tr": "35 χρόνια. Bunu hâlâ hatırlıyorum. Yaklaşık 35 yıl sonra."
+  },
+  {
+    "start": 418.651,
+    "end": 425.151,
+    "gr": "Λοιπόν γράφω το",
+    "tr": "5 έτσι. Σύμφωνοι; Το έμαθα. Yani 5'i şu şekilde yazıyorum. Kabul etmek? Bunu öğrendim."
+  },
+  {
+    "start": 425.33,
+    "end": 427.07,
+    "gr": "Μη νομίζετε",
+    "tr": ", μεγάλη κι εγώ το έμαθα. Öyle düşünmüyorum, ben bunu daha büyük yaşlarda öğrendim."
+  },
+  {
+    "start": 427.259,
+    "end": 431.709,
+    "gr": "Μην αγχώνεστε γιατί δεν το μάθατε ακόμα",
+    "tr": ". Θα το μάθετε. Πάμε στο επόμενο. Endişelenme, bunu öğrenmedin. Hala. Öğreneceksin. Bir sonrakine geçelim."
+  },
+  {
+    "start": 431.977,
+    "end": 434.719,
+    "gr": "6 - έξι 7 - εφτά 6 - altı 7 - yedi",
+    "tr": "6 - altı 7 - yedi 6 - alti 7 - yedi"
+  },
+  {
+    "start": 436.823,
+    "end": 440.409,
+    "gr": "8 αυτό λιγάκι είναι περίεργο το 8. 8, bu biraz garip, 8.",
+    "tr": "8 bu biraz tuhaf 8. 8, ama biraz garip, 8."
+  },
+  {
+    "start": 440.752,
+    "end": 444.734,
+    "gr": "9 - εννέα 10 - δέκα 108 9 - dokuz 10 - on 108",
+    "tr": "9 - dokuz 10 - on 108 9 - dokuz 10 - 108'de"
+  },
+  {
+    "start": 450.768,
+    "end": 453.966,
+    "gr": "11 - έντεκα 12 - δώδεκα 11 - on bir 12 - on iki",
+    "tr": "11 - onbir 12 - on iki 11 - bir 12 - ikide"
+  },
+  {
+    "start": 455.759,
+    "end": 460.721,
+    "gr": "13 - δεκατρία 14 - δεκατέσσερα 13 - on üç 14 - on dört",
+    "tr": "13 - on üç 14 - on dört 13 - üç 14 - dört"
+  },
+  {
+    "start": 461.865,
+    "end": 464.542,
+    "gr": "15 - δεκαπέντε. Είναι μία λέξη. 15 - on beş. Tek kelime.",
+    "tr": "15 - on beş. Tek kelime. 15 - beşte. Tek kelime."
+  },
+  {
+    "start": 464.748,
+    "end": 468.903,
+    "gr": "Αν ξέρω πώς γράφεται το",
+    "tr": "10 και το 5, απλά τα ενώνω μαζί. 10'u nasıl heceleyeceğimi biliyorsam ve 5'i de bir araya getirdim."
+  },
+  {
+    "start": 469.154,
+    "end": 471.123,
+    "gr": "Δεν κάθομαι",
+    "tr": ", να σπάω το κεφάλι μου πώς γράφεται. Burada oturup bunu bozacak değilim. Kafam, nasıl yazılıyor?"
+  },
+  {
+    "start": 471.362,
+    "end": 476.355,
+    "gr": "16 - δεκαέξι 17 - δεκαεφτά 16 - on altı 17 - on yedi",
+    "tr": "16 - on altı 17 - on yedi 16 - alti 17 - yedide"
+  },
+  {
+    "start": 477.84,
+    "end": 484.7,
+    "gr": "18 - δεκαοχτώ, 19 - δεκαεννέα, και 20 - είκοσι! 18 - on sekiz, 19 - on dokuz ve 20 - yirmi!",
+    "tr": "18 - on sekiz, 19 - on dokuz ve 20 - yirmi! 18 - sekizde, 19 - dokuzda ve 20 - yirmide!"
+  },
+  {
+    "start": 485.155,
+    "end": 489.975,
+    "gr": "Το",
+    "tr": "20 γράφεται με «ει» στην αρχή. Το έχετε μάθει κι αυτό. 20, \"ei\" harfleriyle yazılır. prensip. Bunu da sen öğrendin."
+  },
+  {
+    "start": 491.242,
+    "end": 498.93,
+    "gr": "Τώρα πες",
+    "tr": "…να βρούμε ένα ζωάκι που μπορεί να ανέβει 10-10 σκαλάκια. Şimdi söyle bakalım... bir hayvan bulalım. 10-10 basamak çıkabilen kişi."
+  },
+  {
+    "start": 499.355,
+    "end": 501.935,
+    "gr": "Για βρείτε ένα ζωάκι που μπορεί να ανέβει",
+    "tr": "10-10 σκαλάκια. Bir hayvan bulmak için 10-10 basamak çıkabilir."
+  },
+  {
+    "start": 502.91,
+    "end": 507.231,
+    "gr": "Μπορεί ο ελέφαντας",
+    "tr": "; Όχι κυρία δεν μπορεί, δεν χωράει στη σκάλα. θα σφηνώσει. Fil bunu yapabilir mi? Hayır efendim, hayır. Belki de merdivenlere sığmaz. Sıkışıp kalacak."
+  },
+  {
+    "start": 508.893,
+    "end": 514.584,
+    "gr": "Μπορεί η μαϊμού",
+    "tr": "; Η μαϊμού, αν είναι πολύ τσαχπίνα θα πεταχτεί, δεν μπορώ να πω. Maymun yapabilir mi? Maymun, eğer çok Atılıp atılmayacağını söyleyemem."
+  },
+  {
+    "start": 518.397,
+    "end": 521.685,
+    "gr": "Βρείτε ένα ζωάκι",
+    "tr": ". Και πάμε λοιπόν με αυτό το ζωάκι Bir hayvan bulun. Hadi başlayalım! yani bu küçük hayvanla"
+  },
+  {
+    "start": 521.877,
+    "end": 525.811,
+    "gr": "να αρχίσουμε",
+    "tr": ", να ανεβαίνουμε 10-10 σκαλάκια. 10 basamak çıkarak başlayalım."
+  },
+  {
+    "start": 526.191,
+    "end": 528.937,
+    "gr": "Από το",
+    "tr": "0 θα πηδήξει κατευθείαν στο 10. 0'dan doğrudan 10'a atlayacak."
+  },
+  {
+    "start": 529.575,
+    "end": 531.345,
+    "gr": "Από το",
+    "tr": "10 στο 20 10 ila 20 arası"
+  },
+  {
+    "start": 531.688,
+    "end": 533.598,
+    "gr": "από το",
+    "tr": "20 στο 30 20 ile 30 arasında"
+  },
+  {
+    "start": 533.761,
+    "end": 535.883,
+    "gr": "από το",
+    "tr": "30 στο 40 30 ile 40 arası"
+  },
+  {
+    "start": 536.078,
+    "end": 538.539,
+    "gr": "κι από το",
+    "tr": "40 στο 50 και καίγεται. ve 40 ile 50 arasında yanıyor."
+  },
+  {
+    "start": 539.524,
+    "end": 540.684,
+    "gr": "Α",
+    "tr": "! Κι ανάποδα. A! Ve bunun tam tersi de geçerli."
+  },
+  {
+    "start": 540.931,
+    "end": 548.327,
+    "gr": "",
+    "tr": "50, 40, 30, 20, 10 50, 40, 30, 20, 10"
+  },
+  {
+    "start": 548.931,
+    "end": 551.0,
+    "gr": "0 και πέφτει στο πηγάδι. 0 ve kuyuya düşüyor.",
+    "tr": "0 ve kuyuya düşüyor. 0 ve kuyuya düşüyor."
+  },
+  {
+    "start": 551.318,
+    "end": 552.704,
+    "gr": "Όχι και μέσα στο πηγάδι",
+    "tr": ", βρε κυρία. Hanımefendi, kuyuda bile değil."
+  },
+  {
+    "start": 553.721,
+    "end": 557.195,
+    "gr": "Α",
+    "tr": "! Βρήκα. Ένα πουλάκι μπορεί να πηδήξει 10 σκαλάκια. A! Buldum. Küçük bir kuş 10 basamak atlayabilir."
+  },
+  {
+    "start": 557.367,
+    "end": 559.465,
+    "gr": "Πετάει και πηδάει",
+    "tr": ". Μια χαρά. Uçar ve zıplar. Tamam aşkım."
+  },
+  {
+    "start": 560.041,
+    "end": 566.199,
+    "gr": "Τώρα τελειώσαμε με τους αριθμούς και λέμε τι είναι ένας άβακας",
+    "tr": ". Sayılarla işimiz bitti. Ve biz de abaküsün ne olduğunu söylüyoruz."
+  },
+  {
+    "start": 566.473,
+    "end": 569.497,
+    "gr": "Ο άβακας λοιπόν",
+    "tr": ", ήταν ένα όργανο, Abaküs bir araçtı."
+  },
+  {
+    "start": 569.674,
+    "end": 572.209,
+    "gr": "που το χρησιμοποιούσαν στα αρχαία χρόνια",
+    "tr": ". Bu, eski zamanlarda kullanılıyordu."
+  },
+  {
+    "start": 572.372,
+    "end": 574.431,
+    "gr": "Πάλι σας λέω για αρχαία",
+    "tr": ", δεν ξέρω. Yine söylüyorum, size eski zamanlardan bahsediyorum, bilmiyorum."
+  },
+  {
+    "start": 576.454,
+    "end": 581.563,
+    "gr": "Και έβγαινε από την αρχαία ελληνική λέξη",
+    "tr": "\"άβαξ\", δηλαδή χωρίς βάση. Ve bu, eski Yunancadan gelmektedir. \"Abax\" kelimesi, \"temelsiz\" anlamına gelir."
+  },
+  {
+    "start": 581.727,
+    "end": 587.082,
+    "gr": "Ά",
+    "tr": "– βαξ. Στη συνέχεια σήμαινε πίνακας υπολογισμών. A – balmumu. Daha sonra Hesaplama tablosu anlamına geliyordu."
+  },
+  {
+    "start": 587.374,
+    "end": 590.956,
+    "gr": "Τότε δεν είχαν ούτε κομπιουτεράκι",
+    "tr": ", ούτε έγραφαν εύκολα στο χαρτί. O zamanlar bilgisayar bile yoktu. Ayrıca kağıda kolayca yazı yazamıyorlardı."
+  },
+  {
+    "start": 591.183,
+    "end": 595.18,
+    "gr": "Έπρεπε να σκαλίζουν τις πέτρες",
+    "tr": ", έπρεπε να τα μετράνε ένα-ένα, δεν γινότανε. Taşları yontmak zorunda kaldılar. Onları tek tek saymak zorunda kaldılar, bu mümkün değildi."
+  },
+  {
+    "start": 596.196,
+    "end": 601.517,
+    "gr": "Για να δούμε εδώ στη διαφάνεια άβακες από τα παλιά παλιά χρόνια",
+    "tr": ". Şimdi slayta bakalım. Eski zamanlardan kalma abaküsler."
+  },
+  {
+    "start": 601.952,
+    "end": 604.56,
+    "gr": "Ο πρώτος είναι ο ελληνικός άβακας",
+    "tr": ". İlki Yunan abaküsüdür."
+  },
+  {
+    "start": 605.747,
+    "end": 607.454,
+    "gr": "Ο ρωμαϊκός",
+    "tr": ". Romalı."
+  },
+  {
+    "start": 607.989,
+    "end": 611.514,
+    "gr": "Ο κινέζικος",
+    "tr": ", σας έχω και κινέζικο, να μην λέτε. Çinliler, sizi yakaladım. Ve Çinliler, söylemeyin."
+  },
+  {
+    "start": 612.458,
+    "end": 614.467,
+    "gr": "Ο ιαπωνικός",
+    "tr": "- και ιαπωνικό! Japonlar - ve Japonlar!"
+  },
+  {
+    "start": 615.194,
+    "end": 619.867,
+    "gr": "Και ο σημερινός σχολικός άβακας",
+    "tr": ", το αριθμητήριο. Ve günümüzün okul abaküsü, yani aritmetik makinesi."
+  },
+  {
+    "start": 620.305,
+    "end": 623.318,
+    "gr": "Όλοι έχετε στην τάξη σας ένα αριθμητήριο και στο σπίτι σας",
+    "tr": ". Sınıfınızdaki herkesin bir Evinizdeki hesap makinesi."
+  },
+  {
+    "start": 623.641,
+    "end": 628.472,
+    "gr": "Βλέπετε ότι έχουμε ανά",
+    "tr": "10 κάθε οριζόντια στήλη Gördüğünüz gibi bizde her biri var. her yatay sütunda 10 adet"
+  },
+  {
+    "start": 628.788,
+    "end": 630.393,
+    "gr": "και χωρίζεται με δύο χρώματα",
+    "tr": ". ve iki renkle ayrılmıştır."
+  },
+  {
+    "start": 630.605,
+    "end": 632.61,
+    "gr": "Γιατί το κάνει αυτό",
+    "tr": "; Δεν άκουσα; Bunu neden yapıyor? Duymadım mı?"
+  },
+  {
+    "start": 633.6,
+    "end": 636.726,
+    "gr": "Το κάνει γιατί χωρίζει",
+    "tr": "5 και 5 κι έτσι εμείς λοιπόν Bunu 5'e böldüğü için yapıyor. ve 5 ve böylece biz"
+  },
+  {
+    "start": 636.751,
+    "end": 641.899,
+    "gr": "χωρίς να μετράμε",
+    "tr": "1, 2, 3, 4, 5 ξέρουμε ότι αυτό είναι 5. 1, 2, 3 saymadan, 4, 5, bunun 5 olduğunu biliyoruz."
+  },
+  {
+    "start": 642.108,
+    "end": 644.938,
+    "gr": "Σύμφωνοι παιδάκια",
+    "tr": "; Ξέρουμε ότι αυτά είναι 10. Anlaştık mı çocuklar? Bunların 10 tane olduğunu biliyoruz."
+  },
+  {
+    "start": 645.121,
+    "end": 651.785,
+    "gr": "Πολύ σημαντικό εργαλείο στις πρώτες μας στιγμές με την Αριθμητική",
+    "tr": ". Çok önemli bir araç Aritmetikle ilk anlarımız."
+  },
+  {
+    "start": 652.157,
+    "end": 656.258,
+    "gr": "Για να προχωρήσουμε",
+    "tr": ". Για να δούμε λιγάκι τι είναι οι μονάδες και οι δεκάδες. Devam edelim. Görelim. Birler ve onlar basamağı hakkında biraz bilgi."
+  },
+  {
+    "start": 656.578,
+    "end": 665.125,
+    "gr": "Όταν έχουμε",
+    "tr": "10 πράσινες μάρκες κι αυτές μπορούμε να τις ανταλλάξουμε με 1 κόκκινη, Elimizde 10 yeşil fiş ve bunlar olduğunda Bunları 1 adet kırmızı olanla değiştirebiliriz."
+  },
+  {
+    "start": 665.309,
+    "end": 669.909,
+    "gr": "τότε λέμε ότι η κόκκινη μάρκα αντιστοιχεί σε",
+    "tr": "1 δεκάδα. o zaman kırmızının Bu işaret 1 onluğa karşılık gelir."
+  },
+  {
+    "start": 670.258,
+    "end": 673.45,
+    "gr": "Σύμφωνοι παιδιά",
+    "tr": "; Για κοιτάξτε εδώ, στη διαφάνεια. Anlaştık mı arkadaşlar? Bakın burada, slaytta."
+  },
+  {
+    "start": 673.662,
+    "end": 678.275,
+    "gr": "Ο Πυθαγόρας έχει",
+    "tr": "1, 2, 3, 4, …. 16 μάρκες. Pisagor'un 1, 2, 3, 4, … sayıları vardır. 16 fiş."
+  },
+  {
+    "start": 678.458,
+    "end": 681.289,
+    "gr": "Τις είχα μετρήσει πριν",
+    "tr": ", δεν μέτρησα τόσο γρήγορα. Μη νομίζετε! Onları daha önce saymıştım, değil mi? Çok hızlı saydım. Öyle düşünmüyorum!"
+  },
+  {
+    "start": 681.675,
+    "end": 687.72,
+    "gr": "16 πράσινες και έχει και 1 κόκκινη. Πόσες έχει σύνολο; 16 yeşil ve 1 kırmızı. Toplamda kaç tane var?",
+    "tr": "16 yeşil ve 1 kırmızı var. Toplamda kaç tane var? 16 yeşil ve 1 kırmızı. Toplam kaç tane var?"
+  },
+  {
+    "start": 687.929,
+    "end": 693.692,
+    "gr": "Αφού η",
+    "tr": "1 κόκκινη αντιστοιχεί σε 10 πράσινες, έχουμε 10... 1 kırmızı, şuna karşılık gelir: 10 yeşil olanın içinde 10 tane var..."
+  },
+  {
+    "start": 693.693,
+    "end": 696.204,
+    "gr": "Γιατί το έβαλα πέρα",
+    "tr": ", αφού μου χρειάζεται. Madem ihtiyacım var, neden bir kenara koydum ki?"
+  },
+  {
+    "start": 696.307,
+    "end": 704.437,
+    "gr": "10 που είναι η κόκκινη και άλλες 6 κι άλλες μάλλον 16 μας κάνει... 10 numara, yani kırmızı olan ve diğerleri 6 ve üzeri muhtemelen bizi 16 yapar...",
+    "tr": "10 olan kırmızı olan 6 ve diğerleri muhtemelen bizi 16 yapar... 10 numara, yani kırızmi olan ve diğerleri 6 ve üzeri muhtemelen bizi 16 yapar..."
+  },
+  {
+    "start": 704.629,
+    "end": 707.601,
+    "gr": "...10, 20 και 6 ίσον 26. ...10, 20 ve 6, 26'ya eşittir.",
+    "tr": "...10, 20 ve 6 eşittir 26. ...10, 20 ve 6, 26'ya eşittir."
+  },
+  {
+    "start": 707.824,
+    "end": 717.379,
+    "gr": "Άρα ο Πυθαγόρας έχει",
+    "tr": "26. Η Υπατία όμως μας λέει, ότι έχει 3 κόκκινες δηλαδή... Yani Pisagor'un 26'sı var. Hypatia Ama bize 3 tane kırmızı olanı olduğunu söylüyor..."
+  },
+  {
+    "start": 717.565,
+    "end": 725.798,
+    "gr": "10, 20, 30 και 2 πράσινες... δηλαδή...1,2 10, 20, 30 ve 2 yeşil... yani... 1, 2",
+    "tr": "10, 20, 30 ve 2 yeşil... yani...1,2 10, 20, 30 ve 2 yeşil... yani... 1, 2"
+  },
+  {
+    "start": 726.136,
+    "end": 729.511,
+    "gr": "Ποιο είναι πιο μεγάλο",
+    "tr": "; Το 26 ή το 32; Hangisi daha büyük? 26'sı mı, yoksa 32'si mi?"
+  },
+  {
+    "start": 729.955,
+    "end": 736.549,
+    "gr": "Για σκεφτείτε παιδάκια",
+    "tr": ". Αν σας έλεγα, πόσα θέλετε, 26 σοκολατάκια ή 32; Bir düşünün çocuklar. Sana söyleseydim, Kaç tane istersiniz, 26 çikolata mı yoksa 32 mi?"
+  },
+  {
+    "start": 736.732,
+    "end": 738.919,
+    "gr": "32 θα μου λέγατε. Είμαι σίγουρη. 32, bana söylerdin. Eminim.",
+    "tr": "32 bana söylerdin. Eminim. 32, bana sordin. Eminem."
+  },
+  {
+    "start": 740.017,
+    "end": 742.961,
+    "gr": "Για να δούμε λιγάκι εδώ τις μονάδες και τις δεκάδες",
+    "tr": ". Şuraya bir bakalım. Birler ve onlar basamağı."
+  },
+  {
+    "start": 743.148,
+    "end": 744.513,
+    "gr": "Αυτό το έχω πάρει από το βιβλίο σας",
+    "tr": ", Bunu kitabınızdan aldım."
+  },
+  {
+    "start": 744.848,
+    "end": 746.624,
+    "gr": "γιατί είναι ένα από τα πιο σημαντικά τμήματα",
+    "tr": "Çünkü bu en önemli parçalardan biridir."
+  },
+  {
+    "start": 746.876,
+    "end": 749.377,
+    "gr": "που έχουμε κάνει στα Μαθηματικά μας",
+    "tr": ". Matematik dersinde yaptığımız şey."
+  },
+  {
+    "start": 749.779,
+    "end": 754.44,
+    "gr": "Δηλαδή αναλόγως με τη θέση",
+    "tr": ", έχει και διαφορετική αξία ο αριθμός. Yani, konuma bağlı olarak sayının değeri değişir."
+  },
+  {
+    "start": 754.732,
+    "end": 759.851,
+    "gr": "Σε έναν αριθμό με",
+    "tr": "2 ψηφία, για παράδειγμα το 26, İki basamaklı bir sayıda, örneğin 26'da,"
+  },
+  {
+    "start": 760.007,
+    "end": 763.606,
+    "gr": "το ψηφίο που βρίσκεται από δεξιά είναι οι μονάδες",
+    "tr": "Sağdaki rakam birler basamağını gösterir."
+  },
+  {
+    "start": 763.879,
+    "end": 767.724,
+    "gr": "και το ψηφίο που βρίσκεται από αριστερά είναι οι δεκάδες",
+    "tr": ". Soldaki rakam ise onlar basamağını gösterir."
+  },
+  {
+    "start": 767.946,
+    "end": 769.643,
+    "gr": "Για να δούμε πώς το έχει το βιβλίο μας",
+    "tr": ". Bakalım kitabımız nasıl gidiyor."
+  },
+  {
+    "start": 769.937,
+    "end": 774.856,
+    "gr": "Έχει τον αριθμό",
+    "tr": "… Ποτέ δεν τα πάω καλά με τους μαρκαδόρους - ...26 Telefon numarası onda var… Hiçbir zaman anlaşamıyoruz. İşaretleme konusunda iyi - ...26"
+  },
+  {
+    "start": 775.611,
+    "end": 782.018,
+    "gr": "Από εδώ είναι οι μονάδες κι από εδώ είναι οι δεκάδες",
+    "tr": ". Buradan itibaren birimler ve buradan da onlarca örnek geliyor."
+  },
+  {
+    "start": 782.018,
+    "end": 785.728,
+    "gr": "Τα γράφουμε με αρχικά μεγάλα γράμματα",
+    "tr": ". Σύμφωνοι παιδάκια; Ε; Onları büyük harflerle yazıyoruz. Anlaştık mı çocuklar? Ha?"
+  },
+  {
+    "start": 788.4,
+    "end": 791.423,
+    "gr": "Τι είναι λοιπόν μία δεκάδα",
+    "tr": "; Θα σας πω το εξής. Peki, bir düzine ne anlama geliyor? Size şunu söyleyeceğim."
+  },
+  {
+    "start": 791.719,
+    "end": 795.038,
+    "gr": "Μέσα σε αυτό το σακουλάκι έχω",
+    "tr": "10 καραμέλες. Bu poşetin içinde 10 tane şeker var."
+  },
+  {
+    "start": 795.394,
+    "end": 799.535,
+    "gr": "Δηλαδή αυτό εδώ το σακουλάκι σημαίνει",
+    "tr": ", ότι έχω 1 δεκάδα. Yani şu küçük çanta mı? Bu, 1 tane onluk banknotum olduğu anlamına geliyor."
+  },
+  {
+    "start": 799.869,
+    "end": 806.154,
+    "gr": "Σύμφωνοι παιδάκια",
+    "tr": "; Κι εδώ στο μπολάκι έχω σκέτες καραμέλες, μονάδες. Anlaştık mı çocuklar? Ve burada Elimde bir kase sade şekerleme var."
+  },
+  {
+    "start": 806.386,
+    "end": 808.2,
+    "gr": "Μία καραμέλα",
+    "tr": ". Bir şekerleme."
+  },
+  {
+    "start": 808.382,
+    "end": 814.271,
+    "gr": "Άρα όταν βάζω ένα τέτοιο σακουλάκι",
+    "tr": ", σημαίνει ότι έχω δεκάδες. Yani ben de böyle bir şey koyduğumda Çanta, yani düzinelerce var demek."
+  },
+  {
+    "start": 814.472,
+    "end": 817.659,
+    "gr": "Δε σημαίνει",
+    "tr": "1, σημαίνει ότι έχω 10 εδώ μέσα. Bu 1 anlamına gelmiyor, şu anlama geliyor Burada 10 tane var."
+  },
+  {
+    "start": 817.911,
+    "end": 822.556,
+    "gr": "Και όταν βάζω στις μονάδες τον αριθμό",
+    "tr": "1, σημαίνει 1. Ve birimleri girdiğimde 1 sayısı, 1 anlamına gelir."
+  },
+  {
+    "start": 822.556,
+    "end": 824.266,
+    "gr": "Την ανοίγω",
+    "tr": ", τρώω και τελείωσα. Açıyorum, yiyorum ve işim bitiyor."
+  },
+  {
+    "start": 824.557,
+    "end": 829.287,
+    "gr": "Λοιπόν",
+    "tr": ", για να δούμε μία ιστοριούλα από το βιβλίο σας πάλι. Pekala, bir tanesine bakalım. Kitabınızdan küçük bir öykü daha."
+  },
+  {
+    "start": 829.709,
+    "end": 836.517,
+    "gr": "Η κυρά Μαριώ η πονηρή αλεπού χρωστάει",
+    "tr": "14 αυγά στην κυρά πάπια και θέλει να τα επιστρέψει. Kurnaz tilki Bayan Mario'nun 14 yumurta borcu var. Ördek hanıma onları geri vermek istiyor."
+  },
+  {
+    "start": 837.021,
+    "end": 843.133,
+    "gr": "\"Θα σου δώσω όσα λέει ο αριθμός 14, δηλαδή 1 + 4\". \"Size 14 rakamının ne dediğini aktaracağım, yani 1 + 4\".",
+    "tr": "\"Size 14 sayısının ne dediğini vereceğim, yani 1 + 4\". \"Boyut 14 rakamının ne dediğini aktaracıcam, yani 1 + 4\"."
+  },
+  {
+    "start": 843.551,
+    "end": 846.588,
+    "gr": "1 + 4 = 5 Πάρε 5 αυγά. Φτάνει. 1 + 4 = 5 5 yumurta alın. Yeterli.",
+    "tr": "1 + 4 = 5 5 yumurta alın. Bu kadar yeter. 1 + 4 = 5 5 yumurta. Yeterli."
+  },
+  {
+    "start": 846.861,
+    "end": 852.772,
+    "gr": "Η αλεπού έδωσε στην κυρά πάπια όσα αυγά της χρωστούσε ή την ξεγέλασε",
+    "tr": "; Tilki, dişi ördeğe istediği her şeyi verdi. Ona yumurta mı borçluydu yoksa onu mu kandırdı?"
+  },
+  {
+    "start": 853.243,
+    "end": 861.26,
+    "gr": "Δηλαδή πάει και λέει η αλεπού",
+    "tr": ", γιατί είναι αλεπού δεν είναι τυχαία. \"Μου έδωσες 14 αυγά. Σύμφωνοι;\" Tilki gidip, \"O neden tilki?\" diye soruyor. Rastgele. \"Bana 14 yumurta verdin. Anlaştık mı?\""
+  },
+  {
+    "start": 861.618,
+    "end": 864.417,
+    "gr": "\"Πα πα πα\", λέει η πάπια, γιατί μιλάει παπίσια. \"Baba baba,\" diyor ördek, çünkü ördek gibi konuşuyor.",
+    "tr": "Ördek \"Baba baba\" diyor çünkü ördek gibi konuşuyor. \"Baba baba\" diyor ördek, çünkü ördek gibi konuşuyor."
+  },
+  {
+    "start": 864.697,
+    "end": 869.922,
+    "gr": "\"Αφού έχω το 1 κι έχω το 4. Συγγνώμη δηλαδή, βάζω \"Benim 1 tane var ve benim de var 4. Affedersiniz, koyuyorum",
+    "tr": "\"Benim 1 tane var bende 4 tane var. Kusura bakmayın, \"Benim 1 tane var ve benim de var 4\" koydum. Affedersiniz, ortaya koyuyorum"
+  },
+  {
+    "start": 870.145,
+    "end": 874.969,
+    "gr": "1 αυγουλάκι, βάζω κι άλλα 4. Άρα πόσα σου δίνω;\". 1 yumurta, biraz daha ekleyeceğim. 4. Peki size ne kadar vereyim?",
+    "tr": "1 yumurta, daha fazla koydum 4. Peki sana ne kadar vereyim?\". 1 yumurta, biraz daha ekleyeceğim. 4. Peki size ne kadar vereyim?"
+  },
+  {
+    "start": 875.221,
+    "end": 877.922,
+    "gr": "\"Πάρε 5 αυγά και είσαι μία χαρά\". \"5 yumurta al, sorun yok.\"",
+    "tr": "\"5 yumurta al, sorun yok.\" \"5 yumurta al, sorun yok.\""
+  },
+  {
+    "start": 878.617,
+    "end": 885.982,
+    "gr": "Τι λάθος έκανε σκόπιμα η κυρά Μαριώ",
+    "tr": ", για να ξεγελάσει την κυρά πάπια; Bayan Mario hangi hatayı kasten yaptı? Bayan Ördek'i kandırmak için mi?"
+  },
+  {
+    "start": 886.245,
+    "end": 889.063,
+    "gr": "Τι λάθος έχει κάνει",
+    "tr": "; Για σκεφτείτε το. Ne hata yaptı? Bir düşünün."
+  },
+  {
+    "start": 889.523,
+    "end": 893.808,
+    "gr": "Είμαι σίγουρη ότι το έχετε βρει όλοι αυτό το λάθος",
+    "tr": ". Eminim sizde vardır. Herkes bu hatayı yapıyor."
+  },
+  {
+    "start": 893.923,
+    "end": 899.363,
+    "gr": "Και είναι πολύ σημαντικό λάθος",
+    "tr": ", γιατί το κάνουμε πολύ συχνά στις ηλικίες σας. Ve bu çok önemli bir hata, çünkü Sizin yaşınızda bunu çok sık yaparız."
+  },
+  {
+    "start": 900.341,
+    "end": 906.089,
+    "gr": "Εσείς τώρα είστε",
+    "tr": "7, εγώ είμαι 8,5, άρα το κάνουμε πολύ συχνά εμείς οι μικροί αυτό το λάθος. Sen şimdi 7 yaşındasın, ben 8,5 yaşındayım, yani Biz küçükler bu hatayı çok sık yaparız."
+  },
+  {
+    "start": 906.356,
+    "end": 911.52,
+    "gr": "Εδώ σας έχω και μερικές ασκησούλες από το βιβλίο",
+    "tr": ", αν θέλετε να τις κάνετε. İşte size bazı egzersizler. Kitaptan, yapmak isterseniz."
+  },
+  {
+    "start": 912.757,
+    "end": 917.361,
+    "gr": "Συμπληρώνουμε στον άβακα τις δεκάδες και τις μονάδες",
+    "tr": ". Abaküsü dolduruyoruz. Onlar ve birler basamağı."
+  },
+  {
+    "start": 917.838,
+    "end": 926.215,
+    "gr": "Κόκκινες και μπλε",
+    "tr": ". 1 κόκκινη μάρκα σημαίνει 10, ενώ 1 πράσινη σημαίνει 1. Kırmızı ve mavi. 1 kırmızı jeton 1 yeşil 10 anlamına gelirken, 1 yeşil 1 anlamına gelir."
+  },
+  {
+    "start": 926.528,
+    "end": 932.162,
+    "gr": "Η δεύτερη άσκηση που σας την έχω",
+    "tr": ", αν θέλετε να την κάνετε κι αυτή, Yapacağınız ikinci egzersiz Ben yaptım, sen de yapmak istersen,"
+  },
+  {
+    "start": 932.378,
+    "end": 939.375,
+    "gr": "είναι να γράψετε διάφορους αριθμούς και να ελέγξετε έτσι",
+    "tr": ", αν ξέρετε πώς γράφονται. çeşitli sayıları yazmaktır ve Yazılışlarını biliyorsanız, bu şekilde kontrol edin."
+  },
+  {
+    "start": 939.67,
+    "end": 943.695,
+    "gr": "Ξέρετε πώς γράφεται το",
+    "tr": "20; Για να δω, γιατί το είπα και πριν. 20 sayısını nasıl heceleyeceğinizi biliyor musunuz? Bir bakayım, çünkü bunu daha önce söylemiştim."
+  },
+  {
+    "start": 944.068,
+    "end": 948.078,
+    "gr": "Ξέρετε το",
+    "tr": "18; Είμαι σίγουρη ότι ξέρετε. 18'i biliyor musunuz? Eminim biliyorsunuzdur."
+  },
+  {
+    "start": 949.427,
+    "end": 953.609,
+    "gr": "Αφού λοιπόν κάνετε και αυτό",
+    "tr": ", πάμε να δούμε λίγο και την πρόσθεση. Bunu yaptıktan sonra, Şimdi de ekleme işlemine bir göz atalım."
+  },
+  {
+    "start": 954.005,
+    "end": 960.909,
+    "gr": "Η πρόσθεση είναι πάρα πάρα πολύ σημαντική",
+    "tr": ", γιατί βάζουμε πράγματα μαζί. Toplama işlemi çok, çok önemlidir. Neden nesneleri bir araya getiriyoruz?"
+  },
+  {
+    "start": 961.215,
+    "end": 964.689,
+    "gr": "Και φυσικά θέλουμε να βάζουμε πράγματα μαζί",
+    "tr": ", εκτός από κιλά. Ve elbette biz de koymak istiyoruz. Kilolar hariç her şeyi bir araya getirmek."
+  },
+  {
+    "start": 965.537,
+    "end": 968.362,
+    "gr": "Λοιπόν για να δούμε πώς κάνουμε την πρόσθεση",
+    "tr": ". Şimdi nasıl olduğunu görelim. Toplama işlemini yapıyoruz."
+  },
+  {
+    "start": 968.738,
+    "end": 972.0,
+    "gr": "Για την πρόσθεση μπορούμε να χρησιμοποιήσουμε πολλά πράγματα",
+    "tr": ". Ek olarak şunları yapabiliriz: Pek çok şey kullanıyoruz."
+  },
+  {
+    "start": 972.651,
+    "end": 975.529,
+    "gr": "Μπορούμε τα δάχτυλα των χεριών",
+    "tr": ", τώρα χρειαζόμαστε... Parmaklarımızı kullanabiliriz. Eller, şimdi ihtiyacımız olan..."
+  },
+  {
+    "start": 975.8,
+    "end": 978.276,
+    "gr": "...και των ποδιών, γιατί φτάσαμε μέχρι το 20. ...ve ayaklar, çünkü 20 yaşına ulaştık.",
+    "tr": "...ve bacaklardan çünkü 20'ye ulaştık."
+  },
+  {
+    "start": 978.645,
+    "end": 982.682,
+    "gr": "Μπορούμε να χρησιμοποιήσουμε μολυβάκια",
+    "tr": ", μπορούμε καραμελίτσες, Kurşun kalem kullanabiliriz. Biraz şekerleme alabilir miyiz?"
+  },
+  {
+    "start": 983.084,
+    "end": 988.371,
+    "gr": "μπορούμε ξυλάκια και φυσικά το αριθμητήριο μας",
+    "tr": ". Çubuk kullanabilir miyiz? Ve tabii ki abaküsümüz."
+  },
+  {
+    "start": 989.333,
+    "end": 997.47,
+    "gr": "Εκτός όμως από όλα αυτά που μας βοηθάνε",
+    "tr": ", γιατί βλέπουμε πόσο κάνει 2 + 2. Ama tüm bunların yanı sıra, bize yardımcı olan her şey... Çünkü 2 + 2'nin ne kadar olduğunu görüyoruz."
+  },
+  {
+    "start": 997.902,
+    "end": 999.624,
+    "gr": "Βλέπουμε τα δαχτυλάκια",
+    "tr": ", τα μετράμε. Parmakları görüyoruz, onları sayıyoruz."
+  },
+  {
+    "start": 999.624,
+    "end": 1004.43,
+    "gr": "Χρησιμοποιούμε και το σαγόνι",
+    "tr": ", αν δεν έχουμε κάτι άλλο και τα βλέπουμε. Çeneyi de kullanırız, eğer Başka hiçbir şeyimiz yok ve onları görüyoruz."
+  },
+  {
+    "start": 1004.836,
+    "end": 1006.819,
+    "gr": "Τα ξυλάκια τα βλέπουμε",
+    "tr": ", τις καραμέλες τις βλέπουμε. Çubukları görüyoruz, Şekerleri görüyoruz."
+  },
+  {
+    "start": 1007.176,
+    "end": 1011.899,
+    "gr": "Υπάρχει κι ένας άλλος τρόπος",
+    "tr": ", με την αριθμογραμμή. Başka bir yol daha var. sayı doğrusu ile."
+  },
+  {
+    "start": 1011.99,
+    "end": 1019.752,
+    "gr": "Αν κοιτάξουμε εδώ στην αριθμογραμμή",
+    "tr": ", μας λέει: 4 + 3 + 2 Buraya baktığımızda... Sayı doğrusu bize şunu söylüyor: 4 + 3 + 2"
+  },
+  {
+    "start": 1019.991,
+    "end": 1024.191,
+    "gr": "Άρα εμείς ξεκινάμε από εδώ",
+    "tr": ", από το 4… Ωραία; Öyleyse buradan başlıyoruz. Buradan, 4'ten itibaren... Tamam mı?"
+  },
+  {
+    "start": 1025.175,
+    "end": 1028.349,
+    "gr": "Και λέμε",
+    "tr": ": Θα βάλουμε άλλα 3. Θα προχωρήσουμε δηλαδή... Ve biz diyoruz ki: Daha fazlasını koyacağız. 3. Öyleyse devam edelim..."
+  },
+  {
+    "start": 1028.771,
+    "end": 1034.517,
+    "gr": "1, 2, 3 και θα φτάσουμε στο 7. 1, 2, 3 ve 7'ye ulaşacağız.",
+    "tr": "1, 2, 3 ve 7'ye ulaşacağız. 1, 2, 3 ve 7'ye ulaşacağız."
+  },
+  {
+    "start": 1034.939,
+    "end": 1037.002,
+    "gr": "Και μετά μας λέει να βάλουμε άλλα",
+    "tr": "2. Sonra da bize 2 tane daha eklememizi söylüyor."
+  },
+  {
+    "start": 1037.818,
+    "end": 1041.946,
+    "gr": "Πάμε πάλι",
+    "tr": "2 βηματάκια από εκεί που φτάσαμε: 1, 2 Tekrar 2 adım atalım. Geldiğimiz yer: 1, 2"
+  },
+  {
+    "start": 1042.138,
+    "end": 1044.094,
+    "gr": "Και φτάσαμε στο",
+    "tr": "9. Ve 9'a ulaştık."
+  },
+  {
+    "start": 1044.35,
+    "end": 1047.657,
+    "gr": "Άρα με την αριθμογραμμή μπορούμε να καταλάβουμε ποια",
+    "tr": "... Yani sayı doğrusuyla Hangisini anlayabiliriz..."
+  },
+  {
+    "start": 1047.844,
+    "end": 1051.645,
+    "gr": "...είναι η σειρά των αριθμών και πώς πάμε στα βηματάκια μας. ...sayı dizisidir ve Küçük adımlarımızı nasıl atacağız?",
+    "tr": "...sayıların sırası ve küçük adımlarımızı nasıl attığımızdır. ...sayı dizisidir ve Küçük adımlarımız nasıl ağağız?"
+  },
+  {
+    "start": 1051.956,
+    "end": 1054.887,
+    "gr": "Άλλος ένας τρόπος που είναι για πολύ προχωρημένους",
+    "tr": ", Başka bir yol ki Bu, çok ileri düzeydeki kişiler içindir."
+  },
+  {
+    "start": 1055.088,
+    "end": 1059.243,
+    "gr": "για μαθηματικά μυαλά",
+    "tr": ", κοτσιδάκια, μαγουλάκια με μαθηματικό μυαλό, Matematik zekasına sahip olanlar için, örgülü saçlar, Matematik zekasına sahip küçük kızlar,"
+  },
+  {
+    "start": 1059.518,
+    "end": 1062.809,
+    "gr": "είναι να βάλουμε τον μεγάλο αριθμό μέσα στο μυαλό μας",
+    "tr": ", büyük olanı koymaktır. zihnimizdeki sayı,"
+  },
+  {
+    "start": 1063.207,
+    "end": 1070.1,
+    "gr": "βάζουμε ας πούμε το",
+    "tr": "10, το έχω μέσα στο μυαλό μου και μετά βάζω άλλα 2... Diyelim ki 10 koyduk, ben de onu oraya ekledim. Aklımda bir fikir oluştu ve sonra buna 2 tane daha ekledim..."
+  },
+  {
+    "start": 1070.198,
+    "end": 1076.641,
+    "gr": "...10, 11, 12, και μετά βάζω άλλα 2, 13, 14. ...10, 11, 12 ve ötesi 2, 13, 14 daha ekliyorum.",
+    "tr": "...10, 11, 12 ve sonra bir tane daha koyuyorum 2, 13, 14. ...10, 11, 12 ve ötesi 2, 13, 14 daha ekliyorum."
+  },
+  {
+    "start": 1076.987,
+    "end": 1080.797,
+    "gr": "Δηλαδή βάζω κάποια στο μυαλό και κάποια με τα δαχτυλάκια",
+    "tr": ". Yani aklımda bir şeyler tutuyorum. ve bazılarının parmakları var."
+  },
+  {
+    "start": 1081.121,
+    "end": 1083.425,
+    "gr": "Αυτός είναι πιο προχωρημένος τρόπος",
+    "tr": ". Bu daha fazla Gelişmiş yöntem."
+  },
+  {
+    "start": 1083.45,
+    "end": 1085.487,
+    "gr": "Θέλουμε όλοι να φτάσουμε σε αυτόν",
+    "tr": ". Hepimiz istiyoruz ki Hadi ona ulaşalım."
+  },
+  {
+    "start": 1085.71,
+    "end": 1089.324,
+    "gr": "Άρα",
+    "tr": ", τι έχουμε καταφέρει στο σημερινό μας μάθημα; Peki, neler başardık? Bugünkü dersimizde ne olacak?"
+  },
+  {
+    "start": 1089.538,
+    "end": 1095.893,
+    "gr": "Θυμηθήκαμε πώς είναι αυτοί οι αριθμοί μέχρι το",
+    "tr": "50; O dönemin nasıl bir şey olduğunu hatırladık. Bu sayılar 50'ye kadar mı?"
+  },
+  {
+    "start": 1096.22,
+    "end": 1102.683,
+    "gr": "Βλέπουμε ας πούμε ένα σύμβολο και ξέρουμε ότι αυτός ο αριθμός είναι το",
+    "tr": "18, 25, 32; Diyelim ki bir sembol görüyoruz ve biliyoruz. Bu sayının 18, 25 veya 32 olduğunu mu kastediyorsunuz?"
+  },
+  {
+    "start": 1102.892,
+    "end": 1107.486,
+    "gr": "Αν δεν το θυμόμαστε",
+    "tr": ", τότε κάνουμε μερικές επαναλήψεις, γιατί είναι σημαντικό. Hatırlamazsak, o zaman yaparız. Birkaç tekrar, çünkü önemli."
+  },
+  {
+    "start": 1107.684,
+    "end": 1110.019,
+    "gr": "Δεν μπορούμε να προχωρήσουμε",
+    "tr": ", αν δεν ξέρουμε αυτό. İlerleyemiyoruz, Eğer bunu bilmiyorsak."
+  },
+  {
+    "start": 1110.218,
+    "end": 1115.917,
+    "gr": "Μετά θυμόμαστε πώς γράφονται με λέξεις οι αριθμοί μέχρι το",
+    "tr": "20; Sonra onların nasıl yazıldığını hatırlıyoruz. 20'ye kadar olan sayıları kelimelerle nasıl yazabilirsiniz?"
+  },
+  {
+    "start": 1116.113,
+    "end": 1119.891,
+    "gr": "Κι εδώ είναι πολύ σημαντικό και θα δείτε στη συνέχεια",
+    "tr": ", Ve burada bu çok önemli. Ve bunu daha sonra göreceksiniz,"
+  },
+  {
+    "start": 1120.097,
+    "end": 1123.71,
+    "gr": "ότι πολλές φορές και στα Μαθηματικά θα χρειαστεί να γράφουμε με λέξεις",
+    "tr": ". Matematikte bu kadar çok kez Kelimelerle yazmamız gerekecek."
+  },
+  {
+    "start": 1123.918,
+    "end": 1125.646,
+    "gr": "Άρα καλό είναι να τις μάθουμε νωρίς",
+    "tr": ". Bu yüzden onları erken öğrenmek iyidir."
+  },
+  {
+    "start": 1125.827,
+    "end": 1128.928,
+    "gr": "Αναγνωρίζουμε τι είναι και σε τι χρησιμεύει ένας",
+    "tr": "... Ne olduğunu biliyoruz. Peki bir tanesinin ne faydası var ki..."
+  },
+  {
+    "start": 1129.03,
+    "end": 1131.694,
+    "gr": "...άβακας; Και στην αρχαία εποχή, αλλά και σήμερα; ...abaküs; Ve eski zamanlarda Bu geçmişte de geçerliydi, ama bugün de mi?",
+    "tr": "...abaküs; Ve eski zamanlarda, ama aynı zamanda bugün de? ... abaküs? Geçmişte, Bu görechte de gegellydi, ama bungun de mi?"
+  },
+  {
+    "start": 1132.571,
+    "end": 1134.784,
+    "gr": "Ξεχωρίζουμε τι είναι η δεκάδα και η μονάδα",
+    "tr": "; On ile bir arasında bir ayrım yapıyor muyuz?"
+  },
+  {
+    "start": 1135.067,
+    "end": 1139.446,
+    "gr": "Και τέλος",
+    "tr": ", θυμάμαι πώς κάνω μία πρόσθεση; Ve son olarak, toplama işlemini nasıl yapacağımı hatırlıyor muyum?"
+  },
+  {
+    "start": 1139.651,
+    "end": 1143.258,
+    "gr": "Όλα αυτά μπορούμε να τα θυμηθούμε μαζί",
+    "tr": "; Bütün bunları birlikte hatırlayabilir miyiz?"
+  },
+  {
+    "start": 1143.804,
+    "end": 1148.927,
+    "gr": "Ξέρω",
+    "tr": ". Είναι πάρα πάρα πολλά και δεν είναι εύκολο, είναι πολλά μαθήματα μαζί. Bilmek. Çok fazla var ve değil Çok kolay, bir sürü dersi bir arada öğrenmek gibi."
+  },
+  {
+    "start": 1149.214,
+    "end": 1153.207,
+    "gr": "Όμως είμαι σίγουρη",
+    "tr": ", ότι το σκυλάκι, το γατάκι, Ama eminim ki, köpek, yavru kedi,"
+  },
+  {
+    "start": 1153.403,
+    "end": 1157.649,
+    "gr": "το λαγουδάκι",
+    "tr": ", ο παπαγάλος και η χήνα στην αυλή της γιαγιάς, tavşan, papağan ve büyükannenin bahçesindeki kaz,"
+  },
+  {
+    "start": 1158.023,
+    "end": 1161.414,
+    "gr": "μας άκουσαν πολύ προσεκτικά",
+    "tr": ". Ή μήπως με ακούσατε κι εσείς; Bizi çok dikkatle dinlediler. Yoksa sen de beni duydun mu?"
+  },
+  {
+    "start": 1161.592,
+    "end": 1164.343,
+    "gr": "Νομίζω με ακούσατε κι εσείς",
+    "tr": ". Sanırım sen de beni duydun."
+  },
+  {
+    "start": 1164.519,
+    "end": 1167.858,
+    "gr": "Σας εύχομαι να περάσετε πάρα πολύ όμορφα σήμερα",
+    "tr": ". İyi vakit geçirmenizi dilerim. Bugün çok güzel."
+  },
+  {
+    "start": 1168.246,
+    "end": 1172.982,
+    "gr": "Εκτός από τις λέξεις και τις εικόνες γύρω μας υπάρχουν παντού αριθμοί",
+    "tr": ". kelimelerin ve görsellerin yanı sıra Çevremizde her yerde sayılar var."
+  },
+  {
+    "start": 1173.241,
+    "end": 1178.879,
+    "gr": "Ανακαλύψτε τους και βρείτε όμορφες ιστορίες",
+    "tr": ". Η ζωή μας είναι γεμάτη αριθμούς. Onları keşfedin ve güzellerini bulun. hikayeler. Hayatımız sayılarla dolu."
+  },
+  {
+    "start": 1179.244,
+    "end": 1182.653,
+    "gr": "Για βρείτε έναν και στείλτε τον μου μαζί με πολλά πολλά φιλάκια",
+    "tr": ". Bir tane bul ve gönder. Bana çok çok öpücükler."
+  },
+  {
+    "start": 1182.849,
+    "end": 1185.017,
+    "gr": "Γεια σας παιδιά",
+    "tr": "! Σας ευχαριστώ πολύ! Merhaba arkadaşlar! Çok teşekkür ederim!"
+  }
+]
