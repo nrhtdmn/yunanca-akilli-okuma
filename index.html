@@ -64,6 +64,8 @@
         <button class="sub-tab-btn active" onclick="switchAdminTab('announcements', this)">📢 Duyurular</button>
         <button class="sub-tab-btn" onclick="switchAdminTab('practices', this)">💪 Alıştırmalar</button>
         <button class="sub-tab-btn" onclick="switchAdminTab('users', this)">👥 Kullanıcılar</button>
+      <button class="sub-tab-btn" onclick="switchAdminTab('yds', this); populateAdminYdsExams();">📝 YDS Çözümleri</button>
+
       </div>
 
       <div class="admin-panel" id="admin-panel-announcements" style="display: block; animation: fadeIn 0.3s ease;">
@@ -115,8 +117,35 @@
           </table>
         </div>
       </div>
+<div class="admin-panel" id="admin-panel-yds" style="display: none; animation: fadeIn 0.3s ease;">
+        <div style="background:var(--surface-alt); padding:15px; border-radius:10px; border:1px solid var(--accent2);">
+           <h3 style="color:var(--accent2); margin-bottom:15px; font-size:1.1rem;">📝 YDS Soru Çözümü / Konu Anlatımı Ekle</h3>
+           
+           <select id="admin-yds-exam-select" class="auth-input" style="padding:10px; margin-bottom:10px;" onchange="loadAdminYdsQuestions()">
+               <option value="">-- Önce Sınav Seçin --</option>
+           </select>
+           
+           <select id="admin-yds-q-select" class="auth-input" style="padding:10px; margin-bottom:10px;" onchange="loadAdminYdsExplanation()">
+               <option value="">-- Sonra Soru Seçin --</option>
+           </select>
+
+           <div id="admin-yds-q-preview" style="margin-bottom:15px; padding:15px; background:var(--surface); border:1px solid var(--border); border-radius:6px; font-size:0.95rem; color:var(--text); line-height: 1.5;">
+               Soru önizlemesi burada görünecek...
+           </div>
+
+           <label style="color:var(--accent2); font-size:0.95rem; font-weight:bold; display:block; margin-bottom:5px;">📖 Detaylı Çözüm / Konu Anlatımı:</label>
+           <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:10px;">
+               💡 Word'den veya internetten kopyaladığınız tablolu, renkli yazıları buraya doğrudan yapıştırabilirsiniz.
+           </div>
+           <div id="admin-yds-explanation" contenteditable="true" style="min-height: 150px; max-height: 400px; overflow-y: auto; background: var(--surface); color: var(--text); border: 2px dashed var(--accent2); padding: 15px; border-radius: 8px; outline: none; cursor: text; margin-bottom:15px;"></div>
+
+           <button class="main-btn" style="width:100%; padding:10px; background:var(--accent2);" onclick="saveYdsExplanation()">Çözümü Kaydet / Güncelle</button>
+        </div>
+      </div>
     </div>
   </div>
+
+
 
   <div class="modal-overlay" id="announcement-modal">
     <div class="modal-box" style="max-width: 500px; text-align:center;">
