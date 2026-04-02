@@ -1,4 +1,4 @@
-.container { max-width: 1000px; margin: 0 auto; transition: all 0.3s ease; }
+.container { max-width: 95%; margin: 0 auto; transition: all 0.3s ease; }
 
 header { margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
 .logo h1 { font-size: 1.6rem; color: var(--accent); letter-spacing: -0.5px; margin-bottom: 5px; }
