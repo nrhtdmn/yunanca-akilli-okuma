@@ -1066,11 +1066,20 @@ async function searchDictionary() {
  * ALIŞTIRMALAR (PRACTICE) MOTORU
  * ========================================== */
 
+
+
+
+
+
+/* ==========================================
+ * ALIŞTIRMALAR (PRACTICE) MOTORU
+ * ========================================== */
+
 function renderPracticeLibrary() {
   const container = document.getElementById('practice-grid-container');
   let html = "";
 
-  // 1. Veritabanındaki tüm "Seviyeleri" (A1, A2 vb.) otomatik bul
+  // 1. Mevcut Alıştırmaları Çiz (Veritabanındaki tüm Seviyeleri otomatik bul)
   const levels = [...new Set(PRACTICE_CATALOG.map(p => p.level))].sort();
 
   levels.forEach(level => {
@@ -1078,14 +1087,12 @@ function renderPracticeLibrary() {
     const safeLevel = level.replace(/[^a-zA-Z0-9]/g, '_');
     let levelContent = '';
 
-    // 2. O seviyedeki "Kategorileri" (Günlük Yaşam, Doğa vb.) otomatik bul
     const categories = [...new Set(practicesInLevel.map(p => p.category))].sort();
 
     categories.forEach(cat => {
       const safeCat = safeLevel + "_" + cat.replace(/[^a-zA-Z0-9]/g, '_');
       const practicesInCat = practicesInLevel.filter(p => p.category === cat);
 
-      // Kartları oluştur
       let cardsHtml = `<div class="text-grid">`;
       practicesInCat.forEach(prac => {
         cardsHtml += `
@@ -1096,7 +1103,6 @@ function renderPracticeLibrary() {
       });
       cardsHtml += `</div>`;
 
-      // Kategori Klasörünü oluştur (Akordiyon)
       levelContent += `
         <div class="deck-section" style="margin: 10px 15px; border-left: 3px solid var(--success); border-radius: 0 8px 8px 0; background: rgba(0,0,0,0.2);">
           <div class="deck-header" onclick="toggleAccordion('prac-cat-${safeCat}')" style="background:transparent; padding: 12px 15px;">
@@ -1108,7 +1114,6 @@ function renderPracticeLibrary() {
         </div>`;
     });
 
-    // Seviye Ana Klasörünü oluştur (Akordiyon)
     html += `
       <div class="deck-section" style="margin-bottom:15px; border: 1px solid var(--border);">
         <div class="deck-header" onclick="toggleAccordion('prac-lvl-${safeLevel}')" style="font-size: 1.15rem; padding: 18px 20px; background: linear-gradient(90deg, #1c212d 0%, #13161e 100%);">
@@ -1120,6 +1125,32 @@ function renderPracticeLibrary() {
       </div>`;
   });
 
+  // 2. YDS Soru Bankasını Buraya "Çözüm Modu" Olarak Ekle
+  if (typeof GLOBAL_SORU_BANKASI !== 'undefined' && GLOBAL_SORU_BANKASI.length > 0) {
+    const exams = [...new Set(GLOBAL_SORU_BANKASI.map(q => q.exam))].sort();
+    let ydsContent = `<div class="text-grid" style="padding: 10px 15px;">`;
+
+    exams.forEach(examName => {
+      ydsContent += `
+        <div class="text-card" onclick="openYdsPractice('${examName}')" style="border-color: rgba(232, 201, 109, 0.4);">
+          <div class="text-card-title">${examName}</div>
+          <div class="text-card-play" style="color:var(--accent2);">💡 Çözümleri Gör ➔</div>
+        </div>`;
+    });
+    ydsContent += `</div>`;
+
+    html += `
+      <div class="deck-section" style="margin-top:25px; margin-bottom:15px; border: 1px solid var(--border);">
+        <div class="deck-header" onclick="toggleAccordion('prac-lvl-yds')" style="font-size: 1.15rem; padding: 18px 20px; background: linear-gradient(90deg, #2a2015 0%, #13161e 100%);">
+          <strong style="color:var(--accent2);">📝 YDS / YÖKDİL Soru Çözümleri</strong><span class="deck-arrow" id="arrow-prac-lvl-yds">▼</span>
+        </div>
+        <div class="deck-content" id="content-prac-lvl-yds" style="padding: 5px 0 15px 0;">
+          <div style="padding: 10px 20px; color:var(--text-dim); font-size:0.95rem;">Soru bankasındaki testleri süre stresi olmadan, okuyarak ve cevapları inceleyerek çözün.</div>
+          ${ydsContent}
+        </div>
+      </div>`;
+  }
+
   if (html === "") {
     html = `<p style="color:var(--text-dim); text-align:center; padding: 20px;">Henüz alıştırma eklenmemiş.</p>`;
   }
@@ -1127,13 +1158,86 @@ function renderPracticeLibrary() {
   container.innerHTML = html;
 }
 
+// YDS Soru Çözüm Ekranını Açan Özel Fonksiyon
+// YDS Soru Çözüm Ekranını Açan Özel Fonksiyon
+window.openYdsPractice = function(examName) {
+  if(!requireAuth(1)) return;
 
+  const questions = GLOBAL_SORU_BANKASI.filter(q => q.exam === examName);
+  if(!questions || questions.length === 0) return;
 
+  document.getElementById('practice-library-view').style.display = 'none';
+  document.getElementById('practice-workspace').style.display = 'block';
+  document.getElementById('active-practice-title').textContent = "Soru Çözümü: " + examName;
 
+  // Sol Metin Panelini Gizle
+  const textPanel = document.querySelector('.practice-text-panel');
+  if(textPanel) textPanel.style.display = 'none';
+
+  const checkBtn = document.querySelector('button[onclick="checkPracticeAnswers()"]');
+  if(checkBtn && checkBtn.parentElement) checkBtn.parentElement.style.display = 'none';
+
+  const qContainer = document.getElementById('practice-questions-content');
+  let qHtml = "";
+
+  questions.forEach((q, index) => {
+    let optsHtml = "";
+    for (const [key, text] of Object.entries(q.options)) {
+        optsHtml += `<div style="margin-bottom: 8px; padding: 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface-alt);">
+                        <strong style="color:var(--accent); margin-right: 8px;">${key})</strong> ${tokenizePracHTML(text)}
+                     </div>`;
+    }
+
+    const safeAnsKey = q.answer; 
+    const safeAnsText = q.options[safeAnsKey];
+    
+    // Εδώ ελέγχουμε αν υπάρχει εξήγηση (q.explanation)
+    let buttonText = "👁️ Cevabı Gör / Gizle";
+    let detailedExplanation = `<div style="margin-top: 8px; font-size: 1.05rem;">${tokenizePracHTML(safeAnsText)}</div>`;
+
+    if (q.explanation && q.explanation.trim() !== "") {
+        buttonText = "👁️ Cevabı ve Detaylı Çözümü Gör";
+        detailedExplanation = `<div style="margin-top: 15px; border-top: 1px dashed var(--border); padding-top: 15px; font-size: 1.05rem; line-height: 1.7; color: var(--text);">${q.explanation}</div>`;
+    }
+
+    qHtml += `
+      <div class="prac-q-box" style="margin-bottom: 30px; border-left: 4px solid var(--accent2); background: var(--surface); padding: 20px; box-shadow: var(--shadow);">
+        <div class="prac-q-title" style="font-size: 1.15rem; line-height: 1.6; margin-bottom: 20px;">
+            <strong style="color:var(--text-dim);">Soru ${index+1}:</strong><br><br>
+            ${tokenizePracHTML(q.question)}
+        </div>
+        <div style="margin-bottom: 20px;">
+            ${optsHtml}
+        </div>
+        <div>
+            <button class="secondary-btn" style="padding:10px 20px; font-size:0.95rem; border:1px solid var(--success); color:var(--success); background:transparent; border-radius:6px; cursor:pointer;"
+                    onclick="const ansDiv = document.getElementById('yds-ans-${q.id}'); ansDiv.style.display = ansDiv.style.display === 'none' ? 'block' : 'none';">
+                ${buttonText}
+            </button>
+        </div>
+        <div id="yds-ans-${q.id}" style="display: none; margin-top: 15px; padding: 20px; background: var(--surface-alt); border: 2px solid var(--success); border-radius: 8px; color: var(--text); animation: fadeIn 0.3s ease;">
+            <strong style="color:var(--success); font-size: 1.2rem; display:block; margin-bottom: 10px;">Doğru Cevap: ${safeAnsKey}</strong>
+            ${detailedExplanation}
+        </div>
+      </div>
+    `;
+  });
+
+  qContainer.innerHTML = qHtml;
+};
+
+// Alıştırma Ekranını Kapatma Fonksiyonu
 function closePracticeWorkspace() {
   document.getElementById('practice-workspace').style.display = 'none';
   document.getElementById('practice-library-view').style.display = 'block';
   activePracticeSession = null;
+
+  // Çıkış yaparken sol paneli ve "Cevapları Kontrol Et" butonunu eski haline getir (Normal alıştırmalar bozulmasın diye)
+  const textPanel = document.querySelector('.practice-text-panel');
+  if(textPanel) textPanel.style.display = 'block';
+
+  const checkBtn = document.querySelector('button[onclick="checkPracticeAnswers()"]');
+  if(checkBtn && checkBtn.parentElement) checkBtn.parentElement.style.display = 'block';
 }
 
 // Seçim Fonksiyonları (Butonların rengini ayarlamak için)
@@ -1285,6 +1389,7 @@ function openPractice(id) {
   prac.questions.forEach((q, index) => {
     qHtml += `<div class="prac-q-box" id="prac-box-${q.id}">`;
     
+    // --- 1. SORU VE ŞIKLAR BÖLÜMÜ ---
     if(q.type === 'tf') {
       qHtml += `<div class="prac-q-title">${index+1}. ${tokenizePracHTML(q.question)}</div>`;
       qHtml += `<button class="prac-tf-btn" id="btn-${q.id}-true" onclick="selectPracOpt('${q.id}', 'true')">🟢 Σωστό (Doğru)</button>`;
@@ -1303,15 +1408,13 @@ function openPractice(id) {
     else if(q.type === 'fill-write') {
       qHtml += `<div class="prac-q-title">${index+1}. ${tokenizePracHTML(q.question)}</div>`;
       
-      // Flex yapısı eklendi, yan yana düzgün durması için
       qHtml += `<div style="font-size:1.15rem; margin-top:10px; display:flex; align-items:center; flex-wrap:wrap; gap:10px;">`;
       if(q.before) qHtml += `<span>${tokenizePracHTML(q.before)}</span>`; 
       qHtml += `<input type="text" class="prac-input" id="ans-${q.id}" autocomplete="off" placeholder="Cevabı yazın...">`;
       if(q.after) qHtml += `<span>${tokenizePracHTML(q.after)}</span>`; 
       
-      // YENİ: CEVABI GÖR BUTONU
       const safeAns = q.answer ? q.answer.replace(/'/g, "\\'") : "";
-      qHtml += `<button class="secondary-btn" style="padding:6px 12px; font-size:0.85rem; border:1px solid var(--accent2); color:var(--accent2); background:transparent; border-radius:6px; cursor:pointer;" onclick="document.getElementById('ans-${q.id}').value = '${safeAns}'; this.style.opacity='0.5';">👁️ Cevabı Gör</button>`;
+      qHtml += `<button class="secondary-btn" style="padding:6px 12px; font-size:0.85rem; border:1px solid var(--accent); color:var(--accent); background:transparent; border-radius:6px; cursor:pointer;" onclick="document.getElementById('ans-${q.id}').value = '${safeAns}'; this.style.opacity='0.5';">Cevabı Doldur</button>`;
       
       qHtml += `</div>`;
     }
@@ -1325,6 +1428,22 @@ function openPractice(id) {
       qHtml += `<select class="prac-select" id="ans-${q.id}">${opts}</select>`;
       if(q.after) qHtml += `<span>${tokenizePracHTML(q.after)}</span>`; 
       qHtml += `</div>`;
+    }
+
+    // --- 2. DETAYLI AÇIKLAMA / KONU ANLATIMI BÖLÜMÜ ---
+    // Eğer admin panelinden zengin metin (tablo vs.) kopyalanmışsa butonu göster
+    if (q.explanation) {
+        qHtml += `
+            <div style="margin-top: 20px; border-top: 1px dashed var(--border); padding-top: 15px;">
+                <button class="secondary-btn" style="padding:8px 15px; font-size:0.9rem; border:1px solid var(--accent2); color:var(--accent2); background:transparent; border-radius:6px; cursor:pointer;"
+                        onclick="const expDiv = document.getElementById('prac-exp-${q.id}'); expDiv.style.display = expDiv.style.display === 'none' ? 'block' : 'none';">
+                    👁️ Detaylı Çözümü / Konu Anlatımını Gör
+                </button>
+            </div>
+            <div id="prac-exp-${q.id}" style="display: none; margin-top: 15px; padding: 20px; background: var(--surface-alt); border: 2px solid var(--accent2); border-radius: 8px; color: var(--text); animation: fadeIn 0.3s ease; font-size: 1.05rem; line-height: 1.7; overflow-x: auto;">
+                ${q.explanation}
+            </div>
+        `;
     }
     
     qHtml += `</div>`; 
@@ -1535,29 +1654,44 @@ function changeAdminQType(selectElem, qId) {
     const type = selectElem.value;
     const container = document.getElementById(`q-fields-${qId}`);
     
+    let fieldsHtml = '';
+    
     if(type === 'tf') {
-        container.innerHTML = `
+        fieldsHtml = `
             <input type="text" class="auth-input q-text" style="padding:10px; margin-bottom:10px;" placeholder="Soru cümlesi...">
             <select class="auth-input q-ans-tf" style="padding:10px; margin-bottom:0;"><option value="true">Doğru (Σωστό)</option><option value="false">Yanlış (Λάθος)</option></select>
         `;
     } else if (type === 'mc') {
-        container.innerHTML = `
+        fieldsHtml = `
             <input type="text" class="auth-input q-text" style="padding:10px; margin-bottom:10px;" placeholder="Soru cümlesi...">
             <input type="text" class="auth-input q-opts" style="padding:10px; margin-bottom:10px;" placeholder="Şıklar (Virgülle ayırın: Elma,Armut,Muz)">
             <input type="number" class="auth-input q-ans-mc" style="padding:10px; margin-bottom:0;" placeholder="Doğru şıkkın sırası (0'dan başlar: 0, 1, 2...)">
         `;
     } else if (type === 'fill-write') {
-         container.innerHTML = `
+         fieldsHtml = `
             <div style="color:var(--text-dim); font-size:0.85rem; margin-bottom:10px;">💡 Bu soru doğrudan metin içindeki boşlukta gösterilecektir.</div>
             <input type="text" class="auth-input q-ans-fw" style="padding:10px; margin-bottom:0;" placeholder="Doğru Cevap (Yazılacak kelime)">
         `;
     } else if (type === 'fill-select') {
-         container.innerHTML = `
+         fieldsHtml = `
             <div style="color:var(--text-dim); font-size:0.85rem; margin-bottom:10px;">💡 Bu soru doğrudan metin içindeki boşlukta açılır menü olarak gösterilecektir.</div>
             <input type="text" class="auth-input q-opts" style="padding:10px; margin-bottom:10px;" placeholder="Şıklar (Virgülle ayırın: είναι, έχει, κάνει)">
             <input type="text" class="auth-input q-ans-fs" style="padding:10px; margin-bottom:0;" placeholder="Doğru Cevap (Kelimenin aynısı)">
         `;
     }
+
+    // TIKLANABİLİR, KOPYALA-YAPIŞTIR DESTEKLİ ZENGİN METİN KUTUSU
+    fieldsHtml += `
+        <div style="margin-top: 15px; border-top: 1px dashed var(--border); padding-top: 15px;">
+            <label style="color:var(--accent2); font-size:0.95rem; font-weight:bold; display:block; margin-bottom:5px;">📖 Detaylı Çözüm / Konu Anlatımı (İsteğe Bağlı):</label>
+            <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:10px;">
+                💡 Word'den veya internetten kopyaladığınız tablolu, renkli, kalın yazıları buraya <b>doğrudan yapıştırabilirsiniz</b>. Biçimlendirmeler korunur.
+            </div>
+            <div class="q-explanation" contenteditable="true" style="min-height: 80px; max-height: 400px; overflow-y: auto; background: var(--surface-alt); color: var(--text); border: 2px dashed var(--accent2); padding: 15px; border-radius: 8px; outline: none; cursor: text;"></div>
+        </div>
+    `;
+
+    container.innerHTML = fieldsHtml;
 }
 
 function savePracticeFromForm() {
@@ -1593,17 +1727,26 @@ function savePracticeFromForm() {
             if(!qObj.question || qObj.options.length < 2 || qObj.answer === "") hasError = true;
         } 
         else if(type === 'fill-write') {
-            qObj.question = ""; // Metin içinde olacağı için yönergeye gerek yok
+            qObj.question = ""; 
             qObj.answer = block.querySelector('.q-ans-fw').value.trim();
             if(!qObj.answer) hasError = true;
         } 
         else if(type === 'fill-select') {
-            qObj.question = ""; // Metin içinde olacağı için yönergeye gerek yok
+            qObj.question = ""; 
             const optsStr = block.querySelector('.q-opts').value.trim();
             qObj.options = optsStr.split(',').map(s => s.trim()).filter(s => s);
             qObj.answer = block.querySelector('.q-ans-fs').value.trim();
             if(qObj.options.length < 2 || !qObj.answer) hasError = true;
         }
+
+        // YENİ EKLENEN KISIM: Zengin Metni Oku ve Kaydet
+        const explanationBox = block.querySelector('.q-explanation');
+        if(explanationBox) {
+            let expText = explanationBox.innerHTML.trim();
+            if(expText === '<br>' || expText === '<div><br></div>') expText = ''; // Boşsa temizle
+            qObj.explanation = expText;
+        }
+
         questions.push(qObj);
     });
 
@@ -1616,13 +1759,13 @@ function savePracticeFromForm() {
     else { PRACTICE_CATALOG.unshift(newPrac); showToastMessage("✅ Yeni alıştırma sisteme eklendi!"); }
 
     localStorage.setItem('y_practices_db', JSON.stringify(PRACTICE_CATALOG));
-    if (useFirebase && db) { db.collection("global").doc("practices").set({list: PRACTICE_CATALOG}); }
+    if (typeof useFirebase !== 'undefined' && useFirebase && db) { db.collection("global").doc("practices").set({list: PRACTICE_CATALOG}); }
 
     document.getElementById('admin-prac-id').value = ''; document.getElementById('admin-prac-title').value = '';
     document.getElementById('admin-prac-text').value = ''; document.getElementById('admin-prac-questions').innerHTML = '';
-    adminQCount = 0; 
+    if (typeof adminQCount !== 'undefined') adminQCount = 0; 
     
-    renderPracticeLibrary();
+    if (typeof renderPracticeLibrary === 'function') renderPracticeLibrary();
     if(typeof renderAdminPracticeList === 'function') renderAdminPracticeList();
 }
 
@@ -1661,12 +1804,21 @@ function loadPracticeToAdminForm(id) {
                 currentBlock.querySelector('.q-opts').value = (q.options || []).join(', ');
                 currentBlock.querySelector('.q-ans-fs').value = q.answer || "";
             }
+
+            // YENİ EKLENEN KISIM: Düzenleme modunda açıklamayı geri getir
+            const explanationBox = currentBlock.querySelector('.q-explanation');
+            if (explanationBox && q.explanation) {
+                explanationBox.innerHTML = q.explanation;
+            }
         });
     }
 
     showToastMessage("✏️ Alıştırma düzenleme moduna alındı. Değişiklikleri yapıp Kaydet'e basın.");
     document.getElementById('admin-modal').querySelector('.modal-box').scrollTo({ top: 0, behavior: 'smooth' });
 }
+
+
+
 /* ==========================================
  * OKUMA PANELİ TEMİZLEME MOTORU
  * ========================================== */
@@ -1729,3 +1881,117 @@ function toggleTheme() {
 document.addEventListener('DOMContentLoaded', initTheme);
 // Eğer script defer/async yükleniyorsa doğrudan da çağırabiliriz:
 initTheme();
+
+
+/* ==========================================
+ * YDS SORU ÇÖZÜMÜ / KONU ANLATIMI YÖNETİMİ
+ * ========================================== */
+
+// 1. Soru Bankasındaki Sınavları Bulup Dropdown'a Doldurur
+function populateAdminYdsExams() {
+    const examSelect = document.getElementById('admin-yds-exam-select');
+    if (!examSelect || typeof GLOBAL_SORU_BANKASI === 'undefined') return;
+    
+    // Sınav isimlerini benzersiz (unique) olarak al
+    const exams = [...new Set(GLOBAL_SORU_BANKASI.map(q => q.exam))].sort();
+    
+    examSelect.innerHTML = '<option value="">-- Önce Sınav Seçin --</option>' + 
+        exams.map(exam => `<option value="${exam}">${exam}</option>`).join('');
+        
+    document.getElementById('admin-yds-q-select').innerHTML = '<option value="">-- Sonra Soru Seçin --</option>';
+    document.getElementById('admin-yds-q-preview').innerHTML = 'Soru önizlemesi burada görünecek...';
+    document.getElementById('admin-yds-explanation').innerHTML = '';
+}
+
+// 2. Seçilen Sınava Ait Soruları Dropdown'a Doldurur
+function loadAdminYdsQuestions() {
+    const examName = document.getElementById('admin-yds-exam-select').value;
+    const qSelect = document.getElementById('admin-yds-q-select');
+    
+    if (!examName) {
+        qSelect.innerHTML = '<option value="">-- Sonra Soru Seçin --</option>';
+        return;
+    }
+
+    // Sadece seçilen sınavın sorularını getir
+    const questions = GLOBAL_SORU_BANKASI.filter(q => q.exam === examName);
+    qSelect.innerHTML = '<option value="">-- Sonra Soru Seçin --</option>' + 
+        questions.map((q, index) => `<option value="${q.id}">Soru ${index + 1} - (${q.category})</option>`).join('');
+        
+    document.getElementById('admin-yds-q-preview').innerHTML = 'Soru önizlemesi burada görünecek...';
+    document.getElementById('admin-yds-explanation').innerHTML = '';
+}
+
+// 3. Soru Seçildiğinde Soruyu Önizletir ve Varsa Eski Çözümü Getirir
+function loadAdminYdsExplanation() {
+    const qId = document.getElementById('admin-yds-q-select').value;
+    const preview = document.getElementById('admin-yds-q-preview');
+    const expBox = document.getElementById('admin-yds-explanation');
+    
+    if (!qId) {
+        preview.innerHTML = 'Soru önizlemesi burada görünecek...';
+        expBox.innerHTML = '';
+        return;
+    }
+
+    // Soruyu bul (ID'nin Sayı veya Metin olma ihtimaline karşı ikisini de String yaparak eşleştiriyoruz)
+    const q = GLOBAL_SORU_BANKASI.find(x => String(x.id) === String(qId));
+    
+    if (q) {
+        preview.innerHTML = `<strong style="color:var(--accent);">Soru:</strong> ${q.question}<br><br><strong style="color:var(--success);">Doğru Cevap:</strong> ${q.answer} - ${q.options[q.answer]}`;
+        expBox.innerHTML = q.explanation || ""; // Varsa eski açıklamayı kutuya koy
+    } else {
+        preview.innerHTML = '<span style="color:var(--error);">Soru veritabanında bulunamadı. ID hatası olabilir.</span>';
+    }
+}
+
+// 4. Yazılan Açıklamayı Soru Bankasına Kaydeder
+function saveYdsExplanation() {
+    const qId = document.getElementById('admin-yds-q-select').value;
+    if (!qId) {
+        showToastMessage("❌ Lütfen önce bir soru seçin!");
+        return;
+    }
+
+    const expBox = document.getElementById('admin-yds-explanation');
+    let expText = expBox.innerHTML.trim();
+    if(expText === '<br>' || expText === '<div><br></div>') expText = '';
+
+    // Soruyu bul (Yine String eşleştirmesi ile)
+    const qIndex = GLOBAL_SORU_BANKASI.findIndex(x => String(x.id) === String(qId));
+    
+    if (qIndex > -1) {
+        GLOBAL_SORU_BANKASI[qIndex].explanation = expText;
+        
+        // Veriyi tarayıcı hafızasına kaydet (JSON sıfırlansa da açıklamalar gitmesin diye ayrı tutuyoruz)
+        let savedExplanations = JSON.parse(localStorage.getItem('y_yds_explanations')) || {};
+        savedExplanations[qId] = expText;
+        localStorage.setItem('y_yds_explanations', JSON.stringify(savedExplanations));
+        
+        showToastMessage("✅ Soru çözümü / konu anlatımı başarıyla kaydedildi!");
+        
+        // Eğer o an arka planda YDS alıştırması açıksa canlı olarak yenile
+        if(typeof openYdsPractice === 'function') {
+            const examName = document.getElementById('admin-yds-exam-select').value;
+            if(document.getElementById('practice-workspace').style.display === 'block') {
+                openYdsPractice(examName); 
+            }
+        }
+    } else {
+        showToastMessage("❌ Kayıt başarısız! Soru listede bulunamadı.");
+    }
+}
+// 5. Sisteme "Yazılan Açıklamaları Hatırla" Mantığını Aşılayan Tetikleyici
+setInterval(() => {
+    if (typeof GLOBAL_SORU_BANKASI === 'undefined' || GLOBAL_SORU_BANKASI.length === 0) return;
+    const savedExplanations = JSON.parse(localStorage.getItem('y_yds_explanations'));
+    if (savedExplanations) {
+        for (let qId in savedExplanations) {
+            const realQ = GLOBAL_SORU_BANKASI.find(q => q.id === qId);
+            if (realQ) {
+                realQ.explanation = savedExplanations[qId];
+            }
+        }
+    }
+}, 1000);
+
