@@ -1945,7 +1945,12 @@ function loadAdminYdsExplanation() {
     }
 }
 
-// 4. Yazılan Açıklamayı Soru Bankasına Kaydeder
+
+
+// Sistemi başlattıktan 2 saniye sonra buluttaki çözümleri çek (Soruların yüklenmesini beklemek için)
+setTimeout(fetchYdsExplanationsFromCloud, 2000);
+
+// 4. Yazılan Açıklamayı Soru Bankasına Kaydeder (Zorunlu Bulut Senkronizasyonu)
 function saveYdsExplanation() {
     const qId = document.getElementById('admin-yds-q-select').value;
     if (!qId) {
@@ -1957,18 +1962,25 @@ function saveYdsExplanation() {
     let expText = expBox.innerHTML.trim();
     if(expText === '<br>' || expText === '<div><br></div>') expText = '';
 
-    // Soruyu bul (Yine String eşleştirmesi ile)
+    // Soruyu bul
     const qIndex = GLOBAL_SORU_BANKASI.findIndex(x => String(x.id) === String(qId));
     
     if (qIndex > -1) {
         GLOBAL_SORU_BANKASI[qIndex].explanation = expText;
         
-        // Veriyi tarayıcı hafızasına kaydet (JSON sıfırlansa da açıklamalar gitmesin diye ayrı tutuyoruz)
+        // 1. Tarayıcıya Kaydet (Geçici Hafıza)
         let savedExplanations = JSON.parse(localStorage.getItem('y_yds_explanations')) || {};
         savedExplanations[qId] = expText;
         localStorage.setItem('y_yds_explanations', JSON.stringify(savedExplanations));
         
-        showToastMessage("✅ Soru çözümü / konu anlatımı başarıyla kaydedildi!");
+        // 2. DOĞRUDAN FİREBASE'E KAYDET (Telefon ve diğer bilgisayarlar için)
+        if (typeof db !== 'undefined' && db !== null) {
+            db.collection("global").doc("yds_explanations").set(savedExplanations, { merge: true })
+              .then(() => console.log("☁️ Çözüm Firebase bulutuna başarıyla kaydedildi!"))
+              .catch(err => console.error("Firebase kayıt hatası:", err));
+        }
+        
+        showToastMessage("✅ Soru çözümü buluta ve cihaza kaydedildi!");
         
         // Eğer o an arka planda YDS alıştırması açıksa canlı olarak yenile
         if(typeof openYdsPractice === 'function') {
@@ -1981,17 +1993,50 @@ function saveYdsExplanation() {
         showToastMessage("❌ Kayıt başarısız! Soru listede bulunamadı.");
     }
 }
-// 5. Sisteme "Yazılan Açıklamaları Hatırla" Mantığını Aşılayan Tetikleyici
+
+// 5. Başka Cihazdan (Örn: Telefondan) Girildiğinde Çözümleri Firebase'den Çeken Fonksiyon
+function fetchYdsExplanationsFromCloud() {
+    if (typeof db !== 'undefined' && db !== null) {
+        db.collection("global").doc("yds_explanations").get().then((doc) => {
+            if (doc.exists) {
+                const cloudExplanations = doc.data();
+                
+                // Buluttaki veriyi bu cihazın (telefonun) tarayıcısına indir
+                localStorage.setItem('y_yds_explanations', JSON.stringify(cloudExplanations));
+                
+                // Soru bankasındaki sorulara açıklamaları yerleştir
+                if (typeof GLOBAL_SORU_BANKASI !== 'undefined' && GLOBAL_SORU_BANKASI.length > 0) {
+                    for (let qId in cloudExplanations) {
+                        const realQ = GLOBAL_SORU_BANKASI.find(q => String(q.id) === String(qId));
+                        if (realQ) {
+                            realQ.explanation = cloudExplanations[qId];
+                        }
+                    }
+                }
+                console.log("☁️ YDS Çözümleri Firebase'den başarıyla çekildi!");
+            }
+        }).catch((error) => {
+            console.log("Firebase YDS çekme hatası:", error);
+        });
+    }
+}
+
+// Telefon gibi mobil cihazlarda verinin tam yüklenebilmesi için 3 saniye bekle ve buluttan çek
+setTimeout(fetchYdsExplanationsFromCloud, 3000);
+
+// 6. Sisteme "Yazılan Açıklamaları Hatırla" Mantığını Aşılayan Güçlü Tetikleyici
+// (İnternet yavaş olsa bile soru bankası sonradan yüklendiğinde çözümleri otomatik eşleştirir)
 setInterval(() => {
     if (typeof GLOBAL_SORU_BANKASI === 'undefined' || GLOBAL_SORU_BANKASI.length === 0) return;
+    
     const savedExplanations = JSON.parse(localStorage.getItem('y_yds_explanations'));
     if (savedExplanations) {
         for (let qId in savedExplanations) {
-            const realQ = GLOBAL_SORU_BANKASI.find(q => q.id === qId);
-            if (realQ) {
+            const realQ = GLOBAL_SORU_BANKASI.find(q => String(q.id) === String(qId));
+            // Sadece açıklama değişmişse (veya yeni eklenmişse) üzerine yaz, sistemi yorma
+            if (realQ && realQ.explanation !== savedExplanations[qId]) {
                 realQ.explanation = savedExplanations[qId];
             }
         }
     }
-}, 1000);
-
+}, 1500);
