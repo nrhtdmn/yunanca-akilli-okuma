@@ -263,37 +263,88 @@ function deleteUserAnnouncement(annId) {
   showToastMessage("Duyuru silindi.");
 }
 
+// Seviye kutucuklarına tıklandığında altındaki içerikleri açıp kapatacak yardımcı fonksiyon
+window.toggleLevelFolder = function(safeLevel) {
+    const targetFolder = document.getElementById('folder-' + safeLevel);
+    
+    // Eğer tıklanan kutucuğun içeriği zaten açıksa, sadece onu kapat
+    if (targetFolder.style.display === 'block') {
+        targetFolder.style.display = 'none';
+        return;
+    }
+    
+    // Önce ekrandaki açık olan tüm klasörleri gizle (sayfa kalabalık olmasın diye)
+    document.querySelectorAll('.level-folder-content').forEach(folder => {
+        folder.style.display = 'none';
+    });
+    
+    // Sadece tıklanan seviyenin klasörünü aç
+    targetFolder.style.display = 'block';
+};
+
 /* === READ KATALOĞU === */
 function renderTextLibrary() {
   const container = document.getElementById('panel-library');
-  let html = `<div style="text-align:center; margin-bottom:25px;"><h3 style="color:var(--accent); font-size: 1.6rem; margin-bottom:5px;">📚 Okuma Kütüphanesi</h3><p style="color:var(--text-dim); font-size:0.95rem;">Seviyenize uygun klasörü açın ve çalışmak istediğiniz metni seçin.</p></div>`;
+  let html = `<div style="text-align:center; margin-bottom:25px;">
+                <h3 style="color:var(--accent); font-size: 1.6rem; margin-bottom:5px;">📚 Okuma Kütüphanesi</h3>
+                <p style="color:var(--text-dim); font-size:0.95rem;">Önce seviye kutucuğuna tıklayın, ardından açılan menüden metninizi seçin.</p>
+              </div>`;
+              
+  // 1. AŞAMA: Seviyeleri yan yana BÜYÜK KUTUCUKLAR (grid) şeklinde oluşturuyoruz
+  html += `<div class="text-grid" style="margin-bottom: 20px;">`;
   LEVELS.forEach(level => {
-    const textsInLevel = METIN_KATALOGU.filter(t => t.level === level); const safeLevel = level; let levelContent = '';
-    if (textsInLevel.length === 0) { levelContent = `<div style="padding: 15px 20px; color:var(--text-dim); text-align:center; font-style:italic;">Bu seviyede henüz metin bulunmuyor.</div>`; } 
-    else {
+    const textsInLevel = METIN_KATALOGU.filter(t => t.level === level);
+    if (textsInLevel.length > 0) {
+      const safeLevel = level.replace(/[^a-zA-Z0-9]/g, '_');
+      html += `
+        <div class="text-card" onclick="toggleLevelFolder('${safeLevel}')" style="text-align: center; border: 2px solid var(--accent); background: rgba(79, 142, 247, 0.05); padding: 20px;">
+          <div style="font-size: 2.5rem; margin-bottom: 10px;">🎓</div>
+          <div class="text-card-title" style="font-size: 1.3rem; margin-bottom: 5px;">${level} Seviyesi</div>
+          <div style="color: var(--text-dim); font-size: 0.9rem;">${textsInLevel.length} Okuma Parçası ➔</div>
+        </div>`;
+    }
+  });
+  html += `</div>`; // Seviye kutucuklarının grid'ini kapatıyoruz
+
+  // 2. AŞAMA: Tıklanınca açılacak olan GİZLİ İÇERİK (metinler) alanlarını oluşturuyoruz
+  LEVELS.forEach(level => {
+    const textsInLevel = METIN_KATALOGU.filter(t => t.level === level); 
+    if (textsInLevel.length > 0) {
+      const safeLevel = level.replace(/[^a-zA-Z0-9]/g, '_');
+      
+      // Başlangıçta display: none ile gizliyoruz (sadece kutucuğa tıklanınca display: block olacak)
+      html += `
+      <div id="folder-${safeLevel}" class="level-folder-content" style="display: none; background: var(--surface-alt); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; animation: fadeIn 0.3s ease;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;">
+            <h4 style="color:var(--accent); font-size: 1.2rem; margin:0;">📂 ${level} Metinleri</h4>
+            <button class="secondary-btn" onclick="toggleLevelFolder('${safeLevel}')" style="padding: 5px 10px; font-size: 0.85rem; border-color: var(--error); color: var(--error);">✕ Kapat</button>
+        </div>`;
+      
       const categories = [...new Set(textsInLevel.map(t => t.category))];
       categories.forEach(cat => {
-        const safeCat = safeLevel + "_" + cat.replace(/[^a-zA-Z0-9]/g, '_'); const textsInCat = textsInLevel.filter(t => t.category === cat);
-        let cardsHtml = `<div class="text-grid">`;
-        textsInCat.forEach(item => { cardsHtml += `<div class="text-card" onclick="openSampleText('${item.id}')"><div class="text-card-title">${item.title}</div><div class="text-card-play">📖 Oku ➔</div></div>`; });
-        cardsHtml += `</div>`;
-        levelContent += `
-          <div class="deck-section" style="margin: 10px 15px; border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; background: rgba(0,0,0,0.2);">
-            <div class="deck-header" onclick="toggleAccordion('cat-${safeCat}')" style="background:transparent; padding: 12px 15px;">
-              <strong style="color: var(--text); font-size: 1rem;">${cat} <span style="color:var(--text-dim); font-size:0.8rem; font-weight:normal;">(${textsInCat.length} Metin)</span></strong><span class="deck-arrow" id="arrow-cat-${safeCat}">▼</span>
-            </div>
-            <div class="deck-content" id="content-cat-${safeCat}" style="background:transparent; padding-top:5px; border-top: 1px solid rgba(255,255,255,0.05);">${cardsHtml}</div>
-          </div>`;
+        const textsInCat = textsInLevel.filter(t => t.category === cat);
+        
+        // Varsa kategori başlığı (Örn: Günlük Yaşam)
+        if(cat) {
+            html += `<div style="color:var(--text-dim); margin: 0 0 10px 5px; font-weight: bold; font-size: 0.95rem;">🏷️ ${cat}</div>`;
+        }
+        
+        // O seviye ve kategorideki metinleri KUTUCUK (grid) olarak listeliyoruz
+        html += `<div class="text-grid" style="margin-bottom: 25px;">`;
+        textsInCat.forEach(item => { 
+          html += `
+            <div class="text-card" onclick="openSampleText('${item.id}')">
+              <div class="text-card-title">${item.title}</div>
+              <div class="text-card-play">📖 Oku ➔</div>
+            </div>`; 
+        });
+        html += `</div>`;
       });
+      
+      html += `</div>`; // İçerik klasörünü kapatıyoruz
     }
-    html += `
-      <div class="deck-section" style="margin-bottom:15px; border: 1px solid var(--border);">
-        <div class="deck-header" onclick="toggleAccordion('lvl-${safeLevel}')" style="font-size: 1.15rem; padding: 18px 20px; background: linear-gradient(90deg, #1c212d 0%, #13161e 100%);">
-          <strong>🎓 ${level} Seviyesi</strong><span class="deck-arrow" id="arrow-lvl-${safeLevel}">▼</span>
-        </div>
-        <div class="deck-content" id="content-lvl-${safeLevel}" style="padding: 5px 0 15px 0;">${levelContent}</div>
-      </div>`;
   });
+  
   container.innerHTML = html;
 }
 
