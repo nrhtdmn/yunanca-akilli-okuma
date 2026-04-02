@@ -273,7 +273,7 @@ window.toggleLevelFolder = function(safeLevel) {
         return;
     }
     
-    // Önce ekrandaki açık olan tüm klasörleri gizle (sayfa kalabalık olmasın diye)
+    // Önce ekrandaki açık olan tüm klasörleri gizle
     document.querySelectorAll('.level-folder-content').forEach(folder => {
         folder.style.display = 'none';
     });
@@ -290,31 +290,25 @@ function renderTextLibrary() {
                 <p style="color:var(--text-dim); font-size:0.95rem;">Önce seviye kutucuğuna tıklayın, ardından açılan menüden metninizi seçin.</p>
               </div>`;
               
-  // 1. AŞAMA: Seviyeleri yan yana BÜYÜK KUTUCUKLAR (grid) şeklinde oluşturuyoruz
-  html += `<div class="text-grid" style="margin-bottom: 20px;">`;
+  // ANA GRID BAŞLIYOR (Seviyeler ve alt menüler aynı döşemenin içinde olacak)
+  html += `<div class="text-grid" style="margin-bottom: 20px; align-items: start;">`;
+  
   LEVELS.forEach(level => {
     const textsInLevel = METIN_KATALOGU.filter(t => t.level === level);
     if (textsInLevel.length > 0) {
       const safeLevel = level.replace(/[^a-zA-Z0-9]/g, '_');
+      
+      // 1. KISIM: Seviye Kutucuğu
       html += `
-        <div class="text-card" onclick="toggleLevelFolder('${safeLevel}')" style="text-align: center; border: 2px solid var(--accent); background: rgba(79, 142, 247, 0.05); padding: 20px;">
+        <div class="text-card" onclick="toggleLevelFolder('${safeLevel}')" style="text-align: center; border: 2px solid var(--accent); background: rgba(79, 142, 247, 0.05); padding: 20px; cursor: pointer;">
           <div style="font-size: 2.5rem; margin-bottom: 10px;">🎓</div>
           <div class="text-card-title" style="font-size: 1.3rem; margin-bottom: 5px;">${level} Seviyesi</div>
           <div style="color: var(--text-dim); font-size: 0.9rem;">${textsInLevel.length} Okuma Parçası ➔</div>
         </div>`;
-    }
-  });
-  html += `</div>`; // Seviye kutucuklarının grid'ini kapatıyoruz
-
-  // 2. AŞAMA: Tıklanınca açılacak olan GİZLİ İÇERİK (metinler) alanlarını oluşturuyoruz
-  LEVELS.forEach(level => {
-    const textsInLevel = METIN_KATALOGU.filter(t => t.level === level); 
-    if (textsInLevel.length > 0) {
-      const safeLevel = level.replace(/[^a-zA-Z0-9]/g, '_');
-      
-      // Başlangıçta display: none ile gizliyoruz (sadece kutucuğa tıklanınca display: block olacak)
+        
+      // 2. KISIM: Alt Menü İçeriği (grid-column: 1 / -1 sayesinde bulunduğu satırda tam genişlik kaplar)
       html += `
-      <div id="folder-${safeLevel}" class="level-folder-content" style="display: none; background: var(--surface-alt); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; animation: fadeIn 0.3s ease;">
+      <div id="folder-${safeLevel}" class="level-folder-content" style="display: none; grid-column: 1 / -1; background: var(--surface-alt); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; animation: fadeIn 0.3s ease; box-shadow: var(--shadow);">
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;">
             <h4 style="color:var(--accent); font-size: 1.2rem; margin:0;">📂 ${level} Metinleri</h4>
             <button class="secondary-btn" onclick="toggleLevelFolder('${safeLevel}')" style="padding: 5px 10px; font-size: 0.85rem; border-color: var(--error); color: var(--error);">✕ Kapat</button>
@@ -329,7 +323,7 @@ function renderTextLibrary() {
             html += `<div style="color:var(--text-dim); margin: 0 0 10px 5px; font-weight: bold; font-size: 0.95rem;">🏷️ ${cat}</div>`;
         }
         
-        // O seviye ve kategorideki metinleri KUTUCUK (grid) olarak listeliyoruz
+        // O seviyedeki metinleri kendi içindeki KUTUCUKLAR (grid) olarak listeliyoruz
         html += `<div class="text-grid" style="margin-bottom: 25px;">`;
         textsInCat.forEach(item => { 
           html += `
@@ -341,13 +335,13 @@ function renderTextLibrary() {
         html += `</div>`;
       });
       
-      html += `</div>`; // İçerik klasörünü kapatıyoruz
+      html += `</div>`; // Alt menü klasörünü kapatıyoruz
     }
   });
   
+  html += `</div>`; // Ana grid'i kapatıyoruz
   container.innerHTML = html;
 }
-
 async function openSampleText(id) {
   if(!requireAuth(1)) return; 
   showToastMessage("⏳ Metin yükleniyor...");
