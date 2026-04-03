@@ -13,18 +13,34 @@ function openAdminPanel() {
   const tbody = document.getElementById('admin-user-list');
   tbody.innerHTML = "";
   for(let username in dbUsers) {
-    if(username === 'nurhat') continue;
+    if(username === 'nurhat') continue; // Ana admin silinemez
     let user = dbUsers[username];
-    let statusOpt = `<select class="action-select" onchange="updateUserAdmin('${username}', 'status', this.value)"><option value="pending" ${user.status==='pending'?'selected':''}>Beklemede</option><option value="approved" ${user.status==='approved'?'selected':''}>Onaylı</option></select>`;
-    let premiumOpt = `<select class="action-select" onchange="updateUserAdmin('${username}', 'isPremium', this.value)"><option value="false" ${!user.isPremium?'selected':''}>Normal</option><option value="true" ${user.isPremium?'selected':''}>Premium</option></select>`;
-    tbody.innerHTML += `<tr><td><b>${username}</b></td><td>${statusOpt}</td><td>${user.isPremium ? 'Sınırsız' : user.credits}</td><td>${premiumOpt}</td></tr>`;
+    
+    let statusOpt = `<select class="action-select" onchange="updateUserAdmin('${username}', 'status', this.value)">
+                        <option value="pending" ${user.status==='pending'?'selected':''}>Beklemede</option>
+                        <option value="approved" ${user.status==='approved'?'selected':''}>Onaylı</option>
+                     </select>`;
+    
+    let premiumOpt = `<select class="action-select" onchange="updateUserAdmin('${username}', 'isPremium', this.value)">
+                        <option value="false" ${!user.isPremium?'selected':''}>Normal</option>
+                        <option value="true" ${user.isPremium?'selected':''}>Premium</option>
+                      </select>`;
+    
+    // YENİ: Sil butonu tasarımı
+    let deleteBtn = `<button class="secondary-btn" onclick="deleteUserAdmin('${username}')" 
+                        style="padding:5px 10px; font-size:0.8rem; border-color:var(--error); color:var(--error); background:transparent;">
+                        🗑️ Sil
+                     </button>`;
+    
+    tbody.innerHTML += `<tr>
+        <td><b>${username}</b></td>
+        <td>${statusOpt}</td>
+        <td>${user.isPremium ? 'Sınırsız' : user.credits}</td>
+        <td style="display:flex; gap:8px; align-items:center;">${premiumOpt} ${deleteBtn}</td>
+    </tr>`;
   }
   
-  // YENİ: Panel açılırken alıştırma listesini de çizdir
-  if(typeof renderAdminPracticeList === 'function') {
-      renderAdminPracticeList();
-  }
-
+  if(typeof renderAdminPracticeList === 'function') renderAdminPracticeList();
   document.getElementById('admin-modal').style.display = 'flex';
 }
 
