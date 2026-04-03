@@ -2586,7 +2586,6 @@ function toggleTheme() {
 document.addEventListener("DOMContentLoaded", initTheme);
 // Eğer script defer/async yükleniyorsa doğrudan da çağırabiliriz:
 initTheme();
-
 /* ==========================================
  * YDS SORU ÇÖZÜMÜ / KONU ANLATIMI YÖNETİMİ
  * ========================================== */
@@ -2596,7 +2595,6 @@ function populateAdminYdsExams() {
   const examSelect = document.getElementById("admin-yds-exam-select");
   if (!examSelect || typeof GLOBAL_SORU_BANKASI === "undefined") return;
 
-  // Sınav isimlerini benzersiz (unique) olarak al
   const exams = [...new Set(GLOBAL_SORU_BANKASI.map((q) => q.exam))].sort();
 
   examSelect.innerHTML =
@@ -2620,16 +2618,10 @@ function loadAdminYdsQuestions() {
     return;
   }
 
-  // Sadece seçilen sınavın sorularını getir
   const questions = GLOBAL_SORU_BANKASI.filter((q) => q.exam === examName);
   qSelect.innerHTML =
     '<option value="">-- Sonra Soru Seçin --</option>' +
-    questions
-      .map(
-        (q, index) =>
-          `<option value="${q.id}">Soru ${index + 1} - (${q.category})</option>`,
-      )
-      .join("");
+    questions.map((q, index) => `<option value="${q.id}">Soru ${index + 1} - (${q.category})</option>`).join("");
 
   document.getElementById("admin-yds-q-preview").innerHTML =
     "Soru önizlemesi burada görünecek...";
@@ -2648,145 +2640,96 @@ function loadAdminYdsExplanation() {
     return;
   }
 
-  // Soruyu bul (ID'nin Sayı veya Metin olma ihtimaline karşı ikisini de String yaparak eşleştiriyoruz)
   const q = GLOBAL_SORU_BANKASI.find((x) => String(x.id) === String(qId));
 
   if (q) {
     preview.innerHTML = `<strong style="color:var(--accent);">Soru:</strong> ${q.question}<br><br><strong style="color:var(--success);">Doğru Cevap:</strong> ${q.answer} - ${q.options[q.answer]}`;
-    expBox.innerHTML = q.explanation || ""; // Varsa eski açıklamayı kutuya koy
+    expBox.innerHTML = q.explanation || ""; 
   } else {
     preview.innerHTML =
       '<span style="color:var(--error);">Soru veritabanında bulunamadı. ID hatası olabilir.</span>';
   }
 }
 
-// Sistemi başlattıktan 2 saniye sonra buluttaki çözümleri çek (Soruların yüklenmesini beklemek için)
-setTimeout(fetchYdsExplanationsFromCloud, 2000);
-
 // 4. Yazılan Açıklamayı Soru Bankasına Kaydeder (Zorunlu Bulut Senkronizasyonu)
 function saveYdsExplanation() {
-  const qId = document.getElementById("admin-yds-q-select").value;
-  if (!qId) {
-    showToastMessage("❌ Lütfen önce bir soru seçin!");
-    return;
-  }
-
-  const expBox = document.getElementById("admin-yds-explanation");
-  let expText = expBox.innerHTML.trim();
-  if (expText === "<br>" || expText === "<div><br></div>") expText = "";
-
-  // Soruyu bul
-  const qIndex = GLOBAL_SORU_BANKASI.findIndex(
-    (x) => String(x.id) === String(qId),
-  );
-
-  if (qIndex > -1) {
-    GLOBAL_SORU_BANKASI[qIndex].explanation = expText;
-
-    // 1. Tarayıcıya Kaydet (Geçici Hafıza)
-    let savedExplanations =
-      JSON.parse(localStorage.getItem("y_yds_explanations")) || {};
-    savedExplanations[qId] = expText;
-    localStorage.setItem(
-      "y_yds_explanations",
-      JSON.stringify(savedExplanations),
-    );
-
-    // 2. DOĞRUDAN FİREBASE'E KAYDET (Telefon ve diğer bilgisayarlar için)
-    if (typeof db !== "undefined" && db !== null) {
-      db.collection("global")
-        .doc("yds_explanations")
-        .set(savedExplanations, { merge: true })
-        .then(() =>
-          console.log("☁️ Çözüm Firebase bulutuna başarıyla kaydedildi!"),
-        )
-        .catch((err) => console.error("Firebase kayıt hatası:", err));
+    const qId = document.getElementById('admin-yds-q-select').value;
+    if (!qId) {
+        showToastMessage("❌ Lütfen önce bir soru seçin!");
+        return;
     }
 
-    showToastMessage("✅ Soru çözümü buluta ve cihaza kaydedildi!");
+    const expBox = document.getElementById('admin-yds-explanation');
+    let expText = expBox.innerHTML.trim();
+    if(expText === '<br>' || expText === '<div><br></div>') expText = '';
 
-    // Eğer o an arka planda YDS alıştırması açıksa canlı olarak yenile
-    if (typeof openYdsPractice === "function") {
-      const examName = document.getElementById("admin-yds-exam-select").value;
-      if (
-        document.getElementById("practice-workspace").style.display === "block"
-      ) {
-        openYdsPractice(examName);
-      }
+    const qIndex = GLOBAL_SORU_BANKASI.findIndex(x => String(x.id) === String(qId));
+    
+    if (qIndex > -1) {
+        GLOBAL_SORU_BANKASI[qIndex].explanation = expText;
+        
+        let savedExplanations = JSON.parse(localStorage.getItem('y_yds_explanations')) || {};
+        savedExplanations[qId] = expText;
+        localStorage.setItem('y_yds_explanations', JSON.stringify(savedExplanations));
+        
+        if (typeof db !== 'undefined' && db !== null) {
+            db.collection("global").doc("yds_explanations").set(savedExplanations, { merge: true })
+              .then(() => console.log("☁️ Çözüm Firebase bulutuna başarıyla kaydedildi!"))
+              .catch(err => console.error("Firebase kayıt hatası:", err));
+        }
+        
+        showToastMessage("✅ Soru çözümü buluta ve cihaza kaydedildi!");
+        
+        if(typeof openYdsPractice === 'function') {
+            const examName = document.getElementById('admin-yds-exam-select').value;
+            if(document.getElementById('practice-workspace').style.display === 'block') {
+                openYdsPractice(examName); 
+            }
+        }
+    } else {
+        showToastMessage("❌ Kayıt başarısız! Soru listede bulunamadı.");
     }
-  } else {
-    showToastMessage("❌ Kayıt başarısız! Soru listede bulunamadı.");
-  }
 }
 
 // 5. Başka Cihazdan (Örn: Telefondan) Girildiğinde Çözümleri ANINDA Çeken (Canlı) Fonksiyon
 function listenForYdsExplanations() {
-  if (typeof db !== "undefined" && db !== null) {
-    // .get() yerine .onSnapshot() kullanıyoruz. Bu sayede bulutta bir değişiklik
-    // olduğu an, telefon sayfayı yenilemese bile veriyi anında saniyesinde çeker!
-    db.collection("global")
-      .doc("yds_explanations")
-      .onSnapshot(
-        (doc) => {
-          if (doc.exists) {
-            const cloudExplanations = doc.data();
-
-            // Buluttaki veriyi bu cihazın (telefonun) tarayıcısına indir
-            localStorage.setItem(
-              "y_yds_explanations",
-              JSON.stringify(cloudExplanations),
-            );
-
-            // Soru bankasındaki sorulara açıklamaları yerleştir
-            if (
-              typeof GLOBAL_SORU_BANKASI !== "undefined" &&
-              GLOBAL_SORU_BANKASI.length > 0
-            ) {
-              for (let qId in cloudExplanations) {
-                const realQ = GLOBAL_SORU_BANKASI.find(
-                  (q) => String(q.id) === String(qId),
-                );
-                if (realQ) {
-                  realQ.explanation = cloudExplanations[qId];
+    if (typeof db !== 'undefined' && db !== null) {
+        db.collection("global").doc("yds_explanations").onSnapshot((doc) => {
+            if (doc.exists) {
+                const cloudExplanations = doc.data();
+                
+                localStorage.setItem('y_yds_explanations', JSON.stringify(cloudExplanations));
+                
+                if (typeof GLOBAL_SORU_BANKASI !== 'undefined' && GLOBAL_SORU_BANKASI.length > 0) {
+                    for (let qId in cloudExplanations) {
+                        const realQ = GLOBAL_SORU_BANKASI.find(q => String(q.id) === String(qId));
+                        if (realQ) {
+                            realQ.explanation = cloudExplanations[qId];
+                        }
+                    }
                 }
-              }
+                console.log("☁️ 🔄 YDS Çözümleri Firebase'den CANLI olarak çekildi!");
             }
-            console.log(
-              "☁️ 🔄 YDS Çözümleri Firebase'den CANLI olarak çekildi!",
-            );
-          }
-        },
-        (error) => {
-          console.log("Firebase YDS canlı dinleme hatası:", error);
-        },
-      );
-  }
+        }, (error) => {
+            console.log("Firebase YDS canlı dinleme hatası:", error);
+        });
+    }
 }
 
 // Telefonun internet hızına bağlı kalmamak için 2 saniye sonra canlı dinlemeyi başlat
 setTimeout(listenForYdsExplanations, 2000);
 
 // 6. Sisteme "Yazılan Açıklamaları Hatırla" Mantığını Aşılayan Güçlü Tetikleyici
-// (Firebase yüklenene kadar veya internet yoksa cihazın hafızasındakileri kullanır)
 setInterval(() => {
-  if (
-    typeof GLOBAL_SORU_BANKASI === "undefined" ||
-    GLOBAL_SORU_BANKASI.length === 0
-  )
-    return;
-
-  const savedExplanations = JSON.parse(
-    localStorage.getItem("y_yds_explanations"),
-  );
-  if (savedExplanations) {
-    for (let qId in savedExplanations) {
-      const realQ = GLOBAL_SORU_BANKASI.find(
-        (q) => String(q.id) === String(qId),
-      );
-      // Sadece açıklama değişmişse üzerine yaz, sistemi yorma
-      if (realQ && realQ.explanation !== savedExplanations[qId]) {
-        realQ.explanation = savedExplanations[qId];
-      }
+    if (typeof GLOBAL_SORU_BANKASI === 'undefined' || GLOBAL_SORU_BANKASI.length === 0) return;
+    
+    const savedExplanations = JSON.parse(localStorage.getItem('y_yds_explanations'));
+    if (savedExplanations) {
+        for (let qId in savedExplanations) {
+            const realQ = GLOBAL_SORU_BANKASI.find(q => String(q.id) === String(qId));
+            if (realQ && realQ.explanation !== savedExplanations[qId]) {
+                realQ.explanation = savedExplanations[qId];
+            }
+        }
     }
-  }
 }, 2000);
