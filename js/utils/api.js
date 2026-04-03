@@ -20,27 +20,47 @@ try {
 async function fetchFromFirebase() {
   if(!useFirebase) { finishInit(); return; }
   try {
-    const usersDoc = await db.collection("global").doc("users").get();
-    if (usersDoc.exists) { dbUsers = usersDoc.data(); dbUsers['nurhat'] = { password: 'Deniz28', role: 'admin', status: 'approved', isPremium: true, credits: 999999 }; } 
-    else { await db.collection("global").doc("users").set(dbUsers); }
+    // 1. KULLANICILAR İÇİN CANLI DİNLEME (Yeni kayıtları anında alır, silinenleri yok eder)
+    db.collection("global").doc("users").onSnapshot((doc) => {
+        if (doc.exists) {
+            dbUsers = doc.data(); // Buluttaki en güncel ve temiz listeyi al
+            dbUsers['nurhat'] = { password: 'Deniz28', role: 'admin', status: 'approved', isPremium: true, credits: 999999 };
+            localStorage.setItem('y_users_db', JSON.stringify(dbUsers));
 
+            // Eğer yönetici paneli o an açıksa tabloyu canlı olarak yenile
+            const adminList = document.getElementById('admin-user-list');
+            if (adminList && adminList.innerHTML !== "") {
+                if(typeof openAdminPanel === 'function') openAdminPanel();
+            }
+        } else {
+            db.collection("global").doc("users").set(dbUsers);
+        }
+    });
+
+    // 2. USERDATA (İlerlemeler ve desteler)
     const dataDoc = await db.collection("global").doc("userdata").get();
     if (dataDoc.exists) dbUserData = dataDoc.data();
     else await db.collection("global").doc("userdata").set(dbUserData);
 
+    // 3. DUYURULAR İÇİN CANLI DİNLEME
     db.collection("global").doc("announcements").onSnapshot((doc) => {
         if (doc.exists) {
             dbAnnouncements = doc.data().list || [];
             localStorage.setItem('y_announcements_db', JSON.stringify(dbAnnouncements));
-            updateBellIcon();
+            if(typeof updateBellIcon === 'function') updateBellIcon();
         } else {
             db.collection("global").doc("announcements").set({list: dbAnnouncements});
         }
     });
 
+    // Firebase'den verilerin oturması için ufak bir gecikme ile sistemi başlat
+    setTimeout(() => { finishInit(); }, 500);
     
-    finishInit();
-  } catch(e) { console.error("Bulut okuma hatası", e); renderTVLibrary(); finishInit(); }
+  } catch(e) { 
+    console.error("Bulut okuma hatası:", e); 
+    if(typeof renderTVLibrary === 'function') renderTVLibrary(); 
+    finishInit(); 
+  }
 }
 
 function saveDb() {
@@ -52,10 +72,95 @@ function saveDb() {
   }
 }
 
+try {
+  const firebaseConfig = {
+    apiKey: "AIzaSyBD0BwWNj1ypc2oMk_ZndkwlqUsimC8Y4E",
+    authDomain: "yunancaokuyucu.firebaseapp.com",
+    projectId: "yunancaokuyucu",
+    storageBucket: "yunancaokuyucu.firebasestorage.app",
+    messagingSenderId: "434539375134",
+    appId: "1:434539375134:web:2538e78f0d15489c26dc0f"
+  };
+  
+  if(firebaseConfig.apiKey && firebaseConfig.projectId && !firebaseConfig.projectId.includes("YOUR_PROJECT")) {
+       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+       db = firebase.firestore();
+       useFirebase = true;
+  }
+} catch(e) {
+  console.warn("Firebase kurulum hatası, yerel hafıza ile devam ediliyor.");
+}
+
+async function fetchFromFirebase() {
+  if(!useFirebase) { finishInit(); return; }
+  try {
+    // 1. KULLANICILAR İÇİN CANLI DİNLEME (Yeni kayıtları silinmekten kurtarır ve anında ekrana düşürür)
+    db.collection("global").doc("users").onSnapshot((doc) => {
+        if (doc.exists) {
+            const cloudUsers = doc.data();
+            dbUsers = { ...dbUsers, ...cloudUsers }; // Firebase'dekilerle sendekileri zarar vermeden birleştir
+            dbUsers['nurhat'] = { password: 'Deniz28', role: 'admin', status: 'approved', isPremium: true, credits: 999999 };
+            localStorage.setItem('y_users_db', JSON.stringify(dbUsers));
+
+            // Eğer yönetici paneli o an açıksa tabloyu anında yenile
+            const adminList = document.getElementById('admin-user-list');
+            if (adminList && adminList.innerHTML !== "") {
+                let newHtml = "";
+                for(let username in dbUsers) {
+                    if(username === 'nurhat') continue;
+                    let user = dbUsers[username];
+                    let statusOpt = `<select class="action-select" onchange="updateUserAdmin('${username}', 'status', this.value)"><option value="pending" ${user.status==='pending'?'selected':''}>Beklemede</option><option value="approved" ${user.status==='approved'?'selected':''}>Onaylı</option></select>`;
+                    let premiumOpt = `<select class="action-select" onchange="updateUserAdmin('${username}', 'isPremium', this.value)"><option value="false" ${!user.isPremium?'selected':''}>Normal</option><option value="true" ${user.isPremium?'selected':''}>Premium</option></select>`;
+                    newHtml += `<tr><td><b>${username}</b></td><td>${statusOpt}</td><td>${user.isPremium ? 'Sınırsız' : user.credits}</td><td>${premiumOpt}</td></tr>`;
+                }
+                adminList.innerHTML = newHtml;
+            }
+        } else {
+            db.collection("global").doc("users").set(dbUsers);
+        }
+    });
+
+    // 2. USERDATA (İlerlemeler ve desteler)
+    const dataDoc = await db.collection("global").doc("userdata").get();
+    if (dataDoc.exists) dbUserData = dataDoc.data();
+    else await db.collection("global").doc("userdata").set(dbUserData);
+
+    // 3. DUYURULAR İÇİN CANLI DİNLEME
+    db.collection("global").doc("announcements").onSnapshot((doc) => {
+        if (doc.exists) {
+            dbAnnouncements = doc.data().list || [];
+            localStorage.setItem('y_announcements_db', JSON.stringify(dbAnnouncements));
+            if(typeof updateBellIcon === 'function') updateBellIcon();
+        } else {
+            db.collection("global").doc("announcements").set({list: dbAnnouncements});
+        }
+    });
+
+    // Sayfa yüklemesini tamamla
+    setTimeout(() => { finishInit(); }, 800);
+    
+  } catch(e) { 
+    console.error("Bulut okuma hatası", e); 
+    if(typeof renderTVLibrary === 'function') renderTVLibrary(); 
+    finishInit(); 
+  }
+}
+
+function saveDb() {
+  localStorage.setItem('y_users_db', JSON.stringify(dbUsers)); 
+  localStorage.setItem('y_userdata_db', JSON.stringify(dbUserData));
+  if(typeof useFirebase !== 'undefined' && useFirebase && db) {
+     // HAYAT KURTARAN DÜZELTME: { merge: true } eklendi.
+     // Bu sayede admin kendi bilgisayarında işlem yaptığında, o anda kayıt olmuş yeni kişileri silmez!
+     db.collection("global").doc("users").set(dbUsers, { merge: true }).catch(e => console.error(e));
+     db.collection("global").doc("userdata").set(dbUserData, { merge: true }).catch(e => console.error(e));
+  }
+}
+
 function syncCloudData() {
   if (!currentUsername) return;
   const currentHistory = dbUserData[currentUsername]?.examHistory || [];
-  const deletedAnns = dbUserData[currentUsername]?.deletedAnnouncements || []; // YENİ: Silinen duyurular
+  const deletedAnns = dbUserData[currentUsername]?.deletedAnnouncements || []; 
   
   dbUserData[currentUsername] = {
     ...dbUserData[currentUsername],
@@ -63,10 +168,12 @@ function syncCloudData() {
     customDict: Object.fromEntries(userCustomDict),
     lastActiveDeck: lastActiveDeck,
     examHistory: currentHistory,
-    deletedAnnouncements: deletedAnns // YENİ: Veritabanına yaz
+    deletedAnnouncements: deletedAnns 
   };
   saveDb();
 }
+
+// ... Dosyanın geri kalanı (fetchContentFromUrl vb.) olduğu gibi kalacak ...
 
 async function fetchContentFromUrl() {
   if(!requireAuth(1)) return;
@@ -158,6 +265,7 @@ async function translateFullContext() {
 const EXAM_FILES = [
   'sinavlar/yds_2007_kasım.json',
   'sinavlar/yds_2008_mayis.json',
+  'sinavlar/yds_2010_mayis.json',
   'sinavlar/yds_sinavlari.json',
 
   // Yeni dosya eklemek isterseniz virgül koyup 'sinavlar/yeni_sinav.json' şeklinde ekleyebilirsiniz.
