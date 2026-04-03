@@ -40,3 +40,31 @@ function updateUserAdmin(uname, key, val) {
   if(key === 'isPremium') dbUsers[uname][key] = (val === 'true'); else dbUsers[uname][key] = val;
   saveDb(); showToastMessage("Kullanıcı yetkisi güncellendi.");
 }
+
+function deleteUserAdmin(uname) {
+  if (confirm(`"${uname}" kullanıcısını ve tüm verilerini KALICI OLARAK silmek istediğinize emin misiniz?`)) {
+    
+    // 1. Firebase (Bulut) Veritabanından Sil
+    if(typeof db !== 'undefined' && db !== null) {
+        // Kullanıcıyı 'users' belgesinden siler
+        let userDelete = {};
+        userDelete[uname] = firebase.firestore.FieldValue.delete();
+        db.collection("global").doc("users").update(userDelete);
+        
+        // Kullanıcının kelime ve geçmiş verilerini 'userdata' belgesinden siler
+        let dataDelete = {};
+        dataDelete[uname] = firebase.firestore.FieldValue.delete();
+        db.collection("global").doc("userdata").update(dataDelete);
+    }
+    
+    // 2. Yerel Değişkenlerden Sil
+    delete dbUsers[uname];
+    if(dbUserData[uname]) delete dbUserData[uname];
+    
+    // 3. Arayüzü Güncelle
+    saveDb(); // Diğer cihazlarla senkronizasyon için
+    openAdminPanel(); // Listeyi yenile
+    showToastMessage(`🗑️ ${uname} başarıyla silindi.`);
+  }
+}
+
