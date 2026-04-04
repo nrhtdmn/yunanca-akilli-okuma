@@ -35,13 +35,17 @@
         </div>
 
         <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap; justify-content: flex-end;">
-          <div class="user-profile-header" id="user-header-area"></div>
-          <button id="theme-toggle-btn" onclick="toggleTheme()"
-            style="background: var(--surface-alt); border: 1px solid var(--border); border-radius: 50%; width: 45px; height: 45px; font-size: 1.3rem; cursor: pointer; color: var(--text); display: flex; align-items: center; justify-content: center; transition: var(--transition); box-shadow: var(--shadow); flex-shrink: 0;"
-            title="Temayı Değiştir">☀️</button>
-        </div>
+  
+  <button id="pwa-install-btn" class="main-btn" style="display: none; background: linear-gradient(45deg, #10b981, #059669); color: white; border: none; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); font-weight: bold; gap: 8px; align-items: center; cursor: pointer; padding: 10px 20px;">
+    ⬇️ Uygulamayı Yükle
+  </button>
 
-      </div>
+  <div class="user-profile-header" id="user-header-area"></div>
+  
+  <button id="theme-toggle-btn" onclick="toggleTheme()"
+    style="background: var(--surface-alt); border: 1px solid var(--border); border-radius: 50%; width: 45px; height: 45px; font-size: 1.3rem; cursor: pointer; color: var(--text); display: flex; align-items: center; justify-content: center; transition: var(--transition); box-shadow: var(--shadow); flex-shrink: 0;"
+    title="Temayı Değiştir">☀️</button>
+</div>
 
       <div class="main-tabs">
         <button class="main-tab-btn active" id="mtab-read" onclick="switchMainTab('read')">📖 Okuma Paneli</button>
