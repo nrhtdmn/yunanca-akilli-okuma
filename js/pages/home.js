@@ -165,13 +165,15 @@ function finishInit() {
     currentUser = dbUsers[currentUsername];
     loadUserData();
   }
-  updateUserUI();
+updateUserUI();
   renderTextLibrary();
   renderVideoLibrary();
   renderTVLibrary();
   renderRadioLibrary();
   renderNewspaperLibrary();
+  renderLessonLibrary(); // YENİ EKLEDİĞİMİZ KONU ANLATIMI
   fetchExamData();
+  
 }
 
 function updateBellIcon() {
@@ -2735,40 +2737,6 @@ setInterval(() => {
 }, 2000);
 
 
-let GLOBAL_LESSONS = JSON.parse(localStorage.getItem('y_lessons_db')) || [];
-
-function renderLessonLibrary() {
-    const container = document.getElementById('lessons-grid-container');
-    if(!container) return;
-    
-    container.innerHTML = GLOBAL_LESSONS.map(lesson => `
-        <div class="text-card" onclick="openLesson('${lesson.id}')">
-            <div style="font-size:0.8rem; color:var(--accent2);">${lesson.category}</div>
-            <div class="text-card-title">${lesson.title}</div>
-            <div class="text-card-play">Dersi Oku ➔</div>
-        </div>
-    `).join('');
-}
-
-function openLesson(id) {
-    const lesson = GLOBAL_LESSONS.find(l => l.id === id);
-    if(!lesson) return;
-    
-    document.getElementById('lessons-grid-container').style.display = 'none';
-    document.getElementById('lesson-view-area').style.display = 'block';
-    document.getElementById('lesson-active-title').textContent = lesson.title;
-    document.getElementById('lesson-active-body').innerHTML = lesson.content;
-}
-
-function closeLessonView() {
-    document.getElementById('lesson-view-area').style.display = 'none';
-    document.getElementById('lessons-grid-container').style.display = 'grid';
-}
-
-// 1. Veriyi hafızadan al veya boş dizi oluştur
-let GLOBAL_LESSONS = JSON.parse(localStorage.getItem('y_lessons_db')) || [];
-
-// 2. Ders Kaydetme Fonksiyonu (Geliştirilmiş)
 window.GLOBAL_LESSONS = JSON.parse(localStorage.getItem('y_lessons_db')) || [];
 
 window.saveLesson = async function() {
@@ -2785,7 +2753,7 @@ window.saveLesson = async function() {
     const lessonData = {
         id: idInput.value.trim(),
         title: titleInput.value.trim(),
-        category: catInput.value.trim() || "Genel",
+        category: catInput.value.trim() || "Genel Gramer",
         content: bodyInput.innerHTML,
         date: new Date().toLocaleDateString('tr-TR')
     };
@@ -2804,51 +2772,4 @@ window.saveLesson = async function() {
     idInput.value = ""; titleInput.value = ""; bodyInput.innerHTML = "";
     renderLessonLibrary();
     populateAdminLessons();
-};
-
-window.renderLessonLibrary = function() {
-    const container = document.getElementById('lessons-grid-container');
-    if(!container) return;
-    container.innerHTML = window.GLOBAL_LESSONS.map(l => `
-        <div class="text-card" onclick="openLesson('${l.id}')">
-            <div style="font-size:0.8rem; color:var(--accent2);">${l.category}</div>
-            <div class="text-card-title">${l.title}</div>
-            <div class="text-card-play">Dersi Oku ➔</div>
-        </div>
-    `).join('');
-};
-
-window.openLesson = function(id) {
-    const lesson = window.GLOBAL_LESSONS.find(l => l.id === id);
-    if(!lesson) return;
-    document.getElementById('lessons-grid-container').style.display = 'none';
-    document.getElementById('lesson-view-area').style.display = 'block';
-    document.getElementById('lesson-active-title').textContent = lesson.title;
-    document.getElementById('lesson-active-body').innerHTML = lesson.content;
-    window.scrollTo({top:0, behavior:'smooth'});
-};
-
-window.closeLessonView = function() {
-    document.getElementById('lesson-view-area').style.display = 'none';
-    document.getElementById('lessons-grid-container').style.display = 'grid';
-};
-
-window.populateAdminLessons = function() {
-    const list = document.getElementById('admin-lesson-list');
-    if(!list) return;
-    list.innerHTML = window.GLOBAL_LESSONS.map(l => `
-        <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid var(--border);">
-            <span>${l.title}</span>
-            <button onclick="deleteLesson('${l.id}')" style="color:var(--error); background:none; border:none; cursor:pointer;">🗑️</button>
-        </div>
-    `).join('');
-};
-
-window.deleteLesson = function(id) {
-    if(!confirm("Silinsin mi?")) return;
-    window.GLOBAL_LESSONS = window.GLOBAL_LESSONS.filter(l => l.id !== id);
-    localStorage.setItem('y_lessons_db', JSON.stringify(window.GLOBAL_LESSONS));
-    if (window.useFirebase && window.db) window.db.collection("global").doc("lessons_db").set({ list: window.GLOBAL_LESSONS });
-    renderLessonLibrary(); populateAdminLessons();
-    showToastMessage("🗑️ Ders silindi.");
 };
