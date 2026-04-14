@@ -2913,3 +2913,16 @@ window.switchMainTab = function(tabName) {
         console.error("Sayfa bulunamadı: section-" + tabName);
     }
 };
+window.addLinkToEditor = function() {
+    const url = prompt("Bağlantı adresini (URL) girin:", "https://");
+    if (url) {
+        // Seçili metin varsa onu link yapar, yoksa URL'yi link olarak ekler
+        document.execCommand("createLink", false, url);
+        
+        // Linklerin yeni sekmede açılması için (Opsiyonel)
+        const links = document.getElementById('admin-lesson-body').getElementsByTagName('a');
+        for (let link of links) {
+            link.setAttribute('target', '_blank');
+        }
+    }
+};
