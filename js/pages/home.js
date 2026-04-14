@@ -2733,3 +2733,56 @@ setInterval(() => {
         }
     }
 }, 2000);
+
+
+let GLOBAL_LESSONS = JSON.parse(localStorage.getItem('y_lessons_db')) || [];
+
+function renderLessonLibrary() {
+    const container = document.getElementById('lessons-grid-container');
+    if(!container) return;
+    
+    container.innerHTML = GLOBAL_LESSONS.map(lesson => `
+        <div class="text-card" onclick="openLesson('${lesson.id}')">
+            <div style="font-size:0.8rem; color:var(--accent2);">${lesson.category}</div>
+            <div class="text-card-title">${lesson.title}</div>
+            <div class="text-card-play">Dersi Oku ➔</div>
+        </div>
+    `).join('');
+}
+
+function openLesson(id) {
+    const lesson = GLOBAL_LESSONS.find(l => l.id === id);
+    if(!lesson) return;
+    
+    document.getElementById('lessons-grid-container').style.display = 'none';
+    document.getElementById('lesson-view-area').style.display = 'block';
+    document.getElementById('lesson-active-title').textContent = lesson.title;
+    document.getElementById('lesson-active-body').innerHTML = lesson.content;
+}
+
+function closeLessonView() {
+    document.getElementById('lesson-view-area').style.display = 'none';
+    document.getElementById('lessons-grid-container').style.display = 'grid';
+}
+
+// Admin Kayıt Fonksiyonu
+async function saveLesson() {
+    const id = document.getElementById('admin-lesson-id').value.trim();
+    const title = document.getElementById('admin-lesson-title').value.trim();
+    const cat = document.getElementById('admin-lesson-cat').value.trim();
+    const content = document.getElementById('admin-lesson-body').innerHTML;
+
+    if(!id || !title) { alert("ID ve Başlık zorunludur!"); return; }
+
+    const newLesson = { id, title, category: cat, content, date: new Date().toISOString() };
+    
+    const idx = GLOBAL_LESSONS.findIndex(l => l.id === id);
+    if(idx > -1) GLOBAL_LESSONS[idx] = newLesson;
+    else GLOBAL_LESSONS.unshift(newLesson);
+
+    if(useFirebase && db) {
+        await db.collection("global").doc("lessons_db").set({ list: GLOBAL_LESSONS });
+    }
+    showToastMessage("✅ Konu başarıyla kaydedildi!");
+    renderLessonLibrary();
+}
