@@ -2739,13 +2739,19 @@ setInterval(() => {
 
 window.GLOBAL_LESSONS = JSON.parse(localStorage.getItem('y_lessons_db')) || [];
 
+/* ==========================================
+ * KONU ANLATIMI VE GRAMER YÖNETİMİ (LESSONS)
+ * ========================================== */
+
+window.GLOBAL_LESSONS = JSON.parse(localStorage.getItem('y_lessons_db')) || [];
+
 window.saveLesson = async function() {
     const idInput = document.getElementById('admin-lesson-id');
     const titleInput = document.getElementById('admin-lesson-title');
     const bodyInput = document.getElementById('admin-lesson-body');
     const catInput = document.getElementById('admin-lesson-cat');
 
-    if (!idInput.value || !titleInput.value) {
+    if (!idInput || !idInput.value || !titleInput.value) {
         showToastMessage("❌ ID ve Başlık zorunludur!");
         return;
     }
@@ -2758,18 +2764,110 @@ window.saveLesson = async function() {
         date: new Date().toLocaleDateString('tr-TR')
     };
 
+    // Varsa güncelle, yoksa yeni ekle
     const idx = window.GLOBAL_LESSONS.findIndex(l => l.id === lessonData.id);
-    if (idx > -1) window.GLOBAL_LESSONS[idx] = lessonData;
-    else window.GLOBAL_LESSONS.unshift(lessonData);
+    if (idx > -1) {
+        window.GLOBAL_LESSONS[idx] = lessonData;
+    } else {
+        window.GLOBAL_LESSONS.unshift(lessonData);
+    }
 
+    // Yerel Hafızaya Kaydet
     localStorage.setItem('y_lessons_db', JSON.stringify(window.GLOBAL_LESSONS));
     
-    if (window.useFirebase && window.db) {
-        await window.db.collection("global").doc("lessons_db").set({ list: window.GLOBAL_LESSONS });
+    // Buluta Kaydet
+    if (typeof useFirebase !== 'undefined' && useFirebase && typeof db !== 'undefined') {
+        await db.collection("global").doc("lessons_db").set({ list: window.GLOBAL_LESSONS });
     }
 
     showToastMessage("✅ Konu başarıyla kaydedildi!");
-    idInput.value = ""; titleInput.value = ""; bodyInput.innerHTML = "";
-    renderLessonLibrary();
-    populateAdminLessons();
+    
+    // Inputları temizle
+    idInput.value = ""; titleInput.value = ""; bodyInput.innerHTML = ""; catInput.value = "";
+    
+    // Listeleri yenile (Çökme sebebi olan fonksiyonlar artık aşağıda tanımlı)
+    if(typeof window.renderLessonLibrary === 'function') window.renderLessonLibrary();
+    if(typeof window.populateAdminLessons === 'function') window.populateAdminLessons();
+};
+
+// --- EKRANA ÇİZDİRME VE YÖNETİM FONKSİYONLARI ---
+
+window.renderLessonLibrary = function() {
+    const container = document.getElementById('lessons-grid-container');
+    if(!container) return;
+    
+    if(window.GLOBAL_LESSONS.length === 0) {
+         container.innerHTML = '<p style="color:var(--text-dim); text-align:center; grid-column: 1 / -1; padding: 20px;">Henüz konu eklenmemiş.</p>';
+         return;
+    }
+
+    container.innerHTML = window.GLOBAL_LESSONS.map(l => `
+        <div class="text-card" onclick="openLesson('${l.id}')">
+            <div style="font-size:0.85rem; color:var(--accent2); margin-bottom:5px; font-weight:bold;">${l.category}</div>
+            <div class="text-card-title">${l.title}</div>
+            <div class="text-card-play" style="color:var(--accent);">📖 Dersi Oku ➔</div>
+        </div>
+    `).join('');
+};
+
+window.openLesson = function(id) {
+    const lesson = window.GLOBAL_LESSONS.find(l => l.id === id);
+    if(!lesson) return;
+    document.getElementById('lessons-grid-container').style.display = 'none';
+    document.getElementById('lesson-view-area').style.display = 'block';
+    document.getElementById('lesson-active-title').textContent = lesson.title;
+    document.getElementById('lesson-active-body').innerHTML = lesson.content;
+    window.scrollTo({top:0, behavior:'smooth'});
+};
+
+window.closeLessonView = function() {
+    document.getElementById('lesson-view-area').style.display = 'none';
+    document.getElementById('lessons-grid-container').style.display = 'grid';
+};
+
+window.populateAdminLessons = function() {
+    const list = document.getElementById('admin-lesson-list');
+    if(!list) return;
+    
+    if (window.GLOBAL_LESSONS.length === 0) {
+        list.innerHTML = '<p style="color:var(--text-dim); font-size:0.9rem;">Henüz kayıtlı konu yok.</p>';
+        return;
+    }
+
+    list.innerHTML = window.GLOBAL_LESSONS.map(l => `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid var(--border); background:var(--surface); margin-bottom:5px; border-radius:6px;">
+            <div>
+                <strong style="color:var(--text);">${l.title}</strong><br>
+                <small style="color:var(--accent2);">${l.category}</small>
+            </div>
+            <div>
+                <button onclick="editLesson('${l.id}')" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:1.2rem; margin-right:10px;" title="Düzenle">✏️</button>
+                <button onclick="deleteLesson('${l.id}')" style="background:none; border:none; color:var(--error); cursor:pointer; font-size:1.2rem;" title="Sil">🗑️</button>
+            </div>
+        </div>
+    `).join('');
+};
+
+window.editLesson = function(id) {
+    const lesson = window.GLOBAL_LESSONS.find(l => l.id === id);
+    if (!lesson) return;
+    document.getElementById('admin-lesson-id').value = lesson.id;
+    document.getElementById('admin-lesson-title').value = lesson.title;
+    document.getElementById('admin-lesson-cat').value = lesson.category;
+    document.getElementById('admin-lesson-body').innerHTML = lesson.content;
+    showToastMessage("✏️ Düzenleme modu aktif. İşiniz bitince Kaydet'e basın.");
+};
+
+window.deleteLesson = function(id) {
+    if(!confirm("Bu konuyu silmek istediğinize emin misiniz?")) return;
+    window.GLOBAL_LESSONS = window.GLOBAL_LESSONS.filter(l => l.id !== id);
+    localStorage.setItem('y_lessons_db', JSON.stringify(window.GLOBAL_LESSONS));
+    
+    if (typeof useFirebase !== 'undefined' && useFirebase && typeof db !== 'undefined') {
+        db.collection("global").doc("lessons_db").set({ list: window.GLOBAL_LESSONS });
+    }
+    
+    window.renderLessonLibrary(); 
+    window.populateAdminLessons();
+    showToastMessage("🗑️ Ders silindi.");
 };
