@@ -315,3 +315,20 @@ async function fetchExamData() {
     document.getElementById('exam-grid-container').innerHTML = "<p style='text-align:center; color:var(--error); padding:20px;'>Sınav sistemi yüklenirken bir hata oluştu.</p>";
   }
 }
+
+// Konuları canlı dinleme
+function listenForLessons() {
+    if (useFirebase && db) {
+        db.collection("global").doc("lessons_db").onSnapshot((doc) => {
+            if (doc.exists) {
+                GLOBAL_LESSONS = doc.data().list || [];
+                localStorage.setItem('y_lessons_db', JSON.stringify(GLOBAL_LESSONS));
+                renderLessonLibrary();
+            }
+        });
+    }
+}
+// Başlangıçta çağır
+setTimeout(listenForLessons, 1500);
+
+
