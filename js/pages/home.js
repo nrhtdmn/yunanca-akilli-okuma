@@ -2769,121 +2769,86 @@ function closeLessonView() {
 let GLOBAL_LESSONS = JSON.parse(localStorage.getItem('y_lessons_db')) || [];
 
 // 2. Ders Kaydetme Fonksiyonu (Geliştirilmiş)
-async function saveLesson() {
+window.GLOBAL_LESSONS = JSON.parse(localStorage.getItem('y_lessons_db')) || [];
+
+window.saveLesson = async function() {
     const idInput = document.getElementById('admin-lesson-id');
     const titleInput = document.getElementById('admin-lesson-title');
-    const catInput = document.getElementById('admin-lesson-cat');
     const bodyInput = document.getElementById('admin-lesson-body');
+    const catInput = document.getElementById('admin-lesson-cat');
 
-    const id = idInput.value.trim();
-    const title = titleInput.value.trim();
-    const cat = catInput.value.trim();
-    const content = bodyInput.innerHTML;
-
-    if (!id || !title) {
-        showToastMessage("❌ Lütfen ID ve Başlık alanlarını doldurun!");
+    if (!idInput.value || !titleInput.value) {
+        showToastMessage("❌ ID ve Başlık zorunludur!");
         return;
     }
 
-    const newLesson = { 
-        id, 
-        title, 
-        category: cat || "Genel", 
-        content, 
-        date: new Date().toLocaleString('tr-TR') 
+    const lessonData = {
+        id: idInput.value.trim(),
+        title: titleInput.value.trim(),
+        category: catInput.value.trim() || "Genel",
+        content: bodyInput.innerHTML,
+        date: new Date().toLocaleDateString('tr-TR')
     };
 
-    // Mevcut dersi bul ve güncelle veya yeni ekle
-    const idx = GLOBAL_LESSONS.findIndex(l => l.id === id);
-    if (idx > -1) {
-        GLOBAL_LESSONS[idx] = newLesson;
-    } else {
-        GLOBAL_LESSONS.unshift(newLesson);
-    }
+    const idx = window.GLOBAL_LESSONS.findIndex(l => l.id === lessonData.id);
+    if (idx > -1) window.GLOBAL_LESSONS[idx] = lessonData;
+    else window.GLOBAL_LESSONS.unshift(lessonData);
 
-    // HER DURUMDA Yerel Hafızaya Kaydet (Firebase olmasa da çalışır)
-    localStorage.setItem('y_lessons_db', JSON.stringify(GLOBAL_LESSONS));
-
-    // Firebase Bulut Kaydı
-    if (typeof useFirebase !== 'undefined' && useFirebase && db) {
-        try {
-            await db.collection("global").doc("lessons_db").set({ list: GLOBAL_LESSONS });
-            console.log("☁️ Konu buluta senkronize edildi.");
-        } catch (e) {
-            console.error("Firebase kayıt hatası:", e);
-        }
+    localStorage.setItem('y_lessons_db', JSON.stringify(window.GLOBAL_LESSONS));
+    
+    if (window.useFirebase && window.db) {
+        await window.db.collection("global").doc("lessons_db").set({ list: window.GLOBAL_LESSONS });
     }
 
     showToastMessage("✅ Konu başarıyla kaydedildi!");
-    
-    // Formu temizle
-    idInput.value = "";
-    titleInput.value = "";
-    catInput.value = "";
-    bodyInput.innerHTML = "";
-
-    // Listeleri yenile
+    idInput.value = ""; titleInput.value = ""; bodyInput.innerHTML = "";
     renderLessonLibrary();
     populateAdminLessons();
-}
+};
 
-// 3. Yönetici Panelinde Dersleri Listeleyen Fonksiyon (Eksikti)
-function populateAdminLessons() {
-    const listContainer = document.getElementById('admin-lesson-list');
-    if (!listContainer) return;
+window.renderLessonLibrary = function() {
+    const container = document.getElementById('lessons-grid-container');
+    if(!container) return;
+    container.innerHTML = window.GLOBAL_LESSONS.map(l => `
+        <div class="text-card" onclick="openLesson('${l.id}')">
+            <div style="font-size:0.8rem; color:var(--accent2);">${l.category}</div>
+            <div class="text-card-title">${l.title}</div>
+            <div class="text-card-play">Dersi Oku ➔</div>
+        </div>
+    `).join('');
+};
 
-    if (GLOBAL_LESSONS.length === 0) {
-        listContainer.innerHTML = '<p style="color:var(--text-dim); font-size:0.9rem;">Henüz kayıtlı konu yok.</p>';
-        return;
-    }
+window.openLesson = function(id) {
+    const lesson = window.GLOBAL_LESSONS.find(l => l.id === id);
+    if(!lesson) return;
+    document.getElementById('lessons-grid-container').style.display = 'none';
+    document.getElementById('lesson-view-area').style.display = 'block';
+    document.getElementById('lesson-active-title').textContent = lesson.title;
+    document.getElementById('lesson-active-body').innerHTML = lesson.content;
+    window.scrollTo({top:0, behavior:'smooth'});
+};
 
-    listContainer.innerHTML = `
-        <table class="admin-table">
-            <thead>
-                <tr><th>Başlık</th><th>İşlem</th></tr>
-            </thead>
-            <tbody>
-                ${GLOBAL_LESSONS.map(l => `
-                    <tr>
-                        <td><b>${l.title}</b><br><small>${l.category}</small></td>
-                        <td>
-                            <button onclick="editLesson('${l.id}')" style="background:none; border:none; color:var(--accent); cursor:pointer;">✏️</button>
-                            <button onclick="deleteLesson('${l.id}')" style="background:none; border:none; color:var(--error); cursor:pointer; margin-left:10px;">🗑️</button>
-                        </td>
-                    </tr>
-                `).join('')}
-            </tbody>
-        </table>
-    `;
-}
+window.closeLessonView = function() {
+    document.getElementById('lesson-view-area').style.display = 'none';
+    document.getElementById('lessons-grid-container').style.display = 'grid';
+};
 
-// 4. Düzenleme Modu
-function editLesson(id) {
-    const lesson = GLOBAL_LESSONS.find(l => l.id === id);
-    if (!lesson) return;
+window.populateAdminLessons = function() {
+    const list = document.getElementById('admin-lesson-list');
+    if(!list) return;
+    list.innerHTML = window.GLOBAL_LESSONS.map(l => `
+        <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid var(--border);">
+            <span>${l.title}</span>
+            <button onclick="deleteLesson('${l.id}')" style="color:var(--error); background:none; border:none; cursor:pointer;">🗑️</button>
+        </div>
+    `).join('');
+};
 
-    document.getElementById('admin-lesson-id').value = lesson.id;
-    document.getElementById('admin-lesson-title').value = lesson.title;
-    document.getElementById('admin-lesson-cat').value = lesson.category;
-    document.getElementById('admin-lesson-body').innerHTML = lesson.content;
-    
-    showToastMessage("✏️ Düzenleme modu aktif.");
-    // Sayfayı formun başına kaydır
-    document.getElementById('admin-modal').querySelector('.modal-box').scrollTo({top:0, behavior:'smooth'});
-}
-
-// 5. Silme Fonksiyonu
-function deleteLesson(id) {
-    if (!confirm("Bu konuyu silmek istediğinize emin misiniz?")) return;
-
-    GLOBAL_LESSONS = GLOBAL_LESSONS.filter(l => l.id !== id);
-    localStorage.setItem('y_lessons_db', JSON.stringify(GLOBAL_LESSONS));
-
-    if (typeof useFirebase !== 'undefined' && useFirebase && db) {
-        db.collection("global").doc("lessons_db").set({ list: GLOBAL_LESSONS });
-    }
-
-    showToastMessage("🗑️ Konu silindi.");
-    renderLessonLibrary();
-    populateAdminLessons();
-}
+window.deleteLesson = function(id) {
+    if(!confirm("Silinsin mi?")) return;
+    window.GLOBAL_LESSONS = window.GLOBAL_LESSONS.filter(l => l.id !== id);
+    localStorage.setItem('y_lessons_db', JSON.stringify(window.GLOBAL_LESSONS));
+    if (window.useFirebase && window.db) window.db.collection("global").doc("lessons_db").set({ list: window.GLOBAL_LESSONS });
+    renderLessonLibrary(); populateAdminLessons();
+    showToastMessage("🗑️ Ders silindi.");
+};
