@@ -2871,3 +2871,45 @@ window.deleteLesson = function(id) {
     window.populateAdminLessons();
     showToastMessage("🗑️ Ders silindi.");
 };
+/* ==========================================
+ * MENÜ GEÇİŞ MOTORU GÜNCELLEMESİ (TÜM SEKMELER İÇİN)
+ * ========================================== */
+
+window.switchMainTab = function(tabName) {
+    // 1. Tüm üst menü butonlarından 'active' (seçili) ışığını kaldır
+    document.querySelectorAll('.main-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // 2. Sadece tıklanan butona 'active' ışığını yak
+    const activeBtn = document.getElementById('mtab-' + tabName);
+    if (activeBtn) activeBtn.classList.add('active');
+
+    // 3. Sistemdeki TÜM sayfaları gizle (YENİ EKLENEN 'lessons' DAHİL!)
+    const allSections = ['read', 'video', 'media', 'dict', 'exam', 'practice', 'quiz', 'chat', 'lessons'];
+    allSections.forEach(sec => {
+        const el = document.getElementById('section-' + sec);
+        if (el) {
+            el.style.display = 'none';
+        }
+    });
+
+    // 4. Sadece tıklanan sekmeye ait sayfayı görünür yap
+    const activeSection = document.getElementById('section-' + tabName);
+    if (activeSection) {
+        activeSection.style.display = 'block';
+        
+        // Eğer "Konu Anlatımı" sekmesine geçildiyse ana listeyi göster (açık kalmış dersi kapat)
+        if (tabName === 'lessons') {
+            const gridContainer = document.getElementById('lessons-grid-container');
+            const viewArea = document.getElementById('lesson-view-area');
+            if (gridContainer) gridContainer.style.display = 'grid';
+            if (viewArea) viewArea.style.display = 'none';
+        }
+        
+        // Sayfayı yumuşakça en üste kaydır
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+        console.error("Sayfa bulunamadı: section-" + tabName);
+    }
+};
