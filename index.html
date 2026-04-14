@@ -55,8 +55,9 @@
         <button class="main-tab-btn" id="mtab-dict" onclick="switchMainTab('dict')">📚 Sözlük</button>
         <button class="main-tab-btn" id="mtab-exam" onclick="switchMainTab('exam')">📝 Soru Bankası</button>
         <button class="main-tab-btn" id="mtab-practice" onclick="switchMainTab('practice')">💪 Alıştırmalar</button>
-        <button class="main-tab-btn" id="mtab-chat" onclick="switchMainTab('chat')">🤖 AI Sohbet</button>
-        <button class="main-tab-btn" id="mtab-lessons" onclick="switchMainTab('lessons')">📚 Konu Anlatımı</button>
+  <button class="main-tab-btn" id="mtab-lessons" onclick="switchMainTab('lessons')">📚 Konu Anlatımı</button>
+  <button class="main-tab-btn" id="mtab-chat" onclick="switchMainTab('chat')">🤖 AI Sohbet</button>
+        
       </div>
     </header>
 
@@ -85,8 +86,7 @@
           <button class="sub-tab-btn active" onclick="switchAdminTab('announcements', this)">📢 Duyurular</button>
           <button class="sub-tab-btn" onclick="switchAdminTab('practices', this)">💪 Alıştırmalar</button>
           <button class="sub-tab-btn" onclick="switchAdminTab('users', this)">👥 Kullanıcılar</button>
-          <button class="sub-tab-btn" onclick="switchAdminTab('yds', this); populateAdminYdsExams();">📝 YDS
-            Çözümleri</button>
+          <button class="sub-tab-btn" onclick="switchAdminTab('yds', this); populateAdminYdsExams();">📝 YDS Çözümleri</button>
           <button class="sub-tab-btn" onclick="switchAdminTab('lessons_mgmt', this); populateAdminLessons();">📖 Konu Yönetimi</button>
 
         </div>
@@ -124,6 +124,17 @@
   </div>
 </div>
 
+        <div class="admin-panel" id="admin-panel-lessons_mgmt" style="display: none;">
+    <div style="background:var(--surface-alt); padding:15px; border-radius:10px; border:1px solid var(--accent);">
+        <h3 style="color:var(--accent); margin-bottom:15px;">Yeni Ders Ekle</h3>
+        <input type="text" id="admin-lesson-id" class="auth-input" placeholder="Ders ID (örn: gramer-1)">
+        <input type="text" id="admin-lesson-title" class="auth-input" placeholder="Ders Başlığı">
+        <input type="text" id="admin-lesson-cat" class="auth-input" placeholder="Kategori (örn: ✍️ Fiiller)">
+        <div id="admin-lesson-body" contenteditable="true" style="min-height: 200px; background: var(--surface); color: var(--text); border: 2px dashed var(--accent); padding: 15px; border-radius: 8px; margin-top:10px; outline:none;"></div>
+        <button class="main-btn" style="width:100%; margin-top:15px; background:var(--success);" onclick="saveLesson()">💾 Kaydet ve Yayınla</button>
+        <div id="admin-lesson-list" style="margin-top:20px;"></div>
+    </div>
+</div>
         
 
         <div class="admin-panel" id="admin-panel-practices" style="display: none; animation: fadeIn 0.3s ease;">
@@ -390,19 +401,7 @@
       </div>
     </div>
     
-<div id="section-lessons" style="display:none; animation: fadeIn 0.4s ease;">
-    <div class="video-setup-box">
-        <h3 style="color:var(--accent); font-size: 1.6rem;">📖 Gramer & Konu Anlatımları</h3>
-        <p style="color:var(--text-dim);">Detaylı ders notları, tablolar ve ek kaynaklar.</p>
-    </div>
-    <div id="lessons-grid-container" class="text-grid"></div>
-    
-    <div id="lesson-view-area" style="display:none; background:var(--surface); padding:25px; border-radius:12px; border:1px solid var(--border); margin-top:20px;">
-        <button class="secondary-btn" onclick="closeLessonView()">🔙 Listeye Dön</button>
-        <h2 id="lesson-active-title" style="color:var(--accent); margin:20px 0;"></h2>
-        <div id="lesson-active-body" style="line-height:1.8; font-size:1.1rem; color:var(--text);"></div>
-    </div>
-</div>
+
     
     <div id="section-media" style="display:none; animation: fadeIn 0.4s ease;">
       <div id="media-library-view">
@@ -753,6 +752,21 @@
       </div>
     </div>
   </div>
+
+<div id="section-lessons" style="display:none; animation: fadeIn 0.4s ease;">
+    <div class="video-setup-box">
+        <h3 style="color:var(--accent); font-size: 1.6rem;">📚 Konu Anlatımı & Gramer</h3>
+        <p style="color:var(--text-dim);">Ders notları, tablolar ve önemli kurallar.</p>
+    </div>
+    <div id="lessons-grid-container" class="text-grid" style="margin-bottom: 30px;"></div>
+    
+    <div id="lesson-view-area" style="display:none; background:var(--surface); padding:25px; border-radius:12px; border:1px solid var(--border);">
+        <button class="secondary-btn" onclick="closeLessonView()">🔙 Listeye Dön</button>
+        <h2 id="lesson-active-title" style="color:var(--accent); margin:20px 0;"></h2>
+        <div id="lesson-active-body" style="line-height:1.8; font-size:1.1rem; color:var(--text);"></div>
+    </div>
+</div>
+  
   <div id="section-chat" style="display:none; animation: fadeIn 0.4s ease;">
     <div class="video-setup-box"
       style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px; border-color: var(--accent2);">
