@@ -2796,19 +2796,28 @@ window.renderExamLibrary = function() {
 // 2. KLASÖRDEN JSON DOSYALARINI ÇEKEN FONKSİYON
 window.fetchExamData = async function() {
   try {
+    // Önce gömülü veriyi dene (file:// protokolü için)
+    if (window.GLOBAL_SORU_BANKASI_EMBEDDED && window.GLOBAL_SORU_BANKASI_EMBEDDED.length > 0) {
+      window.GLOBAL_SORU_BANKASI = window.GLOBAL_SORU_BANKASI_EMBEDDED;
+      GLOBAL_SORU_BANKASI.length = 0;
+      window.GLOBAL_SORU_BANKASI_EMBEDDED.forEach(q => GLOBAL_SORU_BANKASI.push(q));
+      window.renderExamLibrary();
+      if (typeof window.renderPracticeLibrary === 'function') window.renderPracticeLibrary();
+      return;
+    }
+
     const EXAM_FILES = [
       'sinavlar/yds_2007_kasım.json',
       'sinavlar/yds_2008_mayis.json',
-      'sinavlar/yds_2010_mayis.json',
       'sinavlar/yds_sinavlari.json'
     ];
 
-    window.GLOBAL_SORU_BANKASI = []; 
-    
-    const fetchPromises = EXAM_FILES.map(file => 
+    window.GLOBAL_SORU_BANKASI = [];
+
+    const fetchPromises = EXAM_FILES.map(file =>
       fetch(file)
         .then(res => {
-            if (!res.ok) return []; 
+            if (!res.ok) return [];
             return res.json();
         })
         .catch(err => {
@@ -2818,12 +2827,16 @@ window.fetchExamData = async function() {
     );
 
     const results = await Promise.all(fetchPromises);
-    
+
     results.forEach(examData => {
         if(Array.isArray(examData)) {
             window.GLOBAL_SORU_BANKASI = window.GLOBAL_SORU_BANKASI.concat(examData);
         }
     });
+
+    // let GLOBAL_SORU_BANKASI (helpers.js) da güncelle
+    GLOBAL_SORU_BANKASI.length = 0;
+    window.GLOBAL_SORU_BANKASI.forEach(q => GLOBAL_SORU_BANKASI.push(q));
 
     // Veriler çekildikten sonra ekrana çiz
     window.renderExamLibrary();
