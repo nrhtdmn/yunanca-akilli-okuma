@@ -57,7 +57,8 @@
         <button class="main-tab-btn" id="mtab-practice" onclick="switchMainTab('practice')">💪 Alıştırmalar</button>
   <button class="main-tab-btn" id="mtab-lessons" onclick="switchMainTab('lessons')">📚 Konu Anlatımı</button>
   <button class="main-tab-btn" id="mtab-chat" onclick="switchMainTab('chat')">🤖 AI Sohbet</button>
-        
+  <button class="main-tab-btn" id="mtab-kurs" onclick="switchMainTab('kurs')">🎓 Kurs</button>
+
       </div>
     </header>
 
@@ -801,6 +802,108 @@
     </div>
   </div>
 
+  <!-- ============================================================
+       KURS PANELİ
+       ============================================================ -->
+  <div id="section-kurs" style="display:none; animation: fadeIn 0.4s ease;">
+
+    <!-- Giriş yapılmamış -->
+    <div id="kurs-login-prompt" style="display:none; text-align:center; padding:60px 20px;">
+      <div style="font-size:4rem; margin-bottom:15px;">🔒</div>
+      <h3 style="color:var(--accent); margin-bottom:10px;">Kurs Paneline Erişim</h3>
+      <p style="color:var(--text-dim); margin-bottom:25px;">Bu bölümü kullanmak için giriş yapmanız gerekiyor.</p>
+      <button class="main-btn" style="padding:14px 35px;" onclick="showAuthModal()">Giriş Yap</button>
+    </div>
+
+    <!-- ÖĞRETMEN GÖRÜNÜMÜ -->
+    <div id="kurs-teacher-view" style="display:none;">
+      <div class="video-setup-box" style="border-color:var(--accent);">
+        <h3 style="color:var(--accent); font-size:1.6rem; margin-bottom:5px;">🎓 Öğretmen Paneli</h3>
+        <p style="color:var(--text-dim); margin-bottom:0;">Sınıflarınızı yönetin, ödev atayın ve öğrenci ilerlemesini takip edin.</p>
+      </div>
+
+      <div class="input-tabs" id="kurs-teacher-tabs" style="margin-bottom:20px;">
+        <button class="sub-tab-btn active" onclick="switchKursTab('classes', this)">🏫 Sınıflarım</button>
+        <button class="sub-tab-btn" onclick="switchKursTab('assign', this)">📋 Ödev Ver</button>
+        <button class="sub-tab-btn" onclick="switchKursTab('reports', this)">📊 Raporlar</button>
+      </div>
+
+      <!-- Sınıflarım -->
+      <div id="kurs-panel-classes">
+        <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
+          <input type="text" id="new-class-name" class="auth-input"
+            style="flex:1; margin-bottom:0; padding:13px; min-width:200px;"
+            placeholder="Yeni sınıf adı (örn: 2025 Yaz B1 Sınıfı)"
+            onkeydown="if(event.key==='Enter') createClass()">
+          <button class="main-btn" style="padding:13px 25px; flex-shrink:0;" onclick="createClass()">
+            + Sınıf Oluştur
+          </button>
+        </div>
+        <div id="kurs-classes-list"></div>
+      </div>
+
+      <!-- Ödev Ver -->
+      <div id="kurs-panel-assign" style="display:none;">
+        <div style="background:var(--surface-alt); border:1px solid var(--accent); border-radius:12px; padding:25px; max-width:700px;">
+          <h3 style="color:var(--accent); margin-bottom:20px; font-size:1.2rem;">📋 Yeni Ödev Ata</h3>
+
+          <label style="color:var(--text-dim); font-size:0.9rem; display:block; margin-bottom:5px;">Kime Atanacak?</label>
+          <select id="assign-target-select" class="auth-input" style="padding:12px; margin-bottom:15px;"></select>
+
+          <label style="color:var(--text-dim); font-size:0.9rem; display:block; margin-bottom:5px;">Ödev Türü</label>
+          <select id="assign-type-select" class="auth-input" style="padding:12px; margin-bottom:15px;" onchange="onAssignTypeChange()">
+            <option value="practice">💪 Alıştırma</option>
+            <option value="exam">📝 Sınav Soruları</option>
+          </select>
+
+          <label style="color:var(--text-dim); font-size:0.9rem; display:block; margin-bottom:5px;">İçerik Seçin</label>
+          <select id="assign-content-select" class="auth-input" style="padding:12px; margin-bottom:15px;"></select>
+
+          <div id="assign-exam-cat-group" style="display:none;">
+            <label style="color:var(--text-dim); font-size:0.9rem; display:block; margin-bottom:5px;">Sınav Kategorisi (Bölüm)</label>
+            <select id="assign-exam-cat-select" class="auth-input" style="padding:12px; margin-bottom:15px;"></select>
+          </div>
+
+          <label style="color:var(--text-dim); font-size:0.9rem; display:block; margin-bottom:5px;">
+            Son Teslim Tarihi <span style="color:var(--text-dim);">(boş bırakırsanız süresiz)</span>
+          </label>
+          <input type="date" id="assign-due-date" class="auth-input" style="padding:12px; margin-bottom:20px;">
+
+          <button class="main-btn" style="width:100%; padding:15px; font-size:1.1rem;" onclick="submitAssignment()">
+            📤 Ödevi Ata
+          </button>
+        </div>
+      </div>
+
+      <!-- Raporlar -->
+      <div id="kurs-panel-reports" style="display:none;">
+        <div id="kurs-reports-container"></div>
+      </div>
+    </div>
+
+    <!-- ÖĞRENCİ GÖRÜNÜMÜ -->
+    <div id="kurs-student-view" style="display:none;">
+      <div class="video-setup-box" style="border-color:var(--accent2);">
+        <h3 style="color:var(--accent2); font-size:1.6rem; margin-bottom:5px;">📚 Ödevlerim</h3>
+        <p style="color:var(--text-dim); margin-bottom:0;">Öğretmeninizin atadığı ödevleri tamamlayın.</p>
+      </div>
+      <div id="kurs-student-assignments" style="margin-top:10px;"></div>
+      <div id="kurs-task-workspace" style="display:none; margin-top:10px;"></div>
+    </div>
+
+    <!-- Öğrenci Ekle Modal -->
+    <div class="modal-overlay" id="kurs-add-student-modal" style="display:none;">
+      <div class="modal-box" style="max-width:420px;">
+        <button class="modal-close" onclick="closeAddStudentModal()">✕</button>
+        <h2 class="modal-title">👤 Sınıfa Öğrenci Ekle</h2>
+        <input type="hidden" id="kurs-add-student-classid">
+        <label style="color:var(--text-dim); font-size:0.9rem; display:block; margin-bottom:6px;">Kullanıcı Seçin:</label>
+        <select id="kurs-student-select" class="auth-input" style="padding:12px; margin-bottom:20px;"></select>
+        <button class="main-btn" style="width:100%; padding:13px;" onclick="addStudentToClass()">Ekle</button>
+      </div>
+    </div>
+  </div>
+
   <div id="wpop">
     <div class="wpop-header">
       <div class="wpop-title-row">
@@ -866,6 +969,7 @@
   <script src="js/pages/home.js"></script>
   <script src="js/main.js"></script>
   <script src="js/pages/chat.js"></script>
+  <script src="js/pages/kurs.js"></script>
 
 
 </body>
