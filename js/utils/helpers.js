@@ -1,9 +1,15 @@
 // --- KÜRESEL (GLOBAL) DEĞİŞKENLER ---
-let dbUsers = JSON.parse(localStorage.getItem('y_users_db')) || {};
+let dbUsers;
+try { dbUsers = JSON.parse(localStorage.getItem('y_users_db')) || {}; } catch(e) { dbUsers = {}; localStorage.removeItem('y_users_db'); }
 dbUsers['nurhat'] = { password: 'Deniz28', role: 'admin', status: 'approved', isPremium: true, credits: 999999 };
+window.dbUsers = dbUsers; // window.dbUsers ile let dbUsers her zaman aynı objeyi gösterir
 
-let dbUserData = JSON.parse(localStorage.getItem('y_userdata_db')) || {};
-let dbAnnouncements = JSON.parse(localStorage.getItem('y_announcements_db')) || [];
+let dbUserData;
+try { dbUserData = JSON.parse(localStorage.getItem('y_userdata_db')) || {}; } catch(e) { dbUserData = {}; localStorage.removeItem('y_userdata_db'); }
+window.dbUserData = dbUserData; // window.dbUserData ile let dbUserData her zaman aynı objeyi gösterir
+
+let dbAnnouncements;
+try { dbAnnouncements = JSON.parse(localStorage.getItem('y_announcements_db')) || []; } catch(e) { dbAnnouncements = []; localStorage.removeItem('y_announcements_db'); }
 
 let useFirebase = false;
 let db = null;

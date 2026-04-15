@@ -160,21 +160,20 @@ function openProfileModal() {
 }
 
 function finishInit() {
-  try { initTTS(); } catch(e) { console.error('initTTS hatası:', e); }
-  try {
-    if (currentUsername && dbUsers[currentUsername]) {
-      currentUser = dbUsers[currentUsername];
-      loadUserData();
-    }
-  } catch(e) { console.error('loadUserData hatası:', e); }
-  try { updateUserUI(); } catch(e) { console.error('updateUserUI hatası:', e); }
-  try { renderTextLibrary(); } catch(e) { console.error('renderTextLibrary hatası:', e); }
-  try { renderVideoLibrary(); } catch(e) { console.error('renderVideoLibrary hatası:', e); }
-  try { renderTVLibrary(); } catch(e) { console.error('renderTVLibrary hatası:', e); }
-  try { renderRadioLibrary(); } catch(e) { console.error('renderRadioLibrary hatası:', e); }
-  try { renderNewspaperLibrary(); } catch(e) { console.error('renderNewspaperLibrary hatası:', e); }
-  try { if (typeof window.renderLessonLibrary === 'function') window.renderLessonLibrary(); } catch(e) { console.error('renderLessonLibrary hatası:', e); }
-  try { fetchExamData(); } catch(e) { console.error('fetchExamData hatası:', e); }
+  initTTS();
+  if (currentUsername && dbUsers[currentUsername]) {
+    currentUser = dbUsers[currentUsername];
+    loadUserData();
+  }
+updateUserUI();
+  renderTextLibrary();
+  renderVideoLibrary();
+  renderTVLibrary();
+  renderRadioLibrary();
+  renderNewspaperLibrary();
+  renderLessonLibrary(); // YENİ EKLEDİĞİMİZ KONU ANLATIMI
+  fetchExamData();
+  
 }
 
 function updateBellIcon() {
@@ -2797,28 +2796,19 @@ window.renderExamLibrary = function() {
 // 2. KLASÖRDEN JSON DOSYALARINI ÇEKEN FONKSİYON
 window.fetchExamData = async function() {
   try {
-    // Önce gömülü veriyi dene (file:// protokolü için)
-    if (window.GLOBAL_SORU_BANKASI_EMBEDDED && window.GLOBAL_SORU_BANKASI_EMBEDDED.length > 0) {
-      window.GLOBAL_SORU_BANKASI = window.GLOBAL_SORU_BANKASI_EMBEDDED;
-      GLOBAL_SORU_BANKASI.length = 0;
-      window.GLOBAL_SORU_BANKASI_EMBEDDED.forEach(q => GLOBAL_SORU_BANKASI.push(q));
-      window.renderExamLibrary();
-      if (typeof window.renderPracticeLibrary === 'function') window.renderPracticeLibrary();
-      return;
-    }
-
     const EXAM_FILES = [
       'sinavlar/yds_2007_kasım.json',
       'sinavlar/yds_2008_mayis.json',
+      'sinavlar/yds_2010_mayis.json',
       'sinavlar/yds_sinavlari.json'
     ];
 
-    window.GLOBAL_SORU_BANKASI = [];
-
-    const fetchPromises = EXAM_FILES.map(file =>
+    window.GLOBAL_SORU_BANKASI = []; 
+    
+    const fetchPromises = EXAM_FILES.map(file => 
       fetch(file)
         .then(res => {
-            if (!res.ok) return [];
+            if (!res.ok) return []; 
             return res.json();
         })
         .catch(err => {
@@ -2828,16 +2818,12 @@ window.fetchExamData = async function() {
     );
 
     const results = await Promise.all(fetchPromises);
-
+    
     results.forEach(examData => {
         if(Array.isArray(examData)) {
             window.GLOBAL_SORU_BANKASI = window.GLOBAL_SORU_BANKASI.concat(examData);
         }
     });
-
-    // let GLOBAL_SORU_BANKASI (helpers.js) da güncelle
-    GLOBAL_SORU_BANKASI.length = 0;
-    window.GLOBAL_SORU_BANKASI.forEach(q => GLOBAL_SORU_BANKASI.push(q));
 
     // Veriler çekildikten sonra ekrana çiz
     window.renderExamLibrary();
@@ -2900,131 +2886,31 @@ window.saveLesson = async function() {
 };
 
 // 2. LİSTEYİ ÇİZDİRME (YouTube Kontrolü Eklenmiş)
-// 2. KARTLARI ÇİZDİRME (Akıllı Klasör / Akordiyon Sistemi)
-// Arama kutusuna her harf yazıldığında tetiklenen fonksiyon
-window.filterLessons = function() {
-    const query = document.getElementById('lesson-search-input').value;
-    window.renderLessonLibrary(query);
-};
-
-// 2. KARTLARI ÇİZDİRME (Gelişmiş Canlı Arama Destekli)
-window.renderLessonLibrary = function(searchQuery = "") {
+window.renderLessonLibrary = function() {
     const container = document.getElementById('lessons-grid-container');
     if(!container) return;
     
     if(window.GLOBAL_LESSONS.length === 0) {
-         container.innerHTML = '<p style="color:var(--text-dim); text-align:center; padding: 20px;">Henüz konu eklenmemiş.</p>';
+         container.innerHTML = '<p style="color:var(--text-dim); text-align:center; grid-column: 1 / -1; padding: 20px;">Henüz konu eklenmemiş.</p>';
          return;
     }
 
-    // Arama için harfleri küçülten ve Yunanca/Türkçe aksanları temizleyen akıllı yardımcı
-    const normalizeStr = (str) => {
-        if(!str) return "";
-        return str.toLocaleLowerCase('tr-TR').normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    };
+    container.innerHTML = window.GLOBAL_LESSONS.map(l => {
+        // YouTube linki mi kontrol et
+        const isYouTube = l.link && (l.link.includes('youtube.com') || l.link.includes('youtu.be'));
+        
+        // YouTube ise içeriği aç, değilse ve link varsa dışarı aç
+        const clickAction = (isYouTube || !l.link) ? `openLesson('${l.id}')` : `window.open('${l.link}', '_blank')`;
+        const actionText = isYouTube ? "📺 Videoyu İzle ➔" : (l.link ? "🔗 Kaynağa Git ➔" : "📖 Dersi Oku ➔");
 
-    let filteredLessons = window.GLOBAL_LESSONS;
-
-    // Eğer arama kutusuna bir şey yazılmışsa dersleri filtrele
-    if (searchQuery.trim() !== "") {
-        const lowerQuery = normalizeStr(searchQuery);
-        filteredLessons = window.GLOBAL_LESSONS.filter(l => 
-            normalizeStr(l.title).includes(lowerQuery) || 
-            normalizeStr(l.category).includes(lowerQuery) || 
-            normalizeStr(l.content).includes(lowerQuery) // Dersi açmadan içindeki yazılarda bile arama yapar!
-        );
-    }
-
-    // Aranan kelime hiçbir derste yoksa uyarı ver
-    if(filteredLessons.length === 0) {
-         container.innerHTML = '<p style="color:var(--text-dim); text-align:center; padding: 20px;">Aramanıza uygun sonuç bulunamadı.</p>';
-         return;
-    }
-
-    container.className = ""; 
-    const categories = [...new Set(filteredLessons.map(l => l.category || "Genel Gramer"))].sort();
-    let html = "";
-
-    categories.forEach((cat, index) => {
-        const safeCatId = "lesson_cat_" + index;
-        const lessonsInCat = filteredLessons.filter(l => (l.category || "Genel Gramer") === cat);
-
-        // Eğer bu kategoride filtrelenmiş bir ders yoksa bu klasörü hiç çizme
-        if(lessonsInCat.length === 0) return;
-
-        let cardsHtml = `<div class="text-grid">`;
-        lessonsInCat.forEach(l => {
-            const isYouTube = l.link && (l.link.includes('youtube.com') || l.link.includes('youtu.be'));
-            const clickAction = (isYouTube || !l.link) ? `openLesson('${l.id}')` : `window.open('${l.link}', '_blank')`;
-            const actionText = isYouTube ? "📺 Videoyu İzle ➔" : (l.link ? "🔗 Kaynağa Git ➔" : "📖 Dersi Oku ➔");
-
-            cardsHtml += `
-            <div class="text-card" onclick="${clickAction}" style="border-color: var(--accent);">
-                <div class="text-card-title" style="margin-bottom:8px;">${l.title}</div>
-                <div class="text-card-play" style="color:var(--accent); font-size:0.9rem;">${actionText}</div>
-            </div>
-            `;
-        });
-        cardsHtml += `</div>`;
-
-        // ARAMA YAPILIYORSA klasörleri otomatik "AÇIK" halde (aşağı sarkmış) bırak!
-        const autoOpenClass = searchQuery.trim() !== "" ? "open" : "";
-        const autoOpenStyle = searchQuery.trim() !== "" ? "display:block;" : "";
-
-        html += `
-        <div class="deck-section" style="margin-bottom:15px; border: 1px solid var(--border);">
-            <div class="deck-header" onclick="toggleAccordion('${safeCatId}')" style="font-size: 1.15rem; padding: 18px 20px; background: var(--surface-alt);">
-                <strong>📂 ${cat} <span style="color:var(--text-dim); font-size:0.9rem; font-weight:normal;">(${lessonsInCat.length} Konu)</span></strong>
-                <span class="deck-arrow ${autoOpenClass}" id="arrow-${safeCatId}">▼</span>
-            </div>
-            <div class="deck-content ${autoOpenClass}" id="content-${safeCatId}" style="padding: 15px; ${autoOpenStyle}">
-                ${cardsHtml}
-            </div>
+        return `
+        <div class="text-card" onclick="${clickAction}">
+            <div style="font-size:0.85rem; color:var(--accent2); margin-bottom:5px; font-weight:bold;">${l.category}</div>
+            <div class="text-card-title">${l.title}</div>
+            <div class="text-card-play" style="color:var(--accent);">${actionText}</div>
         </div>
         `;
-    });
-
-    container.innerHTML = html;
-};
-
-// 5. ADMIN PANELİNDE LİSTELEME (Admin için de Klasörlü Düzen)
-window.populateAdminLessons = function() {
-    const list = document.getElementById('admin-lesson-list');
-    if(!list) return;
-    
-    if (window.GLOBAL_LESSONS.length === 0) {
-        list.innerHTML = '<p style="color:var(--text-dim); font-size:0.9rem;">Kayıtlı konu bulunamadı.</p>';
-        return;
-    }
-
-    const categories = [...new Set(window.GLOBAL_LESSONS.map(l => l.category || "Genel Gramer"))].sort();
-    let html = "";
-
-    categories.forEach(cat => {
-        const lessonsInCat = window.GLOBAL_LESSONS.filter(l => (l.category || "Genel Gramer") === cat);
-
-        // Kategori Başlığı
-        html += `<div style="margin-bottom: 15px;">
-                    <div style="background: var(--surface); padding: 8px 12px; border-radius: 6px; color: var(--accent); font-weight: bold; margin-bottom: 10px; border: 1px solid var(--border);">📂 ${cat}</div>`;
-
-        // Kategori içindeki derslerin listesi
-        lessonsInCat.forEach(l => {
-            html += `
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid var(--border); background:var(--surface-alt); margin-bottom:5px; border-radius:6px; margin-left: 15px;">
-                <div>
-                    <strong style="color:var(--text);">${l.title}</strong>
-                </div>
-                <div>
-                    <button onclick="editLesson('${l.id}')" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:1.1rem; margin-right:10px;" title="Düzenle">✏️</button>
-                    <button onclick="deleteLesson('${l.id}')" style="background:none; border:none; color:var(--error); cursor:pointer; font-size:1.1rem;" title="Sil">🗑️</button>
-                </div>
-            </div>`;
-        });
-        
-        html += `</div>`; // Kategoriyi kapat
-    });
-
-    list.innerHTML = html;
+    }).join('');
 };
 
 // 3. DERSİ AÇMA VE VİDEO GÖMME (EKSİKTİ!)
@@ -3161,7 +3047,7 @@ window.switchMainTab = function(tabName) {
     const activeBtn = document.getElementById('mtab-' + tabName);
     if (activeBtn) activeBtn.classList.add('active');
 
-    const allSections = ['read', 'video', 'media', 'dict', 'exam', 'practice', 'quiz', 'chat', 'lessons', 'kurs'];
+    const allSections = ['read', 'video', 'media', 'dict', 'exam', 'practice', 'quiz', 'chat', 'lessons'];
     allSections.forEach(sec => {
         const el = document.getElementById('section-' + sec);
         if (el) el.style.display = 'none';
@@ -3175,9 +3061,6 @@ window.switchMainTab = function(tabName) {
             const viewArea = document.getElementById('lesson-view-area');
             if (gridContainer) gridContainer.style.display = 'grid';
             if (viewArea) viewArea.style.display = 'none';
-        }
-        if (tabName === 'kurs' && typeof window.renderKursPanel === 'function') {
-            window.renderKursPanel();
         }
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }

@@ -25,6 +25,12 @@ function openAdminPanel() {
                         <option value="false" ${!user.isPremium?'selected':''}>Normal</option>
                         <option value="true" ${user.isPremium?'selected':''}>Premium</option>
                       </select>`;
+
+    let roleOpt = `<select class="action-select" onchange="updateUserAdmin('${username}', 'role', this.value)" title="Rol">
+                     <option value="user"    ${(!user.role || user.role==='user')   ?'selected':''}>👤 Üye</option>
+                     <option value="teacher" ${user.role==='teacher'               ?'selected':''}>🎓 Öğretmen</option>
+                     <option value="admin"   ${user.role==='admin'                 ?'selected':''}>⚙️ Admin</option>
+                   </select>`;
     
     // YENİ: Sil butonu tasarımı
     let deleteBtn = `<button class="secondary-btn" onclick="deleteUserAdmin('${username}')" 
@@ -36,7 +42,7 @@ function openAdminPanel() {
         <td><b>${username}</b></td>
         <td>${statusOpt}</td>
         <td>${user.isPremium ? 'Sınırsız' : user.credits}</td>
-        <td style="display:flex; gap:8px; align-items:center;">${premiumOpt} ${deleteBtn}</td>
+        <td style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">${roleOpt} ${premiumOpt} ${deleteBtn}</td>
     </tr>`;
   }
   
