@@ -2740,16 +2740,118 @@ setInterval(() => {
 window.GLOBAL_LESSONS = JSON.parse(localStorage.getItem('y_lessons_db')) || [];
 
 /* ==========================================
- * KONU ANLATIMI VE GRAMER YÖNETİMİ (LESSONS)
+ * YDS / SINAV SİSTEMİ VERİ ÇEKME VE ÇİZDİRME MOTORU
+ * ========================================== */
+
+window.GLOBAL_SORU_BANKASI = [];
+
+// 1. SORULARI EKRANA KARTLAR HALİNDE ÇİZEN FONKSİYON
+window.renderExamLibrary = function() {
+  const container = document.getElementById("exam-grid-container");
+  if (!container) return;
+
+  // Soru yoksa ekrana uyarı bas
+  if (!window.GLOBAL_SORU_BANKASI || window.GLOBAL_SORU_BANKASI.length === 0) {
+      container.innerHTML = `
+        <div style='text-align:center; padding:30px; background:var(--surface-alt); border-radius:12px; border:1px solid var(--border);'>
+          <h3 style='color:var(--error); margin-bottom:10px;'>⚠️ Sınav Verileri Bulunamadı</h3>
+          <p style='color:var(--text-dim);'>Sistem <b>sinavlar</b> klasöründeki JSON dosyalarını okuyamadı.<br><br>
+          💡 <b>Not:</b> Projeyi doğrudan çift tıklayarak (file://) açtıysanız çalışmaz. VS Code üzerinden <b>Live Server</b> ile açmayı deneyin.</p>
+        </div>`;
+      return;
+  }
+
+  // Soruları sınav adına göre grupla ve ekrana çiz
+  const exams = [...new Set(window.GLOBAL_SORU_BANKASI.map((q) => q.exam))];
+  let html = "";
+  
+  exams.forEach((examName, index) => {
+    const safeExamId = "exam_lvl_" + index;
+    const examQuestions = window.GLOBAL_SORU_BANKASI.filter((q) => q.exam === examName);
+    const categories = [...new Set(examQuestions.map((q) => q.category))];
+    let catHtml = "";
+    
+    categories.forEach((cat) => {
+      const qCount = examQuestions.filter((q) => q.category === cat).length;
+      catHtml += `<div style="display:flex; justify-content:space-between; align-items:center; padding: 15px; background:var(--surface); border:1px solid var(--border); border-radius:8px; margin-bottom:10px;">
+                    <div>
+                      <div style="color:var(--text); font-weight:bold; font-size:1.1rem;">${cat}</div>
+                      <div style="color:var(--text-dim); font-size:0.9rem;">Toplam ${qCount} Soru</div>
+                    </div>
+                    <button class="main-btn" style="padding: 10px 20px; background:var(--accent);" onclick="startExamSession('${examName}', '${cat}')">Sınava Başla ➔</button>
+                  </div>`;
+    });
+    
+    html += `<div class="deck-section" style="margin-bottom:15px; border: 1px solid var(--border);">
+               <div class="deck-header" onclick="toggleAccordion('${safeExamId}')" style="font-size: 1.15rem; padding: 18px 20px; background:var(--surface-alt);">
+                 <strong>📂 ${examName}</strong><span class="deck-arrow" id="arrow-${safeExamId}">▼</span>
+               </div>
+               <div class="deck-content" id="content-${safeExamId}" style="padding: 15px;">${catHtml}</div>
+             </div>`;
+  });
+  
+  container.innerHTML = html;
+};
+
+// 2. KLASÖRDEN JSON DOSYALARINI ÇEKEN FONKSİYON
+window.fetchExamData = async function() {
+  try {
+    const EXAM_FILES = [
+      'sinavlar/yds_2007_kasım.json',
+      'sinavlar/yds_2008_mayis.json',
+      'sinavlar/yds_2010_mayis.json',
+      'sinavlar/yds_sinavlari.json'
+    ];
+
+    window.GLOBAL_SORU_BANKASI = []; 
+    
+    const fetchPromises = EXAM_FILES.map(file => 
+      fetch(file)
+        .then(res => {
+            if (!res.ok) return []; 
+            return res.json();
+        })
+        .catch(err => {
+            console.error(`Hata: ${file} dosyası okunamadı (CORS / Live Server hatası olabilir)`);
+            return [];
+        })
+    );
+
+    const results = await Promise.all(fetchPromises);
+    
+    results.forEach(examData => {
+        if(Array.isArray(examData)) {
+            window.GLOBAL_SORU_BANKASI = window.GLOBAL_SORU_BANKASI.concat(examData);
+        }
+    });
+
+    // Veriler çekildikten sonra ekrana çiz
+    window.renderExamLibrary();
+    if (typeof window.renderPracticeLibrary === 'function') window.renderPracticeLibrary();
+
+  } catch (error) {
+    console.error("Sınav sistemi çöktü:", error);
+  }
+};
+
+// 3. SİSTEMİ GARANTİYE ALMAK İÇİN OTOMATİK TETİKLEYİCİ (Dosyanın en altı)
+setTimeout(() => {
+    window.fetchExamData();
+}, 1500);
+
+/* ==========================================
+ * KONU ANLATIMI - YOUTUBE DESTEKLİ MOTOR
  * ========================================== */
 
 window.GLOBAL_LESSONS = JSON.parse(localStorage.getItem('y_lessons_db')) || [];
 
+// 1. KAYDETME FONKSİYONU
 window.saveLesson = async function() {
     const idInput = document.getElementById('admin-lesson-id');
     const titleInput = document.getElementById('admin-lesson-title');
     const bodyInput = document.getElementById('admin-lesson-body');
     const catInput = document.getElementById('admin-lesson-cat');
+    const linkInput = document.getElementById('admin-lesson-link');
 
     if (!idInput || !idInput.value || !titleInput.value) {
         showToastMessage("❌ ID ve Başlık zorunludur!");
@@ -2761,70 +2863,226 @@ window.saveLesson = async function() {
         title: titleInput.value.trim(),
         category: catInput.value.trim() || "Genel Gramer",
         content: bodyInput.innerHTML,
+        link: linkInput ? linkInput.value.trim() : "", 
         date: new Date().toLocaleDateString('tr-TR')
     };
 
-    // Varsa güncelle, yoksa yeni ekle
     const idx = window.GLOBAL_LESSONS.findIndex(l => l.id === lessonData.id);
-    if (idx > -1) {
-        window.GLOBAL_LESSONS[idx] = lessonData;
-    } else {
-        window.GLOBAL_LESSONS.unshift(lessonData);
-    }
+    if (idx > -1) window.GLOBAL_LESSONS[idx] = lessonData;
+    else window.GLOBAL_LESSONS.unshift(lessonData);
 
-    // Yerel Hafızaya Kaydet
     localStorage.setItem('y_lessons_db', JSON.stringify(window.GLOBAL_LESSONS));
     
-    // Buluta Kaydet
     if (typeof useFirebase !== 'undefined' && useFirebase && typeof db !== 'undefined') {
         await db.collection("global").doc("lessons_db").set({ list: window.GLOBAL_LESSONS });
     }
 
-    showToastMessage("✅ Konu başarıyla kaydedildi!");
+    showToastMessage("✅ Kaydedildi!");
+    idInput.value = ""; titleInput.value = ""; bodyInput.innerHTML = ""; catInput.value = ""; 
+    if(linkInput) linkInput.value = "";
     
-    // Inputları temizle
-    idInput.value = ""; titleInput.value = ""; bodyInput.innerHTML = ""; catInput.value = "";
-    
-    // Listeleri yenile (Çökme sebebi olan fonksiyonlar artık aşağıda tanımlı)
     if(typeof window.renderLessonLibrary === 'function') window.renderLessonLibrary();
     if(typeof window.populateAdminLessons === 'function') window.populateAdminLessons();
 };
 
-// --- EKRANA ÇİZDİRME VE YÖNETİM FONKSİYONLARI ---
+// 2. LİSTEYİ ÇİZDİRME (YouTube Kontrolü Eklenmiş)
+// 2. KARTLARI ÇİZDİRME (Akıllı Klasör / Akordiyon Sistemi)
+// Arama kutusuna her harf yazıldığında tetiklenen fonksiyon
+window.filterLessons = function() {
+    const query = document.getElementById('lesson-search-input').value;
+    window.renderLessonLibrary(query);
+};
 
-window.renderLessonLibrary = function() {
+// 2. KARTLARI ÇİZDİRME (Gelişmiş Canlı Arama Destekli)
+window.renderLessonLibrary = function(searchQuery = "") {
     const container = document.getElementById('lessons-grid-container');
     if(!container) return;
     
     if(window.GLOBAL_LESSONS.length === 0) {
-         container.innerHTML = '<p style="color:var(--text-dim); text-align:center; grid-column: 1 / -1; padding: 20px;">Henüz konu eklenmemiş.</p>';
+         container.innerHTML = '<p style="color:var(--text-dim); text-align:center; padding: 20px;">Henüz konu eklenmemiş.</p>';
          return;
     }
 
-    container.innerHTML = window.GLOBAL_LESSONS.map(l => `
-        <div class="text-card" onclick="openLesson('${l.id}')">
-            <div style="font-size:0.85rem; color:var(--accent2); margin-bottom:5px; font-weight:bold;">${l.category}</div>
-            <div class="text-card-title">${l.title}</div>
-            <div class="text-card-play" style="color:var(--accent);">📖 Dersi Oku ➔</div>
+    // Arama için harfleri küçülten ve Yunanca/Türkçe aksanları temizleyen akıllı yardımcı
+    const normalizeStr = (str) => {
+        if(!str) return "";
+        return str.toLocaleLowerCase('tr-TR').normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    };
+
+    let filteredLessons = window.GLOBAL_LESSONS;
+
+    // Eğer arama kutusuna bir şey yazılmışsa dersleri filtrele
+    if (searchQuery.trim() !== "") {
+        const lowerQuery = normalizeStr(searchQuery);
+        filteredLessons = window.GLOBAL_LESSONS.filter(l => 
+            normalizeStr(l.title).includes(lowerQuery) || 
+            normalizeStr(l.category).includes(lowerQuery) || 
+            normalizeStr(l.content).includes(lowerQuery) // Dersi açmadan içindeki yazılarda bile arama yapar!
+        );
+    }
+
+    // Aranan kelime hiçbir derste yoksa uyarı ver
+    if(filteredLessons.length === 0) {
+         container.innerHTML = '<p style="color:var(--text-dim); text-align:center; padding: 20px;">Aramanıza uygun sonuç bulunamadı.</p>';
+         return;
+    }
+
+    container.className = ""; 
+    const categories = [...new Set(filteredLessons.map(l => l.category || "Genel Gramer"))].sort();
+    let html = "";
+
+    categories.forEach((cat, index) => {
+        const safeCatId = "lesson_cat_" + index;
+        const lessonsInCat = filteredLessons.filter(l => (l.category || "Genel Gramer") === cat);
+
+        // Eğer bu kategoride filtrelenmiş bir ders yoksa bu klasörü hiç çizme
+        if(lessonsInCat.length === 0) return;
+
+        let cardsHtml = `<div class="text-grid">`;
+        lessonsInCat.forEach(l => {
+            const isYouTube = l.link && (l.link.includes('youtube.com') || l.link.includes('youtu.be'));
+            const clickAction = (isYouTube || !l.link) ? `openLesson('${l.id}')` : `window.open('${l.link}', '_blank')`;
+            const actionText = isYouTube ? "📺 Videoyu İzle ➔" : (l.link ? "🔗 Kaynağa Git ➔" : "📖 Dersi Oku ➔");
+
+            cardsHtml += `
+            <div class="text-card" onclick="${clickAction}" style="border-color: var(--accent);">
+                <div class="text-card-title" style="margin-bottom:8px;">${l.title}</div>
+                <div class="text-card-play" style="color:var(--accent); font-size:0.9rem;">${actionText}</div>
+            </div>
+            `;
+        });
+        cardsHtml += `</div>`;
+
+        // ARAMA YAPILIYORSA klasörleri otomatik "AÇIK" halde (aşağı sarkmış) bırak!
+        const autoOpenClass = searchQuery.trim() !== "" ? "open" : "";
+        const autoOpenStyle = searchQuery.trim() !== "" ? "display:block;" : "";
+
+        html += `
+        <div class="deck-section" style="margin-bottom:15px; border: 1px solid var(--border);">
+            <div class="deck-header" onclick="toggleAccordion('${safeCatId}')" style="font-size: 1.15rem; padding: 18px 20px; background: var(--surface-alt);">
+                <strong>📂 ${cat} <span style="color:var(--text-dim); font-size:0.9rem; font-weight:normal;">(${lessonsInCat.length} Konu)</span></strong>
+                <span class="deck-arrow ${autoOpenClass}" id="arrow-${safeCatId}">▼</span>
+            </div>
+            <div class="deck-content ${autoOpenClass}" id="content-${safeCatId}" style="padding: 15px; ${autoOpenStyle}">
+                ${cardsHtml}
+            </div>
         </div>
-    `).join('');
+        `;
+    });
+
+    container.innerHTML = html;
 };
 
+// 5. ADMIN PANELİNDE LİSTELEME (Admin için de Klasörlü Düzen)
+window.populateAdminLessons = function() {
+    const list = document.getElementById('admin-lesson-list');
+    if(!list) return;
+    
+    if (window.GLOBAL_LESSONS.length === 0) {
+        list.innerHTML = '<p style="color:var(--text-dim); font-size:0.9rem;">Kayıtlı konu bulunamadı.</p>';
+        return;
+    }
+
+    const categories = [...new Set(window.GLOBAL_LESSONS.map(l => l.category || "Genel Gramer"))].sort();
+    let html = "";
+
+    categories.forEach(cat => {
+        const lessonsInCat = window.GLOBAL_LESSONS.filter(l => (l.category || "Genel Gramer") === cat);
+
+        // Kategori Başlığı
+        html += `<div style="margin-bottom: 15px;">
+                    <div style="background: var(--surface); padding: 8px 12px; border-radius: 6px; color: var(--accent); font-weight: bold; margin-bottom: 10px; border: 1px solid var(--border);">📂 ${cat}</div>`;
+
+        // Kategori içindeki derslerin listesi
+        lessonsInCat.forEach(l => {
+            html += `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid var(--border); background:var(--surface-alt); margin-bottom:5px; border-radius:6px; margin-left: 15px;">
+                <div>
+                    <strong style="color:var(--text);">${l.title}</strong>
+                </div>
+                <div>
+                    <button onclick="editLesson('${l.id}')" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:1.1rem; margin-right:10px;" title="Düzenle">✏️</button>
+                    <button onclick="deleteLesson('${l.id}')" style="background:none; border:none; color:var(--error); cursor:pointer; font-size:1.1rem;" title="Sil">🗑️</button>
+                </div>
+            </div>`;
+        });
+        
+        html += `</div>`; // Kategoriyi kapat
+    });
+
+    list.innerHTML = html;
+};
+
+// 3. DERSİ AÇMA VE VİDEO GÖMME (EKSİKTİ!)
+// DERSİ GÖRÜNTÜLEME (Metin İçinde Video Desteği)
+  // DERSİ GÖRÜNTÜLEME (Çoklu Video Desteği Eklendi)
 window.openLesson = function(id) {
     const lesson = window.GLOBAL_LESSONS.find(l => l.id === id);
     if(!lesson) return;
+    
     document.getElementById('lessons-grid-container').style.display = 'none';
-    document.getElementById('lesson-view-area').style.display = 'block';
+    const viewArea = document.getElementById('lesson-view-area');
+    viewArea.style.display = 'block';
     document.getElementById('lesson-active-title').textContent = lesson.title;
-    document.getElementById('lesson-active-body').innerHTML = lesson.content;
+    
+    let finalContent = lesson.content || "";
+
+    // --- 1. ANA VİDEO MOTORU (Üstteki Link Kutusuna Yazılan Video) ---
+    if (lesson.link && (lesson.link.includes('youtube.com') || lesson.link.includes('youtu.be'))) {
+        const mainVideoId = extractYouTubeId(lesson.link);
+        if (mainVideoId) {
+            const mainVideoHtml = `
+                <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; margin:25px 0; border-radius:12px; border:1px solid var(--border); box-shadow: var(--shadow);">
+                    <iframe style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" src="https://www.youtube.com/embed/${mainVideoId}" allowfullscreen></iframe>
+                </div>`;
+            
+            if (finalContent.includes('[video]')) {
+                finalContent = finalContent.replace('[video]', mainVideoHtml);
+            } else {
+                finalContent = mainVideoHtml + finalContent; // Etiket yoksa en başa ekle
+            }
+        }
+    } else {
+        // Link kutusunda YouTube linki yoksa ama [video] yazılmışsa, bozuk durmaması için o yazıyı sil
+        finalContent = finalContent.replace('[video]', '');
+    }
+
+    // --- 2. ÇOKLU VİDEO MOTORU (Metin İçine Yazılan Ekstra Videolar) ---
+    // Metin içindeki [video:https://...] etiketlerini bulur ve videoya çevirir
+    finalContent = finalContent.replace(/\[video:(.+?)\]/g, function(match, url) {
+        const vidId = extractYouTubeId(url.trim());
+        if (vidId) {
+            return `
+                <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; margin:25px 0; border-radius:12px; border:1px solid var(--border); box-shadow: var(--shadow);">
+                    <iframe style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" src="https://www.youtube.com/embed/${vidId}" allowfullscreen></iframe>
+                </div>`;
+        }
+        return match; // Eğer geçersiz bir linkse yazıyı bozmadan bırakır
+    });
+    
+    document.getElementById('lesson-active-body').innerHTML = finalContent;
     window.scrollTo({top:0, behavior:'smooth'});
 };
 
+// 4. EKRANI KAPATMA VE VİDEOYU DURDURMA (EKSİKTİ!)
 window.closeLessonView = function() {
-    document.getElementById('lesson-view-area').style.display = 'none';
-    document.getElementById('lessons-grid-container').style.display = 'grid';
+    const bodyEl = document.getElementById('lesson-active-body');
+    if (bodyEl) bodyEl.innerHTML = ""; // Arkada video çalmaya devam etmesin diye içi temizlenir
+    const viewArea = document.getElementById('lesson-view-area');
+    const gridContainer = document.getElementById('lessons-grid-container');
+    
+    if (viewArea) viewArea.style.display = 'none';
+    if (gridContainer) gridContainer.style.display = 'grid';
 };
 
+// YARDIMCI FONKSİYON: YouTube Linkinden ID Çıkarma
+window.extractYouTubeId = function(url) {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+};
+
+// 5. YÖNETİCİ PANELİ İŞLEMLERİ (EKSİKTİ!)
 window.populateAdminLessons = function() {
     const list = document.getElementById('admin-lesson-list');
     if(!list) return;
@@ -2855,7 +3113,16 @@ window.editLesson = function(id) {
     document.getElementById('admin-lesson-title').value = lesson.title;
     document.getElementById('admin-lesson-cat').value = lesson.category;
     document.getElementById('admin-lesson-body').innerHTML = lesson.content;
-    showToastMessage("✏️ Düzenleme modu aktif. İşiniz bitince Kaydet'e basın.");
+    
+    const linkInput = document.getElementById('admin-lesson-link');
+    if(linkInput) linkInput.value = lesson.link || "";
+
+    if (typeof showToastMessage === 'function') {
+        showToastMessage("✏️ Düzenleme modu aktif. İşiniz bitince Kaydet'e basın.");
+    }
+    
+    const modalBox = document.getElementById('admin-modal').querySelector('.modal-box');
+    if (modalBox) modalBox.scrollTo({top: 0, behavior: 'smooth'});
 };
 
 window.deleteLesson = function(id) {
@@ -2869,57 +3136,43 @@ window.deleteLesson = function(id) {
     
     window.renderLessonLibrary(); 
     window.populateAdminLessons();
-    showToastMessage("🗑️ Ders silindi.");
+    if (typeof showToastMessage === 'function') showToastMessage("🗑️ Ders silindi.");
 };
+
 /* ==========================================
- * MENÜ GEÇİŞ MOTORU GÜNCELLEMESİ (TÜM SEKMELER İÇİN)
+ * SEKMELERİ GİZLE/GÖSTER MOTORU
  * ========================================== */
-
 window.switchMainTab = function(tabName) {
-    // 1. Tüm üst menü butonlarından 'active' (seçili) ışığını kaldır
-    document.querySelectorAll('.main-tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-
-    // 2. Sadece tıklanan butona 'active' ışığını yak
+    document.querySelectorAll('.main-tab-btn').forEach(btn => btn.classList.remove('active'));
     const activeBtn = document.getElementById('mtab-' + tabName);
     if (activeBtn) activeBtn.classList.add('active');
 
-    // 3. Sistemdeki TÜM sayfaları gizle (YENİ EKLENEN 'lessons' DAHİL!)
     const allSections = ['read', 'video', 'media', 'dict', 'exam', 'practice', 'quiz', 'chat', 'lessons'];
     allSections.forEach(sec => {
         const el = document.getElementById('section-' + sec);
-        if (el) {
-            el.style.display = 'none';
-        }
+        if (el) el.style.display = 'none';
     });
 
-    // 4. Sadece tıklanan sekmeye ait sayfayı görünür yap
     const activeSection = document.getElementById('section-' + tabName);
     if (activeSection) {
         activeSection.style.display = 'block';
-        
-        // Eğer "Konu Anlatımı" sekmesine geçildiyse ana listeyi göster (açık kalmış dersi kapat)
         if (tabName === 'lessons') {
             const gridContainer = document.getElementById('lessons-grid-container');
             const viewArea = document.getElementById('lesson-view-area');
             if (gridContainer) gridContainer.style.display = 'grid';
             if (viewArea) viewArea.style.display = 'none';
         }
-        
-        // Sayfayı yumuşakça en üste kaydır
         window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else {
-        console.error("Sayfa bulunamadı: section-" + tabName);
     }
 };
+
 window.addLinkToEditor = function() {
     const url = prompt("Bağlantı adresini (URL) girin:", "https://");
     if (url) {
-        // Seçili metin varsa onu link yapar, yoksa URL'yi link olarak ekler
+        // Seçili metin varsa link yapar, yoksa URL'yi link olarak ekler
         document.execCommand("createLink", false, url);
         
-        // Linklerin yeni sekmede açılması için (Opsiyonel)
+        // Linklerin her zaman yeni sekmede açılmasını sağla
         const links = document.getElementById('admin-lesson-body').getElementsByTagName('a');
         for (let link of links) {
             link.setAttribute('target', '_blank');
