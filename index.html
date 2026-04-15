@@ -89,6 +89,7 @@
           <button class="sub-tab-btn" onclick="switchAdminTab('yds', this); populateAdminYdsExams();">📝 YDS Çözümleri</button>
           <button class="sub-tab-btn" onclick="switchAdminTab('lessons_mgmt', this); populateAdminLessons();">📖 Konu Yönetimi</button>
 
+
         </div>
 
         <div class="admin-panel" id="admin-panel-announcements" style="display: block; animation: fadeIn 0.3s ease;">
@@ -104,36 +105,36 @@
           </div>
         </div>
 
-        <div class="admin-panel" id="admin-panel-lessons_mgmt" style="display: none;">
+
+
+<div class="admin-panel" id="admin-panel-lessons_mgmt" style="display: none; animation: fadeIn 0.3s ease;">
   <div style="background:var(--surface-alt); padding:15px; border-radius:10px; border:1px solid var(--accent);">
-    <h3 style="color:var(--accent); margin-bottom:15px;">📖 Yeni Konu / Gramer Ekle</h3>
-    <input type="text" id="admin-lesson-id" class="auth-input" placeholder="Benzersiz ID (örn: gramer-1)">
-    <input type="text" id="admin-lesson-title" class="auth-input" placeholder="Konu Başlığı">
-    <input type="text" id="admin-lesson-cat" class="auth-input" placeholder="Kategori (örn: ✍️ Fiiller)">
-    
-    <label style="color:var(--accent); font-weight:bold; display:block; margin-top:10px;">İçerik (Zengin Metin):</label>
-    <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:5px;">💡 Tabloları Word'den veya internetten doğrudan buraya yapıştırabilirsiniz.</div>
-    <div id="admin-lesson-body" contenteditable="true" 
-         style="min-height: 250px; background: var(--surface); color: var(--text); border: 2px dashed var(--accent); padding: 15px; border-radius: 8px; outline: none;">
-    </div>
-
-    <button class="main-btn" style="width:100%; margin-top:15px;" onclick="saveLesson()">Konuyu Kaydet / Güncelle</button>
-    
-    <div id="admin-lesson-list" style="margin-top:20px; max-height:200px; overflow-y:auto; border-top:1px solid var(--border); padding-top:10px;">
-        </div>
-  </div>
+      <h3 style="color:var(--accent); margin-bottom:15px;">📖 Yeni Konu / Gramer Ekle</h3>
+      
+      <input type="text" id="admin-lesson-id" class="auth-input" style="padding:10px; margin-bottom:10px;" placeholder="Benzersiz ID (örn: gramer-1)">
+      <input type="text" id="admin-lesson-title" class="auth-input" style="padding:10px; margin-bottom:10px;" placeholder="Konu Başlığı">
+      
+      <input type="text" id="admin-lesson-link" class="auth-input" style="padding:10px; margin-bottom:10px;" placeholder="YouTube Linki / Drive / Dış Bağlantı (Opsiyonel)">
+      
+      <input type="text" id="admin-lesson-cat" class="auth-input" style="padding:10px; margin-bottom:10px;" placeholder="Kategori (örn: ✍️ Fiiller)">
+      
+      <label style="color:var(--accent); font-weight:bold; display:block; margin-top:10px;">İçerik (Zengin Metin):</label>
+      <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:5px;">💡 Tabloları Word'den doğrudan buraya yapıştırabilirsiniz.</div>
+      
+      <div style="margin-bottom: 5px;">
+          <button type="button" class="secondary-btn" style="padding: 5px 10px; font-size: 0.8rem; border-color:var(--accent); color:var(--accent); background: transparent;" onclick="addLinkToEditor()">🔗 Yazı İçine Link Ekle</button>
+      </div>
+ <div style="font-size:0.85rem; color:var(--text-dim); margin-bottom:10px; line-height:1.5;">
+    💡 <b>Ana Video:</b> Üstteki link kutusunu doldurup metne <b>[video]</b> yazabilirsiniz.<br>
+    💡 <b>Birden Fazla Video:</b> Metnin içine <b>[video:YOUTUBE_LINKI]</b> formatında istediğiniz kadar link ekleyebilirsiniz. <br>
+    💡 Tabloları ve yazıları Word'den kopyalayıp yapıştırabilirsiniz.
 </div>
-
-        <div class="admin-panel" id="admin-panel-lessons_mgmt" style="display: none;">
-    <div style="background:var(--surface-alt); padding:15px; border-radius:10px; border:1px solid var(--accent);">
-        <h3 style="color:var(--accent); margin-bottom:15px;">Yeni Ders Ekle</h3>
-        <input type="text" id="admin-lesson-id" class="auth-input" placeholder="Ders ID (örn: gramer-1)">
-        <input type="text" id="admin-lesson-title" class="auth-input" placeholder="Ders Başlığı">
-        <input type="text" id="admin-lesson-cat" class="auth-input" placeholder="Kategori (örn: ✍️ Fiiller)">
-        <div id="admin-lesson-body" contenteditable="true" style="min-height: 200px; background: var(--surface); color: var(--text); border: 2px dashed var(--accent); padding: 15px; border-radius: 8px; margin-top:10px; outline:none;"></div>
-        <button class="main-btn" style="width:100%; margin-top:15px; background:var(--success);" onclick="saveLesson()">💾 Kaydet ve Yayınla</button>
-        <div id="admin-lesson-list" style="margin-top:20px;"></div>
-    </div>
+      <div id="admin-lesson-body" contenteditable="true" style="min-height: 250px; background: var(--surface); color: var(--text); border: 2px dashed var(--accent); padding: 15px; border-radius: 8px; outline: none; cursor: text; line-height: 1.6;"></div>
+      
+      <button class="main-btn" style="width:100%; margin-top:15px; background:var(--success);" onclick="saveLesson()">💾 Konuyu Kaydet / Güncelle</button>
+      
+      <div id="admin-lesson-list" style="margin-top:20px; border-top:1px dashed var(--border); padding-top:15px; max-height: 250px; overflow-y: auto;"></div>
+  </div>
 </div>
         
 
@@ -202,41 +203,32 @@
             </table>
           </div>
         </div>
-        <div class="admin-panel" id="admin-panel-yds" style="display: none; animation: fadeIn 0.3s ease;">
-          <div
-            style="background:var(--surface-alt); padding:15px; border-radius:10px; border:1px solid var(--accent2);">
-            <h3 style="color:var(--accent2); margin-bottom:15px; font-size:1.1rem;">📝 YDS Soru Çözümü / Konu Anlatımı
-              Ekle</h3>
+<div class="admin-panel" id="admin-panel-yds" style="display: none; animation: fadeIn 0.3s ease;">
+  <div style="background:var(--surface-alt); padding:15px; border-radius:10px; border:1px solid var(--accent2);">
+    <h3 style="color:var(--accent2); margin-bottom:15px; font-size:1.1rem;">📝 YDS Soru Çözümü / Konu Anlatımı Ekle</h3>
 
-            <select id="admin-yds-exam-select" class="auth-input" style="padding:10px; margin-bottom:10px;"
-              onchange="loadAdminYdsQuestions()">
-              <option value="">-- Önce Sınav Seçin --</option>
-            </select>
+    <select id="admin-yds-exam-select" class="auth-input" style="padding:10px; margin-bottom:10px;" onchange="loadAdminYdsQuestions()">
+      <option value="">-- Önce Sınav Seçin --</option>
+    </select>
 
-            <select id="admin-yds-q-select" class="auth-input" style="padding:10px; margin-bottom:10px;"
-              onchange="loadAdminYdsExplanation()">
-              <option value="">-- Sonra Soru Seçin --</option>
-            </select>
+    <select id="admin-yds-q-select" class="auth-input" style="padding:10px; margin-bottom:10px;" onchange="loadAdminYdsExplanation()">
+      <option value="">-- Sonra Soru Seçin --</option>
+    </select>
 
-            <div id="admin-yds-q-preview"
-              style="margin-bottom:15px; padding:15px; background:var(--surface); border:1px solid var(--border); border-radius:6px; font-size:0.95rem; color:var(--text); line-height: 1.5;">
-              Soru önizlemesi burada görünecek...
-            </div>
+    <div id="admin-yds-q-preview" style="margin-bottom:15px; padding:15px; background:var(--surface); border:1px solid var(--border); border-radius:6px; font-size:0.95rem; color:var(--text); line-height: 1.5;">
+      Soru önizlemesi burada görünecek...
+    </div>
 
-            <label
-              style="color:var(--accent2); font-size:0.95rem; font-weight:bold; display:block; margin-bottom:5px;">📖
-              Detaylı Çözüm / Konu Anlatımı:</label>
-            <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:10px;">
-              💡 Word'den veya internetten kopyaladığınız tablolu, renkli yazıları buraya doğrudan yapıştırabilirsiniz.
-            </div>
-            <div id="admin-yds-explanation" contenteditable="true"
-              style="min-height: 150px; max-height: 400px; overflow-y: auto; background: var(--surface); color: var(--text); border: 2px dashed var(--accent2); padding: 15px; border-radius: 8px; outline: none; cursor: text; margin-bottom:15px;">
-            </div>
+    <label style="color:var(--accent2); font-size:0.95rem; font-weight:bold; display:block; margin-bottom:5px;">📖 Detaylı Çözüm / Konu Anlatımı:</label>
+    <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:10px;">
+      💡 Word'den veya internetten kopyaladığınız tablolu, renkli yazıları buraya doğrudan yapıştırabilirsiniz.
+    </div>
+    
+    <div id="admin-yds-explanation" contenteditable="true" style="min-height: 150px; max-height: 400px; overflow-y: auto; background: var(--surface); color: var(--text); border: 2px dashed var(--accent2); padding: 15px; border-radius: 8px; outline: none; cursor: text; margin-bottom:15px;"></div>
 
-            <button class="main-btn" style="width:100%; padding:10px; background:var(--accent2);"
-              onclick="saveYdsExplanation()">Çözümü Kaydet / Güncelle</button>
-          </div>
-        </div>
+    <button class="main-btn" style="width:100%; padding:10px; background:var(--accent2);" onclick="saveYdsExplanation()">💾 Çözümü Kaydet / Güncelle</button>
+  </div>
+</div>
       </div>
     </div>
 
@@ -754,16 +746,21 @@
   </div>
 
 <div id="section-lessons" style="display:none; animation: fadeIn 0.4s ease;">
-    <div class="video-setup-box">
-        <h3 style="color:var(--accent); font-size: 1.6rem;">📚 Konu Anlatımı & Gramer</h3>
-        <p style="color:var(--text-dim);">Ders notları, tablolar ve önemli kurallar.</p>
+    <div class="video-setup-box" style="display:flex; flex-direction:column; gap:15px; border-color: var(--accent);">
+        <div>
+            <h3 style="color:var(--accent); font-size: 1.6rem; margin-bottom:5px;">📚 Konu Anlatımı & Gramer</h3>
+            <p style="color:var(--text-dim); margin-bottom:0;">Ders notları, tablolar ve önemli kurallar.</p>
+        </div>
+        
+        <input type="text" id="lesson-search-input" class="auth-input" style="margin-bottom:0; width:100%; padding:15px; font-size:1.1rem; border:1px solid var(--accent); background:rgba(0,0,0,0.2);" placeholder="🔍 Konu başlığı, kategori veya metin içinde ara..." oninput="filterLessons()">
     </div>
-    <div id="lessons-grid-container" class="text-grid" style="margin-bottom: 30px;"></div>
     
-    <div id="lesson-view-area" style="display:none; background:var(--surface); padding:25px; border-radius:12px; border:1px solid var(--border);">
+    <div id="lessons-grid-container" style="margin-top: 20px;"></div>
+    
+    <div id="lesson-view-area" style="display:none; background:var(--surface); padding:25px; border-radius:12px; border:1px solid var(--border); margin-top:20px;">
         <button class="secondary-btn" onclick="closeLessonView()">🔙 Listeye Dön</button>
         <h2 id="lesson-active-title" style="color:var(--accent); margin:20px 0;"></h2>
-        <div id="lesson-active-body" style="line-height:1.8; font-size:1.1rem; color:var(--text);"></div>
+        <div id="lesson-active-body" style="line-height:1.8; font-size:1.15rem; color:var(--text);"></div>
     </div>
 </div>
   
