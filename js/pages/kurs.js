@@ -539,6 +539,71 @@ window.assignStudentPickNone = function () {
     });
 };
 
+window.assignClassSubsetPickAll = function () {
+  document
+    .querySelectorAll('#assign-class-student-subset input.assign-class-subset-cb[data-username]')
+    .forEach((cb) => {
+      cb.checked = true;
+    });
+};
+
+window.assignClassSubsetPickNone = function () {
+  document
+    .querySelectorAll('#assign-class-student-subset input.assign-class-subset-cb[data-username]')
+    .forEach((cb) => {
+      cb.checked = false;
+    });
+};
+
+/** «Tüm sınıfa» modunda seçilen sınıf için isteğe bağlı alt küme (ör. yalnız 2 öğrenci). */
+window.renderAssignClassSubset = function () {
+  const wrap = document.getElementById('assign-class-subset-wrap');
+  const box = document.getElementById('assign-class-student-subset');
+  const classSel = document.getElementById('assign-class-select');
+  if (!wrap || !box) return;
+  const classIdRaw = classSel && classSel.value;
+  if (!classIdRaw) {
+    wrap.style.display = 'none';
+    box.innerHTML = '';
+    return;
+  }
+  const cls = kursClasses.find((c) => c.id === classIdRaw);
+  const students = cls
+    ? cls.studentUsernames.filter((u) => kursIsStudentMemberRole(u)).slice()
+    : [];
+  students.sort((a, b) => {
+    const la =
+      typeof kursFormatStudentOptionLabel === 'function'
+        ? kursFormatStudentOptionLabel(a)
+        : a;
+    const lb =
+      typeof kursFormatStudentOptionLabel === 'function'
+        ? kursFormatStudentOptionLabel(b)
+        : b;
+    return String(la).localeCompare(String(lb), 'tr');
+  });
+  if (students.length === 0) {
+    wrap.style.display = 'none';
+    box.innerHTML = '';
+    return;
+  }
+  wrap.style.display = 'block';
+  box.innerHTML = students
+    .map((u) => {
+      const lab =
+        typeof kursFormatStudentOptionLabel === 'function'
+          ? kursFormatStudentOptionLabel(u)
+          : u;
+      const enc = encodeURIComponent(u);
+      return (
+        `<label style="display:flex;align-items:center;gap:10px;padding:6px 4px;cursor:pointer;border-radius:6px;">` +
+        `<input type="checkbox" class="assign-class-subset-cb" data-username="${enc}">` +
+        `<span>${kursEscapeHtml(lab)}</span></label>`
+      );
+    })
+    .join('');
+};
+
 window.renderAssignForm = function () {
   const myClasses = kursClasses.filter(
     (c) => c.teacherUsername === currentUsername,
@@ -551,7 +616,14 @@ window.renderAssignForm = function () {
     const n = cls.studentUsernames.filter((u) => kursIsStudentMemberRole(u)).length;
     classHtml += `<option value="${kursEscapeHtml(cls.id)}">🏫 ${kursEscapeHtml(cls.name)} (${n} öğrenci)</option>`;
   });
-  if (classSel) classSel.innerHTML = classHtml;
+  if (classSel) {
+    classSel.innerHTML = classHtml;
+    classSel.onchange = function () {
+      if (typeof window.renderAssignClassSubset === 'function') {
+        window.renderAssignClassSubset();
+      }
+    };
+  }
 
   const allStudents = [
     ...new Set(myClasses.flatMap((c) => c.studentUsernames)),
@@ -583,7 +655,7 @@ window.renderAssignForm = function () {
           const enc = encodeURIComponent(u);
           return (
             `<label style="display:flex;align-items:center;gap:10px;padding:6px 4px;cursor:pointer;border-radius:6px;">` +
-            `<input type="checkbox" name="assign-student-pick" data-username="${enc}">` +
+            `<input type="checkbox" data-username="${enc}">` +
             `<span>${kursEscapeHtml(lab)}</span></label>`
           );
         })
@@ -591,10 +663,9 @@ window.renderAssignForm = function () {
     }
   }
 
-  const modeClass = document.querySelector(
-    'input[name="assign-target-mode"][value="class"]',
-  );
-  if (modeClass) modeClass.checked = true;
+  if (typeof window.renderAssignClassSubset === 'function') {
+    window.renderAssignClassSubset();
+  }
   if (typeof window.onAssignTargetModeChange === 'function') {
     window.onAssignTargetModeChange();
   }
@@ -679,12 +750,36 @@ window.submitAssignment = function () {
       showToastMessage('❌ Sınıfta kayıtlı kimse yok.');
       return;
     }
-    studentUsernames = cls.studentUsernames.filter((u) => kursIsStudentMemberRole(u));
-    if (studentUsernames.length === 0) {
-      showToastMessage(
-        '❌ Sınıfta «Öğrenci» rolünde kimse yok. Yönetici rol ataması yapmalı.',
-      );
-      return;
+
+    const subsetPicked = [];
+    document
+      .querySelectorAll(
+        '#assign-class-student-subset input.assign-class-subset-cb[data-username]:checked',
+      )
+      .forEach((cb) => {
+        const enc = cb.getAttribute('data-username');
+        if (!enc) return;
+        try {
+          subsetPicked.push(decodeURIComponent(enc));
+        } catch (e) { /* ignore */ }
+      });
+
+    if (subsetPicked.length > 0) {
+      studentUsernames = [...new Set(subsetPicked)].filter((u) => kursIsStudentMemberRole(u));
+      if (studentUsernames.length === 0) {
+        showToastMessage(
+          '❌ Seçilen kullanıcılar «Öğrenci» rolünde değil.',
+        );
+        return;
+      }
+    } else {
+      studentUsernames = cls.studentUsernames.filter((u) => kursIsStudentMemberRole(u));
+      if (studentUsernames.length === 0) {
+        showToastMessage(
+          '❌ Sınıfta «Öğrenci» rolünde kimse yok. Yönetici rol ataması yapmalı.',
+        );
+        return;
+      }
     }
   } else {
     const picked = [];
@@ -694,7 +789,10 @@ window.submitAssignment = function () {
       )
       .forEach((cb) => {
         const enc = cb.getAttribute('data-username');
-        if (enc) picked.push(decodeURIComponent(enc));
+        if (!enc) return;
+        try {
+          picked.push(decodeURIComponent(enc));
+        } catch (e) { /* ignore */ }
       });
     studentUsernames = [...new Set(picked)].filter((u) => kursIsStudentMemberRole(u));
     if (studentUsernames.length === 0) {
@@ -762,16 +860,18 @@ window.submitAssignment = function () {
   // Formu sıfırla
   const classSelEl = document.getElementById('assign-class-select');
   if (classSelEl) classSelEl.value = '';
+  if (typeof window.renderAssignClassSubset === 'function') {
+    window.renderAssignClassSubset();
+  }
   document.getElementById('assign-content-select').value = '';
   document.getElementById('assign-due-date').value       = '';
   if (teacherMsgEl) teacherMsgEl.value = '';
   if (typeof window.assignStudentPickNone === 'function') {
     window.assignStudentPickNone();
   }
-  const modeClass = document.querySelector(
-    'input[name="assign-target-mode"][value="class"]',
-  );
-  if (modeClass) modeClass.checked = true;
+  if (typeof window.assignClassSubsetPickNone === 'function') {
+    window.assignClassSubsetPickNone();
+  }
   if (typeof window.onAssignTargetModeChange === 'function') {
     window.onAssignTargetModeChange();
   }

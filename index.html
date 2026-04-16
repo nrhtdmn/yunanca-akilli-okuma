@@ -914,6 +914,16 @@
           <div id="assign-block-class">
             <label style="color:var(--text-dim); font-size:0.9rem; display:block; margin-bottom:5px;">Sınıf</label>
             <select id="assign-class-select" class="auth-input" style="padding:12px; margin-bottom:15px;"></select>
+            <div id="assign-class-subset-wrap" style="display:none; margin-bottom:15px;">
+              <label style="color:var(--text-dim); font-size:0.9rem; display:block; margin-bottom:8px;">
+                İsteğe bağlı: Aynı anda yalnız seçtiklerinize atayın (ör. iki kişi). Hiç işaretlemezseniz tüm sınıfa gider.
+              </label>
+              <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+                <button type="button" class="secondary-btn" style="padding:6px 12px; font-size:0.85rem;" onclick="assignClassSubsetPickAll()">Bu sınıftakilerin tümünü seç</button>
+                <button type="button" class="secondary-btn" style="padding:6px 12px; font-size:0.85rem;" onclick="assignClassSubsetPickNone()">Seçimi temizle</button>
+              </div>
+              <div id="assign-class-student-subset" style="max-height:200px; overflow-y:auto; border:1px solid var(--border); border-radius:8px; padding:10px; background:var(--surface);"></div>
+            </div>
           </div>
           <div id="assign-block-students" style="display:none; margin-bottom:15px;">
             <label style="color:var(--text-dim); font-size:0.9rem; display:block; margin-bottom:8px;">Öğrenciler (birden fazla işaretleyin)</label>
