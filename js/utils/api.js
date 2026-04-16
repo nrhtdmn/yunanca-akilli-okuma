@@ -64,7 +64,7 @@ function ingestUsersDoc(doc) {
   const cloudUsers = doc.data();
   console.log("☁️ Firebase'den gelen kullanıcı verisi:", cloudUsers);
   Object.assign(window.dbUsers, cloudUsers);
-  window.dbUsers["nurhat"] = { password: "Deniz28", role: "admin", status: "approved", isPremium: true, credits: 999999 };
+
   applyCloudUsers();
 }
 
