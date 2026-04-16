@@ -569,10 +569,50 @@ textarea:focus {
   word-break: break-word;
   line-height: 1.2;
 }
+#wp-gr.wpop-word-highlight {
+  display: inline-block;
+  background: rgba(255, 220, 60, 0.75);
+  color: var(--text);
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+.wp-sentence-translate {
+  margin-top: 4px;
+  margin-bottom: 12px;
+}
+.wp-sentence-translate .wp-sentence-label {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+.wp-sentence-el-block {
+  background: rgba(255, 235, 100, 0.45);
+  padding: 10px 12px;
+  border-radius: 8px;
+  line-height: 1.45;
+  color: var(--text);
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+}
+.wp-sentence-tr-block {
+  background: rgba(255, 220, 60, 0.65);
+  padding: 10px 12px;
+  border-radius: 8px;
+  line-height: 1.45;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+.wpop-yellow-mark {
+  background: rgba(255, 200, 0, 0.85);
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-weight: 700;
+}
 #wp-mean-input {
   width: 100%;
-  background: var(--surface-alt);
-  border: 1px solid var(--border);
+  background: rgba(255, 235, 120, 0.4);
+  border: 1px solid rgba(200, 170, 0, 0.45);
   color: var(--text);
   padding: 12px;
   border-radius: 8px;
@@ -580,6 +620,7 @@ textarea:focus {
   text-align: center;
   outline: none;
   transition: var(--transition);
+  font-weight: 600;
 }
 #wp-context-box {
   background: rgba(128, 128, 128, 0.1);

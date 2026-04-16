@@ -223,6 +223,9 @@ function triggerWordPopup(event, word, contextSentence) {
   const phoneticBox= document.getElementById('wp-phonetic'), speakBtn = document.getElementById('popup-speak-btn'), deckTools = popup.querySelector('.deck-tools'), actionBtns = popup.querySelector('.action-buttons'), guestMsg = document.getElementById('popup-guest-msg');
 
   titleGr.textContent = word;
+  titleGr.classList.add('wpop-word-highlight');
+  const stBox = document.getElementById('wp-sentence-translate');
+  if (stBox) { stBox.hidden = true; stBox.innerHTML = ''; }
   const cleanWord = word.replace(/[.,!?;():"""«»]/g, '').trim();
   if (cleanWord.length > 0) { phoneticBox.innerHTML = '<strong>Okunuşu:</strong> ' + getGreekPhonetics(cleanWord); phoneticBox.style.display = 'block'; } 
   else { phoneticBox.style.display = 'none'; }

@@ -1970,18 +1970,60 @@ async function getSmartTranslation(word, contextSentence) {
   return null;
 }
 
-/** Popup: cümlenin tamamını Yunanca → Türkçe çevirir */
+function escapeHtmlForPopup(s) {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+/** Yunanca cümlede tıklanan kelimenin ilk geçişini sarı <mark> ile sarar */
+function highlightWordInGreekSentence(sentence, rawWord) {
+  const esc = escapeHtmlForPopup(sentence);
+  const clean = String(rawWord || "")
+    .replace(/[.,!?;():"""«»]/g, "")
+    .trim();
+  const candidates = [];
+  if (rawWord) candidates.push(String(rawWord));
+  if (clean) candidates.push(clean);
+  for (const w of candidates) {
+    const we = escapeHtmlForPopup(w);
+    const idx = esc.indexOf(we);
+    if (idx !== -1) {
+      return (
+        esc.slice(0, idx) +
+        '<mark class="wpop-yellow-mark">' +
+        we +
+        "</mark>" +
+        esc.slice(idx + we.length)
+      );
+    }
+  }
+  return esc;
+}
+
+/** Popup: cümlenin tamamını Yunanca → Türkçe çevirir (anlam kutusuna yazmaz; bağlamın altında gösterir) */
 async function translateFullContext() {
-  const meanInput = document.getElementById("wp-mean-input");
+  const box = document.getElementById("wp-sentence-translate");
   const ctx =
     typeof activeContextSentence !== "undefined"
       ? String(activeContextSentence || "").trim()
+      : "";
+  const word =
+    typeof activeWordString !== "undefined"
+      ? String(activeWordString || "").trim()
       : "";
   if (!ctx) {
     showToastMessage("Önce metinde bir kelimeye tıklayın (bağlam gerekir).");
     return;
   }
-  if (meanInput) meanInput.value = "Çeviri aranıyor...";
+  if (!box) return;
+
+  box.hidden = false;
+  box.innerHTML =
+    '<div style="color:var(--accent2); font-size:0.9rem; padding:8px 0;">⏳ Cümle çevirisi aranıyor…</div>';
+
   const withTimeout = (p, ms) =>
     Promise.race([
       p,
@@ -1992,11 +2034,24 @@ async function translateFullContext() {
   try {
     let t = await withTimeout(fetchGoogleElToTr(ctx), 15000);
     if (!t) t = await withTimeout(fetchMyMemoryElToTr(ctx), 15000);
-    if (meanInput) meanInput.value = t || "—";
+
+    const elHtml = highlightWordInGreekSentence(ctx, word);
+    const trEscaped = escapeHtmlForPopup(t || "—");
+
+    box.innerHTML =
+      '<div class="wp-sentence-label">Cümlenin tamamı (Yunanca → Türkçe)</div>' +
+      '<div class="wp-sentence-el-block">' +
+      elHtml +
+      "</div>" +
+      '<div class="wp-sentence-tr-block">' +
+      trEscaped +
+      "</div>";
+
     if (!t) showToastMessage("Cümle çevirisi alınamadı.");
   } catch (e) {
     console.error("translateFullContext", e);
-    if (meanInput) meanInput.value = "Çeviri alınamadı";
+    box.innerHTML =
+      '<div style="color:var(--error); font-size:0.9rem;">Çeviri alınamadı. Ağı kontrol edin.</div>';
     showToastMessage("Çeviri sırasında hata oluştu.");
   }
 }
