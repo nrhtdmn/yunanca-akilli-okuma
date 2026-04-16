@@ -99,6 +99,7 @@
           <button type="button" class="sub-tab-btn admin-only-tab active" onclick="switchAdminTab('announcements', this)">📢 Duyurular</button>
           <button type="button" class="sub-tab-btn" onclick="switchAdminTab('practices', this)">💪 Alıştırmalar</button>
           <button type="button" class="sub-tab-btn admin-only-tab" onclick="switchAdminTab('users', this)">👥 Kullanıcılar</button>
+          <button type="button" class="sub-tab-btn admin-only-tab" onclick="switchAdminTab('traffic', this); renderAdminTrafficStats();">📈 Trafik</button>
           <button class="sub-tab-btn" onclick="switchAdminTab('yds', this); populateAdminYdsExams();">📝 YDS Çözümleri</button>
           <button class="sub-tab-btn" onclick="switchAdminTab('lessons_mgmt', this); populateAdminLessons();">📖 Konu Yönetimi</button>
 
@@ -220,6 +221,16 @@
               </thead>
               <tbody id="admin-user-list"></tbody>
             </table>
+          </div>
+        </div>
+        <div class="admin-panel" id="admin-panel-traffic" style="display: none; animation: fadeIn 0.3s ease;">
+          <div style="background:var(--surface-alt); padding:15px; border-radius:10px; border:1px solid var(--border);">
+            <h3 style="color:var(--accent2); margin-bottom:14px; font-size:1.1rem;">📈 Site Trafik Özeti</h3>
+            <div id="admin-traffic-summary" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); gap:10px; margin-bottom:14px;"></div>
+            <div style="margin-top:4px;">
+              <h4 style="color:var(--text); margin:0 0 10px 0; font-size:0.98rem;">Son 7 gün</h4>
+              <div id="admin-traffic-last7" style="display:flex; flex-direction:column; gap:8px;"></div>
+            </div>
           </div>
         </div>
 <div class="admin-panel" id="admin-panel-yds" style="display: none; animation: fadeIn 0.3s ease;">
