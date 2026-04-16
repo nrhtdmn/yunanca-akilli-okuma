@@ -73,6 +73,7 @@ function loadUserData() {
   userDecks = data.decks || { "Genel Kelimeler": [] };
   userCustomDict = new Map(Object.entries(data.customDict || {}));
   lastActiveDeck = data.lastActiveDeck || "Genel Kelimeler";
+  if (!Array.isArray(data.teacherPrivatePractices)) data.teacherPrivatePractices = [];
 
   renderDecksAccordion();
   populateDeckSelects();

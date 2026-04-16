@@ -3,6 +3,8 @@ function showAuthModal(login = true) {
   document.getElementById('auth-title').textContent = isLoginMode ? 'Giriş Yap' : 'Kayıt Ol';
   document.getElementById('auth-submit-btn').textContent = isLoginMode ? 'Giriş Yap' : 'Kayıt Ol';
   document.getElementById('auth-switch-text').innerHTML = isLoginMode ? 'Hesabın yok mu? <b>Kayıt Ol</b>' : 'Zaten hesabın var mı? <b>Giriş Yap</b>';
+  const extra = document.getElementById('auth-register-extra');
+  if (extra) extra.style.display = login ? 'none' : 'block';
   document.getElementById('auth-modal').style.display = 'flex';
 }
 
@@ -52,8 +54,9 @@ window.renderAdminUsersList = function() {
                         🗑️ Sil
                      </button>`;
     
+    const disp = user.displayName || user.fullName || '';
     html += `<tr>
-        <td><b>${username}</b>${isMainAdmin ? ' <small style="color:var(--text-dim);">(ana yönetici)</small>' : ''}</td>
+        <td><b>${username}</b>${disp ? `<br><small style="color:var(--text-dim);">${String(disp).replace(/</g,'&lt;')}</small>` : ''}${isMainAdmin ? ' <small style="color:var(--text-dim);">(ana yönetici)</small>' : ''}</td>
         <td>${statusOpt}</td>
         <td>${user.isPremium ? 'Sınırsız' : (user.credits || 0)}</td>
         <td style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">${roleOpt} ${premiumOpt} ${deleteBtn}</td>

@@ -36,6 +36,14 @@ function submitAuth() {
       showToastMessage("❌ Bu kullanıcı adı zaten alınmış.");
       return;
     }
+    const fnEl = document.getElementById("auth-fullname");
+    const emEl = document.getElementById("auth-email");
+    const fullName = fnEl && fnEl.value.trim();
+    const regEmail = emEl && emEl.value.trim().toLowerCase();
+    if (regEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(regEmail)) {
+      showToastMessage("Geçerli bir e-posta girin veya e-posta alanını boş bırakın.");
+      return;
+    }
     dbUsers[u] = {
       password: p,
       role: "user",
@@ -44,6 +52,12 @@ function submitAuth() {
       credits: 50,
       authProvider: "password",
     };
+    if (fullName) dbUsers[u].displayName = fullName;
+    if (fullName) dbUsers[u].fullName = fullName;
+    if (regEmail) {
+      dbUsers[u].contactEmail = regEmail;
+      dbUsers[u].email = regEmail;
+    }
     saveDb();
     currentUser = dbUsers[u];
     currentUsername = u;
@@ -52,7 +66,7 @@ function submitAuth() {
     closeAuthModal();
     updateUserUI();
     showToastMessage("✅ Kayıt başarılı! Yönetici onaylayana kadar kısıtlı erişimdesiniz.");
-    sendTelegramRegistrationNotice(`Kullanıcı adı: ${u}`);
+    sendTelegramRegistrationNotice(`Kullanıcı: ${u}${fullName ? " — " + fullName : ""}${regEmail ? " — " + regEmail : ""}`);
   }
 }
 

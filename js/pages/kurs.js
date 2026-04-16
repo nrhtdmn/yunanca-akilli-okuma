@@ -56,6 +56,9 @@ window.updateKursDataFromCloud = function(cloudData) {
   if (kursSection && kursSection.style.display === 'block') {
       window.renderKursPanel();
   }
+  if (typeof window.checkNewKursAssignmentToasts === 'function') {
+    window.checkNewKursAssignmentToasts();
+  }
 };
 
 // --- YETKİ ---
@@ -89,20 +92,89 @@ function kursEnsureThread(teacherUsername, studentUsername) {
 }
 
 function kursTeacherHasStudent(teacherUsername, studentUsername) {
-  return kursClasses.some(
+  if (kursClasses.some(
     c => c.teacherUsername === teacherUsername && c.studentUsernames.includes(studentUsername)
+  )) return true;
+  return kursAssignments.some(
+    a => a.teacherUsername === teacherUsername &&
+      a.studentUsernames && a.studentUsernames.includes(studentUsername)
   );
 }
 
 function kursStudentTeacherList() {
-  const mine = kursAssignments.filter(a => a.studentUsernames.includes(currentUsername));
-  return [...new Set(mine.map(a => a.teacherUsername))];
+  const fromAssign = kursAssignments
+    .filter(a => a.studentUsernames.includes(currentUsername))
+    .map(a => a.teacherUsername);
+  const fromClasses = kursClasses
+    .filter(c => c.studentUsernames.includes(currentUsername))
+    .map(c => c.teacherUsername);
+  return [...new Set([...fromAssign, ...fromClasses])];
 }
 
 function kursTeacherStudentList() {
   const myClasses = kursClasses.filter(c => c.teacherUsername === currentUsername);
-  return [...new Set(myClasses.flatMap(c => c.studentUsernames))];
+  const fromClasses = myClasses.flatMap(c => c.studentUsernames);
+  const fromAssign = kursAssignments
+    .filter(a => a.teacherUsername === currentUsername)
+    .flatMap(a => a.studentUsernames || []);
+  return [...new Set([...fromClasses, ...fromAssign])];
 }
+
+function kursDisplayUserLabel(username) {
+  if (!username) return '';
+  const u = typeof dbUsers !== 'undefined' ? dbUsers[username] : null;
+  const name = u && (u.displayName || u.fullName);
+  if (name && String(name).trim()) {
+    return `${kursEscapeHtml(String(name).trim())} <span style="color:var(--text-dim); font-weight:normal; font-size:0.88rem;">(${kursEscapeHtml(username)})</span>`;
+  }
+  return kursEscapeHtml(username);
+}
+
+function kursFormatStudentOptionLabel(username) {
+  if (!username) return '';
+  const u = typeof dbUsers !== 'undefined' ? dbUsers[username] : null;
+  const nm = u && (u.displayName || u.fullName);
+  if (nm && String(nm).trim()) return `${String(nm).trim()} (${username})`;
+  return username;
+}
+
+window.getTeacherPrivatePractices = function () {
+  if (!currentUsername || typeof dbUserData === 'undefined' || !dbUserData[currentUsername]) return [];
+  return dbUserData[currentUsername].teacherPrivatePractices || [];
+};
+
+function findPracticeContentById(contentId) {
+  const pub = PRACTICE_CATALOG.find(p => p.id === contentId);
+  if (pub) return pub;
+  const priv = window.getTeacherPrivatePractices();
+  return Array.isArray(priv) ? priv.find(p => p.id === contentId) : null;
+}
+
+/** Yeni ödev bildirimi (öğrenci, uygulama içi) */
+window.checkNewKursAssignmentToasts = function () {
+  if (!currentUsername || kursIsTeacher()) return;
+  try {
+    const mine = kursAssignments.filter(a =>
+      a.studentUsernames && a.studentUsernames.includes(currentUsername));
+    const seen = JSON.parse(localStorage.getItem('y_kurs_seen_assign_ids') || '[]');
+    const seenSet = new Set(seen);
+    if (!localStorage.getItem('y_kurs_notify_init')) {
+      mine.forEach(a => seenSet.add(a.id));
+      localStorage.setItem('y_kurs_seen_assign_ids', JSON.stringify([...seenSet]));
+      localStorage.setItem('y_kurs_notify_init', '1');
+      return;
+    }
+    mine.forEach(a => {
+      if (!seenSet.has(a.id)) {
+        seenSet.add(a.id);
+        if (typeof showToastMessage === 'function') {
+          showToastMessage('📋 Yeni ödev: ' + (a.contentTitle || 'Ödev'));
+        }
+      }
+    });
+    localStorage.setItem('y_kurs_seen_assign_ids', JSON.stringify([...seenSet]));
+  } catch (e) { /* ignore */ }
+};
 
 // ============================================================
 // ANA RENDER
@@ -132,6 +204,7 @@ window.renderKursPanel = function () {
     studentView.style.display = 'block';
     renderStudentAssignments();
     if (typeof window.renderStudentKursMessaging === 'function') window.renderStudentKursMessaging();
+    if (typeof window.checkNewKursAssignmentToasts === 'function') window.checkNewKursAssignmentToasts();
   }
 };
 
@@ -139,7 +212,7 @@ window.renderKursPanel = function () {
 // ÖĞRETMEN — SEKME
 // ============================================================
 window.switchKursTab = function (tab, btn) {
-  ['classes', 'assign', 'reports', 'messages'].forEach(t => {
+  ['classes', 'assign', 'reports', 'messages', 'teacher-mats'].forEach(t => {
     const el = document.getElementById('kurs-panel-' + t);
     if (el) el.style.display = 'none';
   });
@@ -152,6 +225,7 @@ window.switchKursTab = function (tab, btn) {
   if (tab === 'assign')  renderAssignForm();
   if (tab === 'reports') renderTeacherReports();
   if (tab === 'messages') window.renderTeacherMessages && window.renderTeacherMessages();
+  if (tab === 'teacher-mats') window.renderTeacherPrivateMaterials && window.renderTeacherPrivateMaterials();
 };
 
 // ============================================================
@@ -178,10 +252,11 @@ window.renderKursClasses = function () {
       : cls.studentUsernames.map(uname => {
           const u = dbUsers[uname];
           const badge = u ? (u.status === 'approved' ? '✅' : '⏳ Onay Bekliyor') : '❓ Kayıtsız';
+          const label = typeof kursFormatStudentOptionLabel === 'function' ? kursFormatStudentOptionLabel(uname) : uname;
           return `<div style="display:flex; justify-content:space-between; align-items:center;
                       padding:10px 0; border-bottom:1px solid var(--border);">
-            <span>${badge} <strong>${uname}</strong></span>
-            <button onclick="removeStudentFromClass('${cls.id}','${uname}')"
+            <span>${badge} <strong>${kursEscapeHtml(label)}</strong></span>
+            <button onclick="removeStudentFromClass('${cls.id}', ${JSON.stringify(uname)})"
               style="background:none; border:none; color:var(--error); cursor:pointer; font-size:0.85rem;">Çıkar</button>
           </div>`;
         }).join('');
@@ -257,7 +332,11 @@ window.openAddStudentModal = function (classId) {
 
   document.getElementById('kurs-add-student-classid').value = classId;
   document.getElementById('kurs-student-select').innerHTML = available.length > 0
-    ? available.map(u => `<option value="${u}">${u} (${dbUsers[u].status === 'approved' ? 'Onaylı' : 'Beklemede'})</option>`).join('')
+    ? available.map(u => {
+        const st = dbUsers[u] && dbUsers[u].status === 'approved' ? 'Onaylı' : 'Beklemede';
+        const lab = typeof kursFormatStudentOptionLabel === 'function' ? kursFormatStudentOptionLabel(u) : u;
+        return `<option value=${JSON.stringify(u)}>${kursEscapeHtml(lab)} (${st})</option>`;
+      }).join('')
     : '<option value="">-- Eklenebilecek kullanıcı yok --</option>';
 
   document.getElementById('kurs-add-student-modal').style.display = 'flex';
@@ -309,7 +388,10 @@ window.renderAssignForm = function () {
   const allStudents = [...new Set(myClasses.flatMap(c => c.studentUsernames))];
   if (allStudents.length > 0) {
     optHtml += '<optgroup label="👤 Bireysel Öğrenciler">';
-    allStudents.forEach(u => { optHtml += `<option value="student:${u}">👤 ${u}</option>`; });
+    allStudents.forEach(u => {
+      const lab = typeof kursFormatStudentOptionLabel === 'function' ? kursFormatStudentOptionLabel(u) : u;
+      optHtml += `<option value="student:${u}">👤 ${kursEscapeHtml(lab)}</option>`;
+    });
     optHtml += '</optgroup>';
   }
 
@@ -324,10 +406,21 @@ window.onAssignTypeChange = function () {
 
   if (type === 'practice') {
     examCatGroup.style.display = 'none';
-    contentSel.innerHTML = '<option value="">-- Alıştırma Seçin --</option>' +
-      PRACTICE_CATALOG.map(p =>
-        `<option value="${p.id}">${p.title} (${p.level})</option>`
+    const priv = (typeof window.getTeacherPrivatePractices === 'function' && window.getTeacherPrivatePractices()) || [];
+    let inner = '<option value="">-- Alıştırma Seçin --</option>';
+    if (priv.length > 0) {
+      inner += '<optgroup label="📁 Özel içeriklerim">';
+      inner += priv.map(p =>
+        `<option value=${JSON.stringify(p.id)}>📁 ${kursEscapeHtml(p.title)} (${kursEscapeHtml(p.level || '—')})</option>`
       ).join('');
+      inner += '</optgroup>';
+    }
+    inner += '<optgroup label="🌐 Genel katalog">';
+    inner += PRACTICE_CATALOG.map(p =>
+      `<option value=${JSON.stringify(p.id)}>${kursEscapeHtml(p.title)} (${kursEscapeHtml(p.level)})</option>`
+    ).join('');
+    inner += '</optgroup>';
+    contentSel.innerHTML = inner;
     contentSel.onchange = null;
   } else {
     examCatGroup.style.display = 'block';
@@ -376,7 +469,7 @@ window.submitAssignment = function () {
   let contentTitle = '', examCategory = null;
 
   if (type === 'practice') {
-    const prac   = PRACTICE_CATALOG.find(p => p.id === contentId);
+    const prac   = findPracticeContentById(contentId);
     contentTitle = prac ? prac.title : contentId;
   } else {
     examCategory = document.getElementById('assign-exam-cat-select').value;
@@ -634,20 +727,27 @@ window.renderTeacherMessages = function () {
   const hint = document.getElementById('kurs-msg-teacher-hint');
   if (!sel) return;
   const students = kursTeacherStudentList().sort();
+  const taT = document.getElementById('kurs-msg-input-teacher');
   if (students.length === 0) {
-    sel.innerHTML = '<option value="">—</option>';
+    sel.innerHTML = '<option value="">— Öğrenci yok —</option>';
+    sel.disabled = true;
+    if (taT) { taT.disabled = true; taT.placeholder = 'Öğrenci ekleyin veya ödev atayın.'; }
     if (hint) {
       hint.style.display = 'block';
-      hint.textContent = 'Önce sınıflarınıza öğrenci ekleyin.';
+      hint.textContent = 'Sınıfa öğrenci ekleyin veya ödev vererek öğrenci seçin; sonra buradan yazışabilirsiniz.';
     }
     const box = document.getElementById('kurs-msg-thread');
-    if (box) box.innerHTML = '';
+    if (box) box.innerHTML = '<p style="color:var(--text-dim); font-size:0.9rem;">Henüz mesajlaşabileceğiniz öğrenci yok.</p>';
     return;
   }
+  sel.disabled = false;
+  if (taT) { taT.disabled = false; taT.placeholder = 'Mesajınız...'; }
   if (hint) hint.style.display = 'none';
   const prev = sel.value;
   sel.innerHTML = '<option value="">— Öğrenci seçin —</option>' +
-    students.map(s => `<option value=${JSON.stringify(s)}>${kursEscapeHtml(s)}</option>`).join('');
+    students.map(s =>
+      `<option value=${JSON.stringify(s)}>${kursEscapeHtml(typeof kursFormatStudentOptionLabel === 'function' ? kursFormatStudentOptionLabel(s) : s)}</option>`
+    ).join('');
   if (prev && students.includes(prev)) sel.value = prev;
   window.renderTeacherMessageThread();
 };
@@ -693,7 +793,7 @@ window.sendKursMessageFromTeacher = function () {
   if (!student) { showToastMessage('Öğrenci seçin.'); return; }
   if (!text) { showToastMessage('Mesaj yazın.'); return; }
   if (!kursTeacherHasStudent(currentUsername, student)) {
-    showToastMessage('Bu öğrenci sınıflarınızda değil.');
+    showToastMessage('Bu öğrenciye ödev veya sınıf ilişkiniz yok.');
     return;
   }
   const key = kursEnsureThread(currentUsername, student);
@@ -711,16 +811,33 @@ window.sendKursMessageFromTeacher = function () {
 window.renderStudentKursMessaging = function () {
   const wrap = document.getElementById('kurs-student-messages-panel');
   const sel = document.getElementById('kurs-msg-teacher-select-student');
+  const ta = document.getElementById('kurs-msg-input-student');
   if (!wrap || !sel) return;
+  wrap.style.display = 'block';
   const teachers = kursStudentTeacherList();
+  const prev = sel.value;
   if (teachers.length === 0) {
-    wrap.style.display = 'none';
+    sel.innerHTML = '<option value="">— Henüz öğretmen yok —</option>';
+    sel.disabled = true;
+    if (ta) {
+      ta.disabled = true;
+      ta.placeholder = 'Bir öğretmenin sınıfına eklendiğinizde veya size ödev verildiğinde buradan yazabilirsiniz.';
+    }
+    const box = document.getElementById('kurs-msg-thread-student');
+    if (box) {
+      box.innerHTML = '<p style="color:var(--text-dim); font-size:0.92rem;">Öğretmeniniz sizi sınıfa ekleyene veya size ödev verene kadar bu alan kullanılamaz. Sorularınız için öğretmeninizden sınıfa eklenmesini isteyin.</p>';
+    }
     return;
   }
-  wrap.style.display = 'block';
-  const prev = sel.value;
+  sel.disabled = false;
+  if (ta) {
+    ta.disabled = false;
+    ta.placeholder = 'Mesajınız...';
+  }
   sel.innerHTML = '<option value="">— Öğretmen seçin —</option>' +
-    teachers.map(t => `<option value=${JSON.stringify(t)}>${kursEscapeHtml(t)}</option>`).join('');
+    teachers.map(t =>
+      `<option value=${JSON.stringify(t)}>${kursEscapeHtml(typeof kursFormatStudentOptionLabel === 'function' ? kursFormatStudentOptionLabel(t) : t)}</option>`
+    ).join('');
   if (prev && teachers.includes(prev)) sel.value = prev;
   window.renderStudentMessageThread();
 };
@@ -735,7 +852,7 @@ window.renderStudentMessageThread = function () {
     return;
   }
   if (!kursStudentTeacherList().includes(teacher)) {
-    box.innerHTML = '<p style="color:var(--error); font-size:0.9rem;">Bu öğretmenle ödev ilişkiniz yok.</p>';
+    box.innerHTML = '<p style="color:var(--error); font-size:0.9rem;">Bu öğretmenle bağlantınız yok.</p>';
     return;
   }
   const key = kursThreadKey(teacher, currentUsername);
@@ -783,6 +900,80 @@ window.sendKursMessageFromStudent = function () {
   ta.value = '';
   saveKursData();
   window.renderStudentMessageThread();
+};
+
+// ============================================================
+// ÖĞRETMEN — ÖZEL ALIŞTIRMALAR (yalnızca kendi kataloğu)
+// ============================================================
+window.renderTeacherPrivateMaterials = function () {
+  const listEl = document.getElementById('kurs-teacher-mats-list');
+  if (!listEl) return;
+  const arr = window.getTeacherPrivatePractices();
+  if (!arr.length) {
+    listEl.innerHTML = '<p style="color:var(--text-dim);">Henüz özel alıştırma yok. Aşağıdan ekleyin.</p>';
+    return;
+  }
+  listEl.innerHTML = arr.map(p => `
+    <div style="margin-bottom:10px; padding:12px 14px; border:1px solid var(--border); border-radius:10px; background:var(--surface-alt); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <div><strong>${kursEscapeHtml(p.title)}</strong>
+        <span style="color:var(--text-dim); font-size:0.8rem; margin-left:8px;">${kursEscapeHtml(p.id)}</span></div>
+      <button type="button" class="secondary-btn" style="padding:6px 12px; font-size:0.85rem;"
+        onclick="deleteTeacherPrivatePractice(${JSON.stringify(p.id)})">Sil</button>
+    </div>`).join('');
+};
+
+window.saveTeacherPrivatePracticeFromForm = function () {
+  const title = document.getElementById('tp-title') && document.getElementById('tp-title').value.trim();
+  const text = document.getElementById('tp-text') && document.getElementById('tp-text').value.trim();
+  const json = document.getElementById('tp-questions-json') && document.getElementById('tp-questions-json').value.trim();
+  if (!title || !text) {
+    showToastMessage('Başlık ve metin zorunludur.');
+    return;
+  }
+  let questions = [];
+  if (json) {
+    try {
+      questions = JSON.parse(json);
+      if (!Array.isArray(questions)) throw new Error('array');
+    } catch {
+      showToastMessage('Sorular, köşeli parantezli geçerli bir JSON dizi olmalıdır.');
+      return;
+    }
+  }
+  if (typeof dbUserData === 'undefined' || !currentUsername) return;
+  if (!dbUserData[currentUsername]) dbUserData[currentUsername] = {};
+  if (!Array.isArray(dbUserData[currentUsername].teacherPrivatePractices)) {
+    dbUserData[currentUsername].teacherPrivatePractices = [];
+  }
+  const id = 'tp_' + Date.now();
+  dbUserData[currentUsername].teacherPrivatePractices.push({
+    id,
+    title,
+    level: 'Özel',
+    category: 'Özel',
+    text,
+    questions
+  });
+  if (typeof saveDb === 'function') saveDb();
+  if (typeof syncCloudData === 'function') syncCloudData();
+  showToastMessage('Özel alıştırma kaydedildi. «Ödev Ver» sekmesinde «Özel içeriklerim» altında seçebilirsiniz.');
+  const t1 = document.getElementById('tp-title');
+  const t2 = document.getElementById('tp-text');
+  const t3 = document.getElementById('tp-questions-json');
+  if (t1) t1.value = '';
+  if (t2) t2.value = '';
+  if (t3) t3.value = '';
+  window.renderTeacherPrivateMaterials();
+};
+
+window.deleteTeacherPrivatePractice = function (id) {
+  if (!confirm('Bu özel alıştırmayı silmek istediğinize emin misiniz?')) return;
+  if (!dbUserData[currentUsername]) return;
+  const arr = dbUserData[currentUsername].teacherPrivatePractices || [];
+  dbUserData[currentUsername].teacherPrivatePractices = arr.filter(p => p.id !== id);
+  if (typeof saveDb === 'function') saveDb();
+  if (typeof syncCloudData === 'function') syncCloudData();
+  window.renderTeacherPrivateMaterials();
 };
 
 // ============================================================
@@ -889,7 +1080,7 @@ function _studentCard(asgn) {
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
         <span style="background:rgba(79,142,247,0.15); color:var(--accent); padding:3px 10px; border-radius:20px; font-size:0.8rem;">${typeLabel}</span>
         ${dueBadge}
-        <span style="color:var(--text-dim); font-size:0.8rem;">Öğretmen: ${kursEscapeHtml(asgn.teacherUsername)}</span>
+        <span style="color:var(--text-dim); font-size:0.8rem;">Öğretmen: ${kursEscapeHtml(typeof kursFormatStudentOptionLabel === 'function' ? kursFormatStudentOptionLabel(asgn.teacherUsername) : asgn.teacherUsername)}</span>
       </div>
       ${assignNote}
       ${feedbackHtml}
@@ -923,7 +1114,7 @@ function _showKursWorkspace() {
 // ÖĞRENCİ — ALIŞTIRMA MODU
 // ============================================================
 function _startKursPractice(asgn) {
-  const prac = PRACTICE_CATALOG.find(p => p.id === asgn.contentId);
+  const prac = findPracticeContentById(asgn.contentId);
   if (!prac) { showToastMessage('❌ Alıştırma veritabanında bulunamadı.'); return; }
 
   const ws = _showKursWorkspace();
@@ -1006,7 +1197,11 @@ function _startKursPractice(asgn) {
 window.submitKursPractice = function () {
   const { assignmentId, startTime } = kursActiveSession;
   const asgn = kursAssignments.find(a => a.id === assignmentId);
-  const prac = PRACTICE_CATALOG.find(p => p.id === asgn.contentId);
+  const prac = findPracticeContentById(asgn.contentId);
+  if (!prac || !Array.isArray(prac.questions)) {
+    showToastMessage('❌ Alıştırma verisi bulunamadı.');
+    return;
+  }
 
   let correct = 0, wrong = 0, empty = 0;
   const answerDetails = [];

@@ -167,7 +167,8 @@ function syncCloudData() {
     customDict: Object.fromEntries(uDict || []),
     lastActiveDeck: uLast,
     examHistory: window.dbUserData[uname]?.examHistory || [],
-    deletedAnnouncements: window.dbUserData[uname]?.deletedAnnouncements || []
+    deletedAnnouncements: window.dbUserData[uname]?.deletedAnnouncements || [],
+    teacherPrivatePractices: window.dbUserData[uname]?.teacherPrivatePractices || []
   };
   saveDb();
 }

@@ -63,8 +63,8 @@ exports.onAnnouncementForEmail = functions.firestore
       const u = users[key];
       if (!u || typeof u !== "object") continue;
       if (u.emailNotify === false) continue;
-      const to = u.email;
-      if (!to || typeof to !== "string" || !to.includes("@")) continue;
+      const to = resolveUserEmail(users, key);
+      if (!to) continue;
 
       const raw = String(latest.text || "");
       const text = raw.replace(/</g, "&lt;");
@@ -188,7 +188,7 @@ exports.onKursDataForEmail = functions.firestore
         : [];
       for (const stu of list) {
         const u = users[stu];
-        if (!wantsEmail(u)) continue;
+        if (u && !wantsEmail(u)) continue;
         const to = resolveUserEmail(users, stu);
         if (!to) continue;
         const subj = "Yunanca Akıllı Okuyucu — Yeni ödev";
@@ -223,7 +223,7 @@ exports.onKursDataForEmail = functions.firestore
       if (!noteDiff && !gradeDiff) continue;
       const stu = cur.studentUsername;
       const u = users[stu];
-      if (!wantsEmail(u)) continue;
+      if (u && !wantsEmail(u)) continue;
       const to = resolveUserEmail(users, stu);
       if (!to) continue;
       const parts = [];
@@ -258,7 +258,7 @@ exports.onKursDataForEmail = functions.firestore
       const teacherName = (asgn && asgn.teacherUsername) || sub.teacherUsername;
       if (!teacherName) continue;
       const u = users[teacherName];
-      if (!wantsEmail(u)) continue;
+      if (u && !wantsEmail(u)) continue;
       const to = resolveUserEmail(users, teacherName);
       if (!to) continue;
       const student = sub.studentUsername || key.split("_").pop();
@@ -285,15 +285,23 @@ exports.onKursDataForEmail = functions.firestore
       const arrBefore = bef && bef.messages ? bef.messages : [];
       const arrAfter = aft && aft.messages ? aft.messages : [];
       if (arrAfter.length <= arrBefore.length) continue;
-      const teacher = aft.teacherUsername;
-      const student = aft.studentUsername;
+      let teacher = aft.teacherUsername;
+      let student = aft.studentUsername;
+      if (!teacher || !student) {
+        const parts = String(tkey).split("|||");
+        if (parts.length >= 2) {
+          if (!teacher) teacher = parts[0];
+          if (!student) student = parts[1];
+        }
+      }
       for (let i = arrBefore.length; i < arrAfter.length; i++) {
         const msg = arrAfter[i];
         if (!msg || !msg.from || !msg.body) continue;
-        const isFromTeacher = msg.from === teacher;
+        const isFromTeacher = teacher && msg.from === teacher;
         const recipient = isFromTeacher ? student : teacher;
+        if (!recipient) continue;
         const ru = users[recipient];
-        if (!wantsEmail(ru)) continue;
+        if (ru && !wantsEmail(ru)) continue;
         const to = resolveUserEmail(users, recipient);
         if (!to) continue;
         const subj = "Yunanca Akıllı Okuyucu — Yeni mesaj";

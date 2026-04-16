@@ -28,7 +28,13 @@
     gap: 10px; 
     align-items: center; 
     flex-wrap: wrap; 
-    justify-content: flex-end; 
+    justify-content: flex-end;
+    max-width: min(100%, 560px);
+    max-height: 42vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 4px 2px;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* === BUTONLAR === */

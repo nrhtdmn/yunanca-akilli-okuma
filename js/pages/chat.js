@@ -74,8 +74,16 @@ function startAIChat() {
     
     localStorage.setItem("gemini_api_key", apiKey);
     
+    const hint = document.getElementById('chat-empty-hint');
+    if (hint) hint.remove();
     document.getElementById('chat-messages-container').innerHTML = "";
     chatHistory = [];
+    const inp = document.getElementById('chat-text-input');
+    if (inp) {
+        inp.disabled = false;
+        inp.readOnly = false;
+        inp.removeAttribute('disabled');
+    }
     
     // Açılış mesajı
     appendMessage("AI", `
