@@ -77,15 +77,59 @@ exports.onAnnouncementForEmail = functions.firestore
       return null;
     }
 
-    const transporter = createSmtpTransport(smtp);
-
     const from = smtp.from || smtp.user;
-    const subject = "Yunanca Akıllı Okuyucu — Yeni duyuru";
+    const subject = latest.forUsername
+      ? "Yunanca Akıllı Okuyucu — Size özel bildirim"
+      : "Yunanca Akıllı Okuyucu — Yeni duyuru";
 
     const usersSnap = await admin.firestore().doc("global/users").get();
     if (!usersSnap.exists) return null;
     const users = usersSnap.data() || {};
 
+    const raw = String(latest.text || "");
+    /** Kişisel bildirim: yalnız ilgili kullanıcıya e-posta (tüm üyelere spam olmasın) */
+    if (latest.forUsername) {
+      const u = users[latest.forUsername];
+      if (!u || typeof u !== "object" || u.emailNotify === false) {
+        functions.logger.info("Hedefli duyuru — e-posta atlanıyor (kullanıcı/izin yok)", {
+          forUsername: latest.forUsername,
+        });
+        return null;
+      }
+      const to = resolveUserEmail(users, latest.forUsername);
+      if (!to) {
+        functions.logger.info("Hedefli duyuru — adres yok", {
+          forUsername: latest.forUsername,
+        });
+        return null;
+      }
+      const transporter = createSmtpTransport(smtp);
+      const text = raw.replace(/</g, "&lt;");
+      const html =
+        `<p style="font-family:sans-serif;line-height:1.5;">` +
+        text.replace(/\n/g, "<br>") +
+        `</p>` +
+        (latest.link
+          ? `<p><a href="${encodeURI(String(latest.link))}">${String(
+              latest.link,
+            )}</a></p>`
+          : "");
+      try {
+        await transporter.sendMail({
+          from,
+          to,
+          subject,
+          html,
+          text: raw + (latest.link ? "\n\n" + latest.link : ""),
+        });
+        functions.logger.info("Hedefli duyuru e-postası", { to });
+      } catch (e) {
+        functions.logger.error("Mail gönderilemedi", { to, err: String(e) });
+      }
+      return null;
+    }
+
+    const transporter = createSmtpTransport(smtp);
     let sent = 0;
     for (const key of Object.keys(users)) {
       const u = users[key];
@@ -94,7 +138,6 @@ exports.onAnnouncementForEmail = functions.firestore
       const to = resolveUserEmail(users, key);
       if (!to) continue;
 
-      const raw = String(latest.text || "");
       const text = raw.replace(/</g, "&lt;");
       const html =
         `<p style="font-family:sans-serif;line-height:1.5;">` +

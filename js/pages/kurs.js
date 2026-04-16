@@ -158,6 +158,42 @@ function kursFormatStudentOptionLabel(username) {
   return username;
 }
 
+/** Bildirim metinleri için kısa ad (ad soyad öncelikli) */
+window.kursPlainDisplayName = function (username) {
+  if (!username) return '';
+  const u = typeof dbUsers !== 'undefined' ? dbUsers[username] : null;
+  const nm = u && (u.displayName || u.fullName);
+  if (nm && String(nm).trim()) return String(nm).trim();
+  return username;
+};
+
+/**
+ * Özel alıştırma: yalnız öğretmen + bu içeriği ödev olarak atanmış öğrenci görür
+ * (sınıfta olup atanmamış öğrenci görmez).
+ */
+window.kursStudentMaySeeTeacherPrivatePractice = function (
+  teacherUsername,
+  studentUsername,
+  practiceId,
+) {
+  if (!teacherUsername || !studentUsername || !practiceId) return false;
+  if (!Array.isArray(kursAssignments)) return false;
+  return kursAssignments.some(function (a) {
+    if (!a || a.teacherUsername !== teacherUsername) return false;
+    if (!Array.isArray(a.studentUsernames)) return false;
+    if (a.studentUsernames.indexOf(studentUsername) === -1) return false;
+    if (a.type !== 'practice') return false;
+    if (a.contentId === practiceId) return true;
+    if (
+      a.practicePayload &&
+      (a.practicePayload.id === practiceId || a.contentId === practiceId)
+    ) {
+      return true;
+    }
+    return false;
+  });
+};
+
 window.getTeacherPrivatePractices = function () {
   if (!currentUsername || typeof dbUserData === 'undefined' || !dbUserData[currentUsername]) return [];
   return dbUserData[currentUsername].teacherPrivatePractices || [];
@@ -550,6 +586,18 @@ window.submitAssignment = function () {
   });
 
   saveKursData();
+  const tLab = typeof window.kursPlainDisplayName === 'function'
+    ? window.kursPlainDisplayName(currentUsername)
+    : currentUsername;
+  if (typeof window.pushUserAnnouncement === 'function') {
+    studentUsernames.forEach(function (stu) {
+      window.pushUserAnnouncement(
+        stu,
+        `📋 Yeni ödev: «${contentTitle || 'Ödev'}». Öğretmen: ${tLab}. Kurs sekmesinden açabilirsiniz.`,
+        'kurs',
+      );
+    });
+  }
   showToastMessage(`✅ Ödev atandı → ${studentUsernames.length} öğrenci`);
 
   // Formu sıfırla
@@ -591,7 +639,7 @@ window.renderTeacherReports = function () {
           ? '<span style="color:var(--error);">❌ Teslim Etmedi</span>'
           : '<span style="color:var(--text-dim);">⏳ Bekliyor</span>';
         return `<tr>
-          <td style="padding:10px 12px; border-bottom:1px solid var(--border);">${kursEscapeHtml(uname)}</td>
+          <td style="padding:10px 12px; border-bottom:1px solid var(--border);">${typeof kursDisplayUserLabel === 'function' ? kursDisplayUserLabel(uname) : kursEscapeHtml(uname)}</td>
           <td style="padding:10px 12px; text-align:center; border-bottom:1px solid var(--border);">${badge}</td>
           <td colspan="6" style="padding:10px 12px; text-align:center; border-bottom:1px solid var(--border); color:var(--text-dim);">—</td>
         </tr>`;
@@ -605,7 +653,7 @@ window.renderTeacherReports = function () {
         ? `<span style="color:var(--accent2); font-weight:bold;">${kursEscapeHtml(String(sub.teacherGrade))}</span> · `
         : '';
       return `<tr>
-        <td style="padding:10px 12px; border-bottom:1px solid var(--border);">${kursEscapeHtml(uname)}</td>
+        <td style="padding:10px 12px; border-bottom:1px solid var(--border);">${typeof kursDisplayUserLabel === 'function' ? kursDisplayUserLabel(uname) : kursEscapeHtml(uname)}</td>
         <td style="padding:10px 12px; text-align:center; border-bottom:1px solid var(--border);">
           <span style="color:var(--success);">✅ Teslim</span></td>
         <td style="padding:10px 12px; text-align:center; border-bottom:1px solid var(--border);
@@ -721,7 +769,8 @@ window.kursOpenSubmissionDetail = function (assignmentId, studentUsername) {
   const modal = document.getElementById('kurs-detail-modal');
   const body = document.getElementById('kurs-detail-modal-body');
   if (!modal || !body || !sub) return;
-  let html = '<p style="color:var(--text-dim); margin-bottom:12px;"><strong>Öğrenci:</strong> ' + kursEscapeHtml(studentUsername) + '</p>';
+  let html = '<p style="color:var(--text-dim); margin-bottom:12px;"><strong>Öğrenci:</strong> ' +
+    (typeof kursDisplayUserLabel === 'function' ? kursDisplayUserLabel(studentUsername) : kursEscapeHtml(studentUsername)) + '</p>';
   if (asgn) {
     html += '<p style="margin-bottom:16px;"><strong>Ödev:</strong> ' + kursEscapeHtml(asgn.contentTitle) + '</p>';
   }
@@ -791,6 +840,15 @@ window.kursSaveTeacherNote = function () {
   saveKursData();
   if (modal) modal.style.display = 'none';
   showToastMessage('Not kaydedildi.');
+  const asgnNote = kursAssignments.find(function (a) { return a.id === assignmentId; });
+  if (typeof window.pushUserAnnouncement === 'function' && studentUsername) {
+    const ttl = asgnNote ? asgnNote.contentTitle || 'Ödev' : 'Ödev';
+    window.pushUserAnnouncement(
+      studentUsername,
+      `📝 Öğretmeniniz «${ttl}» ödeviniz için not veya puan güncelledi. Kurs bölümünden inceleyebilirsiniz.`,
+      'kurs',
+    );
+  }
   renderTeacherReports();
 };
 
@@ -880,6 +938,14 @@ window.sendKursMessageFromTeacher = function () {
   });
   ta.value = '';
   saveKursData();
+  if (typeof window.pushUserAnnouncement === 'function') {
+    const prev = text.length > 220 ? text.slice(0, 220) + '…' : text;
+    window.pushUserAnnouncement(
+      student,
+      `💬 Öğretmeninizden mesaj (${typeof window.kursPlainDisplayName === 'function' ? window.kursPlainDisplayName(currentUsername) : currentUsername}): ${prev}`,
+      'kurs',
+    );
+  }
   window.renderTeacherMessageThread();
 };
 
@@ -974,6 +1040,14 @@ window.sendKursMessageFromStudent = function () {
   });
   ta.value = '';
   saveKursData();
+  if (typeof window.pushUserAnnouncement === 'function') {
+    const prev = text.length > 220 ? text.slice(0, 220) + '…' : text;
+    window.pushUserAnnouncement(
+      teacher,
+      `💬 Öğrencinizden mesaj (${typeof window.kursPlainDisplayName === 'function' ? window.kursPlainDisplayName(currentUsername) : currentUsername}): ${prev}`,
+      'kurs',
+    );
+  }
   window.renderStudentMessageThread();
 };
 
@@ -1284,6 +1358,23 @@ window.submitKursPractice = function () {
   };
   saveKursData();
 
+  const asgnDone = kursAssignments.find(function (a) { return a.id === assignmentId; });
+  if (
+    asgnDone &&
+    asgnDone.teacherUsername &&
+    typeof window.pushUserAnnouncement === 'function'
+  ) {
+    const sn =
+      typeof window.kursPlainDisplayName === 'function'
+        ? window.kursPlainDisplayName(currentUsername)
+        : currentUsername;
+    window.pushUserAnnouncement(
+      asgnDone.teacherUsername,
+      `✅ ${sn} «${asgnDone.contentTitle || 'Alıştırma'}» ödevini teslim etti (puan %${score}).`,
+      'kurs',
+    );
+  }
+
   const sc = score >= 70 ? 'var(--success)' : score >= 50 ? 'var(--accent2)' : 'var(--error)';
   const resultEl = document.getElementById('kurs-prac-result');
   resultEl.style.display = 'block';
@@ -1448,6 +1539,23 @@ window.finishKursExam = function () {
     completedAt: new Date().toISOString()
   };
   saveKursData();
+
+  const asgnExam = kursAssignments.find(function (a) { return a.id === assignmentId; });
+  if (
+    asgnExam &&
+    asgnExam.teacherUsername &&
+    typeof window.pushUserAnnouncement === 'function'
+  ) {
+    const sn =
+      typeof window.kursPlainDisplayName === 'function'
+        ? window.kursPlainDisplayName(currentUsername)
+        : currentUsername;
+    window.pushUserAnnouncement(
+      asgnExam.teacherUsername,
+      `✅ ${sn} «${asgnExam.contentTitle || 'Sınav'}» ödevini teslim etti (puan %${score}).`,
+      'kurs',
+    );
+  }
 
   const sc = score >= 70 ? 'var(--success)' : score >= 50 ? 'var(--accent2)' : 'var(--error)';
   const ws = document.getElementById('kurs-task-workspace');

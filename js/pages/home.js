@@ -220,10 +220,54 @@ function finishInit() {
   }
 }
 
+/** Kişisel bildirim (forUsername) veya herkese açık duyuru */
+function announcementAppliesToCurrentUser(a) {
+  if (!a || !currentUsername) return false;
+  if (!a.forUsername) return true;
+  return a.forUsername === currentUsername;
+}
+
+/**
+ * Zil / duyuru listesi için: ilgili kullanıcıya giden metin (Kurs vb.)
+ * @param {string} forUsername — kullanıcı adı (e-posta ile giriş aynı anahtar)
+ */
+window.pushUserAnnouncement = function (forUsername, text, link) {
+  if (!forUsername || !text) return;
+  const newAnn = {
+    id: Date.now() + Math.floor(Math.random() * 1000),
+    text: String(text),
+    link: link || "kurs",
+    forUsername: forUsername,
+    date:
+      new Date().toLocaleDateString("tr-TR") +
+      " - " +
+      new Date().toLocaleTimeString("tr-TR", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+  };
+  dbAnnouncements.unshift(newAnn);
+  try {
+    localStorage.setItem("y_announcements_db", JSON.stringify(dbAnnouncements));
+  } catch (e) {}
+  if (typeof useFirebase !== "undefined" && useFirebase && db) {
+    db.collection("global").doc("announcements").set({ list: dbAnnouncements });
+  }
+  if (forUsername === currentUsername && typeof updateBellIcon === "function") {
+    updateBellIcon();
+  }
+};
+
 function updateBellIcon() {
   if (!currentUser) return;
   const lastRead = dbUserData[currentUsername]?.lastReadAnnouncementsTime || 0;
-  const unreadCount = dbAnnouncements.filter((a) => a.id > lastRead).length;
+  const deletedIds = dbUserData[currentUsername]?.deletedAnnouncements || [];
+  const unreadCount = dbAnnouncements.filter(
+    (a) =>
+      announcementAppliesToCurrentUser(a) &&
+      !deletedIds.includes(a.id) &&
+      a.id > lastRead,
+  ).length;
   const badge = document.getElementById("bell-badge");
   if (badge) {
     if (unreadCount > 0) {
@@ -278,9 +322,9 @@ function openAnnouncementsModal() {
       ? dbUserData[currentUsername].deletedAnnouncements
       : [];
 
-  // Silinmemiş duyuruları filtrele
   const visibleAnnouncements = dbAnnouncements.filter(
-    (a) => !deletedIds.includes(a.id),
+    (a) =>
+      announcementAppliesToCurrentUser(a) && !deletedIds.includes(a.id),
   );
 
   if (visibleAnnouncements.length === 0) {
@@ -314,10 +358,16 @@ function openAnnouncementsModal() {
 
   document.getElementById("announcement-modal").style.display = "flex";
 
-  if (dbAnnouncements.length > 0 && currentUsername) {
+  if (visibleAnnouncements.length > 0 && currentUsername) {
     if (!dbUserData[currentUsername]) dbUserData[currentUsername] = {};
-    dbUserData[currentUsername].lastReadAnnouncementsTime =
-      dbAnnouncements[0].id;
+    const maxSeen = Math.max(
+      ...visibleAnnouncements.map((a) => Number(a.id) || 0),
+    );
+    const prev = dbUserData[currentUsername].lastReadAnnouncementsTime || 0;
+    dbUserData[currentUsername].lastReadAnnouncementsTime = Math.max(
+      prev,
+      maxSeen,
+    );
     syncCloudData();
     updateBellIcon();
   }
@@ -1718,12 +1768,26 @@ function getMergedPracticeCatalogForView() {
       if (urole === "admin") include = true;
       else if (teacherU === uname && (urole === "teacher" || urole === "admin"))
         include = true;
-      else if (
-        urole !== "teacher" &&
-        urole !== "admin" &&
-        typeof window.kursTeacherHasStudent === "function"
-      ) {
-        include = window.kursTeacherHasStudent(teacherU, uname);
+      else if (urole !== "teacher" && urole !== "admin") {
+        priv.forEach((p) => {
+          if (
+            !p ||
+            !p.id ||
+            typeof window.kursStudentMaySeeTeacherPrivatePractice !== "function"
+          ) {
+            return;
+          }
+          if (
+            window.kursStudentMaySeeTeacherPrivatePractice(
+              teacherU,
+              uname,
+              p.id,
+            )
+          ) {
+            add(p);
+          }
+        });
+        include = false;
       }
       if (include) priv.forEach(add);
     });
