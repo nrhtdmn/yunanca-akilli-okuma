@@ -3583,6 +3583,78 @@ setTimeout(() => {
 
 window.GLOBAL_LESSONS = JSON.parse(localStorage.getItem('y_lessons_db')) || [];
 
+window.persistLessonsDb = function () {
+    try {
+        localStorage.setItem('y_lessons_db', JSON.stringify(window.GLOBAL_LESSONS));
+    } catch (e) { /* ignore */ }
+    if (typeof useFirebase !== 'undefined' && useFirebase && typeof db !== 'undefined') {
+        return db.collection('global').doc('lessons_db').set({ list: window.GLOBAL_LESSONS }).catch(function (err) {
+            console.error('persistLessonsDb', err);
+        });
+    }
+    return Promise.resolve();
+};
+
+/** fromIdx: kaynak; toIdx: hedef satırın indeksi (o satırın yerine), veya -1 = listenin sonu */
+window.applyLessonOrderMove = function (fromIdx, toIdx) {
+    const n = window.GLOBAL_LESSONS.length;
+    if (fromIdx < 0 || fromIdx >= n || Number.isNaN(fromIdx)) return;
+    if (toIdx === -1) {
+        if (fromIdx === n - 1) return;
+        const arr = window.GLOBAL_LESSONS.slice();
+        const item = arr.splice(fromIdx, 1)[0];
+        arr.push(item);
+        window.GLOBAL_LESSONS = arr;
+    } else if (toIdx >= 0 && toIdx < n) {
+        if (fromIdx === toIdx) return;
+        const arr = window.GLOBAL_LESSONS.slice();
+        const item = arr.splice(fromIdx, 1)[0];
+        let ins = toIdx;
+        if (fromIdx < toIdx) ins = toIdx - 1;
+        arr.splice(ins, 0, item);
+        window.GLOBAL_LESSONS = arr;
+    } else {
+        return;
+    }
+    window.persistLessonsDb();
+    if (typeof window.renderLessonLibrary === 'function') window.renderLessonLibrary();
+    if (typeof window.populateAdminLessons === 'function') window.populateAdminLessons();
+};
+
+function bindLessonAdminDragDrop(list) {
+    if (!list || list.dataset.lessonDndBound === '1') return;
+    list.dataset.lessonDndBound = '1';
+    list.addEventListener('dragstart', function (e) {
+        var h = e.target.closest && e.target.closest('.lesson-drag-handle');
+        if (!h) return;
+        var row = h.closest('.admin-lesson-row');
+        if (!row || !list.contains(row)) return;
+        e.dataTransfer.setData('text/plain', row.getAttribute('data-lesson-idx'));
+        e.dataTransfer.effectAllowed = 'move';
+        row.style.opacity = '0.55';
+    });
+    list.addEventListener('dragend', function () {
+        Array.prototype.forEach.call(list.querySelectorAll('.admin-lesson-row'), function (r) {
+            r.style.opacity = '';
+        });
+    });
+    list.addEventListener('dragover', function (e) {
+        var row = e.target.closest && e.target.closest('.admin-lesson-row');
+        if (!row || !list.contains(row)) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+    });
+    list.addEventListener('drop', function (e) {
+        e.preventDefault();
+        var row = e.target.closest && e.target.closest('.admin-lesson-row');
+        if (!row || !list.contains(row)) return;
+        var from = parseInt(e.dataTransfer.getData('text/plain'), 10);
+        var to = parseInt(row.getAttribute('data-lesson-idx'), 10);
+        if (Number.isNaN(from) || Number.isNaN(to)) return;
+        window.applyLessonOrderMove(from, to);
+    });
+}
+
 // 1. KAYDETME FONKSİYONU
 window.saveLesson = async function() {
     const idInput = document.getElementById('admin-lesson-id');
@@ -3607,12 +3679,10 @@ window.saveLesson = async function() {
 
     const idx = window.GLOBAL_LESSONS.findIndex(l => l.id === lessonData.id);
     if (idx > -1) window.GLOBAL_LESSONS[idx] = lessonData;
-    else window.GLOBAL_LESSONS.unshift(lessonData);
+    else window.GLOBAL_LESSONS.push(lessonData);
 
-    localStorage.setItem('y_lessons_db', JSON.stringify(window.GLOBAL_LESSONS));
-    
-    if (typeof useFirebase !== 'undefined' && useFirebase && typeof db !== 'undefined') {
-        await db.collection("global").doc("lessons_db").set({ list: window.GLOBAL_LESSONS });
+    if (typeof window.persistLessonsDb === 'function') {
+        await window.persistLessonsDb();
     }
 
     showToastMessage("✅ Kaydedildi!");
@@ -3711,46 +3781,6 @@ window.renderLessonLibrary = function(searchQuery = "") {
     container.innerHTML = html;
 };
 
-// 5. ADMIN PANELİNDE LİSTELEME (Admin için de Klasörlü Düzen)
-window.populateAdminLessons = function() {
-    const list = document.getElementById('admin-lesson-list');
-    if(!list) return;
-    
-    if (window.GLOBAL_LESSONS.length === 0) {
-        list.innerHTML = '<p style="color:var(--text-dim); font-size:0.9rem;">Kayıtlı konu bulunamadı.</p>';
-        return;
-    }
-
-    const categories = [...new Set(window.GLOBAL_LESSONS.map(l => l.category || "Genel Gramer"))].sort();
-    let html = "";
-
-    categories.forEach(cat => {
-        const lessonsInCat = window.GLOBAL_LESSONS.filter(l => (l.category || "Genel Gramer") === cat);
-
-        // Kategori Başlığı
-        html += `<div style="margin-bottom: 15px;">
-                    <div style="background: var(--surface); padding: 8px 12px; border-radius: 6px; color: var(--accent); font-weight: bold; margin-bottom: 10px; border: 1px solid var(--border);">📂 ${cat}</div>`;
-
-        // Kategori içindeki derslerin listesi
-        lessonsInCat.forEach(l => {
-            html += `
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid var(--border); background:var(--surface-alt); margin-bottom:5px; border-radius:6px; margin-left: 15px;">
-                <div>
-                    <strong style="color:var(--text);">${l.title}</strong>
-                </div>
-                <div>
-                    <button onclick="editLesson('${l.id}')" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:1.1rem; margin-right:10px;" title="Düzenle">✏️</button>
-                    <button onclick="deleteLesson('${l.id}')" style="background:none; border:none; color:var(--error); cursor:pointer; font-size:1.1rem;" title="Sil">🗑️</button>
-                </div>
-            </div>`;
-        });
-        
-        html += `</div>`; // Kategoriyi kapat
-    });
-
-    list.innerHTML = html;
-};
-
 // 3. DERSİ AÇMA VE VİDEO GÖMME (EKSİKTİ!)
 // DERSİ GÖRÜNTÜLEME (Metin İçinde Video Desteği)
   // DERSİ GÖRÜNTÜLEME (Çoklu Video Desteği Eklendi)
@@ -3820,28 +3850,35 @@ window.extractYouTubeId = function(url) {
     return (match && match[2].length === 11) ? match[2] : null;
 };
 
-// 5. YÖNETİCİ PANELİ İŞLEMLERİ (EKSİKTİ!)
+// 5. YÖNETİCİ PANELİ — liste sırası = Konu Anlatımı’ndaki gösterim sırası (GLOBAL_LESSONS dizisi)
 window.populateAdminLessons = function() {
     const list = document.getElementById('admin-lesson-list');
-    if(!list) return;
-    
+    if (!list) return;
+
     if (window.GLOBAL_LESSONS.length === 0) {
         list.innerHTML = '<p style="color:var(--text-dim); font-size:0.9rem;">Henüz kayıtlı konu yok.</p>';
         return;
     }
 
-    list.innerHTML = window.GLOBAL_LESSONS.map(l => `
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid var(--border); background:var(--surface); margin-bottom:5px; border-radius:6px;">
-            <div>
+    list.innerHTML = window.GLOBAL_LESSONS.map((l, idx) => `
+        <div class="admin-lesson-row" data-lesson-idx="${idx}" style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid var(--border); background:var(--surface); margin-bottom:5px; border-radius:6px; gap:10px;">
+            <span class="lesson-drag-handle" draggable="true" title="Sürükleyerek sırayı değiştir" style="cursor:grab; color:var(--text-dim); user-select:none; flex-shrink:0; padding:4px; line-height:1;">⋮⋮</span>
+            <div style="flex:1; min-width:0;">
                 <strong style="color:var(--text);">${l.title}</strong><br>
-                <small style="color:var(--accent2);">${l.category}</small>
+                <small style="color:var(--accent2);">${l.category || ''}</small>
             </div>
-            <div>
-                <button onclick="editLesson('${l.id}')" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:1.2rem; margin-right:10px;" title="Düzenle">✏️</button>
-                <button onclick="deleteLesson('${l.id}')" style="background:none; border:none; color:var(--error); cursor:pointer; font-size:1.2rem;" title="Sil">🗑️</button>
+            <div style="flex-shrink:0;">
+                <button type="button" onclick='editLesson(${JSON.stringify(l.id)})' style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:1.2rem; margin-right:10px;" title="Düzenle">✏️</button>
+                <button type="button" onclick='deleteLesson(${JSON.stringify(l.id)})' style="background:none; border:none; color:var(--error); cursor:pointer; font-size:1.2rem;" title="Sil">🗑️</button>
             </div>
         </div>
-    `).join('');
+    `).join('') + `
+        <div class="admin-lesson-row admin-lesson-drop-tail" data-lesson-idx="-1" style="display:flex; align-items:center; padding:10px; border:1px dashed var(--border); background:var(--surface-alt); margin-bottom:5px; border-radius:6px; color:var(--text-dim); font-size:0.88rem; gap:10px;">
+            <span style="width:28px; flex-shrink:0;"></span>
+            <span>⬇ Listeyin <strong>sonuna</strong> taşımak için satırı buraya bırakın</span>
+        </div>`;
+
+    bindLessonAdminDragDrop(list);
 };
 
 window.editLesson = function(id) {
@@ -3866,13 +3903,9 @@ window.editLesson = function(id) {
 window.deleteLesson = function(id) {
     if(!confirm("Bu konuyu silmek istediğinize emin misiniz?")) return;
     window.GLOBAL_LESSONS = window.GLOBAL_LESSONS.filter(l => l.id !== id);
-    localStorage.setItem('y_lessons_db', JSON.stringify(window.GLOBAL_LESSONS));
-    
-    if (typeof useFirebase !== 'undefined' && useFirebase && typeof db !== 'undefined') {
-        db.collection("global").doc("lessons_db").set({ list: window.GLOBAL_LESSONS });
-    }
-    
-    window.renderLessonLibrary(); 
+    if (typeof window.persistLessonsDb === 'function') window.persistLessonsDb();
+
+    window.renderLessonLibrary();
     window.populateAdminLessons();
     if (typeof showToastMessage === 'function') showToastMessage("🗑️ Ders silindi.");
 };
