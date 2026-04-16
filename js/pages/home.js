@@ -103,6 +103,10 @@ function updateUserUI() {
 
   if (currentUser.role === "admin")
     badges += `<span class="premium-badge" style="background:#f87171; color:#fff;">ADMİN</span>`;
+  else if (currentUser.role === "teacher")
+    badges += `<span class="premium-badge" style="background:#2563eb; color:#fff;">ÖĞRETMEN</span>`;
+  else if (currentUser.role === "student")
+    badges += `<span class="premium-badge" style="background:#15803d; color:#fff;">ÖĞRENCİ</span>`;
   else if (currentUser.isPremium)
     badges += `<span class="premium-badge">PREMIUM</span>`;
   else
@@ -129,10 +133,14 @@ function openProfileModal() {
 
   if (currentUser.role === "admin") {
     roleBadge.innerHTML = `<span class="premium-badge" style="background:#f87171; color:#fff; padding: 6px 12px; font-size:0.85rem;">SİSTEM YÖNETİCİSİ</span>`;
+  } else if (currentUser.role === "teacher") {
+    roleBadge.innerHTML = `<span class="premium-badge" style="background:#2563eb; color:#fff; padding: 6px 12px; font-size:0.85rem;">ÖĞRETMEN</span>`;
+  } else if (currentUser.role === "student") {
+    roleBadge.innerHTML = `<span class="premium-badge" style="background:#15803d; color:#fff; padding: 6px 12px; font-size:0.85rem;">ÖĞRENCİ</span>`;
   } else if (currentUser.isPremium) {
     roleBadge.innerHTML = `<span class="premium-badge" style="padding: 6px 12px; font-size:0.85rem;">👑 PREMIUM ÜYE</span>`;
   } else {
-    roleBadge.innerHTML = `<span style="background: rgba(255,255,255,0.1); color: var(--text-dim); padding: 5px 12px; border-radius: 12px; font-size:0.8rem; font-weight:bold;">STANDART ÜYE</span>`;
+    roleBadge.innerHTML = `<span style="background: rgba(255,255,255,0.1); color: var(--text-dim); padding: 5px 12px; border-radius: 12px; font-size:0.8rem; font-weight:bold;">ÜYE</span>`;
   }
 
   // İSTATİSTİK 1: Toplam Öğrenilen/Kaydedilen Kelime Sayısı

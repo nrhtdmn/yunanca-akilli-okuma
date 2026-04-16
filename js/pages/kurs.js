@@ -131,13 +131,23 @@ function kursStudentTeacherList() {
   return [...new Set([...fromAssign, ...fromClasses])];
 }
 
+/**
+ * Öğretmen panelinde sınıfa / ödeve yalnızca «öğrenci» rolü eklenebilir ve listelenir.
+ */
+function kursIsStudentMemberRole(username) {
+  const u = typeof dbUsers !== "undefined" ? dbUsers[username] : null;
+  if (!u || typeof u !== "object") return false;
+  return u.role === "student";
+}
+
 function kursTeacherStudentList() {
   const myClasses = kursClasses.filter(c => c.teacherUsername === currentUsername);
   const fromClasses = myClasses.flatMap(c => c.studentUsernames);
   const fromAssign = kursAssignments
     .filter(a => a.teacherUsername === currentUsername)
     .flatMap(a => a.studentUsernames || []);
-  return [...new Set([...fromClasses, ...fromAssign])];
+  const merged = [...new Set([...fromClasses, ...fromAssign])];
+  return merged.filter(u => kursIsStudentMemberRole(u));
 }
 
 function kursDisplayUserLabel(username) {
@@ -452,8 +462,7 @@ window.openAddStudentModal = function (classId) {
   const available = Object.keys(dbUsers).filter(u =>
     u !== currentUsername &&
     !cls.studentUsernames.includes(u) &&
-    dbUsers[u].role !== 'admin' &&
-    dbUsers[u].role !== 'teacher'
+    kursIsStudentMemberRole(u)
   );
 
   document.getElementById('kurs-add-student-classid').value = classId;
@@ -463,7 +472,7 @@ window.openAddStudentModal = function (classId) {
         const lab = typeof kursFormatStudentOptionLabel === 'function' ? kursFormatStudentOptionLabel(u) : u;
         return `<option value=${JSON.stringify(u)}>${kursEscapeHtml(lab)} (${st})</option>`;
       }).join('')
-    : '<option value="">-- Eklenebilecek kullanıcı yok --</option>';
+    : '<option value="">-- Öğrenci rolünde üye yok (Yönetim → Kullanıcılar: rolü «Öğrenci» yapın) --</option>';
 
   document.getElementById('kurs-add-student-modal').style.display = 'flex';
 };
@@ -476,6 +485,10 @@ window.addStudentToClass = function () {
   const classId  = document.getElementById('kurs-add-student-classid').value;
   const username = document.getElementById('kurs-student-select').value;
   if (!username) { showToastMessage('❌ Lütfen bir kullanıcı seçin.'); return; }
+  if (!kursIsStudentMemberRole(username)) {
+    showToastMessage('❌ Yalnızca «Öğrenci» rolündeki üyeler sınıfa eklenebilir.');
+    return;
+  }
 
   const cls = kursClasses.find(c => c.id === classId);
   if (!cls) return;
@@ -511,7 +524,9 @@ window.renderAssignForm = function () {
   });
   optHtml += '</optgroup>';
 
-  const allStudents = [...new Set(myClasses.flatMap(c => c.studentUsernames))];
+  const allStudents = [...new Set(myClasses.flatMap(c => c.studentUsernames))].filter(u =>
+    kursIsStudentMemberRole(u)
+  );
   if (allStudents.length > 0) {
     optHtml += '<optgroup label="👤 Bireysel Öğrenciler">';
     allStudents.forEach(u => {
@@ -593,11 +608,20 @@ window.submitAssignment = function () {
     classId = target.replace('class:', '');
     const cls = kursClasses.find(c => c.id === classId);
     if (!cls || cls.studentUsernames.length === 0) {
-      showToastMessage('❌ Sınıfta öğrenci yok.'); return;
+      showToastMessage('❌ Sınıfta kayıtlı kimse yok.'); return;
     }
-    studentUsernames = [...cls.studentUsernames];
+    studentUsernames = cls.studentUsernames.filter(u => kursIsStudentMemberRole(u));
+    if (studentUsernames.length === 0) {
+      showToastMessage('❌ Sınıfta «Öğrenci» rolünde kimse yok. Yönetici rol ataması yapmalı.');
+      return;
+    }
   } else {
-    studentUsernames = [target.replace('student:', '')];
+    const one = target.replace('student:', '');
+    if (!kursIsStudentMemberRole(one)) {
+      showToastMessage('❌ Yalnızca öğrenci rolündeki üyelere ödev atanır.');
+      return;
+    }
+    studentUsernames = [one];
   }
 
   let contentTitle = '', examCategory = null, contentSource = null;

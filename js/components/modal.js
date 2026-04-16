@@ -42,7 +42,8 @@ window.renderAdminUsersList = function() {
                       </select>`;
 
     let roleOpt = `<select class="action-select" onchange="updateUserAdmin('${username}', 'role', this.value)" title="Rol">
-                     <option value="user"    ${(!user.role || user.role==='user')   ?'selected':''}>👤 Üye</option>
+                     <option value="user"    ${(!user.role || user.role==='user')   ?'selected':''}>👤 Üye (genel)</option>
+                     <option value="student" ${user.role==='student'               ?'selected':''}>🎒 Öğrenci</option>
                      <option value="teacher" ${user.role==='teacher'               ?'selected':''}>🎓 Öğretmen</option>
                      <option value="admin"   ${user.role==='admin'                 ?'selected':''}>⚙️ Admin</option>
                    </select>`;
