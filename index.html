@@ -900,8 +900,29 @@
         <div style="background:var(--surface-alt); border:1px solid var(--accent); border-radius:12px; padding:25px; max-width:700px;">
           <h3 style="color:var(--accent); margin-bottom:20px; font-size:1.2rem;">📋 Yeni Ödev Ata</h3>
 
-          <label style="color:var(--text-dim); font-size:0.9rem; display:block; margin-bottom:5px;">Kime Atanacak?</label>
-          <select id="assign-target-select" class="auth-input" style="padding:12px; margin-bottom:15px;"></select>
+          <label style="color:var(--text-dim); font-size:0.9rem; display:block; margin-bottom:8px;">Kime atanacak?</label>
+          <div style="display:flex; flex-wrap:wrap; gap:16px; margin-bottom:14px; align-items:center;">
+            <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
+              <input type="radio" name="assign-target-mode" value="class" checked onchange="onAssignTargetModeChange()">
+              <span>Tüm sınıfa (toplu)</span>
+            </label>
+            <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
+              <input type="radio" name="assign-target-mode" value="pick" onchange="onAssignTargetModeChange()">
+              <span>Öğrencileri seçerek</span>
+            </label>
+          </div>
+          <div id="assign-block-class">
+            <label style="color:var(--text-dim); font-size:0.9rem; display:block; margin-bottom:5px;">Sınıf</label>
+            <select id="assign-class-select" class="auth-input" style="padding:12px; margin-bottom:15px;"></select>
+          </div>
+          <div id="assign-block-students" style="display:none; margin-bottom:15px;">
+            <label style="color:var(--text-dim); font-size:0.9rem; display:block; margin-bottom:8px;">Öğrenciler (birden fazla işaretleyin)</label>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+              <button type="button" class="secondary-btn" style="padding:6px 12px; font-size:0.85rem;" onclick="assignStudentPickAll()">Tümünü seç</button>
+              <button type="button" class="secondary-btn" style="padding:6px 12px; font-size:0.85rem;" onclick="assignStudentPickNone()">Seçimi temizle</button>
+            </div>
+            <div id="assign-student-checkboxes" style="max-height:240px; overflow-y:auto; border:1px solid var(--border); border-radius:8px; padding:10px; background:var(--surface);"></div>
+          </div>
 
           <label style="color:var(--text-dim); font-size:0.9rem; display:block; margin-bottom:5px;">Ödev Türü</label>
           <select id="assign-type-select" class="auth-input" style="padding:12px; margin-bottom:15px;" onchange="onAssignTypeChange()">

@@ -513,30 +513,91 @@ window.removeStudentFromClass = function (classId, username) {
 // ============================================================
 // ÖĞRETMEN — ÖDEV ATAMA
 // ============================================================
-window.renderAssignForm = function () {
-  const myClasses   = kursClasses.filter(c => c.teacherUsername === currentUsername);
-  const targetSel   = document.getElementById('assign-target-select');
+window.onAssignTargetModeChange = function () {
+  const mode =
+    (document.querySelector('input[name="assign-target-mode"]:checked') || {}).value ||
+    'class';
+  const blockClass = document.getElementById('assign-block-class');
+  const blockPick = document.getElementById('assign-block-students');
+  if (blockClass) blockClass.style.display = mode === 'class' ? 'block' : 'none';
+  if (blockPick) blockPick.style.display = mode === 'pick' ? 'block' : 'none';
+};
 
-  let optHtml = '<option value="">-- Kime Atanacak? --</option>';
-  optHtml += '<optgroup label="📦 Sınıflar">';
-  myClasses.forEach(cls => {
-    optHtml += `<option value="class:${cls.id}">🏫 ${cls.name} (${cls.studentUsernames.length} öğrenci)</option>`;
-  });
-  optHtml += '</optgroup>';
-
-  const allStudents = [...new Set(myClasses.flatMap(c => c.studentUsernames))].filter(u =>
-    kursIsStudentMemberRole(u)
-  );
-  if (allStudents.length > 0) {
-    optHtml += '<optgroup label="👤 Bireysel Öğrenciler">';
-    allStudents.forEach(u => {
-      const lab = typeof kursFormatStudentOptionLabel === 'function' ? kursFormatStudentOptionLabel(u) : u;
-      optHtml += `<option value="student:${u}">👤 ${kursEscapeHtml(lab)}</option>`;
+window.assignStudentPickAll = function () {
+  document
+    .querySelectorAll('#assign-student-checkboxes input[type="checkbox"][data-username]')
+    .forEach((cb) => {
+      cb.checked = true;
     });
-    optHtml += '</optgroup>';
+};
+
+window.assignStudentPickNone = function () {
+  document
+    .querySelectorAll('#assign-student-checkboxes input[type="checkbox"][data-username]')
+    .forEach((cb) => {
+      cb.checked = false;
+    });
+};
+
+window.renderAssignForm = function () {
+  const myClasses = kursClasses.filter(
+    (c) => c.teacherUsername === currentUsername,
+  );
+  const classSel = document.getElementById('assign-class-select');
+  const box = document.getElementById('assign-student-checkboxes');
+
+  let classHtml = '<option value="">-- Sınıf seçin --</option>';
+  myClasses.forEach((cls) => {
+    const n = cls.studentUsernames.filter((u) => kursIsStudentMemberRole(u)).length;
+    classHtml += `<option value="${kursEscapeHtml(cls.id)}">🏫 ${kursEscapeHtml(cls.name)} (${n} öğrenci)</option>`;
+  });
+  if (classSel) classSel.innerHTML = classHtml;
+
+  const allStudents = [
+    ...new Set(myClasses.flatMap((c) => c.studentUsernames)),
+  ]
+    .filter((u) => kursIsStudentMemberRole(u))
+    .sort((a, b) => {
+      const la =
+        typeof kursFormatStudentOptionLabel === 'function'
+          ? kursFormatStudentOptionLabel(a)
+          : a;
+      const lb =
+        typeof kursFormatStudentOptionLabel === 'function'
+          ? kursFormatStudentOptionLabel(b)
+          : b;
+      return String(la).localeCompare(String(lb), 'tr');
+    });
+
+  if (box) {
+    if (allStudents.length === 0) {
+      box.innerHTML =
+        '<p style="color:var(--text-dim); font-size:0.9rem; margin:0;">Sınıflarınıza «Öğrenci» rolünde üye ekleyin; liste burada görünür.</p>';
+    } else {
+      box.innerHTML = allStudents
+        .map((u) => {
+          const lab =
+            typeof kursFormatStudentOptionLabel === 'function'
+              ? kursFormatStudentOptionLabel(u)
+              : u;
+          const enc = encodeURIComponent(u);
+          return (
+            `<label style="display:flex;align-items:center;gap:10px;padding:6px 4px;cursor:pointer;border-radius:6px;">` +
+            `<input type="checkbox" name="assign-student-pick" data-username="${enc}">` +
+            `<span>${kursEscapeHtml(lab)}</span></label>`
+          );
+        })
+        .join('');
+    }
   }
 
-  if (targetSel) targetSel.innerHTML = optHtml;
+  const modeClass = document.querySelector(
+    'input[name="assign-target-mode"][value="class"]',
+  );
+  if (modeClass) modeClass.checked = true;
+  if (typeof window.onAssignTargetModeChange === 'function') {
+    window.onAssignTargetModeChange();
+  }
   onAssignTypeChange();
 };
 
@@ -591,7 +652,9 @@ window.renderExamCategoryOptions = function () {
 };
 
 window.submitAssignment = function () {
-  const target    = document.getElementById('assign-target-select').value;
+  const mode =
+    (document.querySelector('input[name="assign-target-mode"]:checked') || {}).value ||
+    'class';
   const type      = document.getElementById('assign-type-select').value;
   const selectedContentValue = document.getElementById('assign-content-select').value;
   let contentId = selectedContentValue;
@@ -599,29 +662,46 @@ window.submitAssignment = function () {
   const teacherMsgEl = document.getElementById('assign-teacher-message');
   const teacherMessage = teacherMsgEl && teacherMsgEl.value ? teacherMsgEl.value.trim() : '';
 
-  if (!target) { showToastMessage('❌ Hedef seçin.'); return; }
   if (!selectedContentValue) { showToastMessage('❌ İçerik seçin.'); return; }
 
   let studentUsernames = [], classId = null;
 
-  if (target.startsWith('class:')) {
-    classId = target.replace('class:', '');
-    const cls = kursClasses.find(c => c.id === classId);
-    if (!cls || cls.studentUsernames.length === 0) {
-      showToastMessage('❌ Sınıfta kayıtlı kimse yok.'); return;
+  if (mode === 'class') {
+    const classIdRaw = document.getElementById('assign-class-select') &&
+      document.getElementById('assign-class-select').value;
+    if (!classIdRaw) {
+      showToastMessage('❌ Sınıf seçin.');
+      return;
     }
-    studentUsernames = cls.studentUsernames.filter(u => kursIsStudentMemberRole(u));
+    classId = classIdRaw;
+    const cls = kursClasses.find((c) => c.id === classId);
+    if (!cls || cls.studentUsernames.length === 0) {
+      showToastMessage('❌ Sınıfta kayıtlı kimse yok.');
+      return;
+    }
+    studentUsernames = cls.studentUsernames.filter((u) => kursIsStudentMemberRole(u));
     if (studentUsernames.length === 0) {
-      showToastMessage('❌ Sınıfta «Öğrenci» rolünde kimse yok. Yönetici rol ataması yapmalı.');
+      showToastMessage(
+        '❌ Sınıfta «Öğrenci» rolünde kimse yok. Yönetici rol ataması yapmalı.',
+      );
       return;
     }
   } else {
-    const one = target.replace('student:', '');
-    if (!kursIsStudentMemberRole(one)) {
-      showToastMessage('❌ Yalnızca öğrenci rolündeki üyelere ödev atanır.');
+    const picked = [];
+    document
+      .querySelectorAll(
+        '#assign-student-checkboxes input[type="checkbox"][data-username]:checked',
+      )
+      .forEach((cb) => {
+        const enc = cb.getAttribute('data-username');
+        if (enc) picked.push(decodeURIComponent(enc));
+      });
+    studentUsernames = [...new Set(picked)].filter((u) => kursIsStudentMemberRole(u));
+    if (studentUsernames.length === 0) {
+      showToastMessage('❌ En az bir öğrenci işaretleyin.');
       return;
     }
-    studentUsernames = [one];
+    classId = null;
   }
 
   let contentTitle = '', examCategory = null, contentSource = null;
@@ -680,10 +760,21 @@ window.submitAssignment = function () {
   showToastMessage(`✅ Ödev atandı → ${studentUsernames.length} öğrenci`);
 
   // Formu sıfırla
-  document.getElementById('assign-target-select').value  = '';
+  const classSelEl = document.getElementById('assign-class-select');
+  if (classSelEl) classSelEl.value = '';
   document.getElementById('assign-content-select').value = '';
   document.getElementById('assign-due-date').value       = '';
   if (teacherMsgEl) teacherMsgEl.value = '';
+  if (typeof window.assignStudentPickNone === 'function') {
+    window.assignStudentPickNone();
+  }
+  const modeClass = document.querySelector(
+    'input[name="assign-target-mode"][value="class"]',
+  );
+  if (modeClass) modeClass.checked = true;
+  if (typeof window.onAssignTargetModeChange === 'function') {
+    window.onAssignTargetModeChange();
+  }
 };
 
 // ============================================================
