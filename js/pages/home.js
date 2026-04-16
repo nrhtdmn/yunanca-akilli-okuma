@@ -1887,6 +1887,120 @@ function openNewspaper(url) {
   }, 1500);
 }
 
+/** Google translate_a/single (gtx) yanıtından düz metin çıkarır */
+function parseGtxTranslation(data) {
+  if (!data || !Array.isArray(data[0])) return null;
+  let out = "";
+  for (let i = 0; i < data[0].length; i++) {
+    if (data[0][i] && data[0][i][0]) out += data[0][i][0];
+  }
+  const t = out.trim();
+  return t || null;
+}
+
+async function fetchGoogleElToTr(text) {
+  const q = encodeURIComponent(text);
+  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=el&tl=tr&dt=t&q=${q}`;
+  const res = await fetch(url, { mode: "cors", cache: "no-store" });
+  if (!res.ok) throw new Error("translate http " + res.status);
+  const data = await res.json();
+  return parseGtxTranslation(data);
+}
+
+async function fetchMyMemoryElToTr(text) {
+  const url =
+    "https://api.mymemory.translated.net/get?q=" +
+    encodeURIComponent(text) +
+    "&langpair=el|tr";
+  const res = await fetch(url, { mode: "cors", cache: "no-store" });
+  if (!res.ok) throw new Error("mymemory http");
+  const js = await res.json();
+  if (
+    js.responseStatus === 200 &&
+    js.responseData &&
+    js.responseData.translatedText
+  ) {
+    const t = String(js.responseData.translatedText).trim();
+    if (t && !/^MYMEMORY WARNING/i.test(t)) return t;
+  }
+  return null;
+}
+
+/**
+ * Kelime popup'ında kullanılır (modal.js). Yunanca → Türkçe.
+ */
+async function getSmartTranslation(word, contextSentence) {
+  const clean = String(word || "")
+    .replace(/[.,!?;():"""«»]/g, "")
+    .trim();
+  if (!clean) return "—";
+
+  const lower = clean.toLowerCase();
+  if (typeof MASTER_DICT_MAP !== "undefined" && MASTER_DICT_MAP.has(lower)) {
+    return MASTER_DICT_MAP.get(lower);
+  }
+  if (
+    typeof userCustomDict !== "undefined" &&
+    userCustomDict instanceof Map &&
+    userCustomDict.has(lower)
+  ) {
+    return userCustomDict.get(lower);
+  }
+
+  const withTimeout = (p, ms) =>
+    Promise.race([
+      p,
+      new Promise((_, rej) =>
+        setTimeout(() => rej(new Error("timeout")), ms),
+      ),
+    ]);
+
+  try {
+    const g = await withTimeout(fetchGoogleElToTr(clean), 12000);
+    if (g) return g;
+  } catch (e) {
+    console.warn("getSmartTranslation Google:", e);
+  }
+  try {
+    const m = await withTimeout(fetchMyMemoryElToTr(clean), 12000);
+    if (m) return m;
+  } catch (e) {
+    console.warn("getSmartTranslation MyMemory:", e);
+  }
+  return null;
+}
+
+/** Popup: cümlenin tamamını Yunanca → Türkçe çevirir */
+async function translateFullContext() {
+  const meanInput = document.getElementById("wp-mean-input");
+  const ctx =
+    typeof activeContextSentence !== "undefined"
+      ? String(activeContextSentence || "").trim()
+      : "";
+  if (!ctx) {
+    showToastMessage("Önce metinde bir kelimeye tıklayın (bağlam gerekir).");
+    return;
+  }
+  if (meanInput) meanInput.value = "Çeviri aranıyor...";
+  const withTimeout = (p, ms) =>
+    Promise.race([
+      p,
+      new Promise((_, rej) =>
+        setTimeout(() => rej(new Error("timeout")), ms),
+      ),
+    ]);
+  try {
+    let t = await withTimeout(fetchGoogleElToTr(ctx), 15000);
+    if (!t) t = await withTimeout(fetchMyMemoryElToTr(ctx), 15000);
+    if (meanInput) meanInput.value = t || "—";
+    if (!t) showToastMessage("Cümle çevirisi alınamadı.");
+  } catch (e) {
+    console.error("translateFullContext", e);
+    if (meanInput) meanInput.value = "Çeviri alınamadı";
+    showToastMessage("Çeviri sırasında hata oluştu.");
+  }
+}
+
 async function searchDictionary() {
   const word = document.getElementById("dict-search-input").value.trim();
   if (!word) {
@@ -1917,7 +2031,7 @@ async function searchDictionary() {
     const res = await fetch(url);
     const data = await res.json();
     const mainTrans =
-      data[0] && data[0][0] ? data[0][0][0] : "Çeviri bulunamadı.";
+      parseGtxTranslation(data) || "Çeviri bulunamadı.";
     let dictHtml = "";
     const safeWord = word.replace(/'/g, "\\'");
     const safeTrans = mainTrans.replace(/'/g, "\\'");
