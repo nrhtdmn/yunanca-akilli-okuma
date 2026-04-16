@@ -1,0 +1,14 @@
+{
+  "name": "yunanca-akilli-okuma-functions",
+  "description": "Duyuru yayınlandığında e-posta göndermek için (SMTP).",
+  "engines": {
+    "node": "18"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "firebase-admin": "^11.11.1",
+    "firebase-functions": "^4.5.0",
+    "nodemailer": "^6.9.8"
+  },
+  "private": true
+}

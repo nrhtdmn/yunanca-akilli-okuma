@@ -12,10 +12,73 @@ let kursActiveSession = null;
 let kursExamSession   = null;
 
 function saveKursData() {
+  // Yerel hafıza kaydı
   localStorage.setItem('y_kurs_classes',      JSON.stringify(kursClasses));
   localStorage.setItem('y_kurs_assignments',  JSON.stringify(kursAssignments));
   localStorage.setItem('y_kurs_submissions',  JSON.stringify(kursSubmissions));
+
+  // YENİ EKLENEN: Firebase bulutuna kayıt
+  if (window.useFirebase && window.db) {
+    window.db.collection("global").doc("kurs_data").set({
+      classes: kursClasses,
+      assignments: kursAssignments,
+      submissions: kursSubmissions
+    }, { merge: true }).catch(e => console.error("Kurs veri kaydetme hatası:", e));
+  }
 }
+
+// YENİ EKLENEN: Buluttan veri geldiğinde referansları bozmadan dizileri güncelleyen fonksiyon
+window.updateKursDataFromCloud = function(cloudData) {
+  if (cloudData.classes) {
+      kursClasses.length = 0; 
+      cloudData.classes.forEach(c => kursClasses.push(c));
+  }
+  if (cloudData.assignments) {
+      kursAssignments.length = 0;
+      cloudData.assignments.forEach(a => kursAssignments.push(a));
+  }
+  if (cloudData.submissions) {
+      for (let prop in kursSubmissions) { delete kursSubmissions[prop]; }
+      Object.assign(kursSubmissions, cloudData.submissions);
+  }
+  
+  localStorage.setItem('y_kurs_classes', JSON.stringify(kursClasses));
+  localStorage.setItem('y_kurs_assignments', JSON.stringify(kursAssignments));
+  localStorage.setItem('y_kurs_submissions', JSON.stringify(kursSubmissions));
+  
+  // Eğer kullanıcı şu an Kurs panelindeyse ekranı yenile
+  const kursSection = document.getElementById('section-kurs');
+  if (kursSection && kursSection.style.display === 'block') {
+      window.renderKursPanel();
+  }
+};
+
+// Firebase'den Kurs verisi geldiğinde yerel değişkenleri yenileyen tetikleyici
+window.updateKursDataFromCloud = function(cloudData) {
+  if (cloudData.classes) {
+      kursClasses.length = 0; 
+      cloudData.classes.forEach(c => kursClasses.push(c));
+  }
+  if (cloudData.assignments) {
+      kursAssignments.length = 0;
+      cloudData.assignments.forEach(a => kursAssignments.push(a));
+  }
+  if (cloudData.submissions) {
+      for (let prop in kursSubmissions) { delete kursSubmissions[prop]; }
+      Object.assign(kursSubmissions, cloudData.submissions);
+  }
+  
+  // Yerel hafızayı yedekle
+  localStorage.setItem('y_kurs_classes', JSON.stringify(kursClasses));
+  localStorage.setItem('y_kurs_assignments', JSON.stringify(kursAssignments));
+  localStorage.setItem('y_kurs_submissions', JSON.stringify(kursSubmissions));
+  
+  // Eğer kullanıcı o an Kurs sekmesindeyse ekranı yenile
+  const kursSection = document.getElementById('section-kurs');
+  if (kursSection && kursSection.style.display === 'block') {
+      window.renderKursPanel();
+  }
+};
 
 // --- YETKİ ---
 function kursIsTeacher() {

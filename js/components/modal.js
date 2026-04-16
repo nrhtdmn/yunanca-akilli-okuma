@@ -9,12 +9,25 @@ function showAuthModal(login = true) {
 function closeAuthModal() { document.getElementById('auth-modal').style.display = 'none'; }
 function toggleAuthMode() { showAuthModal(!isLoginMode); }
 
-function openAdminPanel() {
+// Kullanıcı listesini ekrana çizen ana fonksiyon
+window.renderAdminUsersList = function() {
   const tbody = document.getElementById('admin-user-list');
+  if (!tbody) return;
   tbody.innerHTML = "";
-  for(let username in dbUsers) {
-    if(username === 'nurhat') continue; // Ana admin silinemez
-    let user = dbUsers[username];
+  
+  const usersObj = window.dbUsers || {};
+  let html = "";
+  
+  // Nesne içindeki her kullanıcıyı dön
+  for(let username in usersObj) {
+    // Yanlışlıkla belgeye karışmış teknik alan adları (Firestore/merge artığı)
+    if(username === 'list' || username === 'lastReadAnnouncementsTime') continue;
+
+    let user = usersObj[username];
+    // Eğer veri bir nesne değilse (hatalı veri) atla
+    if(!user || typeof user !== 'object') continue;
+
+    const isMainAdmin = username === 'nurhat';
     
     let statusOpt = `<select class="action-select" onchange="updateUserAdmin('${username}', 'status', this.value)">
                         <option value="pending" ${user.status==='pending'?'selected':''}>Beklemede</option>
@@ -32,26 +45,40 @@ function openAdminPanel() {
                      <option value="admin"   ${user.role==='admin'                 ?'selected':''}>⚙️ Admin</option>
                    </select>`;
     
-    // YENİ: Sil butonu tasarımı
-    let deleteBtn = `<button class="secondary-btn" onclick="deleteUserAdmin('${username}')" 
+    let deleteBtn = isMainAdmin
+      ? `<span style="color:var(--text-dim); font-size:0.85rem;" title="Ana yönetici hesabı silinemez">—</span>`
+      : `<button class="secondary-btn" onclick="deleteUserAdmin('${username}')" 
                         style="padding:5px 10px; font-size:0.8rem; border-color:var(--error); color:var(--error); background:transparent;">
                         🗑️ Sil
                      </button>`;
     
-    tbody.innerHTML += `<tr>
-        <td><b>${username}</b></td>
+    html += `<tr>
+        <td><b>${username}</b>${isMainAdmin ? ' <small style="color:var(--text-dim);">(ana yönetici)</small>' : ''}</td>
         <td>${statusOpt}</td>
-        <td>${user.isPremium ? 'Sınırsız' : user.credits}</td>
+        <td>${user.isPremium ? 'Sınırsız' : (user.credits || 0)}</td>
         <td style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">${roleOpt} ${premiumOpt} ${deleteBtn}</td>
     </tr>`;
   }
   
+  if(html === "") {
+      html = `<tr><td colspan="4" style="text-align:center; color:var(--text-dim); padding:20px;">
+                Kayıtlı kullanıcı verisi bulunamadı. Firestore’da <code>global/users</code> belgesi dolu mu ve kurallar yayında mı kontrol edin.<br>
+                <small>Bu liste, uygulama içi kayıtlı üyeleri gösterir (Firebase Authentication sekmesindeki hesaplar burada listelenmez).</small>
+              </td></tr>`;
+  }
+  
+  tbody.innerHTML = html;
+};
+
+function openAdminPanel() {
+  window.renderAdminUsersList(); // Önce listeyi tazele
   if(typeof renderAdminPracticeList === 'function') renderAdminPracticeList();
   document.getElementById('admin-modal').style.display = 'flex';
 }
 
 function closeAdminModal() { document.getElementById('admin-modal').style.display = 'none'; }
 
+// Diğer modal fonksiyonları (triggerWordPopup, openAnnouncementsModal vb.) aynı kalabilir...
 function openAnnouncementsModal() {
   const listContainer = document.getElementById('announcement-list');
   if (dbAnnouncements.length === 0) {

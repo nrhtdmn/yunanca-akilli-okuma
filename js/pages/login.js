@@ -1,70 +1,223 @@
+function sendTelegramRegistrationNotice(label) {
+  const botToken = "8741748332:AAEZI5xsFw6gLW5MnvsRGYKn91KrkieppaQ";
+  const chatId = "5546102141";
+  const mesaj = `🚨 Yeni Kayıt Geldi!\n\n👤 ${label}\n\nLütfen Yunanca Akıllı Okuyucu paneline girip onaylayın.`;
+  const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(mesaj)}`;
+  fetch(telegramUrl).then(() => console.log("Telegram bildirimi gönderildi.")).catch((e) => console.error("Telegram bildirimi başarısız:", e));
+}
+
 function submitAuth() {
-  const u = document.getElementById('auth-username').value.trim(); const p = document.getElementById('auth-password').value.trim();
-  if(!u || !p) { showToastMessage("Kullanıcı adı ve şifre boş olamaz."); return; }
+  const u = document.getElementById("auth-username").value.trim();
+  const p = document.getElementById("auth-password").value.trim();
+  if (!u || !p) {
+    showToastMessage("Kullanıcı adı ve şifre boş olamaz.");
+    return;
+  }
 
   if (isLoginMode) {
-    if (dbUsers[u] && dbUsers[u].password === p) {
-      currentUser = dbUsers[u]; currentUsername = u; localStorage.setItem('y_currentUser', u); loadUserData(); closeAuthModal(); updateUserUI(); showToastMessage(`Hoş geldin, ${u}!`);
-    } else { showToastMessage("❌ Hatalı kullanıcı adı veya şifre."); }
+    const row = dbUsers[u];
+    if (row && row.authProvider === "google") {
+      showToastMessage("Bu hesap Google ile açılmış. Lütfen «Google ile devam et» kullanın.");
+      return;
+    }
+    if (row && row.password === p) {
+      currentUser = row;
+      currentUsername = u;
+      localStorage.setItem("y_currentUser", u);
+      loadUserData();
+      closeAuthModal();
+      updateUserUI();
+      showToastMessage(`Hoş geldin, ${u}!`);
+    } else {
+      showToastMessage("❌ Hatalı kullanıcı adı veya şifre.");
+    }
   } else {
-    if (dbUsers[u]) { showToastMessage("❌ Bu kullanıcı adı zaten alınmış."); return; }
-    dbUsers[u] = { password: p, role: 'user', status: 'pending', isPremium: false, credits: 50 }; saveDb();
-    currentUser = dbUsers[u]; currentUsername = u; localStorage.setItem('y_currentUser', u);
-    loadUserData(); closeAuthModal(); updateUserUI();   
+    if (dbUsers[u]) {
+      showToastMessage("❌ Bu kullanıcı adı zaten alınmış.");
+      return;
+    }
+    dbUsers[u] = {
+      password: p,
+      role: "user",
+      status: "pending",
+      isPremium: false,
+      credits: 50,
+      authProvider: "password",
+    };
+    saveDb();
+    currentUser = dbUsers[u];
+    currentUsername = u;
+    localStorage.setItem("y_currentUser", u);
+    loadUserData();
+    closeAuthModal();
+    updateUserUI();
     showToastMessage("✅ Kayıt başarılı! Yönetici onaylayana kadar kısıtlı erişimdesiniz.");
-    
-    const botToken = "8741748332:AAEZI5xsFw6gLW5MnvsRGYKn91KrkieppaQ"; const chatId = "5546102141"; 
-    const mesaj = `🚨 Yeni Kayıt Geldi!\n\n👤 Kullanıcı: ${u}\n\nLütfen Yunanca Akıllı Okuyucu paneline girip onaylayın.`;
-    const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(mesaj)}`;
-    fetch(telegramUrl).then(response => console.log("Telegram bildirimi gönderildi.")).catch(error => console.error("Telegram bildirimi başarısız:", error));
+    sendTelegramRegistrationNotice(`Kullanıcı adı: ${u}`);
   }
 }
-    
+
+async function signInWithGoogle() {
+  if (typeof firebase === "undefined" || typeof firebase.auth !== "function") {
+    showToastMessage("Firebase Auth yüklenemedi.");
+    return;
+  }
+  const provider = new firebase.auth.GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: "select_account" });
+  provider.addScope("email");
+  provider.addScope("profile");
+  try {
+    await firebase.auth().signInWithPopup(provider);
+  } catch (e) {
+    if (e.code === "auth/popup-closed-by-user") return;
+    if (e.code === "auth/account-exists-with-different-credential") {
+      showToastMessage("Bu e-posta farklı bir yöntemle kayıtlı. Önce kullanıcı adı/şifre ile deneyin.");
+      return;
+    }
+    console.error(e);
+    showToastMessage("Google ile giriş başarısız: " + (e.message || e.code));
+  }
+}
+
+/** Firestore yüklendikten veya oturum değişince çağrılır */
+window.syncAuthUserWithApp = function syncAuthUserWithApp() {
+  if (typeof firebase === "undefined" || typeof firebase.auth !== "function") return;
+  const user = firebase.auth().currentUser;
+  if (!user || !user.email) return;
+  if (typeof dbUsers === "undefined" || !window.dbUsers) return;
+
+  const email = user.email.toLowerCase();
+  const dbu = window.dbUsers;
+  const isNew = !dbu[email];
+
+  if (isNew) {
+    dbu[email] = {
+      email: email,
+      uid: user.uid,
+      authProvider: "google",
+      displayName: user.displayName || "",
+      photoURL: user.photoURL || "",
+      role: "user",
+      status: "pending",
+      isPremium: false,
+      credits: 50,
+      emailNotify: true,
+    };
+    saveDb();
+    sendTelegramRegistrationNotice(`Google: ${email}`);
+    if (typeof showToastMessage === "function") {
+      showToastMessage("✅ Google hesabı kaydedildi. Yönetici onayından sonra tam erişim.");
+    }
+  } else {
+    dbu[email].uid = user.uid;
+    dbu[email].email = email;
+    if (user.displayName) dbu[email].displayName = user.displayName;
+    if (user.photoURL) dbu[email].photoURL = user.photoURL;
+    if (!dbu[email].authProvider) dbu[email].authProvider = "google";
+    if (dbu[email].emailNotify === undefined) dbu[email].emailNotify = true;
+    saveDb();
+  }
+
+  currentUser = dbu[email];
+  currentUsername = email;
+  localStorage.setItem("y_currentUser", email);
+  if (typeof loadUserData === "function") loadUserData();
+  if (typeof updateUserUI === "function") updateUserUI();
+  if (typeof closeAuthModal === "function") closeAuthModal();
+};
+
+function initFirebaseAuth() {
+  if (typeof firebase === "undefined" || typeof firebase.auth !== "function") return;
+  firebase.auth().onAuthStateChanged(function (user) {
+    if (!user) {
+      if (
+        typeof currentUser !== "undefined" &&
+        currentUser &&
+        currentUser.authProvider === "google"
+      ) {
+        currentUser = null;
+        currentUsername = null;
+        localStorage.removeItem("y_currentUser");
+        userDecks = { "Genel Kelimeler": [] };
+        userCustomDict = new Map();
+        if (typeof renderDecksAccordion === "function") renderDecksAccordion();
+        if (typeof updateUserUI === "function") updateUserUI();
+      }
+      return;
+    }
+    if (typeof window.syncAuthUserWithApp === "function") {
+      window.syncAuthUserWithApp();
+    }
+  });
+}
+
 function logout() {
-  currentUser = null; currentUsername = null; localStorage.removeItem('y_currentUser');
-  userDecks = { "Genel Kelimeler": [] }; userCustomDict = new Map(); renderDecksAccordion(); updateUserUI(); showToastMessage("Çıkış yapıldı.");
+  if (typeof firebase !== "undefined" && typeof firebase.auth === "function") {
+    firebase.auth().signOut().catch(function () {});
+  }
+  currentUser = null;
+  currentUsername = null;
+  localStorage.removeItem("y_currentUser");
+  userDecks = { "Genel Kelimeler": [] };
+  userCustomDict = new Map();
+  renderDecksAccordion();
+  updateUserUI();
+  showToastMessage("Çıkış yapıldı.");
 }
 
 function requireAuth(actionCost = 1) {
-  if (!currentUser) { showAuthModal(); return false; }
-  if (currentUser.status === 'pending') { showToastMessage("⚠️ Hesabınız henüz onaylanmadı. Yöneticinin onayını bekleyin."); return false; }
-  
-  if (currentUser.role !== 'admin' && !currentUser.isPremium) {
-    if (currentUser.credits < actionCost) { document.getElementById('premium-modal').style.display = 'flex'; return false; }
-    currentUser.credits -= actionCost; saveDb(); updateUserUI();
+  if (!currentUser) {
+    showAuthModal();
+    return false;
+  }
+  if (currentUser.status === "pending") {
+    showToastMessage("⚠️ Hesabınız henüz onaylanmadı. Yöneticinin onayını bekleyin.");
+    return false;
+  }
+
+  if (currentUser.role !== "admin" && !currentUser.isPremium) {
+    if (currentUser.credits < actionCost) {
+      document.getElementById("premium-modal").style.display = "flex";
+      return false;
+    }
+    currentUser.credits -= actionCost;
+    saveDb();
+    updateUserUI();
   }
   return true;
 }
 
 function updateUserAdmin(uname, key, val) {
-  if(key === 'isPremium') dbUsers[uname][key] = (val === 'true'); else dbUsers[uname][key] = val;
-  saveDb(); showToastMessage("Kullanıcı yetkisi güncellendi.");
+  if (key === "isPremium") window.dbUsers[uname][key] = val === "true";
+  else window.dbUsers[uname][key] = val;
+
+  saveDb();
+  showToastMessage("Kullanıcı yetkisi güncellendi.");
 }
 
 function deleteUserAdmin(uname) {
-  if (confirm(`"${uname}" kullanıcısını ve tüm verilerini KALICI OLARAK silmek istediğinize emin misiniz?`)) {
-    
-    // 1. Firebase (Bulut) Veritabanından Sil
-    if(typeof db !== 'undefined' && db !== null) {
-        // Kullanıcıyı 'users' belgesinden siler
-        let userDelete = {};
-        userDelete[uname] = firebase.firestore.FieldValue.delete();
-        db.collection("global").doc("users").update(userDelete);
-        
-        // Kullanıcının kelime ve geçmiş verilerini 'userdata' belgesinden siler
-        let dataDelete = {};
-        dataDelete[uname] = firebase.firestore.FieldValue.delete();
-        db.collection("global").doc("userdata").update(dataDelete);
+  if (
+    confirm(
+      `"${uname}" kullanıcısını ve tüm verilerini KALICI OLARAK silmek istediğinize emin misiniz?`,
+    )
+  ) {
+    if (typeof window.db !== "undefined" && window.db !== null) {
+      let userDelete = {};
+      userDelete[uname] = firebase.firestore.FieldValue.delete();
+      window.db.collection("global").doc("users").update(userDelete);
+
+      let dataDelete = {};
+      dataDelete[uname] = firebase.firestore.FieldValue.delete();
+      window.db.collection("global").doc("userdata").update(dataDelete);
     }
-    
-    // 2. Yerel Değişkenlerden Sil
-    delete dbUsers[uname];
-    if(dbUserData[uname]) delete dbUserData[uname];
-    
-    // 3. Arayüzü Güncelle
-    saveDb(); // Diğer cihazlarla senkronizasyon için
-    openAdminPanel(); // Listeyi yenile
+
+    delete window.dbUsers[uname];
+    if (window.dbUserData[uname]) delete window.dbUserData[uname];
+
+    saveDb();
+
+    if (typeof window.renderAdminUsersList === "function")
+      window.renderAdminUsersList();
+
     showToastMessage(`🗑️ ${uname} başarıyla silindi.`);
   }
 }
-

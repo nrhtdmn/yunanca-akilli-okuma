@@ -88,8 +88,13 @@ function updateUserUI() {
 
   let badges = `<button class="bell-btn" onclick="openAnnouncementsModal()" title="Duyurular">🔔<span class="bell-badge" id="bell-badge">0</span></button>`;
 
+  const headerLabel =
+    (currentUser.displayName && String(currentUser.displayName).trim()) ||
+    currentUsername;
+  const headerShort =
+    headerLabel.length > 28 ? headerLabel.slice(0, 26) + "…" : headerLabel;
   // YENİ: Kullanıcı rozeti artık tıklanabilir ve Profili açıyor
-  badges += `<div class="user-badge" onclick="openProfileModal()" title="Profil ve İstatistikleri Gör">👤 ${currentUsername}`;
+  badges += `<div class="user-badge" onclick="openProfileModal()" title="${(currentUsername || "").replace(/"/g, "&quot;")}">👤 ${headerShort}`;
 
   if (currentUser.role === "admin")
     badges += `<span class="premium-badge" style="background:#f87171; color:#fff;">ADMİN</span>`;
@@ -175,6 +180,11 @@ function finishInit() {
   try { renderNewspaperLibrary(); } catch(e) { console.error('renderNewspaperLibrary hatası:', e); }
   try { if (typeof window.renderLessonLibrary === 'function') window.renderLessonLibrary(); } catch(e) { console.error('renderLessonLibrary hatası:', e); }
   try { fetchExamData(); } catch(e) { console.error('fetchExamData hatası:', e); }
+  try {
+    if (typeof window.syncAuthUserWithApp === "function") window.syncAuthUserWithApp();
+  } catch (e) {
+    console.error("syncAuthUserWithApp hatası:", e);
+  }
 }
 
 function updateBellIcon() {
@@ -666,77 +676,8 @@ function deleteDeckEntirely(event, deckName) {
 }
 
 /* ==========================================
- * 🔥 AKILLI TETİKLEYİCİ (VERİ GELDİĞİNDE LİSTEYİ DOLDURUR)
- * ========================================== */
-let deckCheckInterval = setInterval(() => {
-  // userDecks buluttan indiyse ve içi doluysa menüleri hemen güncelle
-  if (typeof userDecks !== "undefined" && Object.keys(userDecks).length > 0) {
-    populateDeckSelects();
-    renderDecksAccordion();
-    clearInterval(deckCheckInterval); // Görev tamamlandı, tetikleyiciyi durdur
-  }
-}, 300); // Saniyede 3 kez verilerin inip inmediğini kontrol eder
-/* ==========================================
  * CSV İÇE VE DIŞA AKTARMA MOTORU
  * ========================================== */
-
-// Desteleri CSV Olarak İndirme (Dışa Aktar)
-// Desteleri Ekrana Çizen Fonksiyon
-function renderDecksAccordion() {
-  const displayContainer = document.getElementById("deck-display");
-  if (!displayContainer || typeof userDecks === "undefined") return;
-  displayContainer.innerHTML = "";
-
-  const viewSelect = document.getElementById("deck-view-select");
-  if (!viewSelect) return;
-
-  const selectedDeckName = viewSelect.value;
-
-  for (let deckName in userDecks) {
-    if (selectedDeckName !== "all" && deckName !== selectedDeckName) continue;
-
-    const wordList = userDecks[deckName];
-    const safeId = deckName.replace(/[^a-zA-Z0-9]/g, "_");
-    let wordsHtml = "";
-
-    if (wordList.length === 0) {
-      wordsHtml = `<p style="color:var(--text-dim); text-align:center;">Bu destede henüz kelime yok.</p>`;
-    } else {
-      wordsHtml = wordList
-        .map(
-          (item, index) => `
-            <div class="word-item">
-                <span><b>${item.gr}</b> ${item.tr}</span>
-                <div style="display:flex; gap:6px; align-items:center;">
-                    <button class="word-item-tts" onclick="speakGreek('${item.gr.replace(/'/g, "\\'")}');" title="Dinle">🔊</button>
-                    <button class="del-btn" onclick="deleteWordFromDeck('${deckName.replace(/'/g, "\\'")}', ${index})" title="Sil">🗑️</button>
-                </div>
-            </div>`,
-        )
-        .join("");
-    }
-
-    const safeDeckName = deckName.replace(/'/g, "\\'").replace(/"/g, "&quot;");
-    const deleteDeckBtn =
-      deckName !== "Genel Kelimeler"
-        ? `<button class="del-btn" onclick="deleteDeckEntirely(event, '${safeDeckName}')" style="margin-right:15px;" title="Desteyi Sil">Desteyi Sil</button>`
-        : ``;
-
-    // YENİ: ${selectedDeckName !== 'all' ? 'open' : ''} kısımları tamamen silindi.
-    // Artık klasörler her durumda kapalı (katlanmış) olarak gelir.
-    displayContainer.innerHTML += `
-        <div class="deck-section" ${selectedDeckName !== "all" ? 'style="border-color: var(--accent);"' : ""}>
-            <div class="deck-header" onclick="toggleAccordion('deck-${safeId}')" ${selectedDeckName !== "all" ? 'style="background: #1c212d;"' : ""}>
-                <strong>📂 ${deckName} (${wordList.length} kelime)</strong>
-                <div style="display:flex; align-items:center;">
-                    ${deleteDeckBtn}
-                    <span class="deck-arrow" id="arrow-deck-${safeId}">▼</span>
-                </div>
-            </div>
-            <div class="deck-content" id="content-deck-${safeId}">${wordsHtml}</div>
-        </div>`;
-  }
-}
 
 // Desteleri CSV Olarak İndirme (Dışa Aktar)
 function exportDecksToCSV() {
@@ -2714,7 +2655,8 @@ function listenForYdsExplanations() {
                 console.log("☁️ 🔄 YDS Çözümleri Firebase'den CANLI olarak çekildi!");
             }
         }, (error) => {
-            console.log("Firebase YDS canlı dinleme hatası:", error);
+            if (error && error.code === "permission-denied") return;
+            console.warn("Firebase YDS canlı dinleme hatası:", error);
         });
     }
 }

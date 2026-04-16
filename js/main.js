@@ -1,5 +1,6 @@
 // Bu dosya en son çalışacak ve uygulamayı init (boot) edecektir.
 fetchFromFirebase();
+if (typeof initFirebaseAuth === "function") initFirebaseAuth();
 
 /* ==================================================
    PWA (UYGULAMA YÜKLEME) BUTONU MANTIĞI
@@ -9,9 +10,11 @@ const installBtn = document.getElementById('pwa-install-btn');
 
 // Tarayıcı "Bu site yüklenebilir bir PWA'dır" sinyalini verdiğinde çalışır
 window.addEventListener('beforeinstallprompt', (e) => {
-    // Tarayıcının kendi otomatik alt afişini (mini-infobar) engelle
+    // preventDefault: tarayıcının mini kurulum afişini kapatır; kurulum penceresi
+    // "Uygulamayı Yükle" ile prompt() açılır. Chrome bazen "Banner not shown... must call prompt()"
+    // yazar — beklenen bilgi; hata değil (prompt() buton tıklanınca çağrılır).
     e.preventDefault();
-    
+
     // Olayı (sinyali) daha sonra butonla tetiklemek üzere değişkene kaydet
     deferredPrompt = e;
     

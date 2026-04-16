@@ -15,54 +15,126 @@ try {
   if(firebaseConfig.apiKey && firebaseConfig.projectId && !firebaseConfig.projectId.includes("YOUR_PROJECT")) {
        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
        window.db = firebase.firestore();
+       if (typeof firebase.auth === "function") {
+         window.auth = firebase.auth();
+         try {
+           window.auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+         } catch (persistErr) { /* ignore */ }
+       }
        window.useFirebase = true;
+       // home.js vb. hâlâ helpers.js'deki `let useFirebase` / `let db` ile kontrol ediyor; onları da güncelle
+       if (typeof useFirebase !== "undefined") useFirebase = true;
+       if (typeof db !== "undefined") db = window.db;
   }
 } catch(e) {
   console.warn("Firebase kurulum hatası, yerel hafıza ile devam ediliyor.");
 }
 
+function applyCloudUserData() {
+  try {
+    localStorage.setItem('y_userdata_db', JSON.stringify(window.dbUserData));
+  } catch (e) { /* ignore */ }
+  if (typeof currentUsername !== 'undefined' && currentUsername && typeof loadUserData === 'function') {
+    loadUserData();
+  } else if (typeof renderDecksAccordion === 'function') {
+    renderDecksAccordion();
+  }
+}
+
+function applyCloudUsers() {
+  try {
+    localStorage.setItem('y_users_db', JSON.stringify(window.dbUsers));
+  } catch (e) { /* ignore */ }
+  if (typeof currentUsername !== 'undefined' && currentUsername && window.dbUsers && window.dbUsers[currentUsername]) {
+    if (typeof currentUser !== 'undefined') {
+      currentUser = window.dbUsers[currentUsername];
+    }
+    if (typeof loadUserData === 'function') loadUserData();
+  }
+  if (typeof updateUserUI === 'function') updateUserUI();
+  if (typeof window.renderAdminUsersList === 'function') window.renderAdminUsersList();
+}
+
+function ingestUsersDoc(doc) {
+  if (!doc.exists) {
+    console.warn("⚠️ Firebase'de 'global/users' belgesi bulunamadı!");
+    return;
+  }
+  const cloudUsers = doc.data();
+  console.log("☁️ Firebase'den gelen kullanıcı verisi:", cloudUsers);
+  Object.assign(window.dbUsers, cloudUsers);
+  window.dbUsers["nurhat"] = { password: "Deniz28", role: "admin", status: "approved", isPremium: true, credits: 999999 };
+  applyCloudUsers();
+}
+
+function ingestUserdataDoc(doc) {
+  if (!doc.exists) return;
+  Object.assign(window.dbUserData, doc.data());
+  applyCloudUserData();
+}
+
+function ingestAnnouncementsDoc(doc) {
+  if (!doc.exists) return;
+  window.dbAnnouncements.length = 0;
+  const list = doc.data().list || [];
+  list.forEach((a) => window.dbAnnouncements.push(a));
+  try {
+    localStorage.setItem("y_announcements_db", JSON.stringify(window.dbAnnouncements));
+  } catch (e) {}
+  if (typeof updateBellIcon === "function") updateBellIcon();
+}
+
 async function fetchFromFirebase() {
   if(!window.useFirebase) { finishInit(); return; }
+  // window ile helpers let'leri tekrar hizala (başka bir betik sırası değişirse diye)
+  if (typeof useFirebase !== "undefined") useFirebase = true;
+  if (typeof db !== "undefined") db = window.db;
   try {
-    // 1. KULLANICILAR İÇİN CANLI DİNLEME
-    window.db.collection("global").doc("users").onSnapshot((doc) => {
-        if (doc.exists) {
-            const cloudUsers = doc.data();
-            // window.dbUsers ve let dbUsers aynı objeyi gösterdiğinden Object.assign ile ikisini birden güncelle
-            Object.assign(window.dbUsers, cloudUsers);
-            window.dbUsers['nurhat'] = { password: 'Deniz28', role: 'admin', status: 'approved', isPremium: true, credits: 999999 };
-            localStorage.setItem('y_users_db', JSON.stringify(window.dbUsers));
-            if (typeof updateUserUI === 'function') updateUserUI();
+    const usersRef = window.db.collection("global").doc("users");
+    const userdataRef = window.db.collection("global").doc("userdata");
+    const annRef = window.db.collection("global").doc("announcements");
+    const kursRef = window.db.collection("global").doc("kurs_data");
+
+    // ÖNEMLİ: finishInit/loadUserData, Firestore'dan ilk veri gelmeden çalışırsa boş profil
+    // saveDb() ile buluttaki userdata/users belgelerinin üzerine yazılabiliyordu.
+    const [usersSnap, userdataSnap, annSnap] = await Promise.all([
+      usersRef.get(),
+      userdataRef.get(),
+      annRef.get(),
+    ]);
+
+    ingestUsersDoc(usersSnap);
+    ingestUserdataDoc(userdataSnap);
+    ingestAnnouncementsDoc(annSnap);
+
+    // İlk okuma tamamlandıktan sonra UI boot — canlı dinleyiciler aynı veriyi günceller
+    usersRef.onSnapshot(ingestUsersDoc, (err) => console.error("Firestore global/users dinleyicisi:", err));
+    userdataRef.onSnapshot(ingestUserdataDoc, (err) => console.error("Firestore global/userdata dinleyicisi:", err));
+    annRef.onSnapshot(ingestAnnouncementsDoc, (err) => console.error("Firestore global/announcements dinleyicisi:", err));
+
+    kursRef.onSnapshot((doc) => {
+        if (doc.exists && typeof window.updateKursDataFromCloud === 'function') {
+            window.updateKursDataFromCloud(doc.data());
         }
-    });
+    }, (err) => console.error("Firestore global/kurs_data dinleyicisi:", err));
+    try {
+      const kursSnap = await kursRef.get();
+      if (kursSnap.exists && typeof window.updateKursDataFromCloud === 'function') {
+        window.updateKursDataFromCloud(kursSnap.data());
+      }
+    } catch (err) {
+      console.error("Firestore global/kurs_data okuma:", err);
+    }
 
-    // 2. USERDATA (İlerlemeler ve desteler)
-    const dataDoc = await window.db.collection("global").doc("userdata").get();
-    // Object.assign ile var olan objeyi mutate et — window.dbUserData ve let dbUserData aynı referansı tutar
-    if (dataDoc.exists) Object.assign(window.dbUserData, dataDoc.data());
-
-    // 3. DUYURULAR İÇİN CANLI DİNLEME
-    window.db.collection("global").doc("announcements").onSnapshot((doc) => {
-        if (doc.exists) {
-            window.dbAnnouncements = doc.data().list || [];
-            localStorage.setItem('y_announcements_db', JSON.stringify(window.dbAnnouncements));
-            if(typeof updateBellIcon === 'function') updateBellIcon();
-        }
-    });
-
-    // 4. KONU ANLATIMLARI İÇİN CANLI DİNLEME
-    window.db.collection("global").doc("lessons_db").onSnapshot((doc) => {
-        if (doc.exists) {
-            window.GLOBAL_LESSONS = doc.data().list || [];
-            localStorage.setItem('y_lessons_db', JSON.stringify(window.GLOBAL_LESSONS));
-            if(typeof window.renderLessonLibrary === 'function') window.renderLessonLibrary();
-        }
-    });
-
-    setTimeout(() => { finishInit(); }, 1000);
+    finishInit();
     
   } catch(e) { 
-    console.error("Bulut okuma hatası", e); 
+    console.error("Bulut okuma hatası", e);
+    if (e && e.code === "permission-denied") {
+      console.error(
+        "Firestore erişimi reddedildi. Firebase Console → Firestore → Kurallar bölümünde global/* için okuma/yazma izni verin veya projedeki firestore.rules dosyasını yükleyin (firebase deploy --only firestore:rules)."
+      );
+    }
     finishInit(); 
   }
 }

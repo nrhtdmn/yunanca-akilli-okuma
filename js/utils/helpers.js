@@ -11,6 +11,10 @@ window.dbUserData = dbUserData; // window.dbUserData ile let dbUserData her zama
 let dbAnnouncements;
 try { dbAnnouncements = JSON.parse(localStorage.getItem('y_announcements_db')) || []; } catch(e) { dbAnnouncements = []; localStorage.removeItem('y_announcements_db'); }
 
+// YENİ EKLENEN SATIR: Referansın kaybolmaması için window objesine bağladık
+window.dbAnnouncements = dbAnnouncements;
+
+
 let useFirebase = false;
 let db = null;
 let currentUser = null;
