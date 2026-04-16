@@ -292,9 +292,23 @@
           </div>
         </div>
         <div
-          style="background: rgba(79, 142, 247, 0.05); border: 1px solid rgba(79, 142, 247, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+          style="background: rgba(79, 142, 247, 0.05); border: 1px solid rgba(79, 142, 247, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 16px;">
           <h4 style="color:var(--accent); margin-bottom: 5px;">💳 Üyelik Durumu</h4>
           <p id="profile-status-text" style="color:var(--text); font-size: 1rem;"></p>
+        </div>
+        <div style="background:var(--surface-alt); border:1px solid var(--border); padding:15px; border-radius:8px; margin-bottom:20px;">
+          <h4 style="color:var(--accent2); margin-bottom:10px; font-size:1rem;">📧 Bildirim e-postası</h4>
+          <p style="color:var(--text-dim); font-size:0.88rem; margin-bottom:10px;">
+            Kullanıcı adı ile kayıtlıysanız ödev ve mesaj bildirimleri için geçerli bir e-posta girin (Google ile girişte e-postanız zaten kayıtlıdır).
+          </p>
+          <label style="color:var(--text-dim); font-size:0.85rem;">İletişim e-postası</label>
+          <input type="email" id="profile-contact-email" class="auth-input" style="padding:12px; margin-bottom:10px;"
+            placeholder="ornek@posta.com">
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.9rem; color:var(--text);">
+            <input type="checkbox" id="profile-email-notify" checked>
+            Ödev ve mesajlar için e-posta bildirimi al
+          </label>
+          <button type="button" class="secondary-btn" style="margin-top:12px; padding:10px 16px;" onclick="saveProfileContact()">Kaydet</button>
         </div>
         <div style="display: flex; gap: 10px; flex-wrap:wrap;"><button class="main-btn"
             style="flex: 2; min-width:150px; background:var(--tts-color);"
@@ -834,6 +848,7 @@
         <button class="sub-tab-btn active" onclick="switchKursTab('classes', this)">🏫 Sınıflarım</button>
         <button class="sub-tab-btn" onclick="switchKursTab('assign', this)">📋 Ödev Ver</button>
         <button class="sub-tab-btn" onclick="switchKursTab('reports', this)">📊 Raporlar</button>
+        <button class="sub-tab-btn" onclick="switchKursTab('messages', this)">💬 Mesajlar</button>
       </div>
 
       <!-- Sınıflarım -->
@@ -875,7 +890,13 @@
           <label style="color:var(--text-dim); font-size:0.9rem; display:block; margin-bottom:5px;">
             Son Teslim Tarihi <span style="color:var(--text-dim);">(boş bırakırsanız süresiz)</span>
           </label>
-          <input type="date" id="assign-due-date" class="auth-input" style="padding:12px; margin-bottom:20px;">
+          <input type="date" id="assign-due-date" class="auth-input" style="padding:12px; margin-bottom:12px;">
+
+          <label style="color:var(--text-dim); font-size:0.9rem; display:block; margin-bottom:5px;">
+            Öğrencilere kısa not (isteğe bağlı, e-posta ile de iletilir)
+          </label>
+          <textarea id="assign-teacher-message" class="auth-input" rows="3" style="padding:12px; margin-bottom:20px; resize:vertical;"
+            placeholder="Örn: Bu metni iki kez okuyun ve kelime listesini ezberleyin."></textarea>
 
           <button class="main-btn" style="width:100%; padding:15px; font-size:1.1rem;" onclick="submitAssignment()">
             📤 Ödevi Ata
@@ -887,6 +908,21 @@
       <div id="kurs-panel-reports" style="display:none;">
         <div id="kurs-reports-container"></div>
       </div>
+
+      <!-- Mesajlar (öğretmen) -->
+      <div id="kurs-panel-messages" style="display:none;">
+        <p id="kurs-msg-teacher-hint" style="display:none; color:var(--text-dim); margin-bottom:12px;"></p>
+        <div style="max-width:720px;">
+          <label style="color:var(--text-dim); font-size:0.9rem; display:block; margin-bottom:6px;">Öğrenci</label>
+          <select id="kurs-msg-student-select" class="auth-input" style="padding:12px; margin-bottom:12px;"
+            onchange="renderTeacherMessageThread()"></select>
+          <div id="kurs-msg-thread" style="min-height:220px; max-height:360px; overflow:auto; padding:14px; margin-bottom:12px;
+            border:1px solid var(--border); border-radius:12px; background:var(--surface);"></div>
+          <textarea id="kurs-msg-input-teacher" class="auth-input" rows="3" style="padding:12px; margin-bottom:10px; resize:vertical;"
+            placeholder="Mesajınız..."></textarea>
+          <button type="button" class="main-btn" style="padding:12px 22px;" onclick="sendKursMessageFromTeacher()">Gönder</button>
+        </div>
+      </div>
     </div>
 
     <!-- ÖĞRENCİ GÖRÜNÜMÜ -->
@@ -897,6 +933,46 @@
       </div>
       <div id="kurs-student-assignments" style="margin-top:10px;"></div>
       <div id="kurs-task-workspace" style="display:none; margin-top:10px;"></div>
+      <div id="kurs-student-messages-panel" style="display:none; margin-top:24px;">
+        <div class="video-setup-box" style="border-color:var(--accent);">
+          <h4 style="color:var(--accent); margin-bottom:8px;">💬 Öğretmeninizle mesaj</h4>
+          <p style="color:var(--text-dim); font-size:0.9rem; margin-bottom:12px;">Ödev veren öğretmenlerinize yazabilirsiniz.</p>
+          <label style="color:var(--text-dim); font-size:0.85rem;">Öğretmen</label>
+          <select id="kurs-msg-teacher-select-student" class="auth-input" style="padding:12px; margin-bottom:12px;"
+            onchange="renderStudentMessageThread()"></select>
+          <div id="kurs-msg-thread-student" style="min-height:180px; max-height:320px; overflow:auto; padding:14px; margin-bottom:12px;
+            border:1px solid var(--border); border-radius:12px; background:var(--surface);"></div>
+          <textarea id="kurs-msg-input-student" class="auth-input" rows="3" style="padding:12px; margin-bottom:10px; resize:vertical;"
+            placeholder="Mesajınız..."></textarea>
+          <button type="button" class="main-btn" style="padding:12px 22px;" onclick="sendKursMessageFromStudent()">Gönder</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kurs: cevap detayı -->
+    <div class="modal-overlay" id="kurs-detail-modal" style="display:none;" onclick="if(event.target===this)kursCloseDetailModal()">
+      <div class="modal-box" style="max-width:640px; max-height:90vh; overflow:auto;" onclick="event.stopPropagation();">
+        <button class="modal-close" type="button" onclick="kursCloseDetailModal()">✕</button>
+        <h2 class="modal-title" style="color:var(--accent);">📋 Teslim cevapları</h2>
+        <div id="kurs-detail-modal-body" style="margin-top:12px;"></div>
+      </div>
+    </div>
+    <!-- Kurs: öğretmen notu -->
+    <div class="modal-overlay" id="kurs-note-modal" style="display:none;" onclick="if(event.target===this)kursCloseNoteModal()">
+      <div class="modal-box" style="max-width:480px;" onclick="event.stopPropagation();">
+        <button class="modal-close" type="button" onclick="kursCloseNoteModal()">✕</button>
+        <h2 class="modal-title" style="color:var(--accent);">📝 Öğrenciye not</h2>
+        <label style="color:var(--text-dim); font-size:0.9rem;">Puan (0–100, isteğe bağlı)</label>
+        <input type="number" id="kurs-teacher-grade-input" class="auth-input" min="0" max="100" style="padding:12px; margin-bottom:12px;"
+          placeholder="Örn: 85">
+        <label style="color:var(--text-dim); font-size:0.9rem;">Yorum</label>
+        <textarea id="kurs-teacher-note-input" class="auth-input" rows="5" style="padding:12px; margin-bottom:16px; resize:vertical;"
+          placeholder="Öğrenciye geri bildirim..."></textarea>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button type="button" class="main-btn" style="flex:1; min-width:120px;" onclick="kursSaveTeacherNote()">Kaydet</button>
+          <button type="button" class="secondary-btn" onclick="kursCloseNoteModal()">İptal</button>
+        </div>
+      </div>
     </div>
 
     <!-- Öğrenci Ekle Modal -->
