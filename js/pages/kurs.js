@@ -59,6 +59,25 @@ window.updateKursDataFromCloud = function(cloudData) {
   if (typeof window.checkNewKursAssignmentToasts === 'function') {
     window.checkNewKursAssignmentToasts();
   }
+  if (typeof window.refreshKursMessagingIfVisible === 'function') {
+    window.refreshKursMessagingIfVisible();
+  }
+};
+
+/** Bulut güncellemesinde açık mesaj thread'lerini yenile (öğretmen/öğrenci) */
+window.refreshKursMessagingIfVisible = function () {
+  const sec = document.getElementById('section-kurs');
+  if (!sec || sec.style.display !== 'block' || typeof currentUser === 'undefined' || !currentUser) return;
+  if (kursIsTeacher()) {
+    const mp = document.getElementById('kurs-panel-messages');
+    if (mp && mp.style.display === 'block' && typeof window.renderTeacherMessageThread === 'function') {
+      window.renderTeacherMessageThread();
+    }
+  } else {
+    if (typeof window.renderStudentMessageThread === 'function') {
+      window.renderStudentMessageThread();
+    }
+  }
 };
 
 // --- YETKİ ---
@@ -100,6 +119,7 @@ function kursTeacherHasStudent(teacherUsername, studentUsername) {
       a.studentUsernames && a.studentUsernames.includes(studentUsername)
   );
 }
+window.kursTeacherHasStudent = kursTeacherHasStudent;
 
 function kursStudentTeacherList() {
   const fromAssign = kursAssignments
@@ -146,8 +166,19 @@ window.getTeacherPrivatePractices = function () {
 function findPracticeContentById(contentId) {
   const pub = PRACTICE_CATALOG.find(p => p.id === contentId);
   if (pub) return pub;
+  const tpub = (window.TEACHER_PUBLIC_PRACTICES_LIST || []).find(p => p.id === contentId);
+  if (tpub) return tpub;
   const priv = window.getTeacherPrivatePractices();
   return Array.isArray(priv) ? priv.find(p => p.id === contentId) : null;
+}
+
+/** Öğrenci ödev ekranı: öğretmenin özel içeriği ödev kaydında gömülü olabilir */
+function getPracticeForKursTask(asgn) {
+  if (!asgn) return null;
+  if (asgn.practicePayload && Array.isArray(asgn.practicePayload.questions)) {
+    return asgn.practicePayload;
+  }
+  return findPracticeContentById(asgn.contentId);
 }
 
 /** Yeni ödev bildirimi (öğrenci, uygulama içi) */
@@ -197,8 +228,10 @@ window.renderKursPanel = function () {
     teacherView.style.display = 'block';
     studentView.style.display = 'none';
     renderKursClasses();
-    // İlk sekme aktif
-    document.querySelectorAll('#kurs-teacher-tabs .sub-tab-btn')[0].classList.add('active');
+    if (!document.querySelector('#kurs-teacher-tabs .sub-tab-btn.active')) {
+      const first = document.querySelector('#kurs-teacher-tabs .sub-tab-btn');
+      if (first) first.classList.add('active');
+    }
   } else {
     teacherView.style.display = 'none';
     studentView.style.display = 'block';
@@ -416,9 +449,16 @@ window.onAssignTypeChange = function () {
       inner += '</optgroup>';
     }
     inner += '<optgroup label="🌐 Genel katalog">';
-    inner += PRACTICE_CATALOG.map(p =>
-      `<option value=${JSON.stringify(p.id)}>${kursEscapeHtml(p.title)} (${kursEscapeHtml(p.level)})</option>`
-    ).join('');
+    const seenPub = new Set();
+    PRACTICE_CATALOG.forEach(p => {
+      seenPub.add(p.id);
+      inner += `<option value=${JSON.stringify(p.id)}>${kursEscapeHtml(p.title)} (${kursEscapeHtml(p.level)})</option>`;
+    });
+    (window.TEACHER_PUBLIC_PRACTICES_LIST || []).forEach(p => {
+      if (!p || !p.id || seenPub.has(p.id)) return;
+      seenPub.add(p.id);
+      inner += `<option value=${JSON.stringify(p.id)}>🌐 ${kursEscapeHtml(p.title)} (${kursEscapeHtml(p.level || '—')})</option>`;
+    });
     inner += '</optgroup>';
     contentSel.innerHTML = inner;
     contentSel.onchange = null;
@@ -467,10 +507,20 @@ window.submitAssignment = function () {
   }
 
   let contentTitle = '', examCategory = null;
+  let practicePayload = null;
 
   if (type === 'practice') {
     const prac   = findPracticeContentById(contentId);
     contentTitle = prac ? prac.title : contentId;
+    if (prac) {
+      const inBuiltIn = PRACTICE_CATALOG.some(p => p.id === prac.id);
+      const inTeacherPublic = (window.TEACHER_PUBLIC_PRACTICES_LIST || []).some(
+        p => p.id === prac.id
+      );
+      if (!inBuiltIn && !inTeacherPublic) {
+        try { practicePayload = JSON.parse(JSON.stringify(prac)); } catch (e) { /* ignore */ }
+      }
+    }
   } else {
     examCategory = document.getElementById('assign-exam-cat-select').value;
     if (!examCategory) { showToastMessage('❌ Sınav kategorisi seçin.'); return; }
@@ -488,6 +538,7 @@ window.submitAssignment = function () {
     examCategory,
     dueDate: dueDate || null,
     teacherMessage: teacherMessage || null,
+    practicePayload: practicePayload || null,
     createdAt: new Date().toISOString()
   });
 
@@ -564,10 +615,10 @@ window.renderTeacherReports = function () {
           ${gradeCell}${notePrev}
         </td>
         <td style="padding:10px 8px; text-align:center; border-bottom:1px solid var(--border); white-space:nowrap;">
-          <button type="button" class="secondary-btn" style="padding:6px 10px; font-size:0.8rem; margin:2px;"
-            onclick="event.stopPropagation(); kursOpenSubmissionDetail(${JSON.stringify(asgn.id)}, ${JSON.stringify(uname)})">Cevaplar</button>
-          <button type="button" class="secondary-btn" style="padding:6px 10px; font-size:0.8rem; margin:2px;"
-            onclick="event.stopPropagation(); kursOpenTeacherNoteModal(${JSON.stringify(asgn.id)}, ${JSON.stringify(uname)})">Not</button>
+          <button type="button" class="secondary-btn kurs-rpt-detail-btn" style="padding:6px 10px; font-size:0.8rem; margin:2px;"
+            data-kurs-aid="${encodeURIComponent(asgn.id)}" data-kurs-stu="${encodeURIComponent(uname)}">Cevaplar</button>
+          <button type="button" class="secondary-btn kurs-rpt-note-btn" style="padding:6px 10px; font-size:0.8rem; margin:2px;"
+            data-kurs-aid="${encodeURIComponent(asgn.id)}" data-kurs-stu="${encodeURIComponent(uname)}">Not</button>
         </td>
       </tr>`;
     }).join('');
@@ -627,6 +678,23 @@ window.renderTeacherReports = function () {
         </div>
       </div>`;
   }).join('');
+
+  container.querySelectorAll('.kurs-rpt-detail-btn').forEach(function (btn) {
+    btn.onclick = function (e) {
+      e.stopPropagation();
+      const aid = decodeURIComponent(btn.getAttribute('data-kurs-aid') || '');
+      const stu = decodeURIComponent(btn.getAttribute('data-kurs-stu') || '');
+      window.kursOpenSubmissionDetail(aid, stu);
+    };
+  });
+  container.querySelectorAll('.kurs-rpt-note-btn').forEach(function (btn) {
+    btn.onclick = function (e) {
+      e.stopPropagation();
+      const aid = decodeURIComponent(btn.getAttribute('data-kurs-aid') || '');
+      const stu = decodeURIComponent(btn.getAttribute('data-kurs-stu') || '');
+      window.kursOpenTeacherNoteModal(aid, stu);
+    };
+  });
 };
 
 window.deleteAssignment = function (assignmentId) {
@@ -923,47 +991,8 @@ window.renderTeacherPrivateMaterials = function () {
 };
 
 window.saveTeacherPrivatePracticeFromForm = function () {
-  const title = document.getElementById('tp-title') && document.getElementById('tp-title').value.trim();
-  const text = document.getElementById('tp-text') && document.getElementById('tp-text').value.trim();
-  const json = document.getElementById('tp-questions-json') && document.getElementById('tp-questions-json').value.trim();
-  if (!title || !text) {
-    showToastMessage('Başlık ve metin zorunludur.');
-    return;
-  }
-  let questions = [];
-  if (json) {
-    try {
-      questions = JSON.parse(json);
-      if (!Array.isArray(questions)) throw new Error('array');
-    } catch {
-      showToastMessage('Sorular, köşeli parantezli geçerli bir JSON dizi olmalıdır.');
-      return;
-    }
-  }
-  if (typeof dbUserData === 'undefined' || !currentUsername) return;
-  if (!dbUserData[currentUsername]) dbUserData[currentUsername] = {};
-  if (!Array.isArray(dbUserData[currentUsername].teacherPrivatePractices)) {
-    dbUserData[currentUsername].teacherPrivatePractices = [];
-  }
-  const id = 'tp_' + Date.now();
-  dbUserData[currentUsername].teacherPrivatePractices.push({
-    id,
-    title,
-    level: 'Özel',
-    category: 'Özel',
-    text,
-    questions
-  });
-  if (typeof saveDb === 'function') saveDb();
-  if (typeof syncCloudData === 'function') syncCloudData();
-  showToastMessage('Özel alıştırma kaydedildi. «Ödev Ver» sekmesinde «Özel içeriklerim» altında seçebilirsiniz.');
-  const t1 = document.getElementById('tp-title');
-  const t2 = document.getElementById('tp-text');
-  const t3 = document.getElementById('tp-questions-json');
-  if (t1) t1.value = '';
-  if (t2) t2.value = '';
-  if (t3) t3.value = '';
-  window.renderTeacherPrivateMaterials();
+  showToastMessage('Alıştırmalar sekmesindeki formdan ekleyin; özel veya genel olarak kaydedebilirsiniz.');
+  if (typeof window.switchMainTab === 'function') window.switchMainTab('practice');
 };
 
 window.deleteTeacherPrivatePractice = function (id) {
@@ -1114,7 +1143,7 @@ function _showKursWorkspace() {
 // ÖĞRENCİ — ALIŞTIRMA MODU
 // ============================================================
 function _startKursPractice(asgn) {
-  const prac = findPracticeContentById(asgn.contentId);
+  const prac = getPracticeForKursTask(asgn);
   if (!prac) { showToastMessage('❌ Alıştırma veritabanında bulunamadı.'); return; }
 
   const ws = _showKursWorkspace();
@@ -1197,7 +1226,7 @@ function _startKursPractice(asgn) {
 window.submitKursPractice = function () {
   const { assignmentId, startTime } = kursActiveSession;
   const asgn = kursAssignments.find(a => a.id === assignmentId);
-  const prac = findPracticeContentById(asgn.contentId);
+  const prac = getPracticeForKursTask(asgn);
   if (!prac || !Array.isArray(prac.questions)) {
     showToastMessage('❌ Alıştırma verisi bulunamadı.');
     return;

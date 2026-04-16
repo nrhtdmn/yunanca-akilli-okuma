@@ -1,6 +1,7 @@
 // --- GLOBAL DEĞİŞKENLER VE KURULUM ---
 window.useFirebase = false;
 window.db = null;
+window.TEACHER_PUBLIC_PRACTICES_LIST = [];
 
 try {
   const firebaseConfig = {
@@ -84,6 +85,15 @@ function ingestAnnouncementsDoc(doc) {
   if (typeof updateBellIcon === "function") updateBellIcon();
 }
 
+function ingestTeacherPublicPracticesDoc(doc) {
+  if (!doc.exists) {
+    window.TEACHER_PUBLIC_PRACTICES_LIST = [];
+  } else {
+    window.TEACHER_PUBLIC_PRACTICES_LIST = doc.data().list || [];
+  }
+  if (typeof renderPracticeLibrary === "function") renderPracticeLibrary();
+}
+
 async function fetchFromFirebase() {
   if(!window.useFirebase) { finishInit(); return; }
   // window ile helpers let'leri tekrar hizala (başka bir betik sırası değişirse diye)
@@ -94,23 +104,29 @@ async function fetchFromFirebase() {
     const userdataRef = window.db.collection("global").doc("userdata");
     const annRef = window.db.collection("global").doc("announcements");
     const kursRef = window.db.collection("global").doc("kurs_data");
+    const teacherPubRef = window.db.collection("global").doc("teacher_public_practices");
 
     // ÖNEMLİ: finishInit/loadUserData, Firestore'dan ilk veri gelmeden çalışırsa boş profil
     // saveDb() ile buluttaki userdata/users belgelerinin üzerine yazılabiliyordu.
-    const [usersSnap, userdataSnap, annSnap] = await Promise.all([
+    const [usersSnap, userdataSnap, annSnap, teacherPubSnap] = await Promise.all([
       usersRef.get(),
       userdataRef.get(),
       annRef.get(),
+      teacherPubRef.get(),
     ]);
 
     ingestUsersDoc(usersSnap);
     ingestUserdataDoc(userdataSnap);
     ingestAnnouncementsDoc(annSnap);
+    ingestTeacherPublicPracticesDoc(teacherPubSnap);
 
     // İlk okuma tamamlandıktan sonra UI boot — canlı dinleyiciler aynı veriyi günceller
     usersRef.onSnapshot(ingestUsersDoc, (err) => console.error("Firestore global/users dinleyicisi:", err));
     userdataRef.onSnapshot(ingestUserdataDoc, (err) => console.error("Firestore global/userdata dinleyicisi:", err));
     annRef.onSnapshot(ingestAnnouncementsDoc, (err) => console.error("Firestore global/announcements dinleyicisi:", err));
+    teacherPubRef.onSnapshot(ingestTeacherPublicPracticesDoc, (err) =>
+      console.error("Firestore teacher_public_practices:", err),
+    );
 
     kursRef.onSnapshot((doc) => {
         if (doc.exists && typeof window.updateKursDataFromCloud === 'function') {

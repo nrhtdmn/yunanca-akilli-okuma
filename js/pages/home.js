@@ -84,6 +84,9 @@ function updateUserUI() {
   if (!currentUser) {
     headerArea.innerHTML = `<button class="auth-action-btn" onclick="showAuthModal(true)">Giriş Yap / Kayıt Ol</button>`;
     document.getElementById("main-sync-panel").style.display = "none";
+    if (typeof updatePracticeTeacherAddBoxVisibility === "function") {
+      updatePracticeTeacherAddBoxVisibility();
+    }
     return;
   }
 
@@ -112,6 +115,9 @@ function updateUserUI() {
   headerArea.innerHTML = badges;
   document.getElementById("main-sync-panel").style.display = "flex";
   updateBellIcon();
+  if (typeof updatePracticeTeacherAddBoxVisibility === "function") {
+    updatePracticeTeacherAddBoxVisibility();
+  }
 }
 
 // YENİ FONKSİYON: Gelişmiş Profili Açma ve İstatistik Hesaplama
@@ -1678,15 +1684,156 @@ async function searchDictionary() {
  * ALIŞTIRMALAR (PRACTICE) MOTORU
  * ========================================== */
 
+function getMergedPracticeCatalogForView() {
+  const out = [];
+  const seen = new Set();
+  function add(p) {
+    if (!p || !p.id) return;
+    if (seen.has(p.id)) return;
+    seen.add(p.id);
+    out.push(p);
+  }
+  (typeof PRACTICE_CATALOG !== "undefined" && PRACTICE_CATALOG
+    ? PRACTICE_CATALOG
+    : []
+  ).forEach(add);
+  (window.TEACHER_PUBLIC_PRACTICES_LIST || []).forEach(add);
+
+  const uname =
+    typeof currentUsername !== "undefined" && currentUsername
+      ? currentUsername
+      : "";
+  const urole = currentUser && currentUser.role;
+
+  if (typeof dbUserData !== "undefined" && dbUserData && uname) {
+    Object.keys(dbUserData).forEach((teacherU) => {
+      const priv =
+        dbUserData[teacherU] && dbUserData[teacherU].teacherPrivatePractices;
+      if (!Array.isArray(priv) || !priv.length) return;
+      let include = false;
+      if (urole === "admin") include = true;
+      else if (teacherU === uname && (urole === "teacher" || urole === "admin"))
+        include = true;
+      else if (
+        urole !== "teacher" &&
+        urole !== "admin" &&
+        typeof window.kursTeacherHasStudent === "function"
+      ) {
+        include = window.kursTeacherHasStudent(teacherU, uname);
+      }
+      if (include) priv.forEach(add);
+    });
+  }
+  return out;
+}
+
+function findPracticeInMergedCatalog(id) {
+  return (
+    getMergedPracticeCatalogForView().find((p) => p.id === id) || null
+  );
+}
+
+function updatePracticeTeacherAddBoxVisibility() {
+  const box = document.getElementById("practice-teacher-add-box");
+  if (!box) return;
+  const ok =
+    currentUser &&
+    (currentUser.role === "teacher" || currentUser.role === "admin");
+  box.style.display = ok ? "block" : "none";
+}
+
+window.saveTeacherPracticeFromPracticeTab = function () {
+  if (!requireAuth(1)) return;
+  if (
+    !currentUser ||
+    (currentUser.role !== "teacher" && currentUser.role !== "admin")
+  ) {
+    showToastMessage("Bu form yalnızca öğretmen hesapları içindir.");
+    return;
+  }
+  const title = document.getElementById("practice-tp-title")?.value.trim();
+  const level =
+    document.getElementById("practice-tp-level")?.value.trim() || "A2";
+  const category =
+    document.getElementById("practice-tp-cat")?.value.trim() || "Öğretmen";
+  const text = document.getElementById("practice-tp-text")?.value.trim();
+  const jsonRaw = document
+    .getElementById("practice-tp-questions-json")
+    ?.value.trim();
+  const vis =
+    document.querySelector('input[name="practice-tp-visibility"]:checked')
+      ?.value || "private";
+
+  if (!title || !text) {
+    showToastMessage("Başlık ve metin zorunludur.");
+    return;
+  }
+  let questions = [];
+  if (jsonRaw) {
+    try {
+      questions = JSON.parse(jsonRaw);
+      if (!Array.isArray(questions)) throw new Error("array");
+    } catch {
+      showToastMessage("Sorular geçerli bir JSON dizi olmalıdır.");
+      return;
+    }
+  }
+
+  if (vis === "public") {
+    const id = "tpub_" + Date.now();
+    const newPrac = { id, title, level, category, text, questions };
+    const list = [...(window.TEACHER_PUBLIC_PRACTICES_LIST || [])];
+    list.unshift(newPrac);
+    window.TEACHER_PUBLIC_PRACTICES_LIST = list;
+    if (typeof useFirebase !== "undefined" && useFirebase && db) {
+      db.collection("global").doc("teacher_public_practices").set({ list });
+    }
+    showToastMessage("Genel alıştırma kaydedildi; tüm kullanıcılar görebilir.");
+  } else {
+    const id = "tp_" + Date.now();
+    const newPrac = {
+      id,
+      title,
+      level: level || "Özel",
+      category: category || "Özel",
+      text,
+      questions,
+    };
+    if (!dbUserData[currentUsername]) dbUserData[currentUsername] = {};
+    if (!Array.isArray(dbUserData[currentUsername].teacherPrivatePractices)) {
+      dbUserData[currentUsername].teacherPrivatePractices = [];
+    }
+    dbUserData[currentUsername].teacherPrivatePractices.unshift(newPrac);
+    if (typeof saveDb === "function") saveDb();
+    if (typeof syncCloudData === "function") syncCloudData();
+    showToastMessage(
+      "Özel alıştırma kaydedildi; size ve atadığınız öğrencilere görünür.",
+    );
+  }
+
+  const elTitle = document.getElementById("practice-tp-title");
+  const elText = document.getElementById("practice-tp-text");
+  const elJson = document.getElementById("practice-tp-questions-json");
+  if (elTitle) elTitle.value = "";
+  if (elText) elText.value = "";
+  if (elJson) elJson.value = "";
+  renderPracticeLibrary();
+  if (typeof window.renderTeacherPrivateMaterials === "function") {
+    window.renderTeacherPrivateMaterials();
+  }
+};
+
 function renderPracticeLibrary() {
   const container = document.getElementById("practice-grid-container");
   let html = "";
 
+  const merged = getMergedPracticeCatalogForView();
+
   // 1. Mevcut Alıştırmaları Çiz (Veritabanındaki tüm Seviyeleri otomatik bul)
-  const levels = [...new Set(PRACTICE_CATALOG.map((p) => p.level))].sort();
+  const levels = [...new Set(merged.map((p) => p.level))].sort();
 
   levels.forEach((level) => {
-    const practicesInLevel = PRACTICE_CATALOG.filter((p) => p.level === level);
+    const practicesInLevel = merged.filter((p) => p.level === level);
     const safeLevel = level.replace(/[^a-zA-Z0-9]/g, "_");
     let levelContent = "";
 
@@ -2003,94 +2150,6 @@ function addAdminQuestionField() {
 
 // Buluta Kaydetme Fonksiyonu (Hata Çözüldü)
 
-// Öğrenci Ekranı (Boşluk Doldurmaların Yeni Görünümü)
-// Öğrenci Ekranı (Okuma ve Çözme Arayüzü)
-function openPractice(id) {
-  if (!requireAuth(1)) return;
-
-  const prac = PRACTICE_CATALOG.find((p) => p.id === id);
-  if (!prac) return;
-  activePracticeSession = prac;
-
-  document.getElementById("practice-library-view").style.display = "none";
-  document.getElementById("practice-workspace").style.display = "block";
-  document.getElementById("active-practice-title").textContent = prac.title;
-
-  // Metni Çiz
-  document.getElementById("practice-text-content").innerHTML = tokenizePracHTML(
-    prac.text,
-  );
-
-  const qContainer = document.getElementById("practice-questions-content");
-  let qHtml = "";
-
-  prac.questions.forEach((q, index) => {
-    qHtml += `<div class="prac-q-box" id="prac-box-${q.id}">`;
-
-    // --- 1. SORU VE ŞIKLAR BÖLÜMÜ ---
-    if (q.type === "tf") {
-      qHtml += `<div class="prac-q-title">${index + 1}. ${tokenizePracHTML(q.question)}</div>`;
-      qHtml += `<button class="prac-tf-btn" id="btn-${q.id}-true" onclick="selectPracOpt('${q.id}', 'true')">🟢 Σωστό (Doğru)</button>`;
-      qHtml += `<button class="prac-tf-btn" id="btn-${q.id}-false" onclick="selectPracOpt('${q.id}', 'false')">🔴 Λάθος (Yanlış)</button>`;
-      qHtml += `<input type="hidden" id="ans-${q.id}" value="">`;
-    } else if (q.type === "mc") {
-      qHtml += `<div class="prac-q-title">${index + 1}. ${tokenizePracHTML(q.question)}</div>`;
-      if (q.options) {
-        q.options.forEach((opt, optIdx) => {
-          qHtml += `<button class="prac-mc-btn prac-mc-grp-${q.id}" id="btn-${q.id}-${optIdx}" onclick="selectPracMCOpt('${q.id}', '${optIdx}')">${tokenizePracHTML(opt)}</button>`;
-        });
-      }
-      qHtml += `<input type="hidden" id="ans-${q.id}" value="">`;
-    } else if (q.type === "fill-write") {
-      qHtml += `<div class="prac-q-title">${index + 1}. ${tokenizePracHTML(q.question)}</div>`;
-
-      qHtml += `<div style="font-size:1.15rem; margin-top:10px; display:flex; align-items:center; flex-wrap:wrap; gap:10px;">`;
-      if (q.before) qHtml += `<span>${tokenizePracHTML(q.before)}</span>`;
-      qHtml += `<input type="text" class="prac-input" id="ans-${q.id}" autocomplete="off" placeholder="Cevabı yazın...">`;
-      if (q.after) qHtml += `<span>${tokenizePracHTML(q.after)}</span>`;
-
-      const safeAns = q.answer ? q.answer.replace(/'/g, "\\'") : "";
-      qHtml += `<button class="secondary-btn" style="padding:6px 12px; font-size:0.85rem; border:1px solid var(--accent); color:var(--accent); background:transparent; border-radius:6px; cursor:pointer;" onclick="document.getElementById('ans-${q.id}').value = '${safeAns}'; this.style.opacity='0.5';">Cevabı Doldur</button>`;
-
-      qHtml += `</div>`;
-    } else if (q.type === "fill-select") {
-      qHtml += `<div class="prac-q-title">${index + 1}. ${tokenizePracHTML(q.question)}</div>`;
-      let opts = `<option value="" disabled selected>Seçiniz...</option>`;
-      if (q.options)
-        q.options.forEach((opt) => {
-          opts += `<option value="${opt}">${opt}</option>`;
-        });
-
-      qHtml += `<div style="font-size:1.15rem; margin-top:10px; display:flex; align-items:center; flex-wrap:wrap; gap:10px;">`;
-      if (q.before) qHtml += `<span>${tokenizePracHTML(q.before)}</span>`;
-      qHtml += `<select class="prac-select" id="ans-${q.id}">${opts}</select>`;
-      if (q.after) qHtml += `<span>${tokenizePracHTML(q.after)}</span>`;
-      qHtml += `</div>`;
-    }
-
-    // --- 2. DETAYLI AÇIKLAMA / KONU ANLATIMI BÖLÜMÜ ---
-    // Eğer admin panelinden zengin metin (tablo vs.) kopyalanmışsa butonu göster
-    if (q.explanation) {
-      qHtml += `
-            <div style="margin-top: 20px; border-top: 1px dashed var(--border); padding-top: 15px;">
-                <button class="secondary-btn" style="padding:8px 15px; font-size:0.9rem; border:1px solid var(--accent2); color:var(--accent2); background:transparent; border-radius:6px; cursor:pointer;"
-                        onclick="const expDiv = document.getElementById('prac-exp-${q.id}'); expDiv.style.display = expDiv.style.display === 'none' ? 'block' : 'none';">
-                    👁️ Detaylı Çözümü / Konu Anlatımını Gör
-                </button>
-            </div>
-            <div id="prac-exp-${q.id}" style="display: none; margin-top: 15px; padding: 20px; background: var(--surface-alt); border: 2px solid var(--accent2); border-radius: 8px; color: var(--text); animation: fadeIn 0.3s ease; font-size: 1.05rem; line-height: 1.7; overflow-x: auto;">
-                ${q.explanation}
-            </div>
-        `;
-    }
-
-    qHtml += `</div>`;
-  });
-
-  qContainer.innerHTML = qHtml;
-  document.getElementById("practice-result-feedback").style.display = "none";
-}
-
 // YENİ: Tüm kutucukları okuyup, tek bir JSON haline getirip buluta kaydeden fonksiyon
 /* ==========================================
  * YÖNETİCİ ALIŞTIRMA LİSTELEME, DÜZENLEME VE SİLME
@@ -2241,11 +2300,12 @@ function tokenizePracText(text, questionsArray = null) {
 function openPractice(id) {
   if (!requireAuth(1)) return;
 
-  const prac = PRACTICE_CATALOG.find((p) => p.id === id);
+  const prac = findPracticeInMergedCatalog(id);
   if (!prac) return;
   activePracticeSession = prac;
 
   // İnline bayraklarını sıfırla
+  if (!prac.questions) prac.questions = [];
   if (prac.questions)
     prac.questions.forEach((q) => (q.isRenderedInline = false));
 
@@ -3145,8 +3205,22 @@ window.switchMainTab = function(tabName) {
             if (gridContainer) gridContainer.style.display = 'grid';
             if (viewArea) viewArea.style.display = 'none';
         }
-        if (tabName === 'kurs' && typeof window.renderKursPanel === 'function') {
-            window.renderKursPanel();
+        if (tabName === 'quiz' && typeof populateDeckSelects === 'function') {
+            populateDeckSelects();
+        }
+        if (tabName === 'practice') {
+            if (typeof updatePracticeTeacherAddBoxVisibility === 'function') {
+                updatePracticeTeacherAddBoxVisibility();
+            }
+            if (typeof renderPracticeLibrary === 'function') renderPracticeLibrary();
+        }
+        if (tabName === 'kurs') {
+            if (typeof window.checkNewKursAssignmentToasts === 'function') {
+                window.checkNewKursAssignmentToasts();
+            }
+            if (typeof window.renderKursPanel === 'function') {
+                window.renderKursPanel();
+            }
         }
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
