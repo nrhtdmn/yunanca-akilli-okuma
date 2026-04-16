@@ -237,6 +237,10 @@ function updateBellIcon() {
 }
 
 function sendAnnouncement() {
+  if (!currentUser || currentUser.role !== "admin") {
+    showToastMessage("Duyuru göndermek yalnızca yönetici içindir.");
+    return;
+  }
   const text = document.getElementById("admin-ann-text").value.trim();
   const link = document.getElementById("admin-ann-link").value.trim(); // YENİ: Linki al
   if (!text) return;
@@ -1781,7 +1785,15 @@ window.saveTeacherPracticeFromPracticeTab = function () {
 
   if (vis === "public") {
     const id = "tpub_" + Date.now();
-    const newPrac = { id, title, level, category, text, questions };
+    const newPrac = {
+      id,
+      title,
+      level,
+      category,
+      text,
+      questions,
+      authorUsername: currentUsername,
+    };
     const list = [...(window.TEACHER_PUBLIC_PRACTICES_LIST || [])];
     list.unshift(newPrac);
     window.TEACHER_PUBLIC_PRACTICES_LIST = list;
@@ -2160,6 +2172,11 @@ function renderAdminPracticeList() {
   const container = document.getElementById("admin-prac-list-container");
   if (!container) return;
 
+  if (currentUser && currentUser.role === "teacher") {
+    renderTeacherStudioPracticeList();
+    return;
+  }
+
   if (PRACTICE_CATALOG.length === 0) {
     container.innerHTML =
       '<p style="color:var(--text-dim); font-size:0.85rem;">Sistemde henüz alıştırma bulunmuyor.</p>';
@@ -2169,12 +2186,13 @@ function renderAdminPracticeList() {
   let html =
     '<table class="admin-table"><thead><tr><th>ID</th><th>Başlık</th><th>İşlem</th></tr></thead><tbody>';
   PRACTICE_CATALOG.forEach((p) => {
+    const sid = String(p.id).replace(/'/g, "\\'");
     html += `<tr>
             <td style="font-size:0.85rem; color:var(--text-dim);">${p.id}</td>
             <td style="font-size:0.85rem; font-weight:bold;">${p.title}</td>
             <td style="display:flex; gap:5px;">
-                <button class="secondary-btn" style="padding:4px 8px; font-size:0.8rem; border-color:var(--accent); color:var(--accent); background:transparent;" onclick="loadPracticeToAdminForm('${p.id}')">✏️</button>
-                <button class="secondary-btn" style="padding:4px 8px; font-size:0.8rem; border-color:var(--error); color:var(--error); background:transparent;" onclick="deletePracticeFromAdmin('${p.id}')">🗑️</button>
+                <button class="secondary-btn" style="padding:4px 8px; font-size:0.8rem; border-color:var(--accent); color:var(--accent); background:transparent;" onclick="loadPracticeToAdminForm('${sid}')">✏️</button>
+                <button class="secondary-btn" style="padding:4px 8px; font-size:0.8rem; border-color:var(--error); color:var(--error); background:transparent;" onclick="deletePracticeFromAdmin('${sid}')">🗑️</button>
             </td>
         </tr>`;
   });
@@ -2182,27 +2200,99 @@ function renderAdminPracticeList() {
   container.innerHTML = html;
 }
 
+function renderTeacherStudioPracticeList() {
+  const container = document.getElementById("admin-prac-list-container");
+  if (!container || !currentUsername) return;
+
+  const priv =
+    typeof window.getTeacherPrivatePractices === "function"
+      ? window.getTeacherPrivatePractices() || []
+      : [];
+  const pubAll = window.TEACHER_PUBLIC_PRACTICES_LIST || [];
+  const pubOwn = pubAll.filter(
+    (p) => p && p.authorUsername === currentUsername,
+  );
+
+  const rows = [];
+  priv.forEach((p) => rows.push({ p, source: "private" }));
+  pubOwn.forEach((p) => rows.push({ p, source: "public" }));
+
+  if (rows.length === 0) {
+    container.innerHTML =
+      '<p style="color:var(--text-dim); font-size:0.85rem;">Henüz özel veya genel alıştırmanız yok. Yukarıdaki formdan ekleyin.</p>';
+    return;
+  }
+
+  let html =
+    '<table class="admin-table"><thead><tr><th>ID</th><th>Başlık</th><th>Kapsam</th><th>İşlem</th></tr></thead><tbody>';
+  rows.forEach(({ p, source }) => {
+    const scopeLabel = source === "private" ? "🔒 Özel" : "🌐 Genel";
+    const sid = String(p.id).replace(/'/g, "\\'");
+    const src = source === "public" ? "public" : "private";
+    html += `<tr>
+      <td style="font-size:0.85rem; color:var(--text-dim);">${p.id}</td>
+      <td style="font-size:0.85rem; font-weight:bold;">${p.title}</td>
+      <td style="font-size:0.8rem;">${scopeLabel}</td>
+      <td style="display:flex; gap:5px;">
+        <button type="button" class="secondary-btn" style="padding:4px 8px; font-size:0.8rem; border-color:var(--accent); color:var(--accent); background:transparent;" onclick="loadPracticeToAdminForm('${sid}','${src}')">✏️</button>
+        <button type="button" class="secondary-btn" style="padding:4px 8px; font-size:0.8rem; border-color:var(--error); color:var(--error); background:transparent;" onclick="deletePracticeFromAdmin('${sid}','${src}')">🗑️</button>
+      </td>
+    </tr>`;
+  });
+  html += "</tbody></table>";
+  container.innerHTML = html;
+}
+
 // 2. Alıştırmayı Kalıcı Olarak Silme
-function deletePracticeFromAdmin(id) {
+function deletePracticeFromAdmin(id, source) {
   if (
-    confirm(
+    !confirm(
       `"${id}" ID'li alıştırmayı KALICI OLARAK silmek istediğinize emin misiniz?`,
     )
   ) {
-    // Alıştırmayı listeden filtrele (çıkar)
-    PRACTICE_CATALOG = PRACTICE_CATALOG.filter((p) => p.id !== id);
-
-    // Buluta ve yerel hafızaya kaydet
-    localStorage.setItem("y_practices_db", JSON.stringify(PRACTICE_CATALOG));
-    if (useFirebase && db) {
-      db.collection("global").doc("practices").set({ list: PRACTICE_CATALOG });
-    }
-
-    // Arayüzleri yenile
-    renderPracticeLibrary();
-    renderAdminPracticeList();
-    showToastMessage("🗑️ Alıştırma başarıyla silindi.");
+    return;
   }
+
+  if (currentUser && currentUser.role === "teacher") {
+    if (source === "public") {
+      const list = [...(window.TEACHER_PUBLIC_PRACTICES_LIST || [])];
+      const next = list.filter(
+        (p) =>
+          !(
+            p.id === id &&
+            p.authorUsername === currentUsername
+          ),
+      );
+      window.TEACHER_PUBLIC_PRACTICES_LIST = next;
+      if (typeof useFirebase !== "undefined" && useFirebase && db) {
+        db.collection("global").doc("teacher_public_practices").set({ list: next });
+      }
+    } else {
+      if (!dbUserData[currentUsername]) return;
+      const arr = dbUserData[currentUsername].teacherPrivatePractices || [];
+      dbUserData[currentUsername].teacherPrivatePractices = arr.filter(
+        (p) => p.id !== id,
+      );
+      if (typeof saveDb === "function") saveDb();
+      if (typeof syncCloudData === "function") syncCloudData();
+    }
+    if (typeof renderPracticeLibrary === "function") renderPracticeLibrary();
+    renderTeacherStudioPracticeList();
+    if (typeof window.renderTeacherPrivateMaterials === "function") {
+      window.renderTeacherPrivateMaterials();
+    }
+    showToastMessage("🗑️ Alıştırma silindi.");
+    return;
+  }
+
+  PRACTICE_CATALOG = PRACTICE_CATALOG.filter((p) => p.id !== id);
+  localStorage.setItem("y_practices_db", JSON.stringify(PRACTICE_CATALOG));
+  if (useFirebase && db) {
+    db.collection("global").doc("practices").set({ list: PRACTICE_CATALOG });
+  }
+  renderPracticeLibrary();
+  renderAdminPracticeList();
+  showToastMessage("🗑️ Alıştırma başarıyla silindi.");
 }
 
 // 3. Düzenlemek İçin Alıştırmayı Forma Doldurma
@@ -2361,6 +2451,69 @@ function openPractice(id) {
  * YÖNETİCİ PANELİ KONTROLLERİ (FORM VE KAYIT)
  * ========================================== */
 
+function collectPracticeQuestionsFromAdminForm() {
+  const questions = [];
+  let hasError = false;
+  const qBlocks = document.querySelectorAll(
+    "#admin-prac-questions .admin-q-block",
+  );
+  qBlocks.forEach((block, idx) => {
+    const type = block.querySelector(".prac-q-type").value;
+    let qObj = { id: "q" + (idx + 1), type: type };
+
+    if (type === "tf") {
+      qObj.question = block.querySelector(".q-text").value.trim();
+      qObj.answer = block.querySelector(".q-ans-tf").value;
+      if (!qObj.question) hasError = true;
+    } else if (type === "mc") {
+      qObj.question = block.querySelector(".q-text").value.trim();
+      const optsStr = block.querySelector(".q-opts").value.trim();
+      qObj.options = optsStr
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s);
+      qObj.answer = block.querySelector(".q-ans-mc").value.trim();
+      if (!qObj.question || qObj.options.length < 2 || qObj.answer === "")
+        hasError = true;
+    } else if (type === "fill-write") {
+      qObj.question = "";
+      qObj.answer = block.querySelector(".q-ans-fw").value.trim();
+      if (!qObj.answer) hasError = true;
+    } else if (type === "fill-select") {
+      qObj.question = "";
+      const optsStr = block.querySelector(".q-opts").value.trim();
+      qObj.options = optsStr
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s);
+      qObj.answer = block.querySelector(".q-ans-fs").value.trim();
+      if (qObj.options.length < 2 || !qObj.answer) hasError = true;
+    }
+
+    const explanationBox = block.querySelector(".q-explanation");
+    if (explanationBox) {
+      let expText = explanationBox.innerHTML.trim();
+      if (expText === "<br>" || expText === "<div><br></div>") expText = "";
+      qObj.explanation = expText;
+    }
+
+    questions.push(qObj);
+  });
+  return { questions, hasError };
+}
+
+function clearAdminPracticeFormFields() {
+  const idEl = document.getElementById("admin-prac-id");
+  const titleEl = document.getElementById("admin-prac-title");
+  const textEl = document.getElementById("admin-prac-text");
+  const qEl = document.getElementById("admin-prac-questions");
+  if (idEl) idEl.value = "";
+  if (titleEl) titleEl.value = "";
+  if (textEl) textEl.value = "";
+  if (qEl) qEl.innerHTML = "";
+  if (typeof adminQCount !== "undefined") adminQCount = 0;
+}
+
 function changeAdminQType(selectElem, qId) {
   const type = selectElem.value;
   const container = document.getElementById(`q-fields-${qId}`);
@@ -2419,56 +2572,89 @@ function savePracticeFromForm() {
     return;
   }
 
-  const questions = [];
-  const qBlocks = document.querySelectorAll(".admin-q-block");
-  let hasError = false;
-
-  qBlocks.forEach((block, idx) => {
-    const type = block.querySelector(".prac-q-type").value;
-    let qObj = { id: "q" + (idx + 1), type: type };
-
-    if (type === "tf") {
-      qObj.question = block.querySelector(".q-text").value.trim();
-      qObj.answer = block.querySelector(".q-ans-tf").value;
-      if (!qObj.question) hasError = true;
-    } else if (type === "mc") {
-      qObj.question = block.querySelector(".q-text").value.trim();
-      const optsStr = block.querySelector(".q-opts").value.trim();
-      qObj.options = optsStr
-        .split(",")
-        .map((s) => s.trim())
-        .filter((s) => s);
-      qObj.answer = block.querySelector(".q-ans-mc").value.trim();
-      if (!qObj.question || qObj.options.length < 2 || qObj.answer === "")
-        hasError = true;
-    } else if (type === "fill-write") {
-      qObj.question = "";
-      qObj.answer = block.querySelector(".q-ans-fw").value.trim();
-      if (!qObj.answer) hasError = true;
-    } else if (type === "fill-select") {
-      qObj.question = "";
-      const optsStr = block.querySelector(".q-opts").value.trim();
-      qObj.options = optsStr
-        .split(",")
-        .map((s) => s.trim())
-        .filter((s) => s);
-      qObj.answer = block.querySelector(".q-ans-fs").value.trim();
-      if (qObj.options.length < 2 || !qObj.answer) hasError = true;
-    }
-
-    // YENİ EKLENEN KISIM: Zengin Metni Oku ve Kaydet
-    const explanationBox = block.querySelector(".q-explanation");
-    if (explanationBox) {
-      let expText = explanationBox.innerHTML.trim();
-      if (expText === "<br>" || expText === "<div><br></div>") expText = ""; // Boşsa temizle
-      qObj.explanation = expText;
-    }
-
-    questions.push(qObj);
-  });
+  const { questions, hasError } = collectPracticeQuestionsFromAdminForm();
 
   if (hasError) {
     showToastMessage("❌ Soru alanlarında eksiklik var. Lütfen kontrol edin.");
+    return;
+  }
+
+  if (currentUser && currentUser.role === "teacher") {
+    const scope =
+      document.querySelector('input[name="teacher-prac-scope"]:checked')
+        ?.value || "private";
+    const privList =
+      typeof window.getTeacherPrivatePractices === "function"
+        ? window.getTeacherPrivatePractices() || []
+        : [];
+    const pubList = window.TEACHER_PUBLIC_PRACTICES_LIST || [];
+    const inPriv = privList.some((p) => p.id === id);
+    const inPub = pubList.some(
+      (p) => p.id === id && p.authorUsername === currentUsername,
+    );
+    if (scope === "public" && inPriv) {
+      showToastMessage(
+        "❌ Bu ID özel listede var. Önce özel kaydı silin veya başka ID kullanın.",
+      );
+      return;
+    }
+    if (scope === "private" && inPub) {
+      showToastMessage(
+        "❌ Bu ID genel listede var. Önce genel kaydı silin veya başka ID kullanın.",
+      );
+      return;
+    }
+
+    const newPrac = {
+      id,
+      title,
+      level,
+      category,
+      text,
+      questions,
+      authorUsername: currentUsername,
+    };
+
+    if (scope === "public") {
+      const list = [...pubList];
+      const idx = list.findIndex(
+        (p) => p.id === id && p.authorUsername === currentUsername,
+      );
+      if (idx > -1) {
+        list[idx] = newPrac;
+      } else {
+        const idTaken = list.some((p) => p.id === id);
+        if (idTaken) {
+          showToastMessage("❌ Bu ID başka bir kullanıcı tarafından kullanılıyor.");
+          return;
+        }
+        list.unshift(newPrac);
+      }
+      window.TEACHER_PUBLIC_PRACTICES_LIST = list;
+      if (typeof useFirebase !== "undefined" && useFirebase && db) {
+        db.collection("global").doc("teacher_public_practices").set({ list });
+      }
+      showToastMessage("✅ Genel alıştırma kaydedildi (tüm kullanıcılar).");
+    } else {
+      if (!dbUserData[currentUsername]) dbUserData[currentUsername] = {};
+      if (!Array.isArray(dbUserData[currentUsername].teacherPrivatePractices)) {
+        dbUserData[currentUsername].teacherPrivatePractices = [];
+      }
+      const arr = dbUserData[currentUsername].teacherPrivatePractices;
+      const ix = arr.findIndex((p) => p.id === id);
+      if (ix > -1) arr[ix] = newPrac;
+      else arr.unshift(newPrac);
+      if (typeof saveDb === "function") saveDb();
+      if (typeof syncCloudData === "function") syncCloudData();
+      showToastMessage("✅ Özel alıştırma kaydedildi.");
+    }
+
+    clearAdminPracticeFormFields();
+    if (typeof renderPracticeLibrary === "function") renderPracticeLibrary();
+    renderTeacherStudioPracticeList();
+    if (typeof window.renderTeacherPrivateMaterials === "function") {
+      window.renderTeacherPrivateMaterials();
+    }
     return;
   }
 
@@ -2488,18 +2674,33 @@ function savePracticeFromForm() {
     db.collection("global").doc("practices").set({ list: PRACTICE_CATALOG });
   }
 
-  document.getElementById("admin-prac-id").value = "";
-  document.getElementById("admin-prac-title").value = "";
-  document.getElementById("admin-prac-text").value = "";
-  document.getElementById("admin-prac-questions").innerHTML = "";
-  if (typeof adminQCount !== "undefined") adminQCount = 0;
+  clearAdminPracticeFormFields();
 
   if (typeof renderPracticeLibrary === "function") renderPracticeLibrary();
   if (typeof renderAdminPracticeList === "function") renderAdminPracticeList();
 }
 
-function loadPracticeToAdminForm(id) {
-  const p = PRACTICE_CATALOG.find((x) => x.id === id);
+function loadPracticeToAdminForm(id, source) {
+  let p = null;
+  if (currentUser && currentUser.role === "teacher") {
+    if (source === "public") {
+      p = (window.TEACHER_PUBLIC_PRACTICES_LIST || []).find(
+        (x) => x.id === id && x.authorUsername === currentUsername,
+      );
+      const pubRadio = document.querySelector(
+        'input[name="teacher-prac-scope"][value="public"]',
+      );
+      if (pubRadio) pubRadio.checked = true;
+    } else {
+      p = (window.getTeacherPrivatePractices() || []).find((x) => x.id === id);
+      const privRadio = document.querySelector(
+        'input[name="teacher-prac-scope"][value="private"]',
+      );
+      if (privRadio) privRadio.checked = true;
+    }
+  } else {
+    p = PRACTICE_CATALOG.find((x) => x.id === id);
+  }
   if (!p) return;
 
   document.getElementById("admin-prac-id").value = p.id;

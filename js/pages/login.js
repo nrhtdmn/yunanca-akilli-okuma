@@ -201,6 +201,10 @@ function requireAuth(actionCost = 1) {
 }
 
 function updateUserAdmin(uname, key, val) {
+  if (!currentUser || currentUser.role !== "admin") {
+    showToastMessage("Bu işlem yalnız yöneticiler içindir.");
+    return;
+  }
   if (key === "isPremium") window.dbUsers[uname][key] = val === "true";
   else window.dbUsers[uname][key] = val;
 
@@ -209,6 +213,10 @@ function updateUserAdmin(uname, key, val) {
 }
 
 function deleteUserAdmin(uname) {
+  if (!currentUser || currentUser.role !== "admin") {
+    showToastMessage("Bu işlem yalnız yöneticiler içindir.");
+    return;
+  }
   if (
     confirm(
       `"${uname}" kullanıcısını ve tüm verilerini KALICI OLARAK silmek istediğinize emin misiniz?`,

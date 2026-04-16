@@ -258,7 +258,14 @@ window.switchKursTab = function (tab, btn) {
   if (tab === 'assign')  renderAssignForm();
   if (tab === 'reports') renderTeacherReports();
   if (tab === 'messages') window.renderTeacherMessages && window.renderTeacherMessages();
-  if (tab === 'teacher-mats') window.renderTeacherPrivateMaterials && window.renderTeacherPrivateMaterials();
+  if (tab === 'teacher-mats') {
+    if (typeof window.openKursContentStudio === 'function') {
+      window.openKursContentStudio();
+    }
+    if (typeof window.renderTeacherPrivateMaterials === 'function') {
+      window.renderTeacherPrivateMaterials();
+    }
+  }
 };
 
 // ============================================================

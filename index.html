@@ -181,6 +181,12 @@
             <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:15px;">💡 Metinde boşluk bırakmak için
               <b>[1]</b>, <b>[2]</b> gibi numaralar yazın.</div>
 
+            <div id="teacher-practice-visibility-row" style="display:none; margin-bottom:14px; padding:12px; background:rgba(79,142,247,0.08); border:1px solid var(--border); border-radius:10px;">
+              <div style="color:var(--text-dim); font-size:0.88rem; margin-bottom:8px;"><strong>Kayıt kapsamı</strong> (öğretmen)</div>
+              <label style="margin-right:16px; cursor:pointer;"><input type="radio" name="teacher-prac-scope" value="private" checked> Özel — yalnız siz ve atadığınız öğrenciler</label>
+              <label style="cursor:pointer;"><input type="radio" name="teacher-prac-scope" value="public"> Genel — tüm kullanıcılar (Alıştırmalar kütüphanesi)</label>
+            </div>
+
             <div style="margin:15px 0; border-top: 1px dashed var(--border); padding-top: 15px;">
               <h4 style="color:var(--accent2); margin-bottom:10px;">❓ Sorular (Boşluklar İçin)</h4>
               <div id="admin-prac-questions"></div>
@@ -949,9 +955,10 @@
       <div id="kurs-panel-teacher-mats" style="display:none;">
         <div style="max-width:720px;">
           <p style="color:var(--text-dim); margin-bottom:12px; font-size:0.95rem;">
-            Özel veya genel alıştırma eklemek için <strong>Alıştırmalar</strong> sekmesindeki formu kullanın. Aşağıda kayıtlı özel alıştırmalarınız listelenir; «Ödev Ver» ekranında «Özel içeriklerim» altından atanır.
+            Açılan pencerede yönetici paneliyle <strong>aynı alıştırma editörü</strong> vardır: Duyurular, Alıştırmalar, Kullanıcılar, YDS, Konu yönetimi sekmeleri. Alıştırma kaydında <strong>Özel / Genel</strong> seçebilirsiniz. Özel içerikler «Ödev Ver» listesinde de görünür.
           </p>
-          <button type="button" class="main-btn" style="padding:12px 18px; margin-bottom:16px;" onclick="switchMainTab('practice')">💪 Alıştırmalar sekmesine git</button>
+          <button type="button" class="main-btn" style="padding:12px 18px; margin-bottom:16px;" onclick="typeof openKursContentStudio==='function'&&openKursContentStudio()">📁 İçerik stüdyosunu tekrar aç</button>
+          <h4 style="color:var(--accent); margin-bottom:8px; font-size:1rem;">Kayıtlı özel alıştırmalarınız</h4>
           <div id="kurs-teacher-mats-list" style="margin-bottom:20px;"></div>
         </div>
       </div>

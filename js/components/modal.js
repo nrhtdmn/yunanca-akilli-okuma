@@ -74,10 +74,50 @@ window.renderAdminUsersList = function() {
 };
 
 function openAdminPanel() {
+  const modal = document.getElementById('admin-modal');
+  const titleEl = modal && modal.querySelector('h2.modal-title');
+  if (titleEl) titleEl.textContent = '⚙️ Yönetici Paneli';
+  const visRow = document.getElementById('teacher-practice-visibility-row');
+  if (visRow) visRow.style.display = 'none';
   window.renderAdminUsersList(); // Önce listeyi tazele
   if(typeof renderAdminPracticeList === 'function') renderAdminPracticeList();
-  document.getElementById('admin-modal').style.display = 'flex';
+  modal.style.display = 'flex';
 }
+
+/** Kurs → Özel içeriklerim: öğretmen = özel/genel stüdyo; admin = tam yönetici paneli (Alıştırmalar sekmesi) */
+window.openTeacherKursStudio = function () {
+  if (!currentUser || currentUser.role !== 'teacher') {
+    if (typeof showToastMessage === 'function') showToastMessage('Bu stüdyo yalnızca öğretmen hesapları içindir.');
+    return;
+  }
+  const modal = document.getElementById('admin-modal');
+  if (!modal) return;
+  const titleEl = modal.querySelector('h2.modal-title');
+  if (titleEl) titleEl.textContent = '📁 Öğretmen içerik stüdyosu';
+  const visRow = document.getElementById('teacher-practice-visibility-row');
+  if (visRow) visRow.style.display = 'block';
+  if (typeof window.renderAdminUsersList === 'function') window.renderAdminUsersList();
+  if (typeof renderAdminPracticeList === 'function') renderAdminPracticeList();
+  if (typeof populateAdminYdsExams === 'function') populateAdminYdsExams();
+  if (typeof populateAdminLessons === 'function') populateAdminLessons();
+  modal.style.display = 'flex';
+  const pracBtn = Array.from(modal.querySelectorAll('.sub-tab-btn')).find((b) => /Alıştırma/i.test(b.textContent || ''));
+  if (pracBtn && typeof switchAdminTab === 'function') switchAdminTab('practices', pracBtn);
+};
+
+window.openKursContentStudio = function () {
+  if (!currentUser) return;
+  if (currentUser.role === 'admin') {
+    openAdminPanel();
+    const modal = document.getElementById('admin-modal');
+    const pracBtn = modal && Array.from(modal.querySelectorAll('.sub-tab-btn')).find((b) => /Alıştırma/i.test(b.textContent || ''));
+    if (pracBtn && typeof switchAdminTab === 'function') switchAdminTab('practices', pracBtn);
+    return;
+  }
+  if (currentUser.role === 'teacher' && typeof window.openTeacherKursStudio === 'function') {
+    window.openTeacherKursStudio();
+  }
+};
 
 function closeAdminModal() { document.getElementById('admin-modal').style.display = 'none'; }
 
