@@ -1,4 +1,12 @@
 // Bu dosya en son çalışacak ve uygulamayı init (boot) edecektir.
+// kurs.js vb. yüklendikten sonra sekme (URL / localStorage) — Kurs’ta F5 ile aynı yerde kalmak için
+if (typeof window.initMainTabFromUrlOrStorage === "function") {
+  try {
+    window.initMainTabFromUrlOrStorage();
+  } catch (e) {
+    console.error("initMainTabFromUrlOrStorage", e);
+  }
+}
 fetchFromFirebase();
 if (typeof initFirebaseAuth === "function") initFirebaseAuth();
 
