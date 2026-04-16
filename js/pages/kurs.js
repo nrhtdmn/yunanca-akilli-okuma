@@ -199,6 +199,46 @@ window.getTeacherPrivatePractices = function () {
   return dbUserData[currentUsername].teacherPrivatePractices || [];
 };
 
+function getTeacherPrivatePracticesByUsername(username) {
+  if (!username || typeof dbUserData === 'undefined' || !dbUserData[username]) return [];
+  const arr = dbUserData[username].teacherPrivatePractices;
+  return Array.isArray(arr) ? arr : [];
+}
+
+function buildPracticeSelectValue(source, id) {
+  return source + ':' + encodeURIComponent(String(id));
+}
+
+function parsePracticeSelectValue(value) {
+  if (!value) return { source: 'legacy', contentId: '' };
+  const splitAt = value.indexOf(':');
+  if (splitAt < 0) return { source: 'legacy', contentId: value };
+  const source = value.slice(0, splitAt);
+  const rawId = value.slice(splitAt + 1);
+  if (!source || !rawId) return { source: 'legacy', contentId: value };
+  try {
+    return { source, contentId: decodeURIComponent(rawId) };
+  } catch (e) {
+    return { source, contentId: rawId };
+  }
+}
+
+function findPracticeContentBySource(contentId, source, teacherUsername) {
+  if (!contentId) return null;
+  if (source === 'private') {
+    const owner = teacherUsername || currentUsername;
+    const privByTeacher = getTeacherPrivatePracticesByUsername(owner);
+    return privByTeacher.find(p => p && p.id === contentId) || null;
+  }
+  if (source === 'catalog') {
+    return PRACTICE_CATALOG.find(p => p.id === contentId) || null;
+  }
+  if (source === 'teacher_public') {
+    return (window.TEACHER_PUBLIC_PRACTICES_LIST || []).find(p => p && p.id === contentId) || null;
+  }
+  return findPracticeContentById(contentId);
+}
+
 function findPracticeContentById(contentId) {
   const pub = PRACTICE_CATALOG.find(p => p.id === contentId);
   if (pub) return pub;
@@ -213,6 +253,16 @@ function getPracticeForKursTask(asgn) {
   if (!asgn) return null;
   if (asgn.practicePayload && Array.isArray(asgn.practicePayload.questions)) {
     return asgn.practicePayload;
+  }
+  const source = asgn.contentSource || 'legacy';
+  const fromSource = findPracticeContentBySource(asgn.contentId, source, asgn.teacherUsername);
+  if (fromSource) return fromSource;
+
+  // Eski kayıtlar için: yanlış ID eşleşse bile öğretmenin özel listesinde başlığa göre kurtarmayı dene.
+  if (asgn.teacherUsername && asgn.contentTitle) {
+    const teacherPriv = getTeacherPrivatePracticesByUsername(asgn.teacherUsername);
+    const byTitle = teacherPriv.find(p => p && p.title === asgn.contentTitle);
+    if (byTitle) return byTitle;
   }
   return findPracticeContentById(asgn.contentId);
 }
@@ -487,7 +537,7 @@ window.onAssignTypeChange = function () {
     if (priv.length > 0) {
       inner += '<optgroup label="📁 Özel içeriklerim">';
       inner += priv.map(p =>
-        `<option value=${JSON.stringify(p.id)}>📁 ${kursEscapeHtml(p.title)} (${kursEscapeHtml(p.level || '—')})</option>`
+        `<option value="${buildPracticeSelectValue('private', p.id)}">📁 ${kursEscapeHtml(p.title)} (${kursEscapeHtml(p.level || '—')})</option>`
       ).join('');
       inner += '</optgroup>';
     }
@@ -495,12 +545,12 @@ window.onAssignTypeChange = function () {
     const seenPub = new Set();
     PRACTICE_CATALOG.forEach(p => {
       seenPub.add(p.id);
-      inner += `<option value=${JSON.stringify(p.id)}>${kursEscapeHtml(p.title)} (${kursEscapeHtml(p.level)})</option>`;
+      inner += `<option value="${buildPracticeSelectValue('catalog', p.id)}">${kursEscapeHtml(p.title)} (${kursEscapeHtml(p.level)})</option>`;
     });
     (window.TEACHER_PUBLIC_PRACTICES_LIST || []).forEach(p => {
       if (!p || !p.id || seenPub.has(p.id)) return;
       seenPub.add(p.id);
-      inner += `<option value=${JSON.stringify(p.id)}>🌐 ${kursEscapeHtml(p.title)} (${kursEscapeHtml(p.level || '—')})</option>`;
+      inner += `<option value="${buildPracticeSelectValue('teacher_public', p.id)}">🌐 ${kursEscapeHtml(p.title)} (${kursEscapeHtml(p.level || '—')})</option>`;
     });
     inner += '</optgroup>';
     contentSel.innerHTML = inner;
@@ -528,13 +578,14 @@ window.renderExamCategoryOptions = function () {
 window.submitAssignment = function () {
   const target    = document.getElementById('assign-target-select').value;
   const type      = document.getElementById('assign-type-select').value;
-  const contentId = document.getElementById('assign-content-select').value;
+  const selectedContentValue = document.getElementById('assign-content-select').value;
+  let contentId = selectedContentValue;
   const dueDate   = document.getElementById('assign-due-date').value;
   const teacherMsgEl = document.getElementById('assign-teacher-message');
   const teacherMessage = teacherMsgEl && teacherMsgEl.value ? teacherMsgEl.value.trim() : '';
 
-  if (!target)    { showToastMessage('❌ Hedef seçin.'); return; }
-  if (!contentId) { showToastMessage('❌ İçerik seçin.'); return; }
+  if (!target) { showToastMessage('❌ Hedef seçin.'); return; }
+  if (!selectedContentValue) { showToastMessage('❌ İçerik seçin.'); return; }
 
   let studentUsernames = [], classId = null;
 
@@ -549,22 +600,25 @@ window.submitAssignment = function () {
     studentUsernames = [target.replace('student:', '')];
   }
 
-  let contentTitle = '', examCategory = null;
+  let contentTitle = '', examCategory = null, contentSource = null;
   let practicePayload = null;
 
   if (type === 'practice') {
-    const prac   = findPracticeContentById(contentId);
+    const parsed = parsePracticeSelectValue(selectedContentValue);
+    contentId = parsed.contentId;
+    contentSource = parsed.source;
+    if (!contentId) { showToastMessage('❌ Alıştırma seçimi geçersiz.'); return; }
+
+    const prac = findPracticeContentBySource(contentId, contentSource, currentUsername) ||
+      findPracticeContentById(contentId);
     contentTitle = prac ? prac.title : contentId;
     if (prac) {
-      const inBuiltIn = PRACTICE_CATALOG.some(p => p.id === prac.id);
-      const inTeacherPublic = (window.TEACHER_PUBLIC_PRACTICES_LIST || []).some(
-        p => p.id === prac.id
-      );
-      if (!inBuiltIn && !inTeacherPublic) {
+      if (contentSource === 'private') {
         try { practicePayload = JSON.parse(JSON.stringify(prac)); } catch (e) { /* ignore */ }
       }
     }
   } else {
+    contentSource = 'exam';
     examCategory = document.getElementById('assign-exam-cat-select').value;
     if (!examCategory) { showToastMessage('❌ Sınav kategorisi seçin.'); return; }
     contentTitle = contentId + ' — ' + examCategory;
@@ -577,6 +631,7 @@ window.submitAssignment = function () {
     studentUsernames,
     type,
     contentId,
+    contentSource,
     contentTitle,
     examCategory,
     dueDate: dueDate || null,
