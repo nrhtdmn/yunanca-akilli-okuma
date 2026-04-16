@@ -1,12 +1,26 @@
 /**
  * Duyuru belgesi (global/announcements) güncellenince, e-posta adresi kayıtlı üyelere mail atar.
  *
- * Kurulum (Firebase CLI):
- *   firebase functions:config:set smtp.user="gonderici@gmail.com" smtp.pass="uygulama-sifresi" smtp.from="Yunanca <gonderici@gmail.com>"
- *   İsteğe bağlı: smtp.host, smtp.port, smtp.secure
+ * Kurulum (Firebase CLI, proje kökünde):
+ *   firebase login
+ *   firebase use <proje-id>
+ *   firebase functions:config:set \
+ *     smtp.user="gonderici@gmail.com" \
+ *     smtp.pass="UYGULAMA_SIFRESI" \
+ *     smtp.from="Yunanca <gonderici@gmail.com>"
+ *
+ * Gmail (önerilen — 587 STARTTLS):
+ *   firebase functions:config:set smtp.host="smtp.gmail.com" smtp.port="587" smtp.secure="false" ...
+ * Gmail (465 SSL):
+ *   smtp.port="465" ve smtp.secure="true" (varsayılanlar buna yakın)
+ *
+ * Diğer sağlayıcılar: smtp.host, smtp.port, smtp.secure uyumlu ayarlayın.
+ *
  *   firebase deploy --only functions
  *
- * Gmail: 2FA açık → Google Hesabı → Uygulama şifreleri ile "smtp.pass" üretin.
+ * Gmail: 2FA açık → Google Hesabı → Güvenlik → Uygulama şifreleri.
+ *
+ * Sorun giderme: Firebase Console → Functions → Günlükler (SMTP yok / gönderim hatası satırları).
  */
 
 const functions = require("firebase-functions");
@@ -14,6 +28,25 @@ const admin = require("firebase-admin");
 const nodemailer = require("nodemailer");
 
 admin.initializeApp();
+
+/** Gmail: 465 (SSL) veya 587 (STARTTLS). smtp.secure="false" → 587 kullanın. */
+function createSmtpTransport(smtp) {
+  let port = Number(smtp.port || 465);
+  const wantInsecure =
+    smtp.secure === "false" || smtp.secure === false;
+  if (wantInsecure && port === 465) {
+    port = 587;
+  }
+  const useTls = port === 587;
+  return nodemailer.createTransport({
+    host: smtp.host || "smtp.gmail.com",
+    port,
+    secure: port === 465,
+    requireTLS: useTls,
+    auth: { user: smtp.user, pass: smtp.pass },
+    tls: { rejectUnauthorized: true },
+  });
+}
 
 exports.onAnnouncementForEmail = functions.firestore
   .document("global/announcements")
@@ -44,12 +77,7 @@ exports.onAnnouncementForEmail = functions.firestore
       return null;
     }
 
-    const transporter = nodemailer.createTransport({
-      host: smtp.host || "smtp.gmail.com",
-      port: Number(smtp.port || 465),
-      secure: smtp.secure !== "false" && smtp.secure !== false,
-      auth: { user: smtp.user, pass: smtp.pass },
-    });
+    const transporter = createSmtpTransport(smtp);
 
     const from = smtp.from || smtp.user;
     const subject = "Yunanca Akıllı Okuyucu — Yeni duyuru";
@@ -118,15 +146,28 @@ function wantsEmail(u) {
   return !u || u.emailNotify !== false;
 }
 
+/** İlk belge oluşturulurken içe aktarma sanılan çok sayıda ödev → öğrenci maili gönderme */
+const KURS_FIRST_WRITE_ASSIGN_CAP = 40;
+
 exports.onKursDataForEmail = functions.firestore
   .document("global/kurs_data")
   .onWrite(async (change, context) => {
     const after = change.after.exists ? change.after.data() : null;
     if (!after) return null;
-    // İlk oluşturmada (önceki snapshot yok) tüm kayıtlar "yeni" sayılırdı — toplu mail önlenir
-    if (!change.before.exists) {
-      functions.logger.info("kurs_data ilk yazım — kurs e-postaları atlanıyor");
-      return null;
+
+    const isFirstWrite = !change.before.exists;
+    if (isFirstWrite) {
+      const n = Array.isArray(after.assignments) ? after.assignments.length : 0;
+      if (n > KURS_FIRST_WRITE_ASSIGN_CAP) {
+        functions.logger.info(
+          "kurs_data ilk yazım — çok sayıda ödev; ödev e-postaları atlanıyor (içe aktarma koruması)",
+          { count: n },
+        );
+        return null;
+      }
+      functions.logger.info(
+        "kurs_data ilk yazım — yalnız yeni ödev mailleri gönderilecek; teslim/mesaj geçmişi yok sayılır",
+      );
     }
 
     const smtp = functions.config().smtp;
@@ -137,12 +178,7 @@ exports.onKursDataForEmail = functions.firestore
       return null;
     }
 
-    const transporter = nodemailer.createTransport({
-      host: smtp.host || "smtp.gmail.com",
-      port: Number(smtp.port || 465),
-      secure: smtp.secure !== "false" && smtp.secure !== false,
-      auth: { user: smtp.user, pass: smtp.pass },
-    });
+    const transporter = createSmtpTransport(smtp);
     const from = smtp.from || smtp.user;
 
     const usersSnap = await admin.firestore().doc("global/users").get();
@@ -213,6 +249,7 @@ exports.onKursDataForEmail = functions.firestore
     }
 
     // —— Mevcut teslimde öğretmen notu / puan güncellendi → öğrenciye
+    if (!isFirstWrite)
     for (const key of Object.keys(afterSub)) {
       const cur = afterSub[key];
       const prev = beforeSub[key];
@@ -251,6 +288,7 @@ exports.onKursDataForEmail = functions.firestore
     }
 
     // —— Yeni teslimler → öğretmene
+    if (!isFirstWrite)
     for (const key of newSubmissionKeys) {
       const sub = afterSub[key];
       if (!sub || !sub.assignmentId) continue;
@@ -279,6 +317,7 @@ exports.onKursDataForEmail = functions.firestore
     }
 
     // —— Yeni mesajlar → karşı tarafa
+    if (!isFirstWrite)
     for (const tkey of Object.keys(afterThreads)) {
       const aft = afterThreads[tkey];
       const bef = beforeThreads[tkey];
