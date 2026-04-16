@@ -73,6 +73,67 @@ window.renderAdminUsersList = function() {
   tbody.innerHTML = html;
 };
 
+window.renderAdminTrafficStats = function () {
+  const summaryEl = document.getElementById("admin-traffic-summary");
+  const last7El = document.getElementById("admin-traffic-last7");
+  if (!summaryEl || !last7El) return;
+
+  const stats = window.dbTrafficStats || {};
+  const dailyVisits = (stats && stats.dailyVisits) || {};
+  const dailyUniqueVisitors = (stats && stats.dailyUniqueVisitors) || {};
+  const now = new Date();
+  const todayKey = now.toISOString().slice(0, 10);
+
+  const totalVisits = Number(stats.totalVisits || 0);
+  const totalUniqueVisitors = Number(stats.totalUniqueVisitors || 0);
+  const todayVisits = Number(dailyVisits[todayKey] || 0);
+  const todayUnique = Number(dailyUniqueVisitors[todayKey] || 0);
+
+  const cards = [
+    { label: "Toplam Ziyaret", value: totalVisits, color: "var(--accent)" },
+    { label: "Toplam Tekil Cihaz", value: totalUniqueVisitors, color: "var(--success)" },
+    { label: "Bugünkü Ziyaret", value: todayVisits, color: "var(--accent2)" },
+    { label: "Bugünkü Tekil", value: todayUnique, color: "var(--tts-color)" },
+  ];
+
+  summaryEl.innerHTML = cards
+    .map(
+      (card) => `
+      <div style="background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:12px;">
+        <div style="font-size:1.55rem; color:${card.color}; font-weight:bold;">${card.value}</div>
+        <div style="font-size:0.84rem; color:var(--text-dim);">${card.label}</div>
+      </div>`,
+    )
+    .join("");
+
+  const last7 = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(now.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    last7.push({
+      key,
+      label: d.toLocaleDateString("tr-TR", { day: "2-digit", month: "2-digit" }),
+      visits: Number(dailyVisits[key] || 0),
+      unique: Number(dailyUniqueVisitors[key] || 0),
+    });
+  }
+
+  last7El.innerHTML = last7
+    .map(
+      (row) => `
+      <div style="display:grid; grid-template-columns:90px 1fr auto auto; gap:10px; align-items:center; padding:8px 10px; border:1px solid var(--border); border-radius:8px; background:var(--surface);">
+        <strong style="color:var(--text);">${row.label}</strong>
+        <div style="height:8px; border-radius:999px; background:rgba(79,142,247,0.15); overflow:hidden;">
+          <div style="width:${Math.min(100, row.visits * 8)}%; height:100%; background:linear-gradient(90deg, var(--accent), var(--accent2));"></div>
+        </div>
+        <span style="color:var(--text-dim); font-size:0.84rem;">👁 ${row.visits}</span>
+        <span style="color:var(--text-dim); font-size:0.84rem;">👤 ${row.unique}</span>
+      </div>`,
+    )
+    .join("");
+};
+
 function openAdminPanel() {
   const modal = document.getElementById('admin-modal');
   const titleEl = modal && modal.querySelector('h2.modal-title');
@@ -83,6 +144,7 @@ function openAdminPanel() {
     btn.style.display = '';
   });
   window.renderAdminUsersList(); // Önce listeyi tazele
+  if (typeof window.renderAdminTrafficStats === "function") window.renderAdminTrafficStats();
   if(typeof renderAdminPracticeList === 'function') renderAdminPracticeList();
   modal.style.display = 'flex';
 }
