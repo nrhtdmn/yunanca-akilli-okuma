@@ -161,8 +161,34 @@ function openProfileModal() {
     statusText.innerHTML = `<b>Kalan Kredi:</b> <span style='color:var(--error); font-size:1.2rem; font-weight:bold;'>${currentUser.credits}</span><br><small style='color:var(--text-dim)'>Metin okuma, çeviri ve test işlemleri kredi harcar. Krediniz bittiğinde yöneticiye başvurun.</small>`;
   }
 
+  const pe = document.getElementById("profile-contact-email");
+  if (pe) {
+    pe.value =
+      currentUser.contactEmail ||
+      currentUser.email ||
+      (String(currentUsername).includes("@") ? currentUsername : "");
+  }
+  const en = document.getElementById("profile-email-notify");
+  if (en) en.checked = currentUser.emailNotify !== false;
+
   document.getElementById("profile-modal").style.display = "flex";
 }
+
+window.saveProfileContact = function () {
+  if (!currentUser) return;
+  const pe = document.getElementById("profile-contact-email");
+  const en = document.getElementById("profile-email-notify");
+  let val = pe && pe.value.trim();
+  if (val && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+    showToastMessage("Geçerli bir e-posta adresi girin.");
+    return;
+  }
+  if (val) currentUser.contactEmail = val.toLowerCase();
+  else delete currentUser.contactEmail;
+  if (en) currentUser.emailNotify = !!en.checked;
+  saveDb();
+  showToastMessage("Bildirim ayarları kaydedildi.");
+};
 
 function finishInit() {
   try { initTTS(); } catch(e) { console.error('initTTS hatası:', e); }
