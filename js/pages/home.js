@@ -2655,7 +2655,7 @@ function deletePracticeFromAdmin(id, source) {
  * ALIŞTIRMA (PRACTICE) METİN İÇİ MOTORU (CLOZE TEST)
  * ========================================== */
 
-// 1. Akıllı Metin ve Boşluk Motoru
+// 1. Metin ve boşluk motoru
 
 /* ==========================================
  * ALIŞTIRMA (PRACTICE) METİN İÇİ MOTORU (CLOZE TEST)
@@ -2681,7 +2681,7 @@ function tokenizePracHTML(text) {
   return html;
 }
 
-// 1. Akıllı Metin ve Boşluk Motoru (Inputlar Metin İçinde)
+// 1. Metin ve boşluk motoru (Inputlar Metin İçinde)
 function tokenizePracText(text, questionsArray = null) {
   if (!text) return "";
   let html = "";
@@ -3484,7 +3484,7 @@ window.saveLesson = async function() {
 };
 
 // 2. LİSTEYİ ÇİZDİRME (YouTube Kontrolü Eklenmiş)
-// 2. KARTLARI ÇİZDİRME (Akıllı Klasör / Akordiyon Sistemi)
+// 2. KARTLARI ÇİZDİRME (Klasör / akordiyon)
 // Arama kutusuna her harf yazıldığında tetiklenen fonksiyon
 window.filterLessons = function() {
     const query = document.getElementById('lesson-search-input').value;

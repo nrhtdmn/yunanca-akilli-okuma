@@ -2183,7 +2183,7 @@ function deletePracticeFromAdmin(id) {
  * ALIŞTIRMA (PRACTICE) METİN İÇİ MOTORU (CLOZE TEST)
  * ========================================== */
 
-// 1. Akıllı Metin ve Boşluk Motoru
+// 1. Metin ve boşluk motoru
 
 /* ==========================================
  * ALIŞTIRMA (PRACTICE) METİN İÇİ MOTORU (CLOZE TEST)
@@ -2209,7 +2209,7 @@ function tokenizePracHTML(text) {
   return html;
 }
 
-// 1. Akıllı Metin ve Boşluk Motoru (Inputlar Metin İçinde)
+// 1. Metin ve boşluk motoru (Inputlar Metin İçinde)
 function tokenizePracText(text, questionsArray = null) {
   if (!text) return "";
   let html = "";

@@ -1,5 +1,5 @@
 {
-  "name": "yunanca-akilli-okuma-functions",
+  "name": "yunanca-okulu-functions",
   "description": "Duyuru yayınlandığında e-posta göndermek için (SMTP).",
   "engines": {
     "node": "18"

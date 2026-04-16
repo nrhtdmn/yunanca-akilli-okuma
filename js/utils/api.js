@@ -1,4 +1,5 @@
 // --- GLOBAL DEĞİŞKENLER VE KURULUM ---
+// Canlı site: https://www.yunancaokulu.com
 window.useFirebase = false;
 window.db = null;
 window.TEACHER_PUBLIC_PRACTICES_LIST = [];

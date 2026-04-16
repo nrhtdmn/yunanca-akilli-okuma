@@ -9,7 +9,7 @@ service cloud.firestore {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Yunanca Akıllı Okuyucu — Firebase Auth kullanmadan istemciden okuma/yazma (mevcut kod bu yapıda)
+    // Yunanca Okulu (www.yunancaokulu.com) — Firebase Auth kullanmadan istemciden okuma/yazma (mevcut kod bu yapıda)
     match /global/{docId} {
       allow read, write: if true;
     }

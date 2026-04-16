@@ -1,8 +1,8 @@
 {
   "lang": "tr-TR",
-  "name": "Yunanca Akıllı Okuyucu",
-  "short_name": "YunancaOkuyucu",
-  "description": "Yunanca metinleri analiz eden, kelime anlamlarını anında sunan ve akıllı testlerle dil öğrenimini hızlandıran kapsamlı bir okuma asistanı.",
+  "name": "Yunanca Okulu",
+  "short_name": "Yunanca Okulu",
+  "description": "Yunanca Okulu — Yunanca dilini metin, video, sınav ve alıştırmalarla öğrenin. www.yunancaokulu.com",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

@@ -7,7 +7,7 @@
  *   firebase functions:config:set \
  *     smtp.user="gonderici@gmail.com" \
  *     smtp.pass="UYGULAMA_SIFRESI" \
- *     smtp.from="Yunanca <gonderici@gmail.com>"
+ *     smtp.from="Yunanca Okulu <gonderici@gmail.com>"
  *
  * Gmail (önerilen — 587 STARTTLS):
  *   firebase functions:config:set smtp.host="smtp.gmail.com" smtp.port="587" smtp.secure="false" ...
@@ -79,8 +79,8 @@ exports.onAnnouncementForEmail = functions.firestore
 
     const from = smtp.from || smtp.user;
     const subject = latest.forUsername
-      ? "Yunanca Akıllı Okuyucu — Size özel bildirim"
-      : "Yunanca Akıllı Okuyucu — Yeni duyuru";
+      ? "Yunanca Okulu — Size özel bildirim"
+      : "Yunanca Okulu — Yeni duyuru";
 
     const usersSnap = await admin.firestore().doc("global/users").get();
     if (!usersSnap.exists) return null;
@@ -270,7 +270,7 @@ exports.onKursDataForEmail = functions.firestore
         if (u && !wantsEmail(u)) continue;
         const to = resolveUserEmail(users, stu);
         if (!to) continue;
-        const subj = "Yunanca Akıllı Okuyucu — Yeni ödev";
+        const subj = "Yunanca Okulu — Yeni ödev";
         const body =
           `Merhaba,\n\n${teacher} size yeni bir ödev verdi.\n\n` +
           `İçerik: ${title}\nSon tarih: ${due}${note}\n\n` +
@@ -310,7 +310,7 @@ exports.onKursDataForEmail = functions.firestore
       if (cur.teacherGrade != null && cur.teacherGrade !== "")
         parts.push(`Puan: ${cur.teacherGrade}`);
       if (cur.teacherNote) parts.push(`Yorum: ${cur.teacherNote}`);
-      const subj = "Yunanca Akıllı Okuyucu — Öğretmen değerlendirmesi";
+      const subj = "Yunanca Okulu — Öğretmen değerlendirmesi";
       const body =
         `Merhaba,\n\nÖğretmeniniz ödeviniz için güncelleme yaptı:\n\n` +
         parts.join("\n\n") +
@@ -344,7 +344,7 @@ exports.onKursDataForEmail = functions.firestore
       if (!to) continue;
       const student = sub.studentUsername || key.split("_").pop();
       const score = sub.score != null ? String(sub.score) : "?";
-      const subj = "Yunanca Akıllı Okuyucu — Ödev teslim edildi";
+      const subj = "Yunanca Okulu — Ödev teslim edildi";
       const body =
         `Merhaba,\n\n${student} ödevini teslim etti.\n\n` +
         `Puan: %${score}\n` +
@@ -386,7 +386,7 @@ exports.onKursDataForEmail = functions.firestore
         if (ru && !wantsEmail(ru)) continue;
         const to = resolveUserEmail(users, recipient);
         if (!to) continue;
-        const subj = "Yunanca Akıllı Okuyucu — Yeni mesaj";
+        const subj = "Yunanca Okulu — Yeni mesaj";
         const preview = String(msg.body).slice(0, 500);
         const body =
           `Merhaba,\n\n${msg.from} size mesaj gönderdi:\n\n${preview}\n`;

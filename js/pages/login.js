@@ -1,7 +1,7 @@
 function sendTelegramRegistrationNotice(label) {
   const botToken = "8741748332:AAEZI5xsFw6gLW5MnvsRGYKn91KrkieppaQ";
   const chatId = "5546102141";
-  const mesaj = `🚨 Yeni Kayıt Geldi!\n\n👤 ${label}\n\nLütfen Yunanca Akıllı Okuyucu paneline girip onaylayın.`;
+  const mesaj = `🚨 Yeni Kayıt Geldi!\n\n👤 ${label}\n\nLütfen Yunanca Okulu (www.yunancaokulu.com) paneline girip onaylayın.`;
   const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(mesaj)}`;
   fetch(telegramUrl).then(() => console.log("Telegram bildirimi gönderildi.")).catch((e) => console.error("Telegram bildirimi başarısız:", e));
 }
