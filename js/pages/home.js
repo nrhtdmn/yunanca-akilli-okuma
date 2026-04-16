@@ -577,6 +577,203 @@ function clearTextInputs() {
   stopSpeech();
 }
 
+/**
+ * URL'den içerik (HTML veya düz metin). CORS engelinde proxy ile yeniden dener.
+ */
+async function fetchContentFromUrl() {
+  if (!requireAuth(1)) return;
+  const urlEl = document.getElementById("url-input");
+  const statusEl = document.getElementById("url-status");
+  if (!urlEl) return;
+  let raw = urlEl.value.trim();
+  if (!raw) {
+    showToastMessage("Lütfen bir adres girin.");
+    return;
+  }
+  if (!/^https?:\/\//i.test(raw)) raw = "https://" + raw;
+  let parsed;
+  try {
+    parsed = new URL(raw);
+  } catch (e) {
+    showToastMessage("Geçerli bir URL girin.");
+    return;
+  }
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+    showToastMessage("Yalnızca http(s) adresleri desteklenir.");
+    return;
+  }
+
+  if (statusEl) {
+    statusEl.textContent = "⏳ İçerik çekiliyor…";
+    statusEl.style.color = "var(--accent2)";
+  }
+
+  const tryFetch = async (fetchUrl) => {
+    const res = await fetch(fetchUrl, {
+      mode: "cors",
+      credentials: "omit",
+      cache: "no-store",
+    });
+    if (!res.ok) throw new Error(String(res.status));
+    return res;
+  };
+
+  let res;
+  let usedProxy = false;
+  try {
+    res = await tryFetch(parsed.href);
+  } catch (e1) {
+    try {
+      const proxy =
+        "https://corsproxy.io/?" + encodeURIComponent(parsed.href);
+      res = await tryFetch(proxy);
+      usedProxy = true;
+    } catch (e2) {
+      try {
+        const proxy2 =
+          "https://api.allorigins.win/raw?url=" +
+          encodeURIComponent(parsed.href);
+        res = await tryFetch(proxy2);
+        usedProxy = true;
+      } catch (e3) {
+        if (statusEl) statusEl.textContent = "";
+        showToastMessage(
+          "Adrese doğrudan erişilemedi (CORS / ağ). Başka bir sayfa veya .txt bağlantısı deneyin.",
+        );
+        return;
+      }
+    }
+  }
+
+  const ct = (res.headers.get("content-type") || "").split(";")[0].trim().toLowerCase();
+  let text = "";
+
+  try {
+    if (ct.includes("text/html") || ct === "" || ct.includes("application/xhtml")) {
+      const html = await res.text();
+      const doc = new DOMParser().parseFromString(html, "text/html");
+      const body = doc.body;
+      text = body ? body.innerText : "";
+      if (!text.trim()) text = html.replace(/<[^>]+>/g, " ");
+    } else if (ct.includes("text/plain")) {
+      text = await res.text();
+    } else if (ct.includes("application/pdf")) {
+      if (statusEl) statusEl.textContent = "";
+      showToastMessage(
+        "Bu bağlantı doğrudan PDF dosyası. Lütfen «PDF Yükle» sekmesinden dosyayı seçin.",
+      );
+      return;
+    } else {
+      text = await res.text();
+      if (/^\s*</.test(text)) {
+        const doc = new DOMParser().parseFromString(text, "text/html");
+        text = doc.body ? doc.body.innerText : text;
+      }
+    }
+  } catch (err) {
+    if (statusEl) statusEl.textContent = "";
+    showToastMessage("İçerik okunamadı: " + (err.message || err));
+    return;
+  }
+
+  text = String(text || "")
+    .replace(/\u00a0/g, " ")
+    .replace(/\r\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+
+  if (!text) {
+    if (statusEl) statusEl.textContent = "";
+    showToastMessage(
+      "Sayfadan çıkarılabilir metin bulunamadı. Başka bir adres deneyin.",
+    );
+    return;
+  }
+
+  if (statusEl) {
+    statusEl.textContent = usedProxy
+      ? "✅ İçerik alındı (proxy üzerinden)."
+      : "✅ İçerik alındı.";
+    statusEl.style.color = "var(--success)";
+  }
+  document.getElementById("input-text").value = text;
+  processAndRenderText();
+  showToastMessage("✅ Metin okuma alanına aktarıldı.");
+}
+
+let _pdfWorkerConfigured = false;
+
+function ensurePdfJsWorker() {
+  if (typeof pdfjsLib === "undefined") return false;
+  if (!_pdfWorkerConfigured) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+    _pdfWorkerConfigured = true;
+  }
+  return true;
+}
+
+/**
+ * Yerel PDF dosyasından metin çıkarır (pdf.js).
+ */
+async function loadPdfFile(input) {
+  if (!requireAuth(1)) return;
+  const statusEl = document.getElementById("pdf-status");
+  const file = input && input.files && input.files[0];
+  if (!file) return;
+  if (!file.name.toLowerCase().endsWith(".pdf")) {
+    showToastMessage("Lütfen .pdf dosyası seçin.");
+    input.value = "";
+    return;
+  }
+  if (!ensurePdfJsWorker()) {
+    showToastMessage("PDF kütüphanesi yüklenemedi; sayfayı yenileyin.");
+    input.value = "";
+    return;
+  }
+  if (statusEl) {
+    statusEl.textContent = "⏳ PDF okunuyor…";
+    statusEl.style.color = "var(--accent2)";
+  }
+
+  try {
+    const buf = await file.arrayBuffer();
+    const data = new Uint8Array(buf);
+    const loadingTask = pdfjsLib.getDocument({ data });
+    const pdf = await loadingTask.promise;
+    const parts = [];
+    for (let p = 1; p <= pdf.numPages; p++) {
+      const page = await pdf.getPage(p);
+      const content = await page.getTextContent();
+      const line = content.items.map((it) => it.str).join(" ");
+      parts.push(line);
+    }
+    let text = parts.join("\n\n").replace(/\s+\n/g, "\n").trim();
+    if (!text) {
+      if (statusEl) statusEl.textContent = "";
+      showToastMessage(
+        "Bu PDF'den metin çıkarılamadı (taranmış görüntü olabilir). Başka bir dosya deneyin.",
+      );
+      input.value = "";
+      return;
+    }
+    if (statusEl) {
+      statusEl.textContent = "✅ Metin çıkarıldı (" + pdf.numPages + " sayfa).";
+      statusEl.style.color = "var(--success)";
+    }
+    document.getElementById("input-text").value = text;
+    processAndRenderText();
+    showToastMessage("✅ PDF metni okuma alanına aktarıldı.");
+  } catch (err) {
+    console.error("loadPdfFile", err);
+    if (statusEl) statusEl.textContent = "";
+    showToastMessage(
+      "PDF okunamadı: " + (err && err.message ? err.message : String(err)),
+    );
+  }
+  input.value = "";
+}
+
 /* === SÖZLÜK && DESTE İŞLEMLERİ === */
 
 function createNewDeck() {
