@@ -2,6 +2,7 @@
 window.useFirebase = false;
 window.db = null;
 window.TEACHER_PUBLIC_PRACTICES_LIST = [];
+window.dbTrafficStats = {};
 
 try {
   const firebaseConfig = {
@@ -94,6 +95,48 @@ function ingestTeacherPublicPracticesDoc(doc) {
   if (typeof renderPracticeLibrary === "function") renderPracticeLibrary();
 }
 
+function ingestTrafficDoc(doc) {
+  if (!doc.exists) {
+    window.dbTrafficStats = {};
+  } else {
+    window.dbTrafficStats = doc.data() || {};
+  }
+  if (typeof window.renderAdminTrafficStats === "function") {
+    window.renderAdminTrafficStats();
+  }
+}
+
+async function trackSiteTraffic() {
+  if (!window.useFirebase || !window.db || typeof firebase === "undefined") return;
+  try {
+    const today = new Date().toISOString().slice(0, 10);
+    let visitorId = localStorage.getItem("y_visitor_id");
+    if (!visitorId) {
+      visitorId = `v_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+      localStorage.setItem("y_visitor_id", visitorId);
+    }
+
+    const lastUniqueTrackedDay = localStorage.getItem("y_traffic_unique_day");
+    const isFirstVisitToday = lastUniqueTrackedDay !== today;
+    const updates = {
+      lastVisitAt: Date.now(),
+      lastVisitorId: visitorId,
+      totalVisits: firebase.firestore.FieldValue.increment(1),
+      [`dailyVisits.${today}`]: firebase.firestore.FieldValue.increment(1),
+    };
+
+    if (isFirstVisitToday) {
+      updates.totalUniqueVisitors = firebase.firestore.FieldValue.increment(1);
+      updates[`dailyUniqueVisitors.${today}`] = firebase.firestore.FieldValue.increment(1);
+      localStorage.setItem("y_traffic_unique_day", today);
+    }
+
+    await window.db.collection("global").doc("traffic_stats").set(updates, { merge: true });
+  } catch (e) {
+    console.error("Trafik takibi başarısız:", e);
+  }
+}
+
 async function fetchFromFirebase() {
   if(!window.useFirebase) { finishInit(); return; }
   // window ile helpers let'leri tekrar hizala (başka bir betik sırası değişirse diye)
@@ -105,20 +148,23 @@ async function fetchFromFirebase() {
     const annRef = window.db.collection("global").doc("announcements");
     const kursRef = window.db.collection("global").doc("kurs_data");
     const teacherPubRef = window.db.collection("global").doc("teacher_public_practices");
+    const trafficRef = window.db.collection("global").doc("traffic_stats");
 
     // ÖNEMLİ: finishInit/loadUserData, Firestore'dan ilk veri gelmeden çalışırsa boş profil
     // saveDb() ile buluttaki userdata/users belgelerinin üzerine yazılabiliyordu.
-    const [usersSnap, userdataSnap, annSnap, teacherPubSnap] = await Promise.all([
+    const [usersSnap, userdataSnap, annSnap, teacherPubSnap, trafficSnap] = await Promise.all([
       usersRef.get(),
       userdataRef.get(),
       annRef.get(),
       teacherPubRef.get(),
+      trafficRef.get(),
     ]);
 
     ingestUsersDoc(usersSnap);
     ingestUserdataDoc(userdataSnap);
     ingestAnnouncementsDoc(annSnap);
     ingestTeacherPublicPracticesDoc(teacherPubSnap);
+    ingestTrafficDoc(trafficSnap);
 
     // İlk okuma tamamlandıktan sonra UI boot — canlı dinleyiciler aynı veriyi günceller
     usersRef.onSnapshot(ingestUsersDoc, (err) => console.error("Firestore global/users dinleyicisi:", err));
@@ -126,6 +172,9 @@ async function fetchFromFirebase() {
     annRef.onSnapshot(ingestAnnouncementsDoc, (err) => console.error("Firestore global/announcements dinleyicisi:", err));
     teacherPubRef.onSnapshot(ingestTeacherPublicPracticesDoc, (err) =>
       console.error("Firestore teacher_public_practices:", err),
+    );
+    trafficRef.onSnapshot(ingestTrafficDoc, (err) =>
+      console.error("Firestore global/traffic_stats dinleyicisi:", err),
     );
 
     kursRef.onSnapshot((doc) => {
@@ -142,6 +191,7 @@ async function fetchFromFirebase() {
       console.error("Firestore global/kurs_data okuma:", err);
     }
 
+    await trackSiteTraffic();
     finishInit();
     
   } catch(e) { 
