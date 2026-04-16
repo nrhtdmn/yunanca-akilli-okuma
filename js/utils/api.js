@@ -235,7 +235,8 @@ function syncCloudData() {
     lastActiveDeck: uLast,
     examHistory: window.dbUserData[uname]?.examHistory || [],
     deletedAnnouncements: window.dbUserData[uname]?.deletedAnnouncements || [],
-    teacherPrivatePractices: window.dbUserData[uname]?.teacherPrivatePractices || []
+    teacherPrivatePractices: window.dbUserData[uname]?.teacherPrivatePractices || [],
+    readingHighlights: window.dbUserData[uname]?.readingHighlights || {},
   };
   saveDb();
 }

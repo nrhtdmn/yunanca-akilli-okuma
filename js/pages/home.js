@@ -66,8 +66,12 @@ function loadUserData() {
       decks: { "Genel Kelimeler": [] },
       customDict: {},
       lastActiveDeck: "Genel Kelimeler",
+      readingHighlights: {},
     };
     saveDb();
+  }
+  if (!dbUserData[currentUsername].readingHighlights) {
+    dbUserData[currentUsername].readingHighlights = {};
   }
   const data = dbUserData[currentUsername];
   userDecks = data.decks || { "Genel Kelimeler": [] };
@@ -514,6 +518,117 @@ async function openSampleText(id) {
   }
 }
 
+/** Okuma metni için sabit hash (vurgu anahtarı) */
+function hashReadingText(text) {
+  let h = 5381;
+  const s = String(text || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h * 33) ^ s.charCodeAt(i);
+  }
+  return "r" + (h >>> 0).toString(16);
+}
+
+function getReadingHighlightStore() {
+  if (
+    typeof currentUsername !== "undefined" &&
+    currentUsername &&
+    typeof dbUserData !== "undefined" &&
+    dbUserData[currentUsername]
+  ) {
+    if (!dbUserData[currentUsername].readingHighlights) {
+      dbUserData[currentUsername].readingHighlights = {};
+    }
+    return dbUserData[currentUsername].readingHighlights;
+  }
+  if (
+    typeof window._localReadingHighlights !== "object" ||
+    !window._localReadingHighlights
+  ) {
+    try {
+      window._localReadingHighlights = JSON.parse(
+        localStorage.getItem("y_reading_highlights") || "{}",
+      );
+    } catch (e) {
+      window._localReadingHighlights = {};
+    }
+  }
+  return window._localReadingHighlights;
+}
+
+function persistReadingHighlightStore() {
+  if (
+    typeof currentUsername !== "undefined" &&
+    currentUsername &&
+    typeof dbUserData !== "undefined" &&
+    dbUserData[currentUsername]
+  ) {
+    if (typeof syncCloudData === "function") syncCloudData();
+    else if (typeof saveDb === "function") saveDb();
+  } else {
+    try {
+      localStorage.setItem(
+        "y_reading_highlights",
+        JSON.stringify(window._localReadingHighlights || {}),
+      );
+    } catch (e) {}
+  }
+}
+
+function getHighlightRangesForText(rawText) {
+  const store = getReadingHighlightStore();
+  const list = store[hashReadingText(rawText)];
+  return Array.isArray(list) ? list : [];
+}
+
+function updateReadingHighlightRange(rawText, start, end, highlighted) {
+  const store = getReadingHighlightStore();
+  const key = hashReadingText(rawText);
+  if (!store[key]) store[key] = [];
+  const ranges = store[key];
+  const idx = ranges.findIndex((r) => r[0] === start && r[1] === end);
+  if (highlighted) {
+    if (idx === -1) ranges.push([start, end]);
+  } else if (idx !== -1) {
+    ranges.splice(idx, 1);
+  }
+  persistReadingHighlightStore();
+}
+
+function applySavedHighlightsToReader(rawText) {
+  const ranges = getHighlightRangesForText(rawText);
+  if (!ranges.length || typeof allWordSpans === "undefined" || !allWordSpans) {
+    return;
+  }
+  const want = new Set(ranges.map((r) => r[0] + ":" + r[1]));
+  allWordSpans.forEach((span) => {
+    const ds = span.getAttribute("data-start");
+    const de = span.getAttribute("data-end");
+    if (ds == null || de == null) return;
+    const a = parseInt(ds, 10);
+    const b = parseInt(de, 10);
+    if (want.has(a + ":" + b)) span.classList.add("highlighted");
+  });
+}
+
+/**
+ * Kelime vurgusu (modal) — data-start/data-end ile kalıcı kayıt
+ */
+window.syncReadingHighlightToStorage = function (isHighlighted) {
+  const el =
+    typeof activeTokenElement !== "undefined" ? activeTokenElement : null;
+  if (!el || !el.classList || !el.classList.contains("tok")) return;
+  const ds = el.getAttribute("data-start");
+  const de = el.getAttribute("data-end");
+  if (ds == null || de == null) return;
+  const start = parseInt(ds, 10);
+  const end = parseInt(de, 10);
+  if (Number.isNaN(start) || Number.isNaN(end)) return;
+  const input = document.getElementById("input-text");
+  const rawText = input ? input.value : "";
+  if (!rawText) return;
+  updateReadingHighlightRange(rawText, start, end, !!isHighlighted);
+};
+
 function processAndRenderText() {
   const rawText = document.getElementById("input-text").value;
   if (!rawText.trim()) {
@@ -566,6 +681,7 @@ function processAndRenderText() {
     readerDiv.appendChild(pContainer);
     globalTextForTTS += "\n";
   });
+  applySavedHighlightsToReader(rawText);
   renderDecksAccordion();
   window.scrollTo({ top: readerDiv.offsetTop - 30, behavior: "smooth" });
 }

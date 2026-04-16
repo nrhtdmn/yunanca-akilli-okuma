@@ -250,7 +250,15 @@ function triggerWordPopup(event, word, contextSentence) {
 }
 
 function closePopup() { document.getElementById('wpop').style.display = "none"; stopSpeech(); }
-function toggleHighlightWord() { if (activeTokenElement) { activeTokenElement.classList.toggle('highlighted'); showToastMessage("Kelime vurgusu değiştirildi."); } }
+function toggleHighlightWord() {
+  if (!activeTokenElement) return;
+  activeTokenElement.classList.toggle('highlighted');
+  const on = activeTokenElement.classList.contains('highlighted');
+  if (typeof window.syncReadingHighlightToStorage === 'function') {
+    window.syncReadingHighlightToStorage(on);
+  }
+  showToastMessage("Kelime vurgusu değiştirildi.");
+}
 
 function closeOsymModal(id) { document.getElementById(id).style.display = 'none'; }
 function openStatusModal() {
