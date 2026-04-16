@@ -224,6 +224,11 @@ function finishInit() {
   } catch (e) {
     console.error("syncAuthUserWithApp hatası:", e);
   }
+  try {
+    if (typeof window.restoreLastMainTab === "function") window.restoreLastMainTab();
+  } catch (e) {
+    console.error("restoreLastMainTab hatası:", e);
+  }
 }
 
 /** Kişisel bildirim (forUsername) veya herkese açık duyuru */
@@ -3875,12 +3880,23 @@ window.deleteLesson = function(id) {
 /* ==========================================
  * SEKMELERİ GİZLE/GÖSTER MOTORU
  * ========================================== */
+const MAIN_TAB_IDS = ['read', 'video', 'media', 'dict', 'exam', 'practice', 'quiz', 'chat', 'lessons', 'kurs'];
+const MAIN_TAB_STORAGE_KEY = 'y_main_tab';
+
+window.restoreLastMainTab = function () {
+    try {
+        const saved = localStorage.getItem(MAIN_TAB_STORAGE_KEY);
+        if (!saved || !MAIN_TAB_IDS.includes(saved)) return;
+        window.switchMainTab(saved);
+    } catch (e) { /* ignore */ }
+};
+
 window.switchMainTab = function(tabName) {
     document.querySelectorAll('.main-tab-btn').forEach(btn => btn.classList.remove('active'));
     const activeBtn = document.getElementById('mtab-' + tabName);
     if (activeBtn) activeBtn.classList.add('active');
 
-    const allSections = ['read', 'video', 'media', 'dict', 'exam', 'practice', 'quiz', 'chat', 'lessons', 'kurs'];
+    const allSections = MAIN_TAB_IDS;
     allSections.forEach(sec => {
         const el = document.getElementById('section-' + sec);
         if (el) el.style.display = 'none';
@@ -3911,6 +3927,11 @@ window.switchMainTab = function(tabName) {
         }
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+    try {
+        if (MAIN_TAB_IDS.includes(tabName)) {
+            localStorage.setItem(MAIN_TAB_STORAGE_KEY, tabName);
+        }
+    } catch (e) { /* ignore */ }
 };
 
 window.addLinkToEditor = function() {
