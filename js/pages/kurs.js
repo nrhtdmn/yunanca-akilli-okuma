@@ -6,28 +6,28 @@
 let kursClasses     = JSON.parse(localStorage.getItem('y_kurs_classes'))      || [];
 let kursAssignments = JSON.parse(localStorage.getItem('y_kurs_assignments'))  || [];
 let kursSubmissions = JSON.parse(localStorage.getItem('y_kurs_submissions'))  || {};
+let kursThreads     = JSON.parse(localStorage.getItem('y_kurs_threads'))        || {};
 
 // Aktif oturum (öğrenci ödev çözerken)
 let kursActiveSession = null;
 let kursExamSession   = null;
 
 function saveKursData() {
-  // Yerel hafıza kaydı
   localStorage.setItem('y_kurs_classes',      JSON.stringify(kursClasses));
   localStorage.setItem('y_kurs_assignments',  JSON.stringify(kursAssignments));
   localStorage.setItem('y_kurs_submissions',  JSON.stringify(kursSubmissions));
+  localStorage.setItem('y_kurs_threads',      JSON.stringify(kursThreads));
 
-  // YENİ EKLENEN: Firebase bulutuna kayıt
   if (window.useFirebase && window.db) {
     window.db.collection("global").doc("kurs_data").set({
       classes: kursClasses,
       assignments: kursAssignments,
-      submissions: kursSubmissions
+      submissions: kursSubmissions,
+      threads: kursThreads
     }, { merge: true }).catch(e => console.error("Kurs veri kaydetme hatası:", e));
   }
 }
 
-// YENİ EKLENEN: Buluttan veri geldiğinde referansları bozmadan dizileri güncelleyen fonksiyon
 window.updateKursDataFromCloud = function(cloudData) {
   if (cloudData.classes) {
       kursClasses.length = 0; 
@@ -41,37 +41,15 @@ window.updateKursDataFromCloud = function(cloudData) {
       for (let prop in kursSubmissions) { delete kursSubmissions[prop]; }
       Object.assign(kursSubmissions, cloudData.submissions);
   }
-  
-  localStorage.setItem('y_kurs_classes', JSON.stringify(kursClasses));
-  localStorage.setItem('y_kurs_assignments', JSON.stringify(kursAssignments));
-  localStorage.setItem('y_kurs_submissions', JSON.stringify(kursSubmissions));
-  
-  // Eğer kullanıcı şu an Kurs panelindeyse ekranı yenile
-  const kursSection = document.getElementById('section-kurs');
-  if (kursSection && kursSection.style.display === 'block') {
-      window.renderKursPanel();
+  if (cloudData.threads) {
+      for (let prop in kursThreads) { delete kursThreads[prop]; }
+      Object.assign(kursThreads, cloudData.threads);
   }
-};
 
-// Firebase'den Kurs verisi geldiğinde yerel değişkenleri yenileyen tetikleyici
-window.updateKursDataFromCloud = function(cloudData) {
-  if (cloudData.classes) {
-      kursClasses.length = 0; 
-      cloudData.classes.forEach(c => kursClasses.push(c));
-  }
-  if (cloudData.assignments) {
-      kursAssignments.length = 0;
-      cloudData.assignments.forEach(a => kursAssignments.push(a));
-  }
-  if (cloudData.submissions) {
-      for (let prop in kursSubmissions) { delete kursSubmissions[prop]; }
-      Object.assign(kursSubmissions, cloudData.submissions);
-  }
-  
-  // Yerel hafızayı yedekle
   localStorage.setItem('y_kurs_classes', JSON.stringify(kursClasses));
   localStorage.setItem('y_kurs_assignments', JSON.stringify(kursAssignments));
   localStorage.setItem('y_kurs_submissions', JSON.stringify(kursSubmissions));
+  localStorage.setItem('y_kurs_threads', JSON.stringify(kursThreads));
   
   // Eğer kullanıcı o an Kurs sekmesindeyse ekranı yenile
   const kursSection = document.getElementById('section-kurs');
@@ -83,6 +61,47 @@ window.updateKursDataFromCloud = function(cloudData) {
 // --- YETKİ ---
 function kursIsTeacher() {
   return currentUser && (currentUser.role === 'teacher' || currentUser.role === 'admin');
+}
+
+function kursEscapeHtml(s) {
+  if (s == null) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function kursThreadKey(teacherUsername, studentUsername) {
+  return teacherUsername + '|||' + studentUsername;
+}
+
+function kursEnsureThread(teacherUsername, studentUsername) {
+  const key = kursThreadKey(teacherUsername, studentUsername);
+  if (!kursThreads[key]) {
+    kursThreads[key] = {
+      teacherUsername,
+      studentUsername,
+      messages: []
+    };
+  }
+  return key;
+}
+
+function kursTeacherHasStudent(teacherUsername, studentUsername) {
+  return kursClasses.some(
+    c => c.teacherUsername === teacherUsername && c.studentUsernames.includes(studentUsername)
+  );
+}
+
+function kursStudentTeacherList() {
+  const mine = kursAssignments.filter(a => a.studentUsernames.includes(currentUsername));
+  return [...new Set(mine.map(a => a.teacherUsername))];
+}
+
+function kursTeacherStudentList() {
+  const myClasses = kursClasses.filter(c => c.teacherUsername === currentUsername);
+  return [...new Set(myClasses.flatMap(c => c.studentUsernames))];
 }
 
 // ============================================================
@@ -112,6 +131,7 @@ window.renderKursPanel = function () {
     teacherView.style.display = 'none';
     studentView.style.display = 'block';
     renderStudentAssignments();
+    if (typeof window.renderStudentKursMessaging === 'function') window.renderStudentKursMessaging();
   }
 };
 
@@ -119,7 +139,7 @@ window.renderKursPanel = function () {
 // ÖĞRETMEN — SEKME
 // ============================================================
 window.switchKursTab = function (tab, btn) {
-  ['classes', 'assign', 'reports'].forEach(t => {
+  ['classes', 'assign', 'reports', 'messages'].forEach(t => {
     const el = document.getElementById('kurs-panel-' + t);
     if (el) el.style.display = 'none';
   });
@@ -131,6 +151,7 @@ window.switchKursTab = function (tab, btn) {
 
   if (tab === 'assign')  renderAssignForm();
   if (tab === 'reports') renderTeacherReports();
+  if (tab === 'messages') window.renderTeacherMessages && window.renderTeacherMessages();
 };
 
 // ============================================================
@@ -333,6 +354,8 @@ window.submitAssignment = function () {
   const type      = document.getElementById('assign-type-select').value;
   const contentId = document.getElementById('assign-content-select').value;
   const dueDate   = document.getElementById('assign-due-date').value;
+  const teacherMsgEl = document.getElementById('assign-teacher-message');
+  const teacherMessage = teacherMsgEl && teacherMsgEl.value ? teacherMsgEl.value.trim() : '';
 
   if (!target)    { showToastMessage('❌ Hedef seçin.'); return; }
   if (!contentId) { showToastMessage('❌ İçerik seçin.'); return; }
@@ -371,6 +394,7 @@ window.submitAssignment = function () {
     contentTitle,
     examCategory,
     dueDate: dueDate || null,
+    teacherMessage: teacherMessage || null,
     createdAt: new Date().toISOString()
   });
 
@@ -381,6 +405,7 @@ window.submitAssignment = function () {
   document.getElementById('assign-target-select').value  = '';
   document.getElementById('assign-content-select').value = '';
   document.getElementById('assign-due-date').value       = '';
+  if (teacherMsgEl) teacherMsgEl.value = '';
 };
 
 // ============================================================
@@ -415,15 +440,21 @@ window.renderTeacherReports = function () {
           ? '<span style="color:var(--error);">❌ Teslim Etmedi</span>'
           : '<span style="color:var(--text-dim);">⏳ Bekliyor</span>';
         return `<tr>
-          <td style="padding:10px 12px; border-bottom:1px solid var(--border);">${uname}</td>
+          <td style="padding:10px 12px; border-bottom:1px solid var(--border);">${kursEscapeHtml(uname)}</td>
           <td style="padding:10px 12px; text-align:center; border-bottom:1px solid var(--border);">${badge}</td>
-          <td colspan="4" style="padding:10px 12px; text-align:center; border-bottom:1px solid var(--border); color:var(--text-dim);">—</td>
+          <td colspan="6" style="padding:10px 12px; text-align:center; border-bottom:1px solid var(--border); color:var(--text-dim);">—</td>
         </tr>`;
       }
 
       const sc = sub.score >= 70 ? 'var(--success)' : sub.score >= 50 ? 'var(--accent2)' : 'var(--error)';
+      const notePrev = sub.teacherNote
+        ? (sub.teacherNote.length > 48 ? kursEscapeHtml(sub.teacherNote.slice(0, 48)) + '…' : kursEscapeHtml(sub.teacherNote))
+        : '<span style="color:var(--text-dim);">—</span>';
+      const gradeCell = sub.teacherGrade != null && sub.teacherGrade !== ''
+        ? `<span style="color:var(--accent2); font-weight:bold;">${kursEscapeHtml(String(sub.teacherGrade))}</span> · `
+        : '';
       return `<tr>
-        <td style="padding:10px 12px; border-bottom:1px solid var(--border);">${uname}</td>
+        <td style="padding:10px 12px; border-bottom:1px solid var(--border);">${kursEscapeHtml(uname)}</td>
         <td style="padding:10px 12px; text-align:center; border-bottom:1px solid var(--border);">
           <span style="color:var(--success);">✅ Teslim</span></td>
         <td style="padding:10px 12px; text-align:center; border-bottom:1px solid var(--border);
@@ -436,6 +467,15 @@ window.renderTeacherReports = function () {
         <td style="padding:10px 12px; text-align:center; border-bottom:1px solid var(--border);
             font-size:0.8rem; color:var(--text-dim);">
           ${new Date(sub.completedAt).toLocaleString('tr-TR', {dateStyle:'short', timeStyle:'short'})}</td>
+        <td style="padding:10px 12px; border-bottom:1px solid var(--border); font-size:0.82rem; max-width:160px;">
+          ${gradeCell}${notePrev}
+        </td>
+        <td style="padding:10px 8px; text-align:center; border-bottom:1px solid var(--border); white-space:nowrap;">
+          <button type="button" class="secondary-btn" style="padding:6px 10px; font-size:0.8rem; margin:2px;"
+            onclick="event.stopPropagation(); kursOpenSubmissionDetail(${JSON.stringify(asgn.id)}, ${JSON.stringify(uname)})">Cevaplar</button>
+          <button type="button" class="secondary-btn" style="padding:6px 10px; font-size:0.8rem; margin:2px;"
+            onclick="event.stopPropagation(); kursOpenTeacherNoteModal(${JSON.stringify(asgn.id)}, ${JSON.stringify(uname)})">Not</button>
+        </td>
       </tr>`;
     }).join('');
 
@@ -485,6 +525,8 @@ window.renderTeacherReports = function () {
                 <th style="padding:10px 12px; text-align:center; border-bottom:1px solid var(--border);">D / Y / B</th>
                 <th style="padding:10px 12px; text-align:center; border-bottom:1px solid var(--border);">Süre</th>
                 <th style="padding:10px 12px; text-align:center; border-bottom:1px solid var(--border);">Tarih</th>
+                <th style="padding:10px 12px; text-align:left; border-bottom:1px solid var(--border);">Not / puan</th>
+                <th style="padding:10px 12px; text-align:center; border-bottom:1px solid var(--border);">İşlem</th>
               </tr>
             </thead>
             <tbody>${rows}</tbody>
@@ -503,6 +545,244 @@ window.deleteAssignment = function (assignmentId) {
   saveKursData();
   renderTeacherReports();
   showToastMessage('Ödev silindi.');
+};
+
+window.kursOpenSubmissionDetail = function (assignmentId, studentUsername) {
+  const asgn = kursAssignments.find(a => a.id === assignmentId);
+  const sub = kursSubmissions[assignmentId + '_' + studentUsername];
+  const modal = document.getElementById('kurs-detail-modal');
+  const body = document.getElementById('kurs-detail-modal-body');
+  if (!modal || !body || !sub) return;
+  let html = '<p style="color:var(--text-dim); margin-bottom:12px;"><strong>Öğrenci:</strong> ' + kursEscapeHtml(studentUsername) + '</p>';
+  if (asgn) {
+    html += '<p style="margin-bottom:16px;"><strong>Ödev:</strong> ' + kursEscapeHtml(asgn.contentTitle) + '</p>';
+  }
+  const details = sub.answerDetails;
+  if (!details || !details.length) {
+    html += '<p style="color:var(--text-dim);">Bu teslimde soru bazlı kayıt yok (eski kayıt). Genel puan: %' + sub.score + '</p>';
+  } else {
+    html += '<div style="display:flex; flex-direction:column; gap:12px; max-height:60vh; overflow:auto;">';
+    details.forEach((d, i) => {
+      const mark = d.ok ? '✅' : '❌';
+      const col = d.ok ? 'var(--success)' : 'var(--error)';
+      html += `<div style="border:1px solid var(--border); border-radius:8px; padding:12px; background:var(--surface-alt);">
+        <div style="font-weight:bold; color:${col}; margin-bottom:6px;">${mark} Soru ${i + 1}</div>
+        <div style="font-size:0.9rem; margin-bottom:8px; color:var(--text);">${kursEscapeHtml(d.prompt)}</div>
+        <div style="font-size:0.85rem;"><span style="color:var(--text-dim);">Öğrenci:</span> ${kursEscapeHtml(d.userAnswer)}</div>
+        <div style="font-size:0.85rem;"><span style="color:var(--text-dim);">Doğru cevap:</span> ${kursEscapeHtml(d.correctAnswer)}</div>
+      </div>`;
+    });
+    html += '</div>';
+  }
+  body.innerHTML = html;
+  modal.style.display = 'flex';
+};
+
+window.kursCloseDetailModal = function () {
+  const modal = document.getElementById('kurs-detail-modal');
+  if (modal) modal.style.display = 'none';
+};
+
+window.kursOpenTeacherNoteModal = function (assignmentId, studentUsername) {
+  const sub = kursSubmissions[assignmentId + '_' + studentUsername];
+  const modal = document.getElementById('kurs-note-modal');
+  if (!modal || !sub) return;
+  modal.dataset.assignmentId = assignmentId;
+  modal.dataset.studentUsername = studentUsername;
+  const ta = document.getElementById('kurs-teacher-note-input');
+  const gr = document.getElementById('kurs-teacher-grade-input');
+  if (ta) ta.value = sub.teacherNote || '';
+  if (gr) gr.value = sub.teacherGrade != null && sub.teacherGrade !== '' ? String(sub.teacherGrade) : '';
+  modal.style.display = 'flex';
+};
+
+window.kursCloseNoteModal = function () {
+  const modal = document.getElementById('kurs-note-modal');
+  if (modal) modal.style.display = 'none';
+};
+
+window.kursSaveTeacherNote = function () {
+  const modal = document.getElementById('kurs-note-modal');
+  const assignmentId = modal && modal.dataset.assignmentId;
+  const studentUsername = modal && modal.dataset.studentUsername;
+  if (!assignmentId || !studentUsername) return;
+  const key = assignmentId + '_' + studentUsername;
+  const sub = kursSubmissions[key];
+  if (!sub) return;
+  const ta = document.getElementById('kurs-teacher-note-input');
+  const gr = document.getElementById('kurs-teacher-grade-input');
+  sub.teacherNote = ta ? ta.value.trim() : '';
+  const g = gr && gr.value.trim();
+  if (g === '') delete sub.teacherGrade;
+  else {
+    const n = parseInt(g, 10);
+    if (!isNaN(n)) sub.teacherGrade = Math.max(0, Math.min(100, n));
+  }
+  sub.teacherNoteAt = new Date().toISOString();
+  sub.teacherNoteBy = currentUsername;
+  saveKursData();
+  if (modal) modal.style.display = 'none';
+  showToastMessage('Not kaydedildi.');
+  renderTeacherReports();
+};
+
+// ============================================================
+// ÖĞRETMEN / ÖĞRENCİ — MESAJLAŞMA
+// ============================================================
+window.renderTeacherMessages = function () {
+  const sel = document.getElementById('kurs-msg-student-select');
+  const hint = document.getElementById('kurs-msg-teacher-hint');
+  if (!sel) return;
+  const students = kursTeacherStudentList().sort();
+  if (students.length === 0) {
+    sel.innerHTML = '<option value="">—</option>';
+    if (hint) {
+      hint.style.display = 'block';
+      hint.textContent = 'Önce sınıflarınıza öğrenci ekleyin.';
+    }
+    const box = document.getElementById('kurs-msg-thread');
+    if (box) box.innerHTML = '';
+    return;
+  }
+  if (hint) hint.style.display = 'none';
+  const prev = sel.value;
+  sel.innerHTML = '<option value="">— Öğrenci seçin —</option>' +
+    students.map(s => `<option value=${JSON.stringify(s)}>${kursEscapeHtml(s)}</option>`).join('');
+  if (prev && students.includes(prev)) sel.value = prev;
+  window.renderTeacherMessageThread();
+};
+
+window.renderTeacherMessageThread = function () {
+  const sel = document.getElementById('kurs-msg-student-select');
+  const box = document.getElementById('kurs-msg-thread');
+  if (!sel || !box) return;
+  const student = sel.value;
+  if (!student) {
+    box.innerHTML = '<p style="color:var(--text-dim); font-size:0.9rem;">Soldan öğrenci seçin.</p>';
+    return;
+  }
+  const key = kursThreadKey(currentUsername, student);
+  const thread = kursThreads[key];
+  const messages = (thread && thread.messages) || [];
+  if (messages.length === 0) {
+    box.innerHTML = '<p style="color:var(--text-dim); font-size:0.9rem;">Henüz mesaj yok. Aşağıdan yazabilirsiniz.</p>';
+    return;
+  }
+  box.innerHTML = messages.map(m => {
+    const mine = m.from === currentUsername;
+    return `<div style="margin-bottom:10px; text-align:${mine ? 'right' : 'left'};">
+      <div style="display:inline-block; max-width:85%; padding:10px 14px; border-radius:12px;
+        background:${mine ? 'var(--accent)' : 'var(--surface-alt)'};
+        color:${mine ? '#fff' : 'var(--text)'};
+        border:1px solid var(--border); font-size:0.92rem; text-align:left;">
+        ${kursEscapeHtml(m.body).replace(/\n/g, '<br>')}
+        <div style="font-size:0.72rem; opacity:0.85; margin-top:6px;">
+          ${new Date(m.createdAt).toLocaleString('tr-TR', { dateStyle: 'short', timeStyle: 'short' })}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  box.scrollTop = box.scrollHeight;
+};
+
+window.sendKursMessageFromTeacher = function () {
+  const student = document.getElementById('kurs-msg-student-select') &&
+    document.getElementById('kurs-msg-student-select').value;
+  const ta = document.getElementById('kurs-msg-input-teacher');
+  const text = ta && ta.value.trim();
+  if (!student) { showToastMessage('Öğrenci seçin.'); return; }
+  if (!text) { showToastMessage('Mesaj yazın.'); return; }
+  if (!kursTeacherHasStudent(currentUsername, student)) {
+    showToastMessage('Bu öğrenci sınıflarınızda değil.');
+    return;
+  }
+  const key = kursEnsureThread(currentUsername, student);
+  kursThreads[key].messages.push({
+    id: 'msg_' + Date.now(),
+    from: currentUsername,
+    body: text,
+    createdAt: new Date().toISOString()
+  });
+  ta.value = '';
+  saveKursData();
+  window.renderTeacherMessageThread();
+};
+
+window.renderStudentKursMessaging = function () {
+  const wrap = document.getElementById('kurs-student-messages-panel');
+  const sel = document.getElementById('kurs-msg-teacher-select-student');
+  if (!wrap || !sel) return;
+  const teachers = kursStudentTeacherList();
+  if (teachers.length === 0) {
+    wrap.style.display = 'none';
+    return;
+  }
+  wrap.style.display = 'block';
+  const prev = sel.value;
+  sel.innerHTML = '<option value="">— Öğretmen seçin —</option>' +
+    teachers.map(t => `<option value=${JSON.stringify(t)}>${kursEscapeHtml(t)}</option>`).join('');
+  if (prev && teachers.includes(prev)) sel.value = prev;
+  window.renderStudentMessageThread();
+};
+
+window.renderStudentMessageThread = function () {
+  const sel = document.getElementById('kurs-msg-teacher-select-student');
+  const box = document.getElementById('kurs-msg-thread-student');
+  if (!sel || !box) return;
+  const teacher = sel.value;
+  if (!teacher) {
+    box.innerHTML = '<p style="color:var(--text-dim); font-size:0.9rem;">Öğretmen seçin.</p>';
+    return;
+  }
+  if (!kursStudentTeacherList().includes(teacher)) {
+    box.innerHTML = '<p style="color:var(--error); font-size:0.9rem;">Bu öğretmenle ödev ilişkiniz yok.</p>';
+    return;
+  }
+  const key = kursThreadKey(teacher, currentUsername);
+  const thread = kursThreads[key];
+  const messages = (thread && thread.messages) || [];
+  if (messages.length === 0) {
+    box.innerHTML = '<p style="color:var(--text-dim); font-size:0.9rem;">Henüz mesaj yok.</p>';
+    return;
+  }
+  box.innerHTML = messages.map(m => {
+    const mine = m.from === currentUsername;
+    return `<div style="margin-bottom:10px; text-align:${mine ? 'right' : 'left'};">
+      <div style="display:inline-block; max-width:85%; padding:10px 14px; border-radius:12px;
+        background:${mine ? 'var(--accent2)' : 'var(--surface-alt)'};
+        color:${mine ? '#fff' : 'var(--text)'};
+        border:1px solid var(--border); font-size:0.92rem; text-align:left;">
+        ${kursEscapeHtml(m.body).replace(/\n/g, '<br>')}
+        <div style="font-size:0.72rem; opacity:0.85; margin-top:6px;">
+          ${new Date(m.createdAt).toLocaleString('tr-TR', { dateStyle: 'short', timeStyle: 'short' })}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  box.scrollTop = box.scrollHeight;
+};
+
+window.sendKursMessageFromStudent = function () {
+  const teacher = document.getElementById('kurs-msg-teacher-select-student') &&
+    document.getElementById('kurs-msg-teacher-select-student').value;
+  const ta = document.getElementById('kurs-msg-input-student');
+  const text = ta && ta.value.trim();
+  if (!teacher) { showToastMessage('Öğretmen seçin.'); return; }
+  if (!text) { showToastMessage('Mesaj yazın.'); return; }
+  if (!kursStudentTeacherList().includes(teacher)) {
+    showToastMessage('Bu öğretmene mesaj gönderemezsiniz.');
+    return;
+  }
+  const key = kursEnsureThread(teacher, currentUsername);
+  kursThreads[key].messages.push({
+    id: 'msg_' + Date.now(),
+    from: currentUsername,
+    body: text,
+    createdAt: new Date().toISOString()
+  });
+  ta.value = '';
+  saveKursData();
+  window.renderStudentMessageThread();
 };
 
 // ============================================================
@@ -584,16 +864,35 @@ function _studentCard(asgn) {
       onclick="startKursTask('${asgn.id}')">Başla ➔</button>`;
   }
 
+  const assignNote = asgn.teacherMessage
+    ? `<div style="margin-top:10px; padding:10px 12px; background:rgba(79,142,247,0.08); border-radius:8px; font-size:0.88rem; color:var(--text); border:1px solid var(--border);">
+        <strong style="color:var(--accent);">Öğretmen notu:</strong> ${kursEscapeHtml(asgn.teacherMessage).replace(/\n/g, '<br>')}
+      </div>`
+    : '';
+  let feedbackHtml = '';
+  if (asgn.status === 'completed' && asgn.sub) {
+    const s = asgn.sub;
+    if (s.teacherNote || s.teacherGrade != null) {
+      const g = s.teacherGrade != null && s.teacherGrade !== '' ? `<span style="color:var(--accent2); font-weight:bold;">Not: ${kursEscapeHtml(String(s.teacherGrade))}</span> · ` : '';
+      const n = s.teacherNote ? kursEscapeHtml(s.teacherNote).replace(/\n/g, '<br>') : '';
+      feedbackHtml = `<div style="margin-top:10px; padding:10px 12px; background:rgba(46,204,113,0.08); border-radius:8px; font-size:0.88rem; border:1px solid var(--border);">
+        ${g}${n || '<span style="color:var(--text-dim);">Öğretmen değerlendirmesi</span>'}
+      </div>`;
+    }
+  }
+
   return `<div style="background:var(--surface-alt); border:1px solid var(--border); border-radius:12px;
       padding:18px 20px; margin-bottom:12px; display:flex; justify-content:space-between;
-      align-items:center; gap:15px; flex-wrap:wrap;">
+      align-items:flex-start; gap:15px; flex-wrap:wrap;">
     <div style="flex:1; min-width:180px;">
       <div style="font-size:1.05rem; font-weight:bold; margin-bottom:6px;">${typeIcon} ${asgn.contentTitle}</div>
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
         <span style="background:rgba(79,142,247,0.15); color:var(--accent); padding:3px 10px; border-radius:20px; font-size:0.8rem;">${typeLabel}</span>
         ${dueBadge}
-        <span style="color:var(--text-dim); font-size:0.8rem;">Öğretmen: ${asgn.teacherUsername}</span>
+        <span style="color:var(--text-dim); font-size:0.8rem;">Öğretmen: ${kursEscapeHtml(asgn.teacherUsername)}</span>
       </div>
+      ${assignNote}
+      ${feedbackHtml}
     </div>
     <div>${action}</div>
   </div>`;
@@ -710,21 +1009,35 @@ window.submitKursPractice = function () {
   const prac = PRACTICE_CATALOG.find(p => p.id === asgn.contentId);
 
   let correct = 0, wrong = 0, empty = 0;
+  const answerDetails = [];
 
   prac.questions.forEach(q => {
     let userAnswer = null;
+    let userAnswerRaw = null;
     if (q.type === 'tf' || q.type === 'mc') {
       document.querySelectorAll(`input[name="kq_${q.id}"]`).forEach(r => {
         if (r.checked) userAnswer = r.value;
       });
+      userAnswerRaw = userAnswer;
     } else if (q.type === 'fill-write' || q.type === 'fill-select') {
       const el = document.getElementById('kfill_' + q.id);
-      userAnswer = el ? el.value.trim().toLowerCase() : null;
+      userAnswerRaw = el ? el.value.trim() : '';
+      userAnswer = userAnswerRaw ? userAnswerRaw.toLowerCase() : null;
     }
 
     if (!userAnswer || userAnswer === '') empty++;
     else if (userAnswer === String(q.answer).toLowerCase()) correct++;
     else wrong++;
+
+    const ok = !!(userAnswer && userAnswer === String(q.answer).toLowerCase());
+    answerDetails.push({
+      qid: q.id,
+      type: q.type,
+      prompt: q.question || '',
+      userAnswer: userAnswerRaw != null ? String(userAnswerRaw) : '',
+      correctAnswer: String(q.answer),
+      ok
+    });
   });
 
   const total     = prac.questions.length;
@@ -733,7 +1046,9 @@ window.submitKursPractice = function () {
 
   kursSubmissions[assignmentId + '_' + currentUsername] = {
     studentUsername: currentUsername, assignmentId,
+    assignmentType: 'practice',
     score, correct, wrong, empty, total, timeSpent,
+    answerDetails,
     completedAt: new Date().toISOString()
   };
   saveKursData();
@@ -873,11 +1188,20 @@ window.finishKursExam = function () {
   if (unanswered > 0 && !confirm(`${unanswered} soru boş bırakıldı. Yine de bitirmek istiyor musunuz?`)) return;
 
   let correct = 0, wrong = 0, empty = 0;
+  const answerDetails = [];
   questions.forEach(q => {
     const a = answers[q.id];
     if (!a) empty++;
     else if (a === q.answer) correct++;
     else wrong++;
+    const ok = a && a === q.answer;
+    answerDetails.push({
+      qid: q.id,
+      prompt: q.question || '',
+      userAnswer: a || '',
+      correctAnswer: q.answer,
+      ok: !!ok
+    });
   });
 
   const total     = questions.length;
@@ -886,7 +1210,10 @@ window.finishKursExam = function () {
 
   kursSubmissions[assignmentId + '_' + currentUsername] = {
     studentUsername: currentUsername, assignmentId,
+    assignmentType: 'exam',
     score, correct, wrong, empty, total, timeSpent,
+    examAnswers: { ...answers },
+    answerDetails,
     completedAt: new Date().toISOString()
   };
   saveKursData();
