@@ -2785,12 +2785,12 @@ function deletePracticeFromAdmin(id, source) {
  * ALIŞTIRMA (PRACTICE) METİN İÇİ MOTORU (CLOZE TEST)
  * ========================================== */
 
-// Düz metinleri ve şıkları tokenize etmek için
-function tokenizePracHTML(text) {
-  if (!text) return "";
+// Tek satır: \s+ ile bölününce \n kaybolduğu için satır bazlı işliyoruz.
+function tokenizePracHTMLLine(line) {
+  if (line == null) return "";
   let html = "";
-  let safeSentence = text.replace(/'/g, "\\'").replace(/"/g, '\\"');
-  const parts = text.split(/(<[^>]*>|\s+)/);
+  let safeSentence = line.replace(/'/g, "\\'").replace(/"/g, '\\"');
+  const parts = line.split(/(<[^>]*>|\s+)/);
   parts.forEach((token) => {
     if (!token) return;
     if (token.startsWith("<")) {
@@ -2805,14 +2805,22 @@ function tokenizePracHTML(text) {
   return html;
 }
 
-// 1. Metin ve boşluk motoru (Inputlar Metin İçinde)
-function tokenizePracText(text, questionsArray = null) {
+// Düz metinleri ve şıkları tokenize etmek için
+function tokenizePracHTML(text) {
   if (!text) return "";
-  let html = "";
-  let safeSentence = text.replace(/'/g, "\\'").replace(/"/g, '\\"');
+  return String(text)
+    .split(/\r?\n/)
+    .map((line) => tokenizePracHTMLLine(line))
+    .join("<br>");
+}
 
-  // Metni etiketlere, boşluklara ([1], [2] vb.) göre ayır
-  const parts = text.split(/(<[^>]*>|\s+|\[\d+\])/);
+// 1. Metin ve boşluk motoru (Inputlar Metin İçinde)
+function tokenizePracTextLine(line, questionsArray) {
+  if (line == null) return "";
+  let html = "";
+  let safeSentence = line.replace(/'/g, "\\'").replace(/"/g, '\\"');
+
+  const parts = line.split(/(<[^>]*>|\s+|\[\d+\])/);
 
   parts.forEach((token) => {
     if (!token) return;
@@ -2827,7 +2835,6 @@ function tokenizePracText(text, questionsArray = null) {
           ? questionsArray[qIdx]
           : null;
 
-      // Boşluk Doldurma - YAZMALI ise Metnin içine INPUT ve GÖZ İKONU göm
       if (q && q.type === "fill-write") {
         q.isRenderedInline = true;
         const safeAns = q.answer ? q.answer.replace(/'/g, "\\'") : "";
@@ -2836,9 +2843,7 @@ function tokenizePracText(text, questionsArray = null) {
                         <input type="text" class="prac-input cloze-inline-input" id="ans-${q.id}" autocomplete="off" placeholder="..." onclick="event.stopPropagation()">
                         <button class="secondary-btn" style="padding:2px 6px; font-size:0.9rem; border:1px solid var(--accent2); color:var(--accent2); background:transparent; border-radius:4px; cursor:pointer; margin-left:4px;" onclick="event.stopPropagation(); document.getElementById('ans-${q.id}').value = '${safeAns}'; this.style.opacity='0.5';" title="Cevabı Gör">👁️</button>
                      </span>`;
-      }
-      // Boşluk Doldurma - SEÇMELİ ise Metnin içine SELECT göm
-      else if (q && q.type === "fill-select") {
+      } else if (q && q.type === "fill-select") {
         q.isRenderedInline = true;
         let opts = `<option value="" disabled selected>Seç...</option>`;
         if (q.options)
@@ -2846,9 +2851,7 @@ function tokenizePracText(text, questionsArray = null) {
             opts += `<option value="${opt}">${opt}</option>`;
           });
         html += `<select class="prac-select cloze-inline-select" id="ans-${q.id}" onclick="event.stopPropagation()">${opts}</select>`;
-      }
-      // Soru Çoktan seçmeli veya Doğru/Yanlış ise sadece Numara dairesini göster
-      else {
+      } else {
         html += `<span class="cloze-number">${num}</span>`;
       }
     } else if (token.startsWith("<")) {
@@ -2862,6 +2865,14 @@ function tokenizePracText(text, questionsArray = null) {
   });
 
   return html;
+}
+
+function tokenizePracText(text, questionsArray = null) {
+  if (!text) return "";
+  return String(text)
+    .split(/\r?\n/)
+    .map((line) => tokenizePracTextLine(line, questionsArray))
+    .join("<br>");
 }
 
 // 2. Öğrenci Ekranı (Okuma ve Çözme Arayüzü)
