@@ -84,9 +84,6 @@ function updateUserUI() {
   if (!currentUser) {
     headerArea.innerHTML = `<button class="auth-action-btn" onclick="showAuthModal(true)">Giriş Yap / Kayıt Ol</button>`;
     document.getElementById("main-sync-panel").style.display = "none";
-    if (typeof updatePracticeTeacherAddBoxVisibility === "function") {
-      updatePracticeTeacherAddBoxVisibility();
-    }
     return;
   }
 
@@ -115,9 +112,6 @@ function updateUserUI() {
   headerArea.innerHTML = badges;
   document.getElementById("main-sync-panel").style.display = "flex";
   updateBellIcon();
-  if (typeof updatePracticeTeacherAddBoxVisibility === "function") {
-    updatePracticeTeacherAddBoxVisibility();
-  }
 }
 
 // YENİ FONKSİYON: Gelişmiş Profili Açma ve İstatistik Hesaplama
@@ -246,15 +240,43 @@ window.pushUserAnnouncement = function (forUsername, text, link) {
         minute: "2-digit",
       }),
   };
-  dbAnnouncements.unshift(newAnn);
-  try {
-    localStorage.setItem("y_announcements_db", JSON.stringify(dbAnnouncements));
-  } catch (e) {}
-  if (typeof useFirebase !== "undefined" && useFirebase && db) {
-    db.collection("global").doc("announcements").set({ list: dbAnnouncements });
-  }
-  if (forUsername === currentUsername && typeof updateBellIcon === "function") {
-    updateBellIcon();
+
+  const dbc =
+    (typeof db !== "undefined" && db) ||
+    (typeof window !== "undefined" && window.db);
+  const writeList = function (base) {
+    const list = Array.isArray(base) ? [...base] : [];
+    list.unshift(newAnn);
+    dbAnnouncements.length = 0;
+    list.forEach((a) => dbAnnouncements.push(a));
+    try {
+      localStorage.setItem("y_announcements_db", JSON.stringify(dbAnnouncements));
+    } catch (e) {}
+    if (typeof useFirebase !== "undefined" && useFirebase && dbc) {
+      dbc
+        .collection("global")
+        .doc("announcements")
+        .set({ list: dbAnnouncements })
+        .catch((e) => console.error("pushUserAnnouncement", e));
+    }
+    if (forUsername === currentUsername && typeof updateBellIcon === "function") {
+      updateBellIcon();
+    }
+  };
+
+  if (typeof useFirebase !== "undefined" && useFirebase && dbc) {
+    dbc
+      .collection("global")
+      .doc("announcements")
+      .get()
+      .then((snap) => {
+        const remote =
+          snap.exists && snap.data().list ? snap.data().list : [];
+        writeList(remote);
+      })
+      .catch(() => writeList(dbAnnouncements.slice()));
+  } else {
+    writeList(dbAnnouncements.slice());
   }
 };
 
@@ -1800,104 +1822,6 @@ function findPracticeInMergedCatalog(id) {
     getMergedPracticeCatalogForView().find((p) => p.id === id) || null
   );
 }
-
-function updatePracticeTeacherAddBoxVisibility() {
-  const box = document.getElementById("practice-teacher-add-box");
-  if (!box) return;
-  const ok =
-    currentUser &&
-    (currentUser.role === "teacher" || currentUser.role === "admin");
-  box.style.display = ok ? "block" : "none";
-}
-
-window.saveTeacherPracticeFromPracticeTab = function () {
-  if (!requireAuth(1)) return;
-  if (
-    !currentUser ||
-    (currentUser.role !== "teacher" && currentUser.role !== "admin")
-  ) {
-    showToastMessage("Bu form yalnızca öğretmen hesapları içindir.");
-    return;
-  }
-  const title = document.getElementById("practice-tp-title")?.value.trim();
-  const level =
-    document.getElementById("practice-tp-level")?.value.trim() || "A2";
-  const category =
-    document.getElementById("practice-tp-cat")?.value.trim() || "Öğretmen";
-  const text = document.getElementById("practice-tp-text")?.value.trim();
-  const jsonRaw = document
-    .getElementById("practice-tp-questions-json")
-    ?.value.trim();
-  const vis =
-    document.querySelector('input[name="practice-tp-visibility"]:checked')
-      ?.value || "private";
-
-  if (!title || !text) {
-    showToastMessage("Başlık ve metin zorunludur.");
-    return;
-  }
-  let questions = [];
-  if (jsonRaw) {
-    try {
-      questions = JSON.parse(jsonRaw);
-      if (!Array.isArray(questions)) throw new Error("array");
-    } catch {
-      showToastMessage("Sorular geçerli bir JSON dizi olmalıdır.");
-      return;
-    }
-  }
-
-  if (vis === "public") {
-    const id = "tpub_" + Date.now();
-    const newPrac = {
-      id,
-      title,
-      level,
-      category,
-      text,
-      questions,
-      authorUsername: currentUsername,
-    };
-    const list = [...(window.TEACHER_PUBLIC_PRACTICES_LIST || [])];
-    list.unshift(newPrac);
-    window.TEACHER_PUBLIC_PRACTICES_LIST = list;
-    if (typeof useFirebase !== "undefined" && useFirebase && db) {
-      db.collection("global").doc("teacher_public_practices").set({ list });
-    }
-    showToastMessage("Genel alıştırma kaydedildi; tüm kullanıcılar görebilir.");
-  } else {
-    const id = "tp_" + Date.now();
-    const newPrac = {
-      id,
-      title,
-      level: level || "Özel",
-      category: category || "Özel",
-      text,
-      questions,
-    };
-    if (!dbUserData[currentUsername]) dbUserData[currentUsername] = {};
-    if (!Array.isArray(dbUserData[currentUsername].teacherPrivatePractices)) {
-      dbUserData[currentUsername].teacherPrivatePractices = [];
-    }
-    dbUserData[currentUsername].teacherPrivatePractices.unshift(newPrac);
-    if (typeof saveDb === "function") saveDb();
-    if (typeof syncCloudData === "function") syncCloudData();
-    showToastMessage(
-      "Özel alıştırma kaydedildi; size ve atadığınız öğrencilere görünür.",
-    );
-  }
-
-  const elTitle = document.getElementById("practice-tp-title");
-  const elText = document.getElementById("practice-tp-text");
-  const elJson = document.getElementById("practice-tp-questions-json");
-  if (elTitle) elTitle.value = "";
-  if (elText) elText.value = "";
-  if (elJson) elJson.value = "";
-  renderPracticeLibrary();
-  if (typeof window.renderTeacherPrivateMaterials === "function") {
-    window.renderTeacherPrivateMaterials();
-  }
-};
 
 function renderPracticeLibrary() {
   const container = document.getElementById("practice-grid-container");
@@ -3474,9 +3398,6 @@ window.switchMainTab = function(tabName) {
             populateDeckSelects();
         }
         if (tabName === 'practice') {
-            if (typeof updatePracticeTeacherAddBoxVisibility === 'function') {
-                updatePracticeTeacherAddBoxVisibility();
-            }
             if (typeof renderPracticeLibrary === 'function') renderPracticeLibrary();
         }
         if (tabName === 'kurs') {

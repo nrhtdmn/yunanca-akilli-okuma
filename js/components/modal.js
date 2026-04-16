@@ -79,6 +79,9 @@ function openAdminPanel() {
   if (titleEl) titleEl.textContent = '⚙️ Yönetici Paneli';
   const visRow = document.getElementById('teacher-practice-visibility-row');
   if (visRow) visRow.style.display = 'none';
+  modal.querySelectorAll('.admin-only-tab').forEach(function (btn) {
+    btn.style.display = '';
+  });
   window.renderAdminUsersList(); // Önce listeyi tazele
   if(typeof renderAdminPracticeList === 'function') renderAdminPracticeList();
   modal.style.display = 'flex';
@@ -95,7 +98,13 @@ window.openTeacherKursStudio = function () {
   const titleEl = modal.querySelector('h2.modal-title');
   if (titleEl) titleEl.textContent = '📁 Öğretmen içerik stüdyosu';
   const visRow = document.getElementById('teacher-practice-visibility-row');
-  if (visRow) visRow.style.display = 'block';
+  if (visRow) {
+    visRow.style.display = 'block';
+    visRow.style.visibility = 'visible';
+  }
+  modal.querySelectorAll('.admin-only-tab').forEach(function (btn) {
+    btn.style.display = 'none';
+  });
   if (typeof window.renderAdminUsersList === 'function') window.renderAdminUsersList();
   if (typeof renderAdminPracticeList === 'function') renderAdminPracticeList();
   if (typeof populateAdminYdsExams === 'function') populateAdminYdsExams();

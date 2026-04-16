@@ -96,9 +96,9 @@
 
         <div class="input-tabs"
           style="margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border);">
-          <button class="sub-tab-btn active" onclick="switchAdminTab('announcements', this)">📢 Duyurular</button>
-          <button class="sub-tab-btn" onclick="switchAdminTab('practices', this)">💪 Alıştırmalar</button>
-          <button class="sub-tab-btn" onclick="switchAdminTab('users', this)">👥 Kullanıcılar</button>
+          <button type="button" class="sub-tab-btn admin-only-tab active" onclick="switchAdminTab('announcements', this)">📢 Duyurular</button>
+          <button type="button" class="sub-tab-btn" onclick="switchAdminTab('practices', this)">💪 Alıştırmalar</button>
+          <button type="button" class="sub-tab-btn admin-only-tab" onclick="switchAdminTab('users', this)">👥 Kullanıcılar</button>
           <button class="sub-tab-btn" onclick="switchAdminTab('yds', this); populateAdminYdsExams();">📝 YDS Çözümleri</button>
           <button class="sub-tab-btn" onclick="switchAdminTab('lessons_mgmt', this); populateAdminLessons();">📖 Konu Yönetimi</button>
 
@@ -672,37 +672,6 @@
           <h3 style="color:var(--accent); margin-bottom:10px; font-size: 1.6rem;">💪 Okuma & Anlama Alıştırmaları</h3>
           <p style="color:var(--text-dim); margin-bottom:0; font-size:1rem;">Metinleri okuyun και anlama kapasitenizi
             interaktif alıştırmalarla (Doğru/Yanlış, Boşluk Doldurma, Eşleştirme) test edin.</p>
-        </div>
-        <div id="practice-teacher-add-box" style="display:none; max-width:720px; margin:0 auto 24px;">
-          <div class="video-setup-box" style="border-color:var(--accent2); text-align:left;">
-            <h4 style="color:var(--accent2); margin-bottom:10px;">➕ Öğretmen: yeni alıştırma</h4>
-            <p style="color:var(--text-dim); font-size:0.9rem; margin-bottom:14px;">
-              <strong>Genel:</strong> tüm kullanıcılar kütüphanede görür. <strong>Özel:</strong> yalnızca siz ve sınıfınızdaki / size atanmış öğrenciler görür (Kurs’tan ödev verirken de seçilebilir).
-            </p>
-            <label style="color:var(--text-dim); font-size:0.88rem;">Başlık</label>
-            <input type="text" id="practice-tp-title" class="auth-input" style="padding:12px; margin-bottom:10px; width:100%; box-sizing:border-box;" placeholder="Örn: Birinci ders tekrarı">
-            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
-              <div style="flex:1; min-width:120px;">
-                <label style="color:var(--text-dim); font-size:0.88rem;">Seviye</label>
-                <input type="text" id="practice-tp-level" class="auth-input" style="padding:10px; width:100%; box-sizing:border-box;" placeholder="A2" value="A2">
-              </div>
-              <div style="flex:1; min-width:120px;">
-                <label style="color:var(--text-dim); font-size:0.88rem;">Kategori</label>
-                <input type="text" id="practice-tp-cat" class="auth-input" style="padding:10px; width:100%; box-sizing:border-box;" placeholder="Okuma" value="Öğretmen">
-              </div>
-            </div>
-            <label style="color:var(--text-dim); font-size:0.88rem;">Okuma metni</label>
-            <textarea id="practice-tp-text" class="auth-input" rows="6" style="padding:12px; margin-bottom:10px; resize:vertical; width:100%; box-sizing:border-box;" placeholder="Parça metnini buraya yazın..."></textarea>
-            <label style="color:var(--text-dim); font-size:0.88rem;">Sorular (JSON dizi — isteğe bağlı)</label>
-            <textarea id="practice-tp-questions-json" class="auth-input" rows="6" style="padding:12px; margin-bottom:12px; resize:vertical; font-family:monospace; font-size:0.82rem; width:100%; box-sizing:border-box;"
-              placeholder='[{"id":"q1","type":"tf","question":"...","answer":"true"}]'></textarea>
-            <div style="margin-bottom:12px; font-size:0.95rem;">
-              <span style="color:var(--text-dim); margin-right:12px;">Yayın:</span>
-              <label style="margin-right:16px; cursor:pointer;"><input type="radio" name="practice-tp-visibility" value="private" checked> Özel</label>
-              <label style="cursor:pointer;"><input type="radio" name="practice-tp-visibility" value="public"> Genel (herkese)</label>
-            </div>
-            <button type="button" class="main-btn" style="padding:12px 20px;" onclick="saveTeacherPracticeFromPracticeTab()">Kaydet</button>
-          </div>
         </div>
         <div id="practice-grid-container" class="text-grid" style="margin-bottom: 40px;"></div>
       </div>

@@ -1359,17 +1359,17 @@ window.submitKursPractice = function () {
   saveKursData();
 
   const asgnDone = kursAssignments.find(function (a) { return a.id === assignmentId; });
-  if (
+  const teacherT =
     asgnDone &&
     asgnDone.teacherUsername &&
-    typeof window.pushUserAnnouncement === 'function'
-  ) {
+    String(asgnDone.teacherUsername).trim();
+  if (teacherT && typeof window.pushUserAnnouncement === 'function') {
     const sn =
       typeof window.kursPlainDisplayName === 'function'
         ? window.kursPlainDisplayName(currentUsername)
         : currentUsername;
     window.pushUserAnnouncement(
-      asgnDone.teacherUsername,
+      teacherT,
       `✅ ${sn} «${asgnDone.contentTitle || 'Alıştırma'}» ödevini teslim etti (puan %${score}).`,
       'kurs',
     );
@@ -1541,17 +1541,17 @@ window.finishKursExam = function () {
   saveKursData();
 
   const asgnExam = kursAssignments.find(function (a) { return a.id === assignmentId; });
-  if (
+  const teacherE =
     asgnExam &&
     asgnExam.teacherUsername &&
-    typeof window.pushUserAnnouncement === 'function'
-  ) {
+    String(asgnExam.teacherUsername).trim();
+  if (teacherE && typeof window.pushUserAnnouncement === 'function') {
     const sn =
       typeof window.kursPlainDisplayName === 'function'
         ? window.kursPlainDisplayName(currentUsername)
         : currentUsername;
     window.pushUserAnnouncement(
-      asgnExam.teacherUsername,
+      teacherE,
       `✅ ${sn} «${asgnExam.contentTitle || 'Sınav'}» ödevini teslim etti (puan %${score}).`,
       'kurs',
     );
