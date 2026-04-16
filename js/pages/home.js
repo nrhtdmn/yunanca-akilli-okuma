@@ -2312,6 +2312,122 @@ function getMergedPracticeCatalogForView() {
   return out;
 }
 
+function persistPracticesCatalog() {
+  try {
+    localStorage.setItem("y_practices_db", JSON.stringify(PRACTICE_CATALOG));
+  } catch (e) { /* ignore */ }
+  if (typeof useFirebase !== "undefined" && useFirebase && typeof db !== "undefined") {
+    db.collection("global").doc("practices").set({ list: PRACTICE_CATALOG }).catch(function (err) {
+      console.error("persistPracticesCatalog", err);
+    });
+  }
+}
+
+function applyArrayOrderMoveInPlace(arr, fromIdx, toIdx) {
+  const n = arr.length;
+  if (fromIdx < 0 || fromIdx >= n || Number.isNaN(fromIdx)) return false;
+  if (toIdx === -1) {
+    if (fromIdx === n - 1) return false;
+    const item = arr.splice(fromIdx, 1)[0];
+    arr.push(item);
+    return true;
+  }
+  if (toIdx >= 0 && toIdx < n) {
+    if (fromIdx === toIdx) return false;
+    const item = arr.splice(fromIdx, 1)[0];
+    let ins = toIdx;
+    if (fromIdx < toIdx) ins = toIdx - 1;
+    arr.splice(ins, 0, item);
+    return true;
+  }
+  return false;
+}
+
+function applyGlobalPracticeOrderMove(fromIdx, toIdx) {
+  if (!applyArrayOrderMoveInPlace(PRACTICE_CATALOG, fromIdx, toIdx)) return;
+  persistPracticesCatalog();
+  if (typeof renderPracticeLibrary === "function") renderPracticeLibrary();
+  renderAdminPracticeList();
+}
+
+function applyTeacherPrivatePracticeOrderMove(fromIdx, toIdx) {
+  if (!currentUsername || !dbUserData[currentUsername]) return;
+  const arr = dbUserData[currentUsername].teacherPrivatePractices;
+  if (!Array.isArray(arr)) return;
+  if (!applyArrayOrderMoveInPlace(arr, fromIdx, toIdx)) return;
+  if (typeof saveDb === "function") saveDb();
+  if (typeof syncCloudData === "function") syncCloudData();
+  if (typeof renderPracticeLibrary === "function") renderPracticeLibrary();
+  renderTeacherStudioPracticeList();
+  if (typeof window.renderTeacherPrivateMaterials === "function") {
+    window.renderTeacherPrivateMaterials();
+  }
+}
+
+function applyTeacherPublicPracticeOrderMove(fromIdx, toIdx) {
+  const me = currentUsername;
+  if (!me) return;
+  const full = [...(window.TEACHER_PUBLIC_PRACTICES_LIST || [])];
+  const mineObjs = full.filter((p) => p && p.authorUsername === me);
+  if (!applyArrayOrderMoveInPlace(mineObjs, fromIdx, toIdx)) return;
+  const nonMine = full.filter((p) => !(p && p.authorUsername === me));
+  const firstMineIndex = full.findIndex((p) => p && p.authorUsername === me);
+  const insertAt = firstMineIndex < 0 ? nonMine.length : firstMineIndex;
+  const next = nonMine.slice();
+  next.splice(insertAt, 0, ...mineObjs);
+  window.TEACHER_PUBLIC_PRACTICES_LIST = next;
+  if (typeof useFirebase !== "undefined" && useFirebase && db) {
+    db.collection("global").doc("teacher_public_practices").set({ list: next }).catch(function (e) {
+      console.error("teacher_public_practices", e);
+    });
+  }
+  if (typeof renderPracticeLibrary === "function") renderPracticeLibrary();
+  renderTeacherStudioPracticeList();
+}
+
+function bindPracticeAdminListDragDrop(container) {
+  if (!container || container.dataset.practiceDndBound === "1") return;
+  container.dataset.practiceDndBound = "1";
+  container.addEventListener("dragstart", function (e) {
+    const h = e.target.closest && e.target.closest(".prac-drag-handle");
+    if (!h) return;
+    const row = e.target.closest(".admin-prac-row");
+    if (!row || !container.contains(row)) return;
+    const idx = row.getAttribute("data-prac-idx");
+    const kind = row.getAttribute("data-prac-kind");
+    e.dataTransfer.setData("text/plain", idx + "|" + kind);
+    e.dataTransfer.effectAllowed = "move";
+    row.style.opacity = "0.55";
+  });
+  container.addEventListener("dragend", function () {
+    Array.prototype.forEach.call(container.querySelectorAll(".admin-prac-row"), function (r) {
+      r.style.opacity = "";
+    });
+  });
+  container.addEventListener("dragover", function (e) {
+    const row = e.target.closest && e.target.closest(".admin-prac-row");
+    if (!row || !container.contains(row)) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  });
+  container.addEventListener("drop", function (e) {
+    e.preventDefault();
+    const row = e.target.closest && e.target.closest(".admin-prac-row");
+    if (!row || !container.contains(row)) return;
+    const raw = e.dataTransfer.getData("text/plain");
+    const pipe = raw.indexOf("|");
+    if (pipe < 0) return;
+    const from = parseInt(raw.slice(0, pipe), 10);
+    const fromKind = raw.slice(pipe + 1);
+    const to = parseInt(row.getAttribute("data-prac-idx"), 10);
+    const toKind = row.getAttribute("data-prac-kind");
+    if (Number.isNaN(from) || Number.isNaN(to) || fromKind !== toKind) return;
+    if (toKind === "catalog") applyGlobalPracticeOrderMove(from, to);
+    else if (toKind === "private") applyTeacherPrivatePracticeOrderMove(from, to);
+    else if (toKind === "public") applyTeacherPublicPracticeOrderMove(from, to);
+  });
+}
+
 function findPracticeInMergedCatalog(id) {
   return (
     getMergedPracticeCatalogForView().find((p) => p.id === id) || null
@@ -2666,21 +2782,28 @@ function renderAdminPracticeList() {
     return;
   }
 
-  let html =
-    '<table class="admin-table"><thead><tr><th>ID</th><th>Başlık</th><th>İşlem</th></tr></thead><tbody>';
-  PRACTICE_CATALOG.forEach((p) => {
-    const sid = String(p.id).replace(/'/g, "\\'");
-    html += `<tr>
-            <td style="font-size:0.85rem; color:var(--text-dim);">${p.id}</td>
-            <td style="font-size:0.85rem; font-weight:bold;">${p.title}</td>
-            <td style="display:flex; gap:5px;">
-                <button class="secondary-btn" style="padding:4px 8px; font-size:0.8rem; border-color:var(--accent); color:var(--accent); background:transparent;" onclick="loadPracticeToAdminForm('${sid}')">✏️</button>
-                <button class="secondary-btn" style="padding:4px 8px; font-size:0.8rem; border-color:var(--error); color:var(--error); background:transparent;" onclick="deletePracticeFromAdmin('${sid}')">🗑️</button>
-            </td>
-        </tr>`;
+  let html = "";
+  PRACTICE_CATALOG.forEach((p, idx) => {
+    html += `
+        <div class="admin-prac-row" data-prac-kind="catalog" data-prac-idx="${idx}" style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid var(--border); background:var(--surface-alt); margin-bottom:5px; border-radius:6px; gap:10px;">
+            <span class="prac-drag-handle" draggable="true" title="Sürükle" style="cursor:grab; color:var(--text-dim); user-select:none; flex-shrink:0; padding:4px;">⋮⋮</span>
+            <div style="flex:1; min-width:0; font-size:0.85rem;">
+                <span style="color:var(--text-dim);">${p.id}</span><br>
+                <strong style="color:var(--text);">${p.title}</strong>
+            </div>
+            <div style="flex-shrink:0; display:flex; gap:5px;">
+                <button type="button" class="secondary-btn" style="padding:4px 8px; font-size:0.8rem; border-color:var(--accent); color:var(--accent); background:transparent;" onclick='loadPracticeToAdminForm(${JSON.stringify(p.id)})'>✏️</button>
+                <button type="button" class="secondary-btn" style="padding:4px 8px; font-size:0.8rem; border-color:var(--error); color:var(--error); background:transparent;" onclick='deletePracticeFromAdmin(${JSON.stringify(p.id)})'>🗑️</button>
+            </div>
+        </div>`;
   });
-  html += "</tbody></table>";
+  html += `
+        <div class="admin-prac-row" data-prac-kind="catalog" data-prac-idx="-1" style="display:flex; align-items:center; padding:8px 10px; border:1px dashed var(--border); border-radius:6px; color:var(--text-dim); font-size:0.85rem; gap:10px;">
+            <span style="width:28px; flex-shrink:0;"></span>
+            <span>⬇ Listenin <strong>sonuna</strong> taşımak için satırı buraya bırakın</span>
+        </div>`;
   container.innerHTML = html;
+  bindPracticeAdminListDragDrop(container);
 }
 
 function renderTeacherStudioPracticeList() {
@@ -2696,34 +2819,56 @@ function renderTeacherStudioPracticeList() {
     (p) => p && p.authorUsername === currentUsername,
   );
 
-  const rows = [];
-  priv.forEach((p) => rows.push({ p, source: "private" }));
-  pubOwn.forEach((p) => rows.push({ p, source: "public" }));
-
-  if (rows.length === 0) {
+  if (priv.length === 0 && pubOwn.length === 0) {
     container.innerHTML =
       '<p style="color:var(--text-dim); font-size:0.85rem;">Henüz özel veya genel alıştırmanız yok. Yukarıdaki formdan ekleyin.</p>';
     return;
   }
 
-  let html =
-    '<table class="admin-table"><thead><tr><th>ID</th><th>Başlık</th><th>Kapsam</th><th>İşlem</th></tr></thead><tbody>';
-  rows.forEach(({ p, source }) => {
-    const scopeLabel = source === "private" ? "🔒 Özel" : "🌐 Genel";
-    const sid = String(p.id).replace(/'/g, "\\'");
-    const src = source === "public" ? "public" : "private";
-    html += `<tr>
-      <td style="font-size:0.85rem; color:var(--text-dim);">${p.id}</td>
-      <td style="font-size:0.85rem; font-weight:bold;">${p.title}</td>
-      <td style="font-size:0.8rem;">${scopeLabel}</td>
-      <td style="display:flex; gap:5px;">
-        <button type="button" class="secondary-btn" style="padding:4px 8px; font-size:0.8rem; border-color:var(--accent); color:var(--accent); background:transparent;" onclick="loadPracticeToAdminForm('${sid}','${src}')">✏️</button>
-        <button type="button" class="secondary-btn" style="padding:4px 8px; font-size:0.8rem; border-color:var(--error); color:var(--error); background:transparent;" onclick="deletePracticeFromAdmin('${sid}','${src}')">🗑️</button>
-      </td>
-    </tr>`;
-  });
-  html += "</tbody></table>";
+  const rowTpl = (p, idx, kind) => {
+    const src = kind === "public" ? "public" : "private";
+    return `
+        <div class="admin-prac-row" data-prac-kind="${kind}" data-prac-idx="${idx}" style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid var(--border); background:var(--surface-alt); margin-bottom:5px; border-radius:6px; gap:10px;">
+            <span class="prac-drag-handle" draggable="true" title="Sürükle" style="cursor:grab; color:var(--text-dim); user-select:none; flex-shrink:0; padding:4px;">⋮⋮</span>
+            <div style="flex:1; min-width:0; font-size:0.85rem;">
+                <span style="color:var(--text-dim);">${p.id}</span><br>
+                <strong style="color:var(--text);">${p.title}</strong>
+            </div>
+            <div style="flex-shrink:0; display:flex; gap:5px;">
+                <button type="button" class="secondary-btn" style="padding:4px 8px; font-size:0.8rem; border-color:var(--accent); color:var(--accent); background:transparent;" onclick='loadPracticeToAdminForm(${JSON.stringify(p.id)}, ${JSON.stringify(src)})'>✏️</button>
+                <button type="button" class="secondary-btn" style="padding:4px 8px; font-size:0.8rem; border-color:var(--error); color:var(--error); background:transparent;" onclick='deletePracticeFromAdmin(${JSON.stringify(p.id)}, ${JSON.stringify(src)})'>🗑️</button>
+            </div>
+        </div>`;
+  };
+
+  let html = "";
+
+  if (priv.length > 0) {
+    html += `<div style="color:var(--accent); font-weight:bold; margin:4px 0 8px 0; font-size:0.9rem;">🔒 Özel alıştırmalar</div>`;
+    priv.forEach((p, idx) => {
+      html += rowTpl(p, idx, "private");
+    });
+    html += `
+        <div class="admin-prac-row" data-prac-kind="private" data-prac-idx="-1" style="display:flex; align-items:center; padding:8px 10px; border:1px dashed var(--border); border-radius:6px; color:var(--text-dim); font-size:0.82rem; margin-bottom:12px; gap:10px;">
+            <span style="width:28px;"></span>
+            <span>⬇ Özel listenin <strong>sonuna</strong> — buraya bırakın</span>
+        </div>`;
+  }
+
+  if (pubOwn.length > 0) {
+    html += `<div style="color:var(--accent); font-weight:bold; margin:4px 0 8px 0; font-size:0.9rem;">🌐 Genel (yayınlarım)</div>`;
+    pubOwn.forEach((p, idx) => {
+      html += rowTpl(p, idx, "public");
+    });
+    html += `
+        <div class="admin-prac-row" data-prac-kind="public" data-prac-idx="-1" style="display:flex; align-items:center; padding:8px 10px; border:1px dashed var(--border); border-radius:6px; color:var(--text-dim); font-size:0.82rem; gap:10px;">
+            <span style="width:28px;"></span>
+            <span>⬇ Genel listenin <strong>sonuna</strong> — buraya bırakın</span>
+        </div>`;
+  }
+
   container.innerHTML = html;
+  bindPracticeAdminListDragDrop(container);
 }
 
 // 2. Alıştırmayı Kalıcı Olarak Silme
@@ -2769,10 +2914,7 @@ function deletePracticeFromAdmin(id, source) {
   }
 
   PRACTICE_CATALOG = PRACTICE_CATALOG.filter((p) => p.id !== id);
-  localStorage.setItem("y_practices_db", JSON.stringify(PRACTICE_CATALOG));
-  if (useFirebase && db) {
-    db.collection("global").doc("practices").set({ list: PRACTICE_CATALOG });
-  }
+  persistPracticesCatalog();
   renderPracticeLibrary();
   renderAdminPracticeList();
   showToastMessage("🗑️ Alıştırma başarıyla silindi.");
@@ -3122,7 +3264,7 @@ function savePracticeFromForm() {
           showToastMessage("❌ Bu ID başka bir kullanıcı tarafından kullanılıyor.");
           return;
         }
-        list.unshift(newPrac);
+        list.push(newPrac);
       }
       window.TEACHER_PUBLIC_PRACTICES_LIST = list;
       if (typeof useFirebase !== "undefined" && useFirebase && db) {
@@ -3137,7 +3279,7 @@ function savePracticeFromForm() {
       const arr = dbUserData[currentUsername].teacherPrivatePractices;
       const ix = arr.findIndex((p) => p.id === id);
       if (ix > -1) arr[ix] = newPrac;
-      else arr.unshift(newPrac);
+      else arr.push(newPrac);
       if (typeof saveDb === "function") saveDb();
       if (typeof syncCloudData === "function") syncCloudData();
       showToastMessage("✅ Özel alıştırma kaydedildi.");
@@ -3159,14 +3301,11 @@ function savePracticeFromForm() {
     PRACTICE_CATALOG[existsIndex] = newPrac;
     showToastMessage("✅ Mevcut alıştırma güncellendi!");
   } else {
-    PRACTICE_CATALOG.unshift(newPrac);
+    PRACTICE_CATALOG.push(newPrac);
     showToastMessage("✅ Yeni alıştırma sisteme eklendi!");
   }
 
-  localStorage.setItem("y_practices_db", JSON.stringify(PRACTICE_CATALOG));
-  if (typeof useFirebase !== "undefined" && useFirebase && db) {
-    db.collection("global").doc("practices").set({ list: PRACTICE_CATALOG });
-  }
+  persistPracticesCatalog();
 
   clearAdminPracticeFormFields();
 
