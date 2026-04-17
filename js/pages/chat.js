@@ -10,6 +10,15 @@ let recognition;
 let isRecording = false;
 let chatHistory = [];
 
+function escapeHtml(text) {
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
+
 // --- 1. SES TANIMA (SPEECH-TO-TEXT) KURULUMU ---
 function initSpeechRecognition() {
     window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -211,6 +220,7 @@ function appendMessage(sender, text) {
     msgDiv.style.marginBottom = "10px";
     msgDiv.style.lineHeight = "1.5";
     msgDiv.style.fontSize = "1.05rem";
+    msgDiv.style.whiteSpace = "normal";
     
     if (isAI) {
         msgDiv.style.alignSelf = "flex-start";
@@ -219,10 +229,11 @@ function appendMessage(sender, text) {
         msgDiv.style.color = "var(--text)";
         msgDiv.innerHTML = `🤖 <b>Yorgo:</b><br> ${text}`;
     } else {
+        const safeText = escapeHtml(text).replace(/\r?\n/g, "<br>");
         msgDiv.style.alignSelf = "flex-end";
         msgDiv.style.background = "var(--accent)";
         msgDiv.style.color = "#fff";
-        msgDiv.innerHTML = `🧑 <b>Sen:</b><br> ${text}`;
+        msgDiv.innerHTML = `🧑 <b>Sen:</b><br> ${safeText}`;
     }
 
     container.appendChild(msgDiv);

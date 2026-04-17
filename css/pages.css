@@ -913,6 +913,77 @@
     background: #eef2f5;
 }
 
+.osym-settings-group {
+    border: 1px solid #b3c6e6;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background: #fdfefe;
+}
+
+.osym-settings-group h3 {
+    margin: 0 0 12px 0;
+    color: #003366;
+    font-size: 1rem;
+}
+
+.osym-settings-options {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.osym-setting-btn {
+    border: 1px solid #b8c6d6;
+    background: #ffffff;
+    color: #2f4158;
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.osym-setting-btn.active {
+    border-color: #003366;
+    background: #003366;
+    color: #fff;
+}
+
+.osym-jump-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#osym-jump-input {
+    width: 120px;
+    border: 1px solid #b8c6d6;
+    border-radius: 4px;
+    padding: 8px 10px;
+    font-size: 1rem;
+}
+
+.osym-settings-note {
+    margin: 10px 0 0 0;
+    color: #5e6e7e;
+    font-size: 0.9rem;
+}
+
+.osym-font-small .osym-question-text,
+.osym-font-small .osym-option-text {
+    font-size: 0.98rem;
+}
+
+.osym-font-normal .osym-question-text,
+.osym-font-normal .osym-option-text {
+    font-size: 1.1rem;
+}
+
+.osym-font-large .osym-question-text,
+.osym-font-large .osym-option-text {
+    font-size: 1.26rem;
+}
+
 
 /* === PRACTICE (ALIŞTIRMALAR) EKLENEN STİLLER === */
 .practice-split-layout {

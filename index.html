@@ -586,7 +586,7 @@
             <button class="osym-top-btn" onclick="openStatusModal()">🕒 Anlık Durum</button>
             <button class="osym-top-btn" onclick="openReviewModal('all')">👁️ Gözden Geçir</button>
             <button class="osym-top-btn" onclick="finishExam()">✔️ Sınavı Sonlandır</button>
-            <button class="osym-top-btn border-btn">Ayarlar</button>
+            <button class="osym-top-btn border-btn" onclick="openOsymSettingsModal()">Ayarlar</button>
           </div>
         </div>
         <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 30px 0 30px;">
@@ -666,6 +666,31 @@
               <div class="osym-tab" id="tab-empty" onclick="openReviewModal('empty')">○ Boş Bıraktıklarım</div>
             </div>
             <div id="osym-review-grid" class="osym-q-grid"></div>
+          </div>
+        </div>
+
+        <div id="osym-settings-modal" class="osym-modal-overlay">
+          <div class="osym-modal" style="max-width:620px;">
+            <div class="osym-modal-header">
+              <h2>AYARLAR</h2>
+              <button class="osym-modal-close" onclick="closeOsymModal('osym-settings-modal')">KAPAT</button>
+            </div>
+            <div class="osym-settings-group">
+              <h3>Metin Boyutu</h3>
+              <div class="osym-settings-options">
+                <button class="osym-setting-btn" onclick="setOsymFontSize('small')">Küçük</button>
+                <button class="osym-setting-btn active" onclick="setOsymFontSize('normal')">Orta</button>
+                <button class="osym-setting-btn" onclick="setOsymFontSize('large')">Büyük</button>
+              </div>
+            </div>
+            <div class="osym-settings-group">
+              <h3>Soruya Git</h3>
+              <div class="osym-jump-row">
+                <input id="osym-jump-input" type="number" min="1" value="1" />
+                <button class="osym-nav-btn" onclick="jumpToExamQFromInput()">Git</button>
+              </div>
+              <p class="osym-settings-note">1 ile <span id="osym-jump-max">1</span> arasinda bir soru numarasi girin.</p>
+            </div>
           </div>
         </div>
       </div>

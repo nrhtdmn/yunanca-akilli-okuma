@@ -284,6 +284,62 @@ function openReviewModal(filter = 'all') {
   document.getElementById('osym-review-modal').style.display = 'flex';
 }
 
+function jumpToExamQ(index) {
+  if (!Array.isArray(examSession) || examSession.length === 0) return;
+  if (typeof index !== "number" || index < 0 || index >= examSession.length) return;
+  if (typeof saveCurrentQuestionState === "function") saveCurrentQuestionState();
+  currentQIndex = index;
+  if (typeof loadExamQuestion === "function") loadExamQuestion();
+  closeOsymModal("osym-review-modal");
+  closeOsymModal("osym-status-modal");
+  closeOsymModal("osym-settings-modal");
+}
+
+function openOsymSettingsModal() {
+  if (!Array.isArray(examSession) || examSession.length === 0) return;
+  const jumpInput = document.getElementById("osym-jump-input");
+  const jumpMax = document.getElementById("osym-jump-max");
+  if (jumpInput) {
+    jumpInput.min = "1";
+    jumpInput.max = String(examSession.length);
+    jumpInput.value = String((currentQIndex || 0) + 1);
+  }
+  if (jumpMax) jumpMax.textContent = String(examSession.length);
+  syncOsymSettingsButtons();
+  document.getElementById("osym-settings-modal").style.display = "flex";
+}
+
+function jumpToExamQFromInput() {
+  const jumpInput = document.getElementById("osym-jump-input");
+  if (!jumpInput) return;
+  const requested = Number(jumpInput.value);
+  if (!requested || requested < 1 || requested > examSession.length) return;
+  jumpToExamQ(requested - 1);
+}
+
+function setOsymFontSize(size) {
+  const workspace = document.getElementById("exam-workspace");
+  if (!workspace) return;
+  workspace.classList.remove("osym-font-small", "osym-font-normal", "osym-font-large");
+  workspace.classList.add(`osym-font-${size}`);
+  localStorage.setItem("osym_font_size", size);
+  syncOsymSettingsButtons();
+}
+
+function syncOsymSettingsButtons() {
+  const selected = localStorage.getItem("osym_font_size") || "normal";
+  document.querySelectorAll(".osym-setting-btn").forEach((btn) => {
+    btn.classList.remove("active");
+    const isMatch = btn.getAttribute("onclick") === `setOsymFontSize('${selected}')`;
+    if (isMatch) btn.classList.add("active");
+  });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  const savedSize = localStorage.getItem("osym_font_size") || "normal";
+  setOsymFontSize(savedSize);
+});
+
 function openExamHistoryModal() {
   if (!currentUser) { showToastMessage("⚠️ Sınav geçmişinizi görmek için giriş yapmalısınız."); return; }
   const history = dbUserData[currentUsername]?.examHistory || []; const listEl = document.getElementById('exam-history-list'); listEl.innerHTML = "";
