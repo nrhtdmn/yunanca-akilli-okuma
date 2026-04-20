@@ -111,6 +111,9 @@
 .reader-toolbar-right {
     display: flex;
     gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    max-width: 100%;
 }
 
 .toolbar-btn {
@@ -143,6 +146,28 @@
     background: rgba(167, 139, 250, 0.25);
     color: #fff;
     border-color: var(--tts-color);
+}
+
+@media (max-width: 768px) {
+    .reader-toolbar {
+        align-items: stretch;
+    }
+
+    .reader-toolbar-left {
+        width: 100%;
+    }
+
+    .reader-toolbar-right {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .reader-toolbar-right .toolbar-btn,
+    .reader-toolbar-right .secondary-btn {
+        flex: 1 1 calc(50% - 8px);
+        min-width: 0;
+        justify-content: center;
+    }
 }
 
 /* === VIDEO & MEDIA SECTION === */
