@@ -1025,6 +1025,19 @@ function bindReaderSelectionTranslation() {
   if (readerSelectionBindingDone) return;
   const reader = document.getElementById("reader");
   if (!reader) return;
+  let selectionDebounceTimer = null;
+  let lastPopupSelection = "";
+
+  const isInsideReader = function (node) {
+    if (!node || !reader) return false;
+    let cur = node.nodeType === 1 ? node : node.parentNode;
+    while (cur) {
+      if (cur === reader) return true;
+      cur = cur.parentNode;
+    }
+    return false;
+  };
+
   const getTokenIndexByNode = function (node) {
     if (!Array.isArray(allWordSpans) || !node) return -1;
     let el = node.nodeType === 1 ? node : node.parentElement;
@@ -1035,13 +1048,15 @@ function bindReaderSelectionTranslation() {
     }
     return -1;
   };
-  reader.addEventListener("mouseup", function () {
+
+  const collectSelection = function () {
     const sel = window.getSelection && window.getSelection();
-    if (!sel) return;
+    if (!sel) return null;
+    if (!isInsideReader(sel.anchorNode) && !isInsideReader(sel.focusNode)) return null;
     const text = String(sel.toString() || "").trim();
-    if (!text || text.length < 2) return;
-    if (!/[\u0370-\u03FF]/.test(text)) return;
-    if (text.length > 120) return;
+    if (!text || text.length < 2) return null;
+    if (!/[\u0370-\u03FF]/.test(text)) return null;
+    if (text.length > 220) return null;
     const range = sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
     const selectedTokens = [];
     if (range && Array.isArray(allWordSpans)) {
@@ -1063,15 +1078,44 @@ function bindReaderSelectionTranslation() {
         }
       }
     }
-    window.activeSelectionTokenElements = selectedTokens;
-    window.lastReaderSelectionMeta = {
+    if (!selectedTokens.length) return null;
+    return {
       text: text.replace(/\s+/g, " "),
-      tokenCount: selectedTokens.length,
+      tokens: selectedTokens,
+    };
+  };
+
+  const applySelection = function (openPopup) {
+    const data = collectSelection();
+    if (!data) return;
+    window.activeSelectionTokenElements = data.tokens;
+    window.lastReaderSelectionMeta = {
+      text: data.text,
+      tokenCount: data.tokens.length,
       createdAt: Date.now(),
     };
-    const selectedPhrase = text.replace(/\s+/g, " ");
-    triggerWordPopup(null, selectedPhrase, selectedPhrase);
+    if (openPopup) {
+      const sig = `${data.text}|${data.tokens.length}`;
+      if (sig !== lastPopupSelection) {
+        lastPopupSelection = sig;
+        triggerWordPopup(null, data.text, data.text);
+      }
+    }
+  };
+
+  reader.addEventListener("mouseup", function () {
+    setTimeout(() => applySelection(true), 10);
   });
+
+  reader.addEventListener("touchend", function () {
+    setTimeout(() => applySelection(true), 120);
+  }, { passive: true });
+
+  document.addEventListener("selectionchange", function () {
+    if (selectionDebounceTimer) clearTimeout(selectionDebounceTimer);
+    selectionDebounceTimer = setTimeout(() => applySelection(false), 100);
+  });
+
   readerSelectionBindingDone = true;
 }
 
