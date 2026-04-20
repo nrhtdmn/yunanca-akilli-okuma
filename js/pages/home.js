@@ -739,6 +739,7 @@ function processAndRenderText() {
       <button class="toolbar-btn" onclick="stopSpeech()" title="Seslendirmeyi durdur">⏹ Durdur</button>
       <button class="toolbar-btn" onclick="adjustReaderFontSize(-0.1)" title="Yazıyı küçült">A-</button>
       <button class="toolbar-btn" onclick="adjustReaderFontSize(0.1)" title="Yazıyı büyüt">A+</button>
+      <button class="toolbar-btn" onclick="persistCurrentReadingState()" title="Okuma değişikliklerini kalıcı kaydet">💾 Değişiklikleri Kaydet</button>
     <button class="secondary-btn" onclick="clearReader()" style="border-color:var(--error); color:var(--error); padding: 5px 10px; font-size: 0.85rem; margin-left: 5px;" title="Okuma alanını temizle">🗑️ Temizle</button>
 
       </div>`;
@@ -746,6 +747,7 @@ function processAndRenderText() {
 
   globalTextForTTS = "";
   allWordSpans = [];
+  window.activeSelectionTokenElements = [];
   rawText.split("\n").forEach((line) => {
     if (!line.trim()) {
       readerDiv.appendChild(document.createElement("br"));
@@ -795,6 +797,23 @@ window.adjustReaderFontSize = function (delta) {
   localStorage.setItem("y_reader_font_scale", String(readerFontScale));
   applyReaderFontSize();
   showToastMessage(`Metin boyutu: ${Math.round(readerFontScale * 100)}%`);
+};
+
+window.persistCurrentReadingState = function () {
+  if (!currentUser || !currentUsername) {
+    if (typeof showAuthModal === "function") showAuthModal(true);
+    showToastMessage("Kaydetmek için giriş yapın.");
+    return;
+  }
+  const text = String(document.getElementById("input-text").value || "").trim();
+  if (!text) {
+    showToastMessage("Kaydedilecek aktif metin yok.");
+    return;
+  }
+  updateReadingProgressForText(text);
+  if (typeof syncCloudData === "function") syncCloudData();
+  if (typeof renderSavedReadingWorks === "function") renderSavedReadingWorks();
+  showToastMessage("✅ Değişiklikler kalıcı olarak kaydedildi.");
 };
 
 window.saveCurrentReadingWork = function () {
@@ -891,6 +910,16 @@ function bindReaderSelectionTranslation() {
     if (!text || text.length < 2) return;
     if (!/[\u0370-\u03FF]/.test(text)) return;
     if (text.length > 120) return;
+    const range = sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
+    const selectedTokens = [];
+    if (range && Array.isArray(allWordSpans)) {
+      allWordSpans.forEach((span) => {
+        try {
+          if (range.intersectsNode(span)) selectedTokens.push(span);
+        } catch (e) { /* ignore */ }
+      });
+    }
+    window.activeSelectionTokenElements = selectedTokens;
     const selectedPhrase = text.replace(/\s+/g, " ");
     triggerWordPopup(null, selectedPhrase, selectedPhrase);
   });

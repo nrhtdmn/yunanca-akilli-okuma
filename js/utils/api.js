@@ -237,6 +237,8 @@ function syncCloudData() {
     deletedAnnouncements: window.dbUserData[uname]?.deletedAnnouncements || [],
     teacherPrivatePractices: window.dbUserData[uname]?.teacherPrivatePractices || [],
     readingHighlights: window.dbUserData[uname]?.readingHighlights || {},
+    readingWorks: Array.isArray(window.dbUserData[uname]?.readingWorks) ? window.dbUserData[uname].readingWorks : [],
+    readingProgress: window.dbUserData[uname]?.readingProgress || {},
   };
   saveDb();
 }

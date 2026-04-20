@@ -217,6 +217,7 @@ function openAnnouncementsModal() {
 function triggerWordPopup(event, word, contextSentence) {
   const isLoggedIn = !!currentUser && currentUser.status === 'approved';
   activeTokenElement = (event && event.target && event.target.classList && event.target.classList.contains("tok")) ? event.target : null;
+  if (activeTokenElement) window.activeSelectionTokenElements = [activeTokenElement];
   activeWordString = word; activeContextSentence = contextSentence;
 
   try { if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') ytPlayer.pauseVideo(); } catch(e) {}
@@ -253,22 +254,39 @@ function triggerWordPopup(event, word, contextSentence) {
 
 function closePopup() { document.getElementById('wpop').style.display = "none"; stopSpeech(); }
 function toggleHighlightWord() {
+  const selectedTokens = Array.isArray(window.activeSelectionTokenElements)
+    ? window.activeSelectionTokenElements.filter((el) => el && el.classList && el.classList.contains("tok"))
+    : [];
+  if (selectedTokens.length > 1) {
+    const willHighlight = !selectedTokens.every((el) => el.classList.contains("highlighted"));
+    selectedTokens.forEach((el) => {
+      if (willHighlight) el.classList.add("highlighted");
+      else el.classList.remove("highlighted");
+      if (typeof window.syncReadingHighlightToStorageForElement === "function") {
+        window.syncReadingHighlightToStorageForElement(el, willHighlight);
+      }
+    });
+    showToastMessage("Seçilen ifade vurgulandı.");
+    return;
+  }
+
   const text = String(activeWordString || "").trim();
-  const isPhrase = !!activeTokenElement && /\s+/.test(text);
+  const isPhrase = /\s+/.test(text);
   if (isPhrase && typeof allWordSpans !== "undefined" && Array.isArray(allWordSpans)) {
-    const phraseWords = text.split(/\s+/).filter(Boolean);
+    const normalizeWord = (s) => String(s || "").replace(/[.,!?;():"""«»]/g, "").trim();
+    const phraseWords = text.split(/\s+/).map(normalizeWord).filter(Boolean);
     if (!phraseWords.length) return;
     const spans = allWordSpans;
     let startIdx = -1;
     let endIdx = -1;
     for (let i = 0; i < spans.length; i++) {
-      const part = String(spans[i].textContent || "").trim();
+      const part = normalizeWord(spans[i].textContent || "");
       if (!part) continue;
       if (part === phraseWords[0]) {
         let ok = true;
         for (let j = 0; j < phraseWords.length; j++) {
           const s = spans[i + j];
-          const t = s ? String(s.textContent || "").trim() : "";
+          const t = s ? normalizeWord(s.textContent || "") : "";
           if (!s || t !== phraseWords[j]) {
             ok = false;
             break;
