@@ -270,7 +270,8 @@ function toggleHighlightWord() {
     return;
   }
 
-  const text = String(activeWordString || "").trim();
+  const lastSel = window.lastReaderSelectionMeta || {};
+  const text = String(activeWordString || lastSel.text || "").trim();
   const isPhrase = /\s+/.test(text);
   if (isPhrase && typeof allWordSpans !== "undefined" && Array.isArray(allWordSpans)) {
     const normalizeWord = (s) => String(s || "").replace(/[.,!?;():"""«»]/g, "").trim();

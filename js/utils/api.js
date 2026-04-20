@@ -72,7 +72,45 @@ function ingestUsersDoc(doc) {
 
 function ingestUserdataDoc(doc) {
   if (!doc.exists) return;
-  Object.assign(window.dbUserData, doc.data());
+  const cloudData = doc.data() || {};
+  const getReadingTs = function (u) {
+    if (!u || typeof u !== "object") return 0;
+    let ts = 0;
+    const works = Array.isArray(u.readingWorks) ? u.readingWorks : [];
+    works.forEach((w) => {
+      const t = Number(w && (w.updatedAt || w.createdAt) || 0);
+      if (t > ts) ts = t;
+    });
+    const prog = (u.readingProgress && typeof u.readingProgress === "object") ? u.readingProgress : {};
+    Object.keys(prog).forEach((k) => {
+      const t = Number(prog[k] && prog[k].updatedAt || 0);
+      if (t > ts) ts = t;
+    });
+    return ts;
+  };
+
+  Object.keys(cloudData).forEach((uname) => {
+    const cloudUserData = cloudData[uname] || {};
+    const localUserData = window.dbUserData[uname] || {};
+    const localTs = getReadingTs(localUserData);
+    const cloudTs = getReadingTs(cloudUserData);
+    window.dbUserData[uname] = {
+      ...localUserData,
+      ...cloudUserData,
+      readingHighlights:
+        (localTs >= cloudTs && localUserData.readingHighlights)
+          ? localUserData.readingHighlights
+          : (cloudUserData.readingHighlights || localUserData.readingHighlights || {}),
+      readingWorks:
+        (localTs >= cloudTs && Array.isArray(localUserData.readingWorks))
+          ? localUserData.readingWorks
+          : (Array.isArray(cloudUserData.readingWorks) ? cloudUserData.readingWorks : (localUserData.readingWorks || [])),
+      readingProgress:
+        (localTs >= cloudTs && localUserData.readingProgress)
+          ? localUserData.readingProgress
+          : (cloudUserData.readingProgress || localUserData.readingProgress || {}),
+    };
+  });
   applyCloudUserData();
 }
 

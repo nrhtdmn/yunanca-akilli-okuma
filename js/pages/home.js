@@ -799,7 +799,7 @@ window.adjustReaderFontSize = function (delta) {
   showToastMessage(`Metin boyutu: ${Math.round(readerFontScale * 100)}%`);
 };
 
-window.persistCurrentReadingState = function () {
+window.persistCurrentReadingState = async function () {
   if (!currentUser || !currentUsername) {
     if (typeof showAuthModal === "function") showAuthModal(true);
     showToastMessage("Kaydetmek için giriş yapın.");
@@ -810,10 +810,31 @@ window.persistCurrentReadingState = function () {
     showToastMessage("Kaydedilecek aktif metin yok.");
     return;
   }
+  const saveBtn = document.querySelector('.reader-toolbar-right .toolbar-btn[onclick*="persistCurrentReadingState"]');
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.textContent = "⏳ Kaydediliyor...";
+  }
   updateReadingProgressForText(text);
-  if (typeof syncCloudData === "function") syncCloudData();
-  if (typeof renderSavedReadingWorks === "function") renderSavedReadingWorks();
-  showToastMessage("✅ Değişiklikler kalıcı olarak kaydedildi.");
+  try {
+    if (typeof syncCloudData === "function") syncCloudData();
+    if (typeof saveDb === "function") saveDb();
+    if (window.useFirebase && window.db && window.dbUserData && window.dbUserData[currentUsername]) {
+      const payload = {};
+      payload[currentUsername] = window.dbUserData[currentUsername];
+      await window.db.collection("global").doc("userdata").set(payload, { merge: true });
+    }
+    if (typeof renderSavedReadingWorks === "function") renderSavedReadingWorks();
+    showToastMessage("✅ Değişiklikler kalıcı olarak kaydedildi.");
+  } catch (e) {
+    console.error("persistCurrentReadingState", e);
+    showToastMessage("❌ Kaydetme sırasında hata oluştu.");
+  } finally {
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.textContent = "💾 Değişiklikleri Kaydet";
+    }
+  }
 };
 
 window.saveCurrentReadingWork = function () {
@@ -903,6 +924,16 @@ function bindReaderSelectionTranslation() {
   if (readerSelectionBindingDone) return;
   const reader = document.getElementById("reader");
   if (!reader) return;
+  const getTokenIndexByNode = function (node) {
+    if (!Array.isArray(allWordSpans) || !node) return -1;
+    let el = node.nodeType === 1 ? node : node.parentElement;
+    while (el && el !== reader) {
+      const idx = allWordSpans.indexOf(el);
+      if (idx !== -1) return idx;
+      el = el.parentElement;
+    }
+    return -1;
+  };
   reader.addEventListener("mouseup", function () {
     const sel = window.getSelection && window.getSelection();
     if (!sel) return;
@@ -919,7 +950,24 @@ function bindReaderSelectionTranslation() {
         } catch (e) { /* ignore */ }
       });
     }
+    if (selectedTokens.length < 2 && sel.rangeCount > 0) {
+      const ai = getTokenIndexByNode(sel.anchorNode);
+      const fi = getTokenIndexByNode(sel.focusNode);
+      if (ai !== -1 && fi !== -1 && Array.isArray(allWordSpans)) {
+        const s = Math.min(ai, fi);
+        const e = Math.max(ai, fi);
+        if (e >= s) {
+          selectedTokens.length = 0;
+          for (let i = s; i <= e; i++) selectedTokens.push(allWordSpans[i]);
+        }
+      }
+    }
     window.activeSelectionTokenElements = selectedTokens;
+    window.lastReaderSelectionMeta = {
+      text: text.replace(/\s+/g, " "),
+      tokenCount: selectedTokens.length,
+      createdAt: Date.now(),
+    };
     const selectedPhrase = text.replace(/\s+/g, " ");
     triggerWordPopup(null, selectedPhrase, selectedPhrase);
   });
