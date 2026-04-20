@@ -4,6 +4,33 @@
 let currentReadingWorkMeta = null;
 let readerSelectionBindingDone = false;
 let readerFontScale = Number(localStorage.getItem("y_reader_font_scale") || "1");
+window.savedReadingSearchQuery = window.savedReadingSearchQuery || "";
+window.savedReadingCategoryFilter = window.savedReadingCategoryFilter || "all";
+
+function normalizeReadingHighlightEntry(entry) {
+  if (Array.isArray(entry) && entry.length >= 2) {
+    const s = Number(entry[0]);
+    const e = Number(entry[1]);
+    if (!Number.isNaN(s) && !Number.isNaN(e)) return { s, e };
+  }
+  if (entry && typeof entry === "object") {
+    const s = Number(entry.s);
+    const e = Number(entry.e);
+    if (!Number.isNaN(s) && !Number.isNaN(e)) return { s, e };
+  }
+  return null;
+}
+
+function normalizeReadingHighlightStore(store) {
+  if (!store || typeof store !== "object") return {};
+  const out = {};
+  Object.keys(store).forEach((k) => {
+    const arr = Array.isArray(store[k]) ? store[k] : [];
+    const norm = arr.map(normalizeReadingHighlightEntry).filter(Boolean);
+    out[k] = norm;
+  });
+  return out;
+}
 
 function populateDeckSelects() {
   // Desteleri al ve HTML seçeneklerine çevir
@@ -76,6 +103,9 @@ function loadUserData() {
   if (!dbUserData[currentUsername].readingHighlights) {
     dbUserData[currentUsername].readingHighlights = {};
   }
+  dbUserData[currentUsername].readingHighlights = normalizeReadingHighlightStore(
+    dbUserData[currentUsername].readingHighlights,
+  );
   if (!Array.isArray(dbUserData[currentUsername].readingWorks)) {
     dbUserData[currentUsername].readingWorks = [];
   }
@@ -613,6 +643,9 @@ function getReadingHighlightStore() {
     if (!dbUserData[currentUsername].readingHighlights) {
       dbUserData[currentUsername].readingHighlights = {};
     }
+    dbUserData[currentUsername].readingHighlights = normalizeReadingHighlightStore(
+      dbUserData[currentUsername].readingHighlights,
+    );
     return dbUserData[currentUsername].readingHighlights;
   }
   if (
@@ -652,7 +685,8 @@ function persistReadingHighlightStore() {
 function getHighlightRangesForText(rawText) {
   const store = getReadingHighlightStore();
   const list = store[hashReadingText(rawText)];
-  return Array.isArray(list) ? list : [];
+  if (!Array.isArray(list)) return [];
+  return list.map(normalizeReadingHighlightEntry).filter(Boolean);
 }
 
 function updateReadingHighlightRange(rawText, start, end, highlighted) {
@@ -660,9 +694,12 @@ function updateReadingHighlightRange(rawText, start, end, highlighted) {
   const key = hashReadingText(rawText);
   if (!store[key]) store[key] = [];
   const ranges = store[key];
-  const idx = ranges.findIndex((r) => r[0] === start && r[1] === end);
+  const idx = ranges.findIndex((r) => {
+    const n = normalizeReadingHighlightEntry(r);
+    return n && n.s === start && n.e === end;
+  });
   if (highlighted) {
-    if (idx === -1) ranges.push([start, end]);
+    if (idx === -1) ranges.push({ s: start, e: end });
   } else if (idx !== -1) {
     ranges.splice(idx, 1);
   }
@@ -675,7 +712,7 @@ function applySavedHighlightsToReader(rawText) {
   if (!ranges.length || typeof allWordSpans === "undefined" || !allWordSpans) {
     return;
   }
-  const want = new Set(ranges.map((r) => r[0] + ":" + r[1]));
+  const want = new Set(ranges.map((r) => r.s + ":" + r.e));
   allWordSpans.forEach((span) => {
     const ds = span.getAttribute("data-start");
     const de = span.getAttribute("data-end");
@@ -850,6 +887,8 @@ window.saveCurrentReadingWork = function () {
   const titleFromMeta = currentReadingWorkMeta && currentReadingWorkMeta.title;
   const title = (prompt("Kayıt başlığı:", titleFromMeta || "Yeni çalışma") || "").trim();
   if (!title) return;
+  const categoryInput = (prompt("Kategori (örn: Haber, Gramer, Hikaye):", "Genel") || "Genel").trim();
+  const category = categoryInput || "Genel";
   const now = Date.now();
   const existingIdx = state.readingWorks.findIndex((w) => w.textKey === key);
   const payload = {
@@ -859,6 +898,7 @@ window.saveCurrentReadingWork = function () {
     text: text,
     sourceType: (currentReadingWorkMeta && currentReadingWorkMeta.sourceType) || "custom",
     sourceId: (currentReadingWorkMeta && currentReadingWorkMeta.sourceId) || null,
+    category: category,
     createdAt: existingIdx >= 0 ? state.readingWorks[existingIdx].createdAt : now,
     updatedAt: now,
   };
@@ -873,6 +913,32 @@ window.saveCurrentReadingWork = function () {
   syncCloudData();
   renderSavedReadingWorks();
   showToastMessage("✅ Metin hesabına kaydedildi.");
+};
+
+window.updateSavedReadingCategory = function (workId) {
+  const state = getCurrentUserReadingState();
+  if (!state) return;
+  const work = state.readingWorks.find((w) => w.id === workId);
+  if (!work) return;
+  const val = (prompt("Yeni kategori:", work.category || "Genel") || "").trim();
+  if (!val) return;
+  work.category = val;
+  work.updatedAt = Date.now();
+  syncCloudData();
+  renderSavedReadingWorks();
+  showToastMessage("Kategori güncellendi.");
+};
+
+window.deleteSavedReadingWork = function (workId) {
+  const state = getCurrentUserReadingState();
+  if (!state || !Array.isArray(state.readingWorks)) return;
+  const work = state.readingWorks.find((w) => w.id === workId);
+  if (!work) return;
+  if (!confirm(`"${work.title}" metnini silmek istediğinize emin misiniz?`)) return;
+  state.readingWorks = state.readingWorks.filter((w) => w.id !== workId);
+  syncCloudData();
+  renderSavedReadingWorks();
+  showToastMessage("Metin silindi.");
 };
 
 window.openSavedReadingWork = function (workId) {
@@ -902,22 +968,57 @@ window.renderSavedReadingWorks = function () {
     box.innerHTML = `<div style="color:var(--text-dim); font-size:0.9rem;">Henüz kayıtlı metin yok.</div>`;
     return;
   }
+  const categorySet = new Set();
+  works.forEach((w) => categorySet.add((w.category || "Genel").trim() || "Genel"));
+  const categoryOptions = ['<option value="all">Tüm kategoriler</option>']
+    .concat(Array.from(categorySet).sort((a, b) => a.localeCompare(b, "tr")).map((cat) => `<option value="${cat}">${cat}</option>`))
+    .join("");
+
+  const normalizedQuery = String(window.savedReadingSearchQuery || "").trim().toLocaleLowerCase("tr");
+  const filteredWorks = works.filter((w) => {
+    const cat = (w.category || "Genel").trim() || "Genel";
+    if (window.savedReadingCategoryFilter !== "all" && cat !== window.savedReadingCategoryFilter) return false;
+    if (!normalizedQuery) return true;
+    const hay = `${w.title || ""} ${cat}`.toLocaleLowerCase("tr");
+    return hay.includes(normalizedQuery);
+  });
+
+  if (!filteredWorks.length) {
+    box.innerHTML = `<div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+      <input id="saved-reading-search" type="text" placeholder="Başlık veya kategori ara..." value="${String(window.savedReadingSearchQuery || "").replace(/"/g, "&quot;")}" oninput="window.savedReadingSearchQuery=this.value; renderSavedReadingWorks();" class="auth-input" style="margin:0; padding:9px 10px; min-width:190px; flex:1;">
+      <select id="saved-reading-category-filter" class="auth-input" style="margin:0; padding:9px 10px; min-width:170px;" onchange="window.savedReadingCategoryFilter=this.value; renderSavedReadingWorks();">${categoryOptions}</select>
+    </div>
+    <div style="color:var(--text-dim); font-size:0.9rem;">Filtreye uygun kayıt bulunamadı.</div>`;
+    const sel = document.getElementById("saved-reading-category-filter");
+    if (sel) sel.value = window.savedReadingCategoryFilter;
+    return;
+  }
   const progressMap = (state && state.readingProgress) || {};
-  box.innerHTML = works
-    .slice(0, 25)
+  box.innerHTML = `<div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+      <input id="saved-reading-search" type="text" placeholder="Başlık veya kategori ara..." value="${String(window.savedReadingSearchQuery || "").replace(/"/g, "&quot;")}" oninput="window.savedReadingSearchQuery=this.value; renderSavedReadingWorks();" class="auth-input" style="margin:0; padding:9px 10px; min-width:190px; flex:1;">
+      <select id="saved-reading-category-filter" class="auth-input" style="margin:0; padding:9px 10px; min-width:170px;" onchange="window.savedReadingCategoryFilter=this.value; renderSavedReadingWorks();">${categoryOptions}</select>
+    </div>` + filteredWorks
+    .slice(0, 50)
     .map((w) => {
       const prog = progressMap[w.textKey] || {};
       const pct = Number(prog.percent || 0);
       const dateText = new Date(w.updatedAt || w.createdAt || Date.now()).toLocaleString("tr-TR");
+      const cat = (w.category || "Genel").trim() || "Genel";
       return `<div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; padding:10px; border:1px solid var(--border); border-radius:8px; background:var(--surface);">
         <div style="min-width:0;">
           <div style="font-weight:bold; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${w.title}</div>
-          <div style="font-size:0.82rem; color:var(--text-dim);">Son çalışma: ${dateText} • %${pct} tamamlandı</div>
+          <div style="font-size:0.82rem; color:var(--text-dim);">Kategori: ${cat} • Son çalışma: ${dateText} • %${pct} tamamlandı</div>
         </div>
-        <button class="secondary-btn" style="padding:7px 10px; font-size:0.82rem;" onclick="openSavedReadingWork('${w.id}')">Aç</button>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
+          <button class="secondary-btn" style="padding:7px 10px; font-size:0.82rem;" onclick="openSavedReadingWork('${w.id}')">Aç</button>
+          <button class="secondary-btn" style="padding:7px 10px; font-size:0.82rem; border-color:var(--accent2); color:var(--accent2);" onclick="updateSavedReadingCategory('${w.id}')">Kategori</button>
+          <button class="secondary-btn" style="padding:7px 10px; font-size:0.82rem; border-color:var(--error); color:var(--error);" onclick="deleteSavedReadingWork('${w.id}')">Sil</button>
+        </div>
       </div>`;
     })
     .join("");
+  const sel = document.getElementById("saved-reading-category-filter");
+  if (sel) sel.value = window.savedReadingCategoryFilter;
 };
 
 function bindReaderSelectionTranslation() {

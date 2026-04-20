@@ -245,15 +245,49 @@ async function fetchFromFirebase() {
 }
 
 function saveDb() {
+  const normalizeReadingHighlightEntryForCloud = function (entry) {
+    if (Array.isArray(entry) && entry.length >= 2) {
+      const s = Number(entry[0]);
+      const e = Number(entry[1]);
+      if (!Number.isNaN(s) && !Number.isNaN(e)) return { s, e };
+      return null;
+    }
+    if (entry && typeof entry === "object") {
+      const s = Number(entry.s);
+      const e = Number(entry.e);
+      if (!Number.isNaN(s) && !Number.isNaN(e)) return { s, e };
+    }
+    return null;
+  };
+  const sanitizeUserDataForCloud = function (raw) {
+    const out = {};
+    const src = raw && typeof raw === "object" ? raw : {};
+    Object.keys(src).forEach((uname) => {
+      const u = src[uname] && typeof src[uname] === "object" ? { ...src[uname] } : {};
+      const rh = u.readingHighlights && typeof u.readingHighlights === "object" ? u.readingHighlights : {};
+      const normalizedRh = {};
+      Object.keys(rh).forEach((k) => {
+        const arr = Array.isArray(rh[k]) ? rh[k] : [];
+        normalizedRh[k] = arr.map(normalizeReadingHighlightEntryForCloud).filter(Boolean);
+      });
+      u.readingHighlights = normalizedRh;
+      out[uname] = u;
+    });
+    return out;
+  };
+
   // window.dbUsers ve let dbUsers artık aynı obje (helpers.js'de window.dbUsers = dbUsers)
   // Yine de undefined olma ihtimaline karşı güvenli kontrol
   const usersToSave = (window.dbUsers && typeof window.dbUsers === 'object') ? window.dbUsers : (typeof dbUsers !== 'undefined' ? dbUsers : {});
   const userDataToSave = (window.dbUserData && typeof window.dbUserData === 'object') ? window.dbUserData : (typeof dbUserData !== 'undefined' ? dbUserData : {});
+  const userDataForCloud = sanitizeUserDataForCloud(userDataToSave);
   localStorage.setItem('y_users_db', JSON.stringify(usersToSave));
-  localStorage.setItem('y_userdata_db', JSON.stringify(userDataToSave));
+  localStorage.setItem('y_userdata_db', JSON.stringify(userDataForCloud));
+  window.dbUserData = userDataForCloud;
+  if (typeof dbUserData !== "undefined") dbUserData = userDataForCloud;
   if(window.useFirebase && window.db) {
      window.db.collection("global").doc("users").set(usersToSave, { merge: true }).catch(e => console.error(e));
-     window.db.collection("global").doc("userdata").set(userDataToSave, { merge: true }).catch(e => console.error(e));
+     window.db.collection("global").doc("userdata").set(userDataForCloud, { merge: true }).catch(e => console.error(e));
   }
 }
 
