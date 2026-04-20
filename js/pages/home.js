@@ -1027,6 +1027,9 @@ function bindReaderSelectionTranslation() {
   if (!reader) return;
   let selectionDebounceTimer = null;
   let lastPopupSelection = "";
+  const isTouchLikeDevice =
+    ("ontouchstart" in window) ||
+    (typeof navigator !== "undefined" && (navigator.maxTouchPoints || 0) > 0);
 
   const isInsideReader = function (node) {
     if (!node || !reader) return false;
@@ -1113,7 +1116,11 @@ function bindReaderSelectionTranslation() {
 
   document.addEventListener("selectionchange", function () {
     if (selectionDebounceTimer) clearTimeout(selectionDebounceTimer);
-    selectionDebounceTimer = setTimeout(() => applySelection(false), 100);
+    selectionDebounceTimer = setTimeout(() => {
+      // Mobilde native seçim menüsü açıldığında touchend/mouseup kaçabiliyor;
+      // selectionchange üzerinden popup açarak çoklu seçimi yakalıyoruz.
+      applySelection(!!isTouchLikeDevice);
+    }, 140);
   });
 
   readerSelectionBindingDone = true;
