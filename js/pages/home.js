@@ -3856,7 +3856,7 @@ function clearReader() {
 
 // Sayfa yüklendiğinde kullanıcının tercihini hafızadan çek ve uygula
 function initTheme() {
-  const savedTheme = localStorage.getItem("y_theme") || "dark"; // Varsayılan: Karanlık
+  const savedTheme = localStorage.getItem("y_theme") || "light"; // Varsayılan: aydınlık
   const themeBtn = document.getElementById("theme-toggle-btn");
 
   if (savedTheme === "light") {
