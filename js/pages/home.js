@@ -1,6 +1,9 @@
 /* ==========================================
  * DESTE VE SÖZLÜK KAYIT İŞLEMLERİ
  * ========================================== */
+let currentReadingWorkMeta = null;
+let readerSelectionBindingDone = false;
+let readerFontScale = Number(localStorage.getItem("y_reader_font_scale") || "1");
 
 function populateDeckSelects() {
   // Desteleri al ve HTML seçeneklerine çevir
@@ -73,6 +76,12 @@ function loadUserData() {
   if (!dbUserData[currentUsername].readingHighlights) {
     dbUserData[currentUsername].readingHighlights = {};
   }
+  if (!Array.isArray(dbUserData[currentUsername].readingWorks)) {
+    dbUserData[currentUsername].readingWorks = [];
+  }
+  if (!dbUserData[currentUsername].readingProgress) {
+    dbUserData[currentUsername].readingProgress = {};
+  }
   const data = dbUserData[currentUsername];
   userDecks = data.decks || { "Genel Kelimeler": [] };
   userCustomDict = new Map(Object.entries(data.customDict || {}));
@@ -81,6 +90,7 @@ function loadUserData() {
 
   renderDecksAccordion();
   populateDeckSelects();
+  if (typeof renderSavedReadingWorks === "function") renderSavedReadingWorks();
 }
 
 function updateUserUI() {
@@ -213,6 +223,9 @@ function finishInit() {
   } catch(e) { console.error('loadUserData hatası:', e); }
   try { updateUserUI(); } catch(e) { console.error('updateUserUI hatası:', e); }
   try { renderTextLibrary(); } catch(e) { console.error('renderTextLibrary hatası:', e); }
+  try { renderSavedReadingWorks(); } catch(e) { console.error('renderSavedReadingWorks hatası:', e); }
+  try { bindReaderSelectionTranslation(); } catch(e) { console.error('bindReaderSelectionTranslation hatası:', e); }
+  try { applyReaderFontSize(); } catch(e) { console.error('applyReaderFontSize hatası:', e); }
   try { renderVideoLibrary(); } catch(e) { console.error('renderVideoLibrary hatası:', e); }
   try { renderTVLibrary(); } catch(e) { console.error('renderTVLibrary hatası:', e); }
   try { renderRadioLibrary(); } catch(e) { console.error('renderRadioLibrary hatası:', e); }
@@ -457,6 +470,13 @@ function renderTextLibrary() {
                 <h3 style="color:var(--accent); font-size: 1.6rem; margin-bottom:5px;">📚 Okuma Kütüphanesi</h3>
                 <p style="color:var(--text-dim); font-size:0.95rem;">Önce seviye kutucuğuna tıklayın, ardından açılan menüden metninizi seçin.</p>
               </div>`;
+  html += `<div style="margin-bottom:18px; background:var(--surface-alt); border:1px solid var(--border); border-radius:10px; padding:14px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+      <strong style="color:var(--accent2);">💾 Kaydedilen Çalışmalarım</strong>
+      <button class="secondary-btn" style="padding:8px 12px; font-size:0.85rem;" onclick="renderSavedReadingWorks()">Yenile</button>
+    </div>
+    <div id="saved-reading-works" style="margin-top:10px;"></div>
+  </div>`;
 
   // ANA GRID BAŞLIYOR (Seviyeler ve alt menüler aynı döşemenin içinde olacak)
   html += `<div class="text-grid" style="margin-bottom: 20px; align-items: start;">`;
@@ -509,6 +529,7 @@ function renderTextLibrary() {
 
   html += `</div>`; // Ana grid'i kapatıyoruz
   container.innerHTML = html;
+  if (typeof renderSavedReadingWorks === "function") renderSavedReadingWorks();
 }
 async function openSampleText(id) {
   if (!requireAuth(1)) return;
@@ -519,6 +540,11 @@ async function openSampleText(id) {
       throw new Error(`'ornek-metinler/${id}.txt' dosyası bulunamadı.`);
     const text = await res.text();
     document.getElementById("input-text").value = text;
+    currentReadingWorkMeta = {
+      sourceType: "sample",
+      sourceId: id,
+      title: `Örnek Metin: ${id}`,
+    };
     processAndRenderText();
     showToastMessage("✅ Metin başarıyla yüklendi!");
   } catch (e) {
@@ -534,6 +560,47 @@ function hashReadingText(text) {
     h = (h * 33) ^ s.charCodeAt(i);
   }
   return "r" + (h >>> 0).toString(16);
+}
+
+function getCurrentUserReadingState() {
+  if (!currentUsername || !dbUserData[currentUsername]) return null;
+  const data = dbUserData[currentUsername];
+  if (!Array.isArray(data.readingWorks)) data.readingWorks = [];
+  if (!data.readingProgress || typeof data.readingProgress !== "object") {
+    data.readingProgress = {};
+  }
+  return data;
+}
+
+function getCurrentReaderTokenCount() {
+  if (!Array.isArray(allWordSpans)) return 0;
+  return allWordSpans.length;
+}
+
+function getCurrentReaderHighlightedCount() {
+  if (!Array.isArray(allWordSpans)) return 0;
+  return allWordSpans.filter((el) => el.classList.contains("highlighted")).length;
+}
+
+function updateReadingProgressForText(rawText) {
+  const state = getCurrentUserReadingState();
+  if (!state || !rawText) return;
+  const key = hashReadingText(rawText);
+  const totalWords = getCurrentReaderTokenCount();
+  const highlightedWords = getCurrentReaderHighlightedCount();
+  const percent = totalWords > 0 ? Math.round((highlightedWords / totalWords) * 100) : 0;
+  const meta = currentReadingWorkMeta || {};
+  state.readingProgress[key] = {
+    textKey: key,
+    title: meta.title || `Çalışma ${new Date().toLocaleDateString("tr-TR")}`,
+    sourceType: meta.sourceType || "custom",
+    sourceId: meta.sourceId || null,
+    updatedAt: Date.now(),
+    totalWords: totalWords,
+    highlightedWords: highlightedWords,
+    percent: percent,
+  };
+  if (typeof syncCloudData === "function") syncCloudData();
 }
 
 function getReadingHighlightStore() {
@@ -600,6 +667,7 @@ function updateReadingHighlightRange(rawText, start, end, highlighted) {
     ranges.splice(idx, 1);
   }
   persistReadingHighlightStore();
+  updateReadingProgressForText(rawText);
 }
 
 function applySavedHighlightsToReader(rawText) {
@@ -637,6 +705,20 @@ window.syncReadingHighlightToStorage = function (isHighlighted) {
   updateReadingHighlightRange(rawText, start, end, !!isHighlighted);
 };
 
+window.syncReadingHighlightToStorageForElement = function (el, isHighlighted) {
+  if (!el || !el.classList || !el.classList.contains("tok")) return;
+  const ds = el.getAttribute("data-start");
+  const de = el.getAttribute("data-end");
+  if (ds == null || de == null) return;
+  const start = parseInt(ds, 10);
+  const end = parseInt(de, 10);
+  if (Number.isNaN(start) || Number.isNaN(end)) return;
+  const input = document.getElementById("input-text");
+  const rawText = input ? input.value : "";
+  if (!rawText) return;
+  updateReadingHighlightRange(rawText, start, end, !!isHighlighted);
+};
+
 function processAndRenderText() {
   const rawText = document.getElementById("input-text").value;
   if (!rawText.trim()) {
@@ -655,6 +737,8 @@ function processAndRenderText() {
       <button class="toolbar-btn tts-toolbar-btn" onclick="speakAllText()" title="Tüm metni sesli oku">🔊 Oku</button>
       <button class="toolbar-btn tts-toolbar-btn" onclick="togglePauseSpeech()" title="Duraklat/Devam Et">⏸ Duraklat</button>
       <button class="toolbar-btn" onclick="stopSpeech()" title="Seslendirmeyi durdur">⏹ Durdur</button>
+      <button class="toolbar-btn" onclick="adjustReaderFontSize(-0.1)" title="Yazıyı küçült">A-</button>
+      <button class="toolbar-btn" onclick="adjustReaderFontSize(0.1)" title="Yazıyı büyüt">A+</button>
     <button class="secondary-btn" onclick="clearReader()" style="border-color:var(--error); color:var(--error); padding: 5px 10px; font-size: 0.85rem; margin-left: 5px;" title="Okuma alanını temizle">🗑️ Temizle</button>
 
       </div>`;
@@ -690,8 +774,127 @@ function processAndRenderText() {
     globalTextForTTS += "\n";
   });
   applySavedHighlightsToReader(rawText);
+  applyReaderFontSize();
+  updateReadingProgressForText(rawText);
   renderDecksAccordion();
+  if (typeof renderSavedReadingWorks === "function") renderSavedReadingWorks();
   window.scrollTo({ top: readerDiv.offsetTop - 30, behavior: "smooth" });
+}
+
+function applyReaderFontSize() {
+  const reader = document.getElementById("reader");
+  if (!reader) return;
+  if (!Number.isFinite(readerFontScale) || readerFontScale < 0.8 || readerFontScale > 1.8) {
+    readerFontScale = 1;
+  }
+  reader.style.fontSize = `${readerFontScale}em`;
+}
+
+window.adjustReaderFontSize = function (delta) {
+  readerFontScale = Math.max(0.8, Math.min(1.8, Number((readerFontScale + delta).toFixed(2))));
+  localStorage.setItem("y_reader_font_scale", String(readerFontScale));
+  applyReaderFontSize();
+  showToastMessage(`Metin boyutu: ${Math.round(readerFontScale * 100)}%`);
+};
+
+window.saveCurrentReadingWork = function () {
+  if (!requireAuth(1)) return;
+  const text = String(document.getElementById("input-text").value || "").trim();
+  if (!text) {
+    showToastMessage("Önce bir metin yükleyin veya yazın.");
+    return;
+  }
+  const state = getCurrentUserReadingState();
+  if (!state) return;
+  const key = hashReadingText(text);
+  const titleFromMeta = currentReadingWorkMeta && currentReadingWorkMeta.title;
+  const title = (prompt("Kayıt başlığı:", titleFromMeta || "Yeni çalışma") || "").trim();
+  if (!title) return;
+  const now = Date.now();
+  const existingIdx = state.readingWorks.findIndex((w) => w.textKey === key);
+  const payload = {
+    id: existingIdx >= 0 ? state.readingWorks[existingIdx].id : `rw_${now}_${Math.random().toString(36).slice(2, 8)}`,
+    textKey: key,
+    title: title,
+    text: text,
+    sourceType: (currentReadingWorkMeta && currentReadingWorkMeta.sourceType) || "custom",
+    sourceId: (currentReadingWorkMeta && currentReadingWorkMeta.sourceId) || null,
+    createdAt: existingIdx >= 0 ? state.readingWorks[existingIdx].createdAt : now,
+    updatedAt: now,
+  };
+  if (existingIdx >= 0) state.readingWorks[existingIdx] = payload;
+  else state.readingWorks.unshift(payload);
+  currentReadingWorkMeta = {
+    sourceType: payload.sourceType,
+    sourceId: payload.id,
+    title: payload.title,
+  };
+  updateReadingProgressForText(text);
+  syncCloudData();
+  renderSavedReadingWorks();
+  showToastMessage("✅ Metin hesabına kaydedildi.");
+};
+
+window.openSavedReadingWork = function (workId) {
+  const state = getCurrentUserReadingState();
+  if (!state) return;
+  const work = state.readingWorks.find((w) => w.id === workId);
+  if (!work) return;
+  document.getElementById("input-text").value = work.text || "";
+  currentReadingWorkMeta = {
+    sourceType: work.sourceType || "saved",
+    sourceId: work.id,
+    title: work.title || "Kaydedilen metin",
+  };
+  processAndRenderText();
+};
+
+window.renderSavedReadingWorks = function () {
+  const box = document.getElementById("saved-reading-works");
+  if (!box) return;
+  if (!currentUser || !currentUsername) {
+    box.innerHTML = `<div style="color:var(--text-dim); font-size:0.9rem;">Kaydedilen çalışmalar için giriş yapın.</div>`;
+    return;
+  }
+  const state = getCurrentUserReadingState();
+  const works = (state && state.readingWorks) || [];
+  if (!works.length) {
+    box.innerHTML = `<div style="color:var(--text-dim); font-size:0.9rem;">Henüz kayıtlı metin yok.</div>`;
+    return;
+  }
+  const progressMap = (state && state.readingProgress) || {};
+  box.innerHTML = works
+    .slice(0, 25)
+    .map((w) => {
+      const prog = progressMap[w.textKey] || {};
+      const pct = Number(prog.percent || 0);
+      const dateText = new Date(w.updatedAt || w.createdAt || Date.now()).toLocaleString("tr-TR");
+      return `<div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; padding:10px; border:1px solid var(--border); border-radius:8px; background:var(--surface);">
+        <div style="min-width:0;">
+          <div style="font-weight:bold; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${w.title}</div>
+          <div style="font-size:0.82rem; color:var(--text-dim);">Son çalışma: ${dateText} • %${pct} tamamlandı</div>
+        </div>
+        <button class="secondary-btn" style="padding:7px 10px; font-size:0.82rem;" onclick="openSavedReadingWork('${w.id}')">Aç</button>
+      </div>`;
+    })
+    .join("");
+};
+
+function bindReaderSelectionTranslation() {
+  if (readerSelectionBindingDone) return;
+  const reader = document.getElementById("reader");
+  if (!reader) return;
+  reader.addEventListener("mouseup", function () {
+    const sel = window.getSelection && window.getSelection();
+    if (!sel) return;
+    const text = String(sel.toString() || "").trim();
+    if (!text || text.length < 2) return;
+    if (!/[\u0370-\u03FF]/.test(text)) return;
+    if (text.length > 120) return;
+    const selectedPhrase = text.replace(/\s+/g, " ");
+    triggerWordPopup(null, selectedPhrase, selectedPhrase);
+  });
+  readerSelectionBindingDone = true;
 }
 
 function clearTextInputs() {
@@ -821,6 +1024,11 @@ async function fetchContentFromUrl() {
     statusEl.style.color = "var(--success)";
   }
   document.getElementById("input-text").value = text;
+  currentReadingWorkMeta = {
+    sourceType: "url",
+    sourceId: parsed.href,
+    title: parsed.hostname,
+  };
   processAndRenderText();
   showToastMessage("✅ Metin okuma alanına aktarıldı.");
 }
@@ -886,6 +1094,11 @@ async function loadPdfFile(input) {
       statusEl.style.color = "var(--success)";
     }
     document.getElementById("input-text").value = text;
+    currentReadingWorkMeta = {
+      sourceType: "pdf",
+      sourceId: file.name,
+      title: file.name,
+    };
     processAndRenderText();
     showToastMessage("✅ PDF metni okuma alanına aktarıldı.");
   } catch (err) {

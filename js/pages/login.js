@@ -25,6 +25,7 @@ function submitAuth() {
       currentUsername = u;
       localStorage.setItem("y_currentUser", u);
       loadUserData();
+      if (typeof renderSavedReadingWorks === "function") renderSavedReadingWorks();
       closeAuthModal();
       updateUserUI();
       showToastMessage(`Hoş geldin, ${u}!`);
@@ -63,6 +64,7 @@ function submitAuth() {
     currentUsername = u;
     localStorage.setItem("y_currentUser", u);
     loadUserData();
+    if (typeof renderSavedReadingWorks === "function") renderSavedReadingWorks();
     closeAuthModal();
     updateUserUI();
     showToastMessage("✅ Kayıt başarılı! Yönetici onaylayana kadar kısıtlı erişimdesiniz.");
@@ -135,6 +137,7 @@ window.syncAuthUserWithApp = function syncAuthUserWithApp() {
   currentUsername = email;
   localStorage.setItem("y_currentUser", email);
   if (typeof loadUserData === "function") loadUserData();
+  if (typeof renderSavedReadingWorks === "function") renderSavedReadingWorks();
   if (typeof updateUserUI === "function") updateUserUI();
   if (typeof closeAuthModal === "function") closeAuthModal();
 };
@@ -174,6 +177,7 @@ function logout() {
   userDecks = { "Genel Kelimeler": [] };
   userCustomDict = new Map();
   renderDecksAccordion();
+  if (typeof renderSavedReadingWorks === "function") renderSavedReadingWorks();
   updateUserUI();
   showToastMessage("Çıkış yapıldı.");
 }

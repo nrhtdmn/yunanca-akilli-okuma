@@ -40,7 +40,7 @@
         style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; width: 100%; gap: 15px; margin-bottom: 20px;">
 
         <div class="logo">
-          <h1>Yunanca Okulu</h1>
+          <h1 style="cursor:pointer;" onclick="switchMainTab('read'); window.scrollTo({ top: 0, behavior: 'smooth' });">Yunanca Okulu</h1>
           <p>www.yunancaokulu.com</p>
         </div>
 
@@ -374,6 +374,13 @@
             <p style="color:var(--text-dim); font-size:0.95rem;">Seviyenize uygun klasörü açın ve çalışmak istediğiniz
               metni seçin.</p>
           </div>
+          <div style="margin-bottom:18px; background:var(--surface-alt); border:1px solid var(--border); border-radius:10px; padding:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+              <strong style="color:var(--accent2);">💾 Kaydedilen Çalışmalarım</strong>
+              <button class="secondary-btn" style="padding:8px 12px; font-size:0.85rem;" onclick="renderSavedReadingWorks()">Yenile</button>
+            </div>
+            <div id="saved-reading-works" style="margin-top:10px;"></div>
+          </div>
           <div class="category-filters" id="text-category-filters"></div>
           <div class="text-grid" id="text-grid-container"></div>
         </div>
@@ -382,6 +389,7 @@
           <textarea id="input-text" placeholder="Çalışmak istediğiniz metni buraya yapıştırın..."></textarea>
           <div class="btn-group">
             <button class="main-btn" onclick="processAndRenderText()">🚀 Metni İşle ve Oku</button>
+            <button class="secondary-btn" onclick="saveCurrentReadingWork()">💾 Metni Kaydet</button>
             <button class="secondary-btn" onclick="clearTextInputs()">Temizle</button>
           </div>
         </div>
@@ -389,6 +397,9 @@
           <div class="url-row">
             <input type="text" id="url-input" placeholder="https://..." />
             <button class="main-btn" onclick="fetchContentFromUrl()">İçeriği Çek</button>
+          </div>
+          <div style="margin-top:10px;">
+            <button class="secondary-btn" onclick="saveCurrentReadingWork()">💾 Metni Kaydet</button>
           </div>
           <div id="url-status" style="color:var(--accent2); font-size:0.9rem; font-weight:bold; min-height:20px;"></div>
         </div>
@@ -399,6 +410,9 @@
             <small style="color: var(--text-dim);">Veya dosyayı buraya sürükleyin</small>
           </label>
           <input type="file" id="pdf-input" accept=".pdf" onchange="loadPdfFile(this)">
+          <div style="margin-top:10px;">
+            <button class="secondary-btn" onclick="saveCurrentReadingWork()">💾 Metni Kaydet</button>
+          </div>
           <div id="pdf-status"></div>
         </div>
       </div>

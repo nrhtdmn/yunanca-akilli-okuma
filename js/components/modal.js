@@ -216,7 +216,8 @@ function openAnnouncementsModal() {
 
 function triggerWordPopup(event, word, contextSentence) {
   const isLoggedIn = !!currentUser && currentUser.status === 'approved';
-  activeTokenElement = event ? event.target : null; activeWordString = word; activeContextSentence = contextSentence;
+  activeTokenElement = (event && event.target && event.target.classList && event.target.classList.contains("tok")) ? event.target : null;
+  activeWordString = word; activeContextSentence = contextSentence;
 
   try { if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') ytPlayer.pauseVideo(); } catch(e) {}
 
@@ -227,11 +228,11 @@ function triggerWordPopup(event, word, contextSentence) {
   titleGr.classList.add('wpop-word-highlight');
   const stBox = document.getElementById('wp-sentence-translate');
   if (stBox) { stBox.hidden = true; stBox.innerHTML = ''; }
-  const cleanWord = word.replace(/[.,!?;():"""«»]/g, '').trim();
+  const cleanWord = String(word || "").replace(/[.,!?;():"""«»]/g, '').trim();
   if (cleanWord.length > 0) { phoneticBox.innerHTML = '<strong>Okunuşu:</strong> ' + getGreekPhonetics(cleanWord); phoneticBox.style.display = 'block'; } 
   else { phoneticBox.style.display = 'none'; }
 
-  let ctx = (contextSentence || '').trim();
+  let ctx = String(contextSentence || '').trim();
   if (ctx.length > 80) {
     const idx = ctx.indexOf(word);
     if (idx > -1) { let s = Math.max(0, idx - 35); let e = Math.min(ctx.length, idx + word.length + 40); ctx = (s > 0 ? '... ' : '') + ctx.substring(s, e).trim() + (e < ctx.length ? ' ...' : ''); } 
@@ -252,6 +253,51 @@ function triggerWordPopup(event, word, contextSentence) {
 
 function closePopup() { document.getElementById('wpop').style.display = "none"; stopSpeech(); }
 function toggleHighlightWord() {
+  const text = String(activeWordString || "").trim();
+  const isPhrase = !!activeTokenElement && /\s+/.test(text);
+  if (isPhrase && typeof allWordSpans !== "undefined" && Array.isArray(allWordSpans)) {
+    const phraseWords = text.split(/\s+/).filter(Boolean);
+    if (!phraseWords.length) return;
+    const spans = allWordSpans;
+    let startIdx = -1;
+    let endIdx = -1;
+    for (let i = 0; i < spans.length; i++) {
+      const part = String(spans[i].textContent || "").trim();
+      if (!part) continue;
+      if (part === phraseWords[0]) {
+        let ok = true;
+        for (let j = 0; j < phraseWords.length; j++) {
+          const s = spans[i + j];
+          const t = s ? String(s.textContent || "").trim() : "";
+          if (!s || t !== phraseWords[j]) {
+            ok = false;
+            break;
+          }
+        }
+        if (ok) {
+          startIdx = i;
+          endIdx = i + phraseWords.length - 1;
+          break;
+        }
+      }
+    }
+    if (startIdx === -1 || endIdx === -1) {
+      showToastMessage("Seçilen ifade metinde bulunamadı.");
+      return;
+    }
+    const chunk = spans.slice(startIdx, endIdx + 1);
+    const willHighlight = !chunk.every((el) => el.classList.contains("highlighted"));
+    chunk.forEach((el) => {
+      if (willHighlight) el.classList.add("highlighted");
+      else el.classList.remove("highlighted");
+      if (typeof window.syncReadingHighlightToStorageForElement === "function") {
+        window.syncReadingHighlightToStorageForElement(el, willHighlight);
+      }
+    });
+    showToastMessage("İfade vurgusu güncellendi.");
+    return;
+  }
+
   if (!activeTokenElement) return;
   activeTokenElement.classList.toggle('highlighted');
   const on = activeTokenElement.classList.contains('highlighted');
