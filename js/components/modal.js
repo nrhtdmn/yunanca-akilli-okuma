@@ -214,7 +214,37 @@ function openAnnouncementsModal() {
   }
 }
 
+if (!window.__popupPointerBindDone) {
+  window.__popupPointerBindDone = true;
+  window.__popupPointerDown = false;
+  document.addEventListener("mousedown", function () { window.__popupPointerDown = true; });
+  document.addEventListener("mouseup", function () { window.__popupPointerDown = false; });
+  document.addEventListener("touchstart", function () { window.__popupPointerDown = true; }, { passive: true });
+  document.addEventListener("touchend", function () { window.__popupPointerDown = false; }, { passive: true });
+}
+
 function triggerWordPopup(event, word, contextSentence) {
+  if (window.__popupPointerDown) return;
+  const selectedTextNow = String((window.getSelection && window.getSelection().toString()) || "").trim();
+  // Kullanıcı metin seçerken tek kelime popup'ı açılmasın; seçim popup'ı ayrıca tetiklenir.
+  if (event && selectedTextNow.length >= 2) return;
+
+  // Tıklama bırakıldıktan kısa süre sonra aç (özellikle mobil/drag seçimde daha doğal his verir).
+  if (event) {
+    const isTouchLikeDevice =
+      ("ontouchstart" in window) ||
+      (typeof navigator !== "undefined" && (navigator.maxTouchPoints || 0) > 0);
+    const openDelayMs = isTouchLikeDevice ? 420 : 260;
+    if (window.__popupOpenDelayTimer) clearTimeout(window.__popupOpenDelayTimer);
+    window.__popupOpenDelayTimer = setTimeout(function () {
+      if (window.__popupPointerDown) return;
+      const selectedLate = String((window.getSelection && window.getSelection().toString()) || "").trim();
+      if (selectedLate.length >= 2) return;
+      triggerWordPopup(null, word, contextSentence);
+    }, openDelayMs);
+    return;
+  }
+
   const isLoggedIn = !!currentUser && currentUser.status === 'approved';
   activeTokenElement = (event && event.target && event.target.classList && event.target.classList.contains("tok")) ? event.target : null;
   if (activeTokenElement) window.activeSelectionTokenElements = [activeTokenElement];
@@ -296,6 +326,7 @@ window.bindGlobalTokenSelectionTranslation = function () {
   };
 
   const applySelection = function (openPopup) {
+    if (window.__popupPointerDown) return;
     const data = collectTokenSelection();
     if (!data) return;
     window.activeSelectionTokenElements = data.tokens;
