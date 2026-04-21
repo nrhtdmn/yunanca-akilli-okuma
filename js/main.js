@@ -62,3 +62,47 @@ window.addEventListener('appinstalled', () => {
     deferredPrompt = null;
 });
 
+/* ==================================================
+   İÇERİK KORUMA (SAĞ TIK / KOPYALAMA ENGELİ)
+================================================== */
+(function preventContentCopying() {
+    const isEditableTarget = (target) => {
+        if (!target || !target.closest) return false;
+        return !!target.closest("input, textarea, [contenteditable='true']");
+    };
+
+    document.addEventListener("contextmenu", function (e) {
+        if (isEditableTarget(e.target)) return;
+        e.preventDefault();
+    });
+
+    document.addEventListener("copy", function (e) {
+        if (isEditableTarget(e.target)) return;
+        e.preventDefault();
+    });
+
+    document.addEventListener("cut", function (e) {
+        if (isEditableTarget(e.target)) return;
+        e.preventDefault();
+    });
+
+    document.addEventListener("selectstart", function (e) {
+        if (isEditableTarget(e.target)) return;
+        e.preventDefault();
+    });
+
+    document.addEventListener("dragstart", function (e) {
+        if (isEditableTarget(e.target)) return;
+        e.preventDefault();
+    });
+
+    document.addEventListener("keydown", function (e) {
+        if (!(e.ctrlKey || e.metaKey)) return;
+        if (isEditableTarget(e.target)) return;
+        const key = String(e.key || "").toLowerCase();
+        if (["c", "x", "a", "s", "u", "p"].includes(key)) {
+            e.preventDefault();
+        }
+    });
+})();
+
