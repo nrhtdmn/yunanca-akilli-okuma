@@ -145,6 +145,18 @@ function ingestTrafficDoc(doc) {
   }
 }
 
+function ingestLessonsDoc(doc) {
+  if (!doc.exists) return;
+  const list = doc.data().list;
+  if (!Array.isArray(list)) return;
+  window.GLOBAL_LESSONS = list;
+  try {
+    localStorage.setItem("y_lessons_db", JSON.stringify(window.GLOBAL_LESSONS));
+  } catch (e) {}
+  if (typeof window.renderLessonLibrary === "function") window.renderLessonLibrary();
+  if (typeof window.populateAdminLessons === "function") window.populateAdminLessons();
+}
+
 async function trackSiteTraffic() {
   if (!window.useFirebase || !window.db || typeof firebase === "undefined") return;
   try {
@@ -188,15 +200,17 @@ async function fetchFromFirebase() {
     const kursRef = window.db.collection("global").doc("kurs_data");
     const teacherPubRef = window.db.collection("global").doc("teacher_public_practices");
     const trafficRef = window.db.collection("global").doc("traffic_stats");
+    const lessonsRef = window.db.collection("global").doc("lessons_db");
 
     // ÖNEMLİ: finishInit/loadUserData, Firestore'dan ilk veri gelmeden çalışırsa boş profil
     // saveDb() ile buluttaki userdata/users belgelerinin üzerine yazılabiliyordu.
-    const [usersSnap, userdataSnap, annSnap, teacherPubSnap, trafficSnap] = await Promise.all([
+    const [usersSnap, userdataSnap, annSnap, teacherPubSnap, trafficSnap, lessonsSnap] = await Promise.all([
       usersRef.get(),
       userdataRef.get(),
       annRef.get(),
       teacherPubRef.get(),
       trafficRef.get(),
+      lessonsRef.get(),
     ]);
 
     ingestUsersDoc(usersSnap);
@@ -204,6 +218,7 @@ async function fetchFromFirebase() {
     ingestAnnouncementsDoc(annSnap);
     ingestTeacherPublicPracticesDoc(teacherPubSnap);
     ingestTrafficDoc(trafficSnap);
+    ingestLessonsDoc(lessonsSnap);
 
     // İlk okuma tamamlandıktan sonra UI boot — canlı dinleyiciler aynı veriyi günceller
     usersRef.onSnapshot(ingestUsersDoc, (err) => console.error("Firestore global/users dinleyicisi:", err));
@@ -214,6 +229,9 @@ async function fetchFromFirebase() {
     );
     trafficRef.onSnapshot(ingestTrafficDoc, (err) =>
       console.error("Firestore global/traffic_stats dinleyicisi:", err),
+    );
+    lessonsRef.onSnapshot(ingestLessonsDoc, (err) =>
+      console.error("Firestore global/lessons_db dinleyicisi:", err),
     );
 
     kursRef.onSnapshot((doc) => {

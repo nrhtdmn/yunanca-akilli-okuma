@@ -4357,6 +4357,71 @@ window.renderLessonLibrary = function(searchQuery = "") {
     container.innerHTML = html;
 };
 
+window.enableLessonPopupReading = function(containerEl) {
+    if (!containerEl) return;
+    globalTextForTTS = "";
+    allWordSpans = [];
+
+    const SKIP_TAGS = new Set(["SCRIPT", "STYLE", "IFRAME", "TEXTAREA", "CODE", "PRE"]);
+    const greekTokenRegex = /([\u0370-\u03FF\u1F00-\u1FFF]+(?:['’\-][\u0370-\u03FF\u1F00-\u1FFF]+)*)/g;
+
+    function splitTextToInteractiveFragment(text, sentenceText) {
+        const frag = document.createDocumentFragment();
+        let lastIndex = 0;
+        text.replace(greekTokenRegex, function(match, _g1, offset) {
+            if (offset > lastIndex) {
+                const plain = text.slice(lastIndex, offset);
+                frag.appendChild(document.createTextNode(plain));
+                globalTextForTTS += plain;
+            }
+            const span = document.createElement("span");
+            span.className = "tok";
+            span.textContent = match;
+            span.dataset.start = String(globalTextForTTS.length);
+            globalTextForTTS += match;
+            span.dataset.end = String(globalTextForTTS.length);
+            span.addEventListener("click", function(event) {
+                event.stopPropagation();
+                triggerWordPopup(event, match, sentenceText || text);
+            });
+            allWordSpans.push(span);
+            frag.appendChild(span);
+            lastIndex = offset + match.length;
+            return match;
+        });
+        if (lastIndex < text.length) {
+            const tail = text.slice(lastIndex);
+            frag.appendChild(document.createTextNode(tail));
+            globalTextForTTS += tail;
+        }
+        return frag;
+    }
+
+    function processTextNode(textNode) {
+        const text = textNode.nodeValue || "";
+        if (!/[\u0370-\u03FF\u1F00-\u1FFF]/.test(text)) return;
+        const parentEl = textNode.parentElement;
+        const sentenceText = (parentEl && parentEl.textContent ? parentEl.textContent.trim() : text.trim()).slice(0, 300);
+        const frag = splitTextToInteractiveFragment(text, sentenceText);
+        textNode.parentNode.replaceChild(frag, textNode);
+    }
+
+    function walk(node) {
+        if (!node) return;
+        if (node.nodeType === Node.ELEMENT_NODE) {
+            if (SKIP_TAGS.has(node.tagName)) return;
+            if (node.classList && node.classList.contains("tok")) return;
+            Array.from(node.childNodes).forEach(walk);
+            return;
+        }
+        if (node.nodeType === Node.TEXT_NODE) {
+            processTextNode(node);
+        }
+    }
+
+    walk(containerEl);
+};
+
 // 3. DERSİ AÇMA VE VİDEO GÖMME (EKSİKTİ!)
 // DERSİ GÖRÜNTÜLEME (Metin İçinde Video Desteği)
   // DERSİ GÖRÜNTÜLEME (Çoklu Video Desteği Eklendi)
@@ -4404,7 +4469,11 @@ window.openLesson = function(id) {
         return match; // Eğer geçersiz bir linkse yazıyı bozmadan bırakır
     });
     
-    document.getElementById('lesson-active-body').innerHTML = finalContent;
+    const lessonBody = document.getElementById('lesson-active-body');
+    lessonBody.innerHTML = finalContent;
+    if (typeof window.enableLessonPopupReading === 'function') {
+        window.enableLessonPopupReading(lessonBody);
+    }
     window.scrollTo({top:0, behavior:'smooth'});
 };
 
@@ -4412,6 +4481,9 @@ window.openLesson = function(id) {
 window.closeLessonView = function() {
     const bodyEl = document.getElementById('lesson-active-body');
     if (bodyEl) bodyEl.innerHTML = ""; // Arkada video çalmaya devam etmesin diye içi temizlenir
+    globalTextForTTS = "";
+    allWordSpans = [];
+    if (typeof stopSpeech === "function") stopSpeech();
     const viewArea = document.getElementById('lesson-view-area');
     const gridContainer = document.getElementById('lessons-grid-container');
     
