@@ -315,9 +315,21 @@ window.bindGlobalTokenSelectionTranslation = function () {
     if (selectionDebounceTimer) clearTimeout(selectionDebounceTimer);
     // Mobilde native seçim menüsünden sonra popup erken açılmasın diye gecikme artırıldı.
     selectionDebounceTimer = setTimeout(function () {
-      applySelection(!!isTouchLikeDevice);
+      applySelection(true);
     }, isTouchLikeDevice ? 320 : 190);
   });
+
+  document.addEventListener("mouseup", function () {
+    setTimeout(function () {
+      applySelection(true);
+    }, 20);
+  });
+
+  document.addEventListener("touchend", function () {
+    setTimeout(function () {
+      applySelection(true);
+    }, 360);
+  }, { passive: true });
 };
 
 function toggleHighlightWord() {
