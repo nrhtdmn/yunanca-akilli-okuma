@@ -253,6 +253,73 @@ function triggerWordPopup(event, word, contextSentence) {
 }
 
 function closePopup() { document.getElementById('wpop').style.display = "none"; stopSpeech(); }
+
+window.bindGlobalTokenSelectionTranslation = function () {
+  if (window.__globalTokenSelectionBindingDone) return;
+  window.__globalTokenSelectionBindingDone = true;
+
+  let selectionDebounceTimer = null;
+  let lastPopupSelection = "";
+  const isTouchLikeDevice =
+    ("ontouchstart" in window) ||
+    (typeof navigator !== "undefined" && (navigator.maxTouchPoints || 0) > 0);
+
+  const inIgnoredContainer = function (node) {
+    if (!node) return false;
+    const el = node.nodeType === 1 ? node : node.parentElement;
+    if (!el) return false;
+    return !!el.closest('input, textarea, [contenteditable="true"], #admin-modal, #wpop');
+  };
+
+  const collectTokenSelection = function () {
+    const sel = window.getSelection && window.getSelection();
+    if (!sel || !sel.rangeCount) return null;
+    if (inIgnoredContainer(sel.anchorNode) || inIgnoredContainer(sel.focusNode)) return null;
+    const text = String(sel.toString() || "").trim();
+    if (!text || text.length < 2 || text.length > 260) return null;
+    if (!/[\u0370-\u03FF\u1F00-\u1FFF]/.test(text)) return null;
+
+    const range = sel.getRangeAt(0);
+    const selectedTokens = Array.from(document.querySelectorAll(".tok")).filter((span) => {
+      try {
+        return range.intersectsNode(span);
+      } catch (e) {
+        return false;
+      }
+    });
+    if (selectedTokens.length < 2) return null;
+
+    return {
+      text: text.replace(/\s+/g, " "),
+      tokens: selectedTokens,
+    };
+  };
+
+  const applySelection = function (openPopup) {
+    const data = collectTokenSelection();
+    if (!data) return;
+    window.activeSelectionTokenElements = data.tokens;
+    window.lastReaderSelectionMeta = {
+      text: data.text,
+      tokenCount: data.tokens.length,
+      createdAt: Date.now(),
+    };
+    if (!openPopup) return;
+    const sig = `${data.text}|${data.tokens.length}`;
+    if (sig === lastPopupSelection) return;
+    lastPopupSelection = sig;
+    triggerWordPopup(null, data.text, data.text);
+  };
+
+  document.addEventListener("selectionchange", function () {
+    if (selectionDebounceTimer) clearTimeout(selectionDebounceTimer);
+    // Mobilde native seçim menüsünden sonra popup erken açılmasın diye gecikme artırıldı.
+    selectionDebounceTimer = setTimeout(function () {
+      applySelection(!!isTouchLikeDevice);
+    }, isTouchLikeDevice ? 320 : 190);
+  });
+};
+
 function toggleHighlightWord() {
   const selectedTokens = Array.isArray(window.activeSelectionTokenElements)
     ? window.activeSelectionTokenElements.filter((el) => el && el.classList && el.classList.contains("tok"))

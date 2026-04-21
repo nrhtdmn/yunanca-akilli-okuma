@@ -255,6 +255,11 @@ function finishInit() {
   try { renderTextLibrary(); } catch(e) { console.error('renderTextLibrary hatası:', e); }
   try { renderSavedReadingWorks(); } catch(e) { console.error('renderSavedReadingWorks hatası:', e); }
   try { bindReaderSelectionTranslation(); } catch(e) { console.error('bindReaderSelectionTranslation hatası:', e); }
+  try {
+    if (typeof window.bindGlobalTokenSelectionTranslation === "function") {
+      window.bindGlobalTokenSelectionTranslation();
+    }
+  } catch (e) { console.error('bindGlobalTokenSelectionTranslation hatası:', e); }
   try { applyReaderFontSize(); } catch(e) { console.error('applyReaderFontSize hatası:', e); }
   try { renderVideoLibrary(); } catch(e) { console.error('renderVideoLibrary hatası:', e); }
   try { renderTVLibrary(); } catch(e) { console.error('renderTVLibrary hatası:', e); }
@@ -1111,7 +1116,7 @@ function bindReaderSelectionTranslation() {
   });
 
   reader.addEventListener("touchend", function () {
-    setTimeout(() => applySelection(true), 120);
+    setTimeout(() => applySelection(true), 260);
   }, { passive: true });
 
   document.addEventListener("selectionchange", function () {
@@ -1120,7 +1125,7 @@ function bindReaderSelectionTranslation() {
       // Mobilde native seçim menüsü açıldığında touchend/mouseup kaçabiliyor;
       // selectionchange üzerinden popup açarak çoklu seçimi yakalıyoruz.
       applySelection(!!isTouchLikeDevice);
-    }, 140);
+    }, isTouchLikeDevice ? 300 : 170);
   });
 
   readerSelectionBindingDone = true;
