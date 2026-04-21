@@ -761,6 +761,154 @@ window.syncReadingHighlightToStorageForElement = function (el, isHighlighted) {
   updateReadingHighlightRange(rawText, start, end, !!isHighlighted);
 };
 
+function normalizeGrammarSearchText(text) {
+  return String(text || "")
+    .toLocaleLowerCase("tr-TR")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\u0370-\u03ff\s]/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function buildLessonScore(lesson, queryTerms) {
+  if (!lesson || !Array.isArray(queryTerms) || !queryTerms.length) return 0;
+  const title = normalizeGrammarSearchText(lesson.title || "");
+  const category = normalizeGrammarSearchText(lesson.category || "");
+  const content = normalizeGrammarSearchText(String(lesson.content || "").replace(/<[^>]*>/g, " "));
+  let score = 0;
+  queryTerms.forEach((term) => {
+    if (!term || term.length < 2) return;
+    if (title.includes(term)) score += 8;
+    if (category.includes(term)) score += 5;
+    if (content.includes(term)) score += 2;
+  });
+  return score;
+}
+
+function detectGrammarTopicHeuristic(text) {
+  const src = String(text || "");
+  const lower = src.toLocaleLowerCase("el-GR");
+  const rules = [
+    { key: "μέλλοντας θα", score: (lower.match(/\bθα\b/g) || []).length * 3 },
+    { key: "υποτακτική να", score: (lower.match(/\bνα\b/g) || []).length * 3 },
+    { key: "παρατατικός", score: (lower.match(/\b(ήταν|ήμουν|ήσουν|ήμασταν|ήσασταν)\b/g) || []).length * 2 },
+    { key: "άρθρα", score: (lower.match(/\b(ο|η|το|οι|τα|τον|την|τους|τις)\b/g) || []).length },
+    { key: "προθέσεις", score: (lower.match(/\b(σε|με|για|από|προς|χωρίς)\b/g) || []).length },
+  ];
+  rules.sort((a, b) => b.score - a.score);
+  const top = rules[0];
+  if (!top || top.score <= 0) return { query: "γραμματική", reason: "Γενική αντιστοίχιση γραμματικής" };
+  return { query: top.key, reason: `Ανίχνευση κανόνα: ${top.key}` };
+}
+
+window.findBestLessonMatch = function (query) {
+  const lessons = Array.isArray(window.GLOBAL_LESSONS) ? window.GLOBAL_LESSONS : [];
+  if (!lessons.length) return null;
+  const terms = normalizeGrammarSearchText(query)
+    .split(" ")
+    .filter((t) => t.length >= 2);
+  if (!terms.length) return null;
+  let best = null;
+  let bestScore = -1;
+  lessons.forEach((lesson) => {
+    const s = buildLessonScore(lesson, terms);
+    if (s > bestScore) {
+      best = lesson;
+      bestScore = s;
+    }
+  });
+  return bestScore > 0 ? best : null;
+};
+
+window.runGrammarTopicAnalysis = async function (text) {
+  const rawText = String(text || "").trim();
+  if (!rawText) return detectGrammarTopicHeuristic(rawText);
+
+  const apiKey = (localStorage.getItem("gemini_api_key") || "").trim();
+  if (!apiKey) return detectGrammarTopicHeuristic(rawText);
+
+  try {
+    const prompt = `
+Βρες τα κυρίαρχα γραμματικά θέματα του παρακάτω ελληνικού κειμένου.
+Επέστρεψε ΜΟΝΟ έγκυρο JSON:
+{
+  "primaryTopicGreek": "σύντομο όνομα θέματος στα ελληνικά",
+  "searchQueryGreek": "σύντομο ερώτημα αναζήτησης στα ελληνικά",
+  "reasonTurkish": "tek cümle Türkçe açıklama"
+}
+Κανόνες:
+- Τα πεδία primaryTopicGreek ve searchQueryGreek ΠΡΕΠΕΙ να είναι ελληνικά (όχι τουρκικά/αγγλικά).
+- searchQueryGreek en fazla 2-4 kelime olsun.
+
+Κείμενο:
+${rawText.slice(0, 7000)}
+`;
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+      }),
+    });
+    const data = await res.json();
+    const outputText = (((data || {}).candidates || [])[0] || {}).content?.parts?.[0]?.text || "";
+    const clean = String(outputText).replace(/```json/gi, "").replace(/```/g, "").trim();
+    const parsed = JSON.parse(clean);
+    const q = String(parsed.searchQueryGreek || parsed.primaryTopicGreek || "").trim();
+    if (!q) return detectGrammarTopicHeuristic(rawText);
+    return {
+      query: q,
+      reason: String(parsed.reasonTurkish || parsed.primaryTopicGreek || "AI analiz sonucu"),
+    };
+  } catch (e) {
+    console.error("runGrammarTopicAnalysis", e);
+    return detectGrammarTopicHeuristic(rawText);
+  }
+};
+
+window.goToGrammarForCurrentReadingText = async function () {
+  const rawText = String(document.getElementById("input-text")?.value || "").trim();
+  if (!rawText) {
+    showToastMessage("Önce okuma metni yükleyin.");
+    return;
+  }
+
+  const btn = document.querySelector('.reader-toolbar-right .toolbar-btn[onclick*="goToGrammarForCurrentReadingText"]');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "🧠 Analiz...";
+  }
+
+  try {
+    const analysis = await window.runGrammarTopicAnalysis(rawText);
+    const query = String((analysis && analysis.query) || "").trim() || "gramer";
+    const matchedLesson = (typeof window.findBestLessonMatch === "function")
+      ? window.findBestLessonMatch(query)
+      : null;
+
+    if (typeof switchMainTab === "function") switchMainTab("lessons");
+    const searchInput = document.getElementById("lesson-search-input");
+    if (searchInput) searchInput.value = query;
+    if (typeof window.renderLessonLibrary === "function") window.renderLessonLibrary(query);
+
+    if (matchedLesson && typeof window.openLesson === "function") {
+      window.openLesson(matchedLesson.id);
+      showToastMessage(`🧭 ${analysis.reason || "Gramer konusu bulundu"} → ${matchedLesson.title}`);
+    } else {
+      showToastMessage(`🧭 ${analysis.reason || "Gramer konusu bulundu"} (Arama: ${query})`);
+    }
+  } catch (e) {
+    console.error("goToGrammarForCurrentReadingText", e);
+    showToastMessage("❌ Gramer analizi sırasında hata oluştu.");
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "🧠 Gramere Git";
+    }
+  }
+};
+
 function processAndRenderText() {
   const rawText = document.getElementById("input-text").value;
   if (!rawText.trim()) {
@@ -781,6 +929,7 @@ function processAndRenderText() {
       <button class="toolbar-btn" onclick="stopSpeech()" title="Seslendirmeyi durdur">⏹ Durdur</button>
       <button class="toolbar-btn" onclick="adjustReaderFontSize(-0.1)" title="Yazıyı küçült">A-</button>
       <button class="toolbar-btn" onclick="adjustReaderFontSize(0.1)" title="Yazıyı büyüt">A+</button>
+      <button class="toolbar-btn" onclick="goToGrammarForCurrentReadingText()" title="Metni analiz edip uygun konu anlatımına git">🧠 Gramere Git</button>
       <button class="toolbar-btn" onclick="persistCurrentReadingState()" title="Okuma değişikliklerini kalıcı kaydet">💾 Değişiklikleri Kaydet</button>
     <button class="secondary-btn" onclick="clearReader()" style="border-color:var(--error); color:var(--error); padding: 5px 10px; font-size: 0.85rem; margin-left: 5px;" title="Okuma alanını temizle">🗑️ Temizle</button>
 

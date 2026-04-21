@@ -86,21 +86,11 @@ window.addEventListener('appinstalled', () => {
         e.preventDefault();
     });
 
-    document.addEventListener("selectstart", function (e) {
-        if (isEditableTarget(e.target)) return;
-        e.preventDefault();
-    });
-
-    document.addEventListener("dragstart", function (e) {
-        if (isEditableTarget(e.target)) return;
-        e.preventDefault();
-    });
-
     document.addEventListener("keydown", function (e) {
         if (!(e.ctrlKey || e.metaKey)) return;
         if (isEditableTarget(e.target)) return;
         const key = String(e.key || "").toLowerCase();
-        if (["c", "x", "a", "s", "u", "p"].includes(key)) {
+        if (["c", "x"].includes(key)) {
             e.preventDefault();
         }
     });
