@@ -4313,16 +4313,48 @@ setTimeout(() => {
 
 window.GLOBAL_LESSONS = JSON.parse(localStorage.getItem('y_lessons_db')) || [];
 
-window.persistLessonsDb = function () {
+window.persistLessonsDb = async function () {
     try {
         localStorage.setItem('y_lessons_db', JSON.stringify(window.GLOBAL_LESSONS));
     } catch (e) { /* ignore */ }
     if (typeof useFirebase !== 'undefined' && useFirebase && typeof db !== 'undefined') {
-        return db.collection('global').doc('lessons_db').set({ list: window.GLOBAL_LESSONS }).catch(function (err) {
+        try {
+            const lessonsCol = db.collection('global_lessons');
+            const existingSnap = await lessonsCol.get();
+            const existingIds = new Set(existingSnap.docs.map(function (d) { return d.id; }));
+
+            const ops = [];
+            window.GLOBAL_LESSONS.forEach(function (lesson, idx) {
+                if (!lesson || typeof lesson !== "object") return;
+                const rawId = String(lesson.id || "").trim();
+                const docId = rawId || ("lesson_" + idx);
+                const payload = {
+                    ...lesson,
+                    id: docId,
+                    __order: idx,
+                    updatedAt: Date.now(),
+                };
+                ops.push({ type: "set", ref: lessonsCol.doc(docId), data: payload });
+                existingIds.delete(docId);
+            });
+
+            existingIds.forEach(function (id) {
+                ops.push({ type: "delete", ref: lessonsCol.doc(id) });
+            });
+
+            const CHUNK_SIZE = 450;
+            for (let i = 0; i < ops.length; i += CHUNK_SIZE) {
+                const batch = db.batch();
+                ops.slice(i, i + CHUNK_SIZE).forEach(function (op) {
+                    if (op.type === "set") batch.set(op.ref, op.data, { merge: true });
+                    else if (op.type === "delete") batch.delete(op.ref);
+                });
+                await batch.commit();
+            }
+        } catch (err) {
             console.error('persistLessonsDb', err);
-        });
+        }
     }
-    return Promise.resolve();
 };
 
 /** fromIdx: kaynak; toIdx: hedef satırın indeksi (o satırın yerine), veya -1 = listenin sonu */
