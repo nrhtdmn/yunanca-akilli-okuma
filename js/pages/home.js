@@ -4479,16 +4479,52 @@ window.renderLessonLibrary = function(searchQuery = "") {
         return str.toLocaleLowerCase('tr-TR').normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     };
 
-    let filteredLessons = window.GLOBAL_LESSONS;
+    let filteredLessons = window.GLOBAL_LESSONS.map((lesson) => ({ lesson, score: 0, snippet: "" }));
+
+    const stripHtml = (html) => String(html || "").replace(/<[^>]*>/g, " ");
+    const escapeHtml = (s) => String(s || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
 
     // Eğer arama kutusuna bir şey yazılmışsa dersleri filtrele
     if (searchQuery.trim() !== "") {
-        const lowerQuery = normalizeStr(searchQuery);
-        filteredLessons = window.GLOBAL_LESSONS.filter(l => 
-            normalizeStr(l.title).includes(lowerQuery) || 
-            normalizeStr(l.category).includes(lowerQuery) || 
-            normalizeStr(l.content).includes(lowerQuery) // Dersi açmadan içindeki yazılarda bile arama yapar!
-        );
+        const terms = normalizeStr(searchQuery).split(/\s+/).filter(Boolean);
+        filteredLessons = filteredLessons
+          .map((row) => {
+            const l = row.lesson;
+            const titleRaw = String(l.title || "");
+            const categoryRaw = String(l.category || "");
+            const contentRaw = stripHtml(l.content || "");
+            const title = normalizeStr(titleRaw);
+            const category = normalizeStr(categoryRaw);
+            const content = normalizeStr(contentRaw);
+
+            let score = 0;
+            terms.forEach((t) => {
+              if (!t || t.length < 2) return;
+              if (title.includes(t)) score += 10;
+              if (category.includes(t)) score += 6;
+              if (content.includes(t)) score += 3;
+            });
+
+            let snippet = "";
+            if (score > 0) {
+              const firstTerm = terms.find((t) => t.length >= 2) || "";
+              const normContent = normalizeStr(contentRaw);
+              const idx = firstTerm ? normContent.indexOf(firstTerm) : -1;
+              if (idx >= 0) {
+                const start = Math.max(0, idx - 55);
+                const end = Math.min(contentRaw.length, idx + 115);
+                snippet = (start > 0 ? "... " : "") + contentRaw.slice(start, end).trim() + (end < contentRaw.length ? " ..." : "");
+              }
+            }
+            return { lesson: l, score, snippet };
+          })
+          .filter((row) => row.score > 0)
+          .sort((a, b) => b.score - a.score);
+    } else {
+      filteredLessons = filteredLessons.map((row) => ({ ...row, score: 0, snippet: "" }));
     }
 
     // Aranan kelime hiçbir derste yoksa uyarı ver
@@ -4498,25 +4534,28 @@ window.renderLessonLibrary = function(searchQuery = "") {
     }
 
     container.className = ""; 
-    const categories = [...new Set(filteredLessons.map(l => l.category || "Genel Gramer"))].sort();
+    const categories = [...new Set(filteredLessons.map(x => x.lesson.category || "Genel Gramer"))].sort();
     let html = "";
 
     categories.forEach((cat, index) => {
         const safeCatId = "lesson_cat_" + index;
-        const lessonsInCat = filteredLessons.filter(l => (l.category || "Genel Gramer") === cat);
+        const lessonsInCat = filteredLessons.filter(x => (x.lesson.category || "Genel Gramer") === cat);
 
         // Eğer bu kategoride filtrelenmiş bir ders yoksa bu klasörü hiç çizme
         if(lessonsInCat.length === 0) return;
 
         let cardsHtml = `<div class="text-grid">`;
-        lessonsInCat.forEach(l => {
+        lessonsInCat.forEach(row => {
+            const l = row.lesson;
             const isYouTube = l.link && (l.link.includes('youtube.com') || l.link.includes('youtu.be'));
             const clickAction = (isYouTube || !l.link) ? `openLesson('${l.id}')` : `window.open('${l.link}', '_blank')`;
             const actionText = isYouTube ? "📺 Videoyu İzle ➔" : (l.link ? "🔗 Kaynağa Git ➔" : "📖 Dersi Oku ➔");
+            const snippetHtml = row.snippet ? `<div style="color:var(--text-dim); font-size:0.82rem; line-height:1.4; margin-bottom:8px;">${escapeHtml(row.snippet)}</div>` : "";
 
             cardsHtml += `
             <div class="text-card" onclick="${clickAction}" style="border-color: var(--accent);">
                 <div class="text-card-title" style="margin-bottom:8px;">${l.title}</div>
+                ${snippetHtml}
                 <div class="text-card-play" style="color:var(--accent); font-size:0.9rem;">${actionText}</div>
             </div>
             `;
