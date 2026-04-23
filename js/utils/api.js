@@ -303,40 +303,51 @@ async function fetchFromFirebase() {
   }
 }
 
-function saveDb() {
-  const normalizeReadingHighlightEntryForCloud = function (entry) {
-    if (Array.isArray(entry) && entry.length >= 2) {
-      const s = Number(entry[0]);
-      const e = Number(entry[1]);
-      if (!Number.isNaN(s) && !Number.isNaN(e)) return { s, e };
-      return null;
-    }
-    if (entry && typeof entry === "object") {
-      const s = Number(entry.s);
-      const e = Number(entry.e);
-      if (!Number.isNaN(s) && !Number.isNaN(e)) return { s, e };
-    }
+function normalizeReadingHighlightEntryForCloud(entry) {
+  if (Array.isArray(entry) && entry.length >= 2) {
+    const s = Number(entry[0]);
+    const e = Number(entry[1]);
+    if (!Number.isNaN(s) && !Number.isNaN(e)) return { s, e };
     return null;
-  };
-  const sanitizeUserDataForCloud = function (raw) {
-    const out = {};
-    const src = raw && typeof raw === "object" ? raw : {};
-    Object.keys(src).forEach((uname) => {
-      const u = src[uname] && typeof src[uname] === "object" ? { ...src[uname] } : {};
-      const rh = u.readingHighlights && typeof u.readingHighlights === "object" ? u.readingHighlights : {};
-      const normalizedRh = {};
-      Object.keys(rh).forEach((k) => {
-        const arr = Array.isArray(rh[k]) ? rh[k] : [];
-        normalizedRh[k] = arr.map(normalizeReadingHighlightEntryForCloud).filter(Boolean);
-      });
-      u.readingHighlights = normalizedRh;
-      out[uname] = u;
-    });
-    return out;
-  };
+  }
+  if (entry && typeof entry === "object") {
+    const s = Number(entry.s);
+    const e = Number(entry.e);
+    if (!Number.isNaN(s) && !Number.isNaN(e)) return { s, e };
+  }
+  return null;
+}
 
-  // window.dbUsers ve let dbUsers artık aynı obje (helpers.js'de window.dbUsers = dbUsers)
-  // Yine de undefined olma ihtimaline karşı güvenli kontrol
+/** Yerel + Firestore (global/userdata) için kullanıcı verisini temizler; readingCompletedIds bulutta da taşınır */
+function sanitizeUserDataForCloud(raw) {
+  const out = {};
+  const src = raw && typeof raw === "object" ? raw : {};
+  Object.keys(src).forEach((uname) => {
+    const u = src[uname] && typeof src[uname] === "object" ? { ...src[uname] } : {};
+    const rh = u.readingHighlights && typeof u.readingHighlights === "object" ? u.readingHighlights : {};
+    const normalizedRh = {};
+    Object.keys(rh).forEach((k) => {
+      const arr = Array.isArray(rh[k]) ? rh[k] : [];
+      normalizedRh[k] = arr.map(normalizeReadingHighlightEntryForCloud).filter(Boolean);
+    });
+    u.readingHighlights = normalizedRh;
+    const rc = u.readingCompletedIds && typeof u.readingCompletedIds === "object" ? u.readingCompletedIds : {};
+    const rcOut = {};
+    Object.keys(rc).forEach((k) => {
+      const n = Number(rc[k]);
+      if (Number.isFinite(n) && n > 0) rcOut[k] = n;
+    });
+    u.readingCompletedIds = rcOut;
+    out[uname] = u;
+  });
+  return out;
+}
+
+/**
+ * Yerel depoya yazar; Firebase açıksa global/userdata ve global/users belgelerine merge yazar.
+ * @returns {Promise<void>}
+ */
+function saveDb() {
   const usersToSave = (window.dbUsers && typeof window.dbUsers === 'object') ? window.dbUsers : (typeof dbUsers !== 'undefined' ? dbUsers : {});
   const userDataToSave = (window.dbUserData && typeof window.dbUserData === 'object') ? window.dbUserData : (typeof dbUserData !== 'undefined' ? dbUserData : {});
   const userDataForCloud = sanitizeUserDataForCloud(userDataToSave);
@@ -344,16 +355,18 @@ function saveDb() {
   localStorage.setItem('y_userdata_db', JSON.stringify(userDataForCloud));
   window.dbUserData = userDataForCloud;
   if (typeof dbUserData !== "undefined") dbUserData = userDataForCloud;
-  if(window.useFirebase && window.db) {
-     window.db.collection("global").doc("users").set(usersToSave, { merge: true }).catch(e => console.error(e));
-     window.db.collection("global").doc("userdata").set(userDataForCloud, { merge: true }).catch(e => console.error(e));
+  if (window.useFirebase && window.db) {
+    const pUsers = window.db.collection("global").doc("users").set(usersToSave, { merge: true });
+    const pData = window.db.collection("global").doc("userdata").set(userDataForCloud, { merge: true });
+    return Promise.all([pUsers, pData]).then(() => undefined);
   }
+  return Promise.resolve();
 }
 
 function syncCloudData() {
   // window.currentUsername yerine let currentUsername (helpers.js) kullanıyoruz
   const uname = (typeof currentUsername !== 'undefined' && currentUsername) ? currentUsername : window.currentUsername;
-  if (!uname) return;
+  if (!uname) return Promise.resolve();
   if (!window.dbUserData) window.dbUserData = (typeof dbUserData !== 'undefined' ? dbUserData : {});
   if (!window.dbUserData[uname]) window.dbUserData[uname] = {};
   const uDecks = (typeof userDecks !== 'undefined') ? userDecks : (window.userDecks || {});
@@ -374,6 +387,6 @@ function syncCloudData() {
       ? window.dbUserData[uname].readingCompletedIds
       : {},
   };
-  saveDb();
+  return saveDb();
 }
 // Diğer yardımcı fonksiyonlar (fetchContentFromUrl, loadPdfFile vb.) olduğu gibi devam edebilir.

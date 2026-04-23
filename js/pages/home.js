@@ -660,8 +660,19 @@ function setReadingCompletionDone(key, done) {
   }
   if (done) state.readingCompletedIds[key] = Date.now();
   else delete state.readingCompletedIds[key];
-  if (typeof syncCloudData === "function") syncCloudData();
-  else if (typeof saveDb === "function") saveDb();
+  let syncPromise = Promise.resolve();
+  if (typeof syncCloudData === "function") syncPromise = syncCloudData() || Promise.resolve();
+  else if (typeof saveDb === "function") syncPromise = saveDb() || Promise.resolve();
+  if (syncPromise && typeof syncPromise.then === "function") {
+    syncPromise.catch(function (err) {
+      console.error("Firestore userdata (readingCompletedIds)", err);
+      if (typeof showToastMessage === "function") {
+        showToastMessage(
+          "Tamamlama bu cihazda kaydedildi; buluta yazılamadı. İnternetinizi kontrol edip bir kez daha “Bitirdim”e basın.",
+        );
+      }
+    });
+  }
   return true;
 }
 
@@ -1105,9 +1116,9 @@ window.persistCurrentReadingState = async function () {
   }
   updateReadingProgressForText(text);
   try {
-    if (typeof syncCloudData === "function") syncCloudData();
-    if (typeof saveDb === "function") saveDb();
-    if (window.useFirebase && window.db && window.dbUserData && window.dbUserData[currentUsername]) {
+    if (typeof syncCloudData === "function") await syncCloudData();
+    else if (typeof saveDb === "function") await saveDb();
+    else if (window.useFirebase && window.db && window.dbUserData && window.dbUserData[currentUsername]) {
       const payload = {};
       payload[currentUsername] = window.dbUserData[currentUsername];
       await window.db.collection("global").doc("userdata").set(payload, { merge: true });
