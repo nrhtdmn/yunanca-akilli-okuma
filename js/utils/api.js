@@ -10,6 +10,8 @@ var READING_COMPLETED_V1_LEGACY = "reading_completed_v1";
 
 var _readingDoneUnsub = null;
 var _readingDoneAttachedFor = null;
+var _readingStateUnsub = null;
+var _readingStateAttachedFor = null;
 
 /** Kullanıcı adı/e-postayı Firestore belge kimliğine çevirir (nokta/@ güvenli) */
 function readingCompletedFirestoreDocId(uname) {
@@ -20,6 +22,20 @@ function readingCompletedFirestoreDocId(uname) {
       .replace(/\//g, "_")
       .replace(/=/g, "");
     const id = "rd_" + b.slice(0, 700);
+    return id.length > 1 ? id : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function readingStateFirestoreDocId(uname) {
+  if (!uname || typeof uname !== "string") return null;
+  try {
+    const b = btoa(encodeURIComponent(uname))
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=/g, "");
+    const id = "rs_" + b.slice(0, 700);
     return id.length > 1 ? id : null;
   } catch (e) {
     return null;
@@ -267,6 +283,49 @@ window.detachReadingCompletedSync = function () {
   _readingDoneAttachedFor = null;
 };
 
+function applyReadingStatePatchToUser(uname, data) {
+  if (!uname || !window.dbUserData) return;
+  if (!window.dbUserData[uname]) window.dbUserData[uname] = {};
+  const row = window.dbUserData[uname];
+  const works = Array.isArray(data && data.readingWorks) ? data.readingWorks : [];
+  const prog = data && data.readingProgress && typeof data.readingProgress === "object" ? data.readingProgress : {};
+  row.readingWorks = works;
+  row.readingProgress = prog;
+}
+
+window.fetchAndAttachReadingStateSync = function (uname) {
+  if (!window.useFirebase || !window.db || !uname) return Promise.resolve();
+  const docId = readingStateFirestoreDocId(uname);
+  if (!docId) return Promise.resolve();
+  const ref = window.db.collection("global").doc(docId);
+  return ref.get().then(function (snap) {
+    if (snap.exists) {
+      applyReadingStatePatchToUser(uname, snap.data() || {});
+      if (typeof dbUserData !== "undefined") dbUserData = window.dbUserData;
+      applyCloudUserData();
+    }
+  }).then(function () {
+    if (typeof window.detachReadingStateSync === "function") window.detachReadingStateSync();
+    _readingStateAttachedFor = uname;
+    _readingStateUnsub = ref.onSnapshot(function (snap) {
+      if (!snap.exists) return;
+      applyReadingStatePatchToUser(uname, snap.data() || {});
+      if (typeof dbUserData !== "undefined") dbUserData = window.dbUserData;
+      applyCloudUserData();
+    }, function (err) {
+      console.error("Firestore okuma state (kullanıcı belgesi):", err);
+    });
+  });
+};
+
+window.detachReadingStateSync = function () {
+  if (typeof _readingStateUnsub === "function") {
+    try { _readingStateUnsub(); } catch (e) {}
+  }
+  _readingStateUnsub = null;
+  _readingStateAttachedFor = null;
+};
+
 /**
  * Okuma tamamlama haritasını buluta yazar (kullanıcıya özel global/rd_… belgesi).
  * @returns {Promise<void>}
@@ -298,6 +357,21 @@ window.pushReadingCompletedToFirestore = function (uname) {
       console.error("pushReadingCompletedToFirestore", err);
       throw err;
     });
+};
+
+window.pushReadingStateToFirestore = function (uname) {
+  if (!window.useFirebase || !window.db || !uname) return Promise.resolve();
+  const docId = readingStateFirestoreDocId(uname);
+  if (!docId) return Promise.resolve();
+  const row = window.dbUserData && window.dbUserData[uname] ? window.dbUserData[uname] : {};
+  const works = Array.isArray(row.readingWorks) ? row.readingWorks : [];
+  const prog = row.readingProgress && typeof row.readingProgress === "object" ? row.readingProgress : {};
+  const payload = {
+    readingWorks: works,
+    readingProgress: prog,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  };
+  return window.db.collection("global").doc(docId).set(payload).then(function () { return undefined; });
 };
 
 function ingestAnnouncementsDoc(doc) {
@@ -446,6 +520,13 @@ async function fetchFromFirebase() {
         console.error("fetchAndAttachReadingCompletedSync (boot)", e);
       }
     }
+    if (unBoot && typeof window.fetchAndAttachReadingStateSync === "function") {
+      try {
+        await window.fetchAndAttachReadingStateSync(unBoot);
+      } catch (e) {
+        console.error("fetchAndAttachReadingStateSync (boot)", e);
+      }
+    }
     ingestAnnouncementsDoc(annSnap);
     ingestTeacherPublicPracticesDoc(teacherPubSnap);
     ingestTrafficDoc(trafficSnap);
@@ -584,6 +665,11 @@ function syncCloudData() {
       ? window.dbUserData[uname].readingCompletedIds
       : {},
   };
-  return saveDb();
+  return saveDb().then(function () {
+    if (typeof window.pushReadingStateToFirestore === "function") {
+      return window.pushReadingStateToFirestore(uname);
+    }
+    return undefined;
+  });
 }
 // Diğer yardımcı fonksiyonlar (fetchContentFromUrl, loadPdfFile vb.) olduğu gibi devam edebilir.
