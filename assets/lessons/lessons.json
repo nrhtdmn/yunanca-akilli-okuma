@@ -1,11 +1,9 @@
 [
   {
-    "id": "isim-nurhat",
-    "title": "İsimler — Nurhat",
-    "category": "📘 Dil Bilgisi",
-    "content": "[html:assets/lessons/isim_nurhat.xhtml]",
-    "link": "assets/lessons/isim_nurhat.xhtml",
-    "date": "23.04.2026",
-    "updatedAt": 1760000000000
-  }
+  "id": "ne-sint-keme-2",
+  "title": "Ne Sint Keme-2",
+  "category": "📘 Dil Bilgisi",
+  "content": "[html:files.yunancaokulu.com/ne-sint-keme.xhtml]",
+  "link": "https://files.yunancaokulu.com/ne-sint-keme.xhtml"
+}
 ]
