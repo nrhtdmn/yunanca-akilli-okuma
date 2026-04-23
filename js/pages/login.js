@@ -25,19 +25,9 @@ function submitAuth() {
       currentUsername = u;
       localStorage.setItem("y_currentUser", u);
       loadUserData();
-      if (typeof window.fetchAndAttachReadingCompletedSync === "function") {
-        window.fetchAndAttachReadingCompletedSync(u).catch(function (e) {
-          console.error("fetchAndAttachReadingCompletedSync", e);
-        });
-      }
-      if (typeof window.fetchAndAttachReadingStateSync === "function") {
-        window.fetchAndAttachReadingStateSync(u).catch(function (e) {
-          console.error("fetchAndAttachReadingStateSync", e);
-        });
-      }
-      if (typeof window.fetchAndAttachDeckStateSync === "function") {
-        window.fetchAndAttachDeckStateSync(u).catch(function (e) {
-          console.error("fetchAndAttachDeckStateSync", e);
+      if (typeof window.fetchAndAttachUserStateSync === "function") {
+        window.fetchAndAttachUserStateSync(u).catch(function (e) {
+          console.error("fetchAndAttachUserStateSync", e);
         });
       }
       if (typeof renderSavedReadingWorks === "function") renderSavedReadingWorks();
@@ -79,19 +69,9 @@ function submitAuth() {
     currentUsername = u;
     localStorage.setItem("y_currentUser", u);
     loadUserData();
-    if (typeof window.fetchAndAttachReadingCompletedSync === "function") {
-      window.fetchAndAttachReadingCompletedSync(u).catch(function (e) {
-        console.error("fetchAndAttachReadingCompletedSync", e);
-      });
-    }
-    if (typeof window.fetchAndAttachReadingStateSync === "function") {
-      window.fetchAndAttachReadingStateSync(u).catch(function (e) {
-        console.error("fetchAndAttachReadingStateSync", e);
-      });
-    }
-    if (typeof window.fetchAndAttachDeckStateSync === "function") {
-      window.fetchAndAttachDeckStateSync(u).catch(function (e) {
-        console.error("fetchAndAttachDeckStateSync", e);
+    if (typeof window.fetchAndAttachUserStateSync === "function") {
+      window.fetchAndAttachUserStateSync(u).catch(function (e) {
+        console.error("fetchAndAttachUserStateSync", e);
       });
     }
     if (typeof renderSavedReadingWorks === "function") renderSavedReadingWorks();
@@ -199,19 +179,9 @@ window.syncAuthUserWithApp = async function syncAuthUserWithApp() {
   currentUsername = accountKey;
   localStorage.setItem("y_currentUser", accountKey);
   if (typeof loadUserData === "function") loadUserData();
-  if (typeof window.fetchAndAttachReadingCompletedSync === "function") {
-    window.fetchAndAttachReadingCompletedSync(accountKey).catch(function (e) {
-      console.error("fetchAndAttachReadingCompletedSync", e);
-    });
-  }
-  if (typeof window.fetchAndAttachReadingStateSync === "function") {
-    window.fetchAndAttachReadingStateSync(accountKey).catch(function (e) {
-      console.error("fetchAndAttachReadingStateSync", e);
-    });
-  }
-  if (typeof window.fetchAndAttachDeckStateSync === "function") {
-    window.fetchAndAttachDeckStateSync(accountKey).catch(function (e) {
-      console.error("fetchAndAttachDeckStateSync", e);
+  if (typeof window.fetchAndAttachUserStateSync === "function") {
+    window.fetchAndAttachUserStateSync(accountKey).catch(function (e) {
+      console.error("fetchAndAttachUserStateSync", e);
     });
   }
   if (typeof renderSavedReadingWorks === "function") renderSavedReadingWorks();
@@ -227,9 +197,7 @@ function initFirebaseAuth() {
   _firebaseAuthListenerRegistered = true;
   firebase.auth().onAuthStateChanged(function (user) {
     if (!user) {
-      if (typeof window.detachReadingCompletedSync === "function") window.detachReadingCompletedSync();
-      if (typeof window.detachReadingStateSync === "function") window.detachReadingStateSync();
-      if (typeof window.detachDeckStateSync === "function") window.detachDeckStateSync();
+      if (typeof window.detachUserStateSync === "function") window.detachUserStateSync();
       if (
         typeof currentUser !== "undefined" &&
         currentUser &&
@@ -256,9 +224,7 @@ function initFirebaseAuth() {
 window.initFirebaseAuth = initFirebaseAuth;
 
 function logout() {
-  if (typeof window.detachReadingCompletedSync === "function") window.detachReadingCompletedSync();
-  if (typeof window.detachReadingStateSync === "function") window.detachReadingStateSync();
-  if (typeof window.detachDeckStateSync === "function") window.detachDeckStateSync();
+  if (typeof window.detachUserStateSync === "function") window.detachUserStateSync();
   if (typeof firebase !== "undefined" && typeof firebase.auth === "function") {
     firebase.auth().signOut().catch(function () {});
   }

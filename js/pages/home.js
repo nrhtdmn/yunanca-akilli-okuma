@@ -670,16 +670,6 @@ function setReadingCompletionDone(key, done) {
   let chain = Promise.resolve();
   if (typeof syncCloudData === "function") chain = Promise.resolve(syncCloudData());
   else if (typeof saveDb === "function") chain = Promise.resolve(saveDb());
-  chain = chain.then(function () {
-    if (
-      typeof window.pushReadingCompletedToFirestore === "function" &&
-      typeof currentUsername !== "undefined" &&
-      currentUsername
-    ) {
-      return window.pushReadingCompletedToFirestore(currentUsername);
-    }
-    return undefined;
-  });
   chain.catch(function (err) {
     console.error("Firestore okuma tamamlama / userdata", err);
     if (typeof showToastMessage === "function") {

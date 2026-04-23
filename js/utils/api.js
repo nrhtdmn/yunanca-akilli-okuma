@@ -14,6 +14,8 @@ var _readingStateUnsub = null;
 var _readingStateAttachedFor = null;
 var _deckStateUnsub = null;
 var _deckStateAttachedFor = null;
+var _userStateUnsub = null;
+var _userStateAttachedFor = null;
 
 /** Kullanıcı adı/e-postayı Firestore belge kimliğine çevirir (nokta/@ güvenli) */
 function readingCompletedFirestoreDocId(uname) {
@@ -56,6 +58,92 @@ function deckStateFirestoreDocId(uname) {
   } catch (e) {
     return null;
   }
+}
+
+function userStateFirestoreDocId(uname) {
+  if (!uname || typeof uname !== "string") return null;
+  try {
+    const b = btoa(encodeURIComponent(uname))
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=/g, "");
+    const id = "us_" + b.slice(0, 700);
+    return id.length > 1 ? id : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function normalizeReadingHighlightsForCloud(rawRh) {
+  const src = rawRh && typeof rawRh === "object" ? rawRh : {};
+  const rhOut = {};
+  Object.keys(src).forEach((k) => {
+    const arr = Array.isArray(src[k]) ? src[k] : [];
+    rhOut[k] = arr
+      .map((entry) => {
+        if (Array.isArray(entry) && entry.length >= 2) {
+          const s = Number(entry[0]);
+          const e = Number(entry[1]);
+          if (!Number.isNaN(s) && !Number.isNaN(e)) return { s: s, e: e };
+          return null;
+        }
+        if (entry && typeof entry === "object") {
+          const s = Number(entry.s);
+          const e = Number(entry.e);
+          if (!Number.isNaN(s) && !Number.isNaN(e)) return { s: s, e: e };
+        }
+        return null;
+      })
+      .filter(Boolean);
+  });
+  return rhOut;
+}
+
+function sanitizeReadingCompletedMap(raw) {
+  const src = raw && typeof raw === "object" ? raw : {};
+  const out = {};
+  Object.keys(src).forEach((k) => {
+    const n = Number(src[k]);
+    if (Number.isFinite(n) && n > 0) out[k] = n;
+  });
+  return out;
+}
+
+function buildUserStatePayload(uname) {
+  const row = window.dbUserData && window.dbUserData[uname] ? window.dbUserData[uname] : {};
+  const uDict = row.customDict && typeof row.customDict === "object" ? row.customDict : {};
+  return {
+    decks: row.decks && typeof row.decks === "object" ? row.decks : { "Genel Kelimeler": [] },
+    customDict: uDict,
+    lastActiveDeck: typeof row.lastActiveDeck === "string" ? row.lastActiveDeck : "Genel Kelimeler",
+    readingWorks: Array.isArray(row.readingWorks) ? row.readingWorks : [],
+    readingProgress: row.readingProgress && typeof row.readingProgress === "object" ? row.readingProgress : {},
+    readingHighlights: normalizeReadingHighlightsForCloud(row.readingHighlights),
+    readingCompletedIds: sanitizeReadingCompletedMap(row.readingCompletedIds),
+    teacherPrivatePractices: Array.isArray(row.teacherPrivatePractices) ? row.teacherPrivatePractices : [],
+    examHistory: Array.isArray(row.examHistory) ? row.examHistory : [],
+    deletedAnnouncements: Array.isArray(row.deletedAnnouncements) ? row.deletedAnnouncements : [],
+    lastReadAnnouncementsTime: Number(row.lastReadAnnouncementsTime || 0) || 0,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  };
+}
+
+function applyUserStatePatchToUser(uname, data) {
+  if (!uname || !window.dbUserData) return;
+  if (!window.dbUserData[uname]) window.dbUserData[uname] = {};
+  const row = window.dbUserData[uname];
+  const src = data && typeof data === "object" ? data : {};
+  if (src.decks && typeof src.decks === "object") row.decks = src.decks;
+  if (src.customDict && typeof src.customDict === "object") row.customDict = src.customDict;
+  if (typeof src.lastActiveDeck === "string") row.lastActiveDeck = src.lastActiveDeck;
+  if (Array.isArray(src.readingWorks)) row.readingWorks = src.readingWorks;
+  if (src.readingProgress && typeof src.readingProgress === "object") row.readingProgress = src.readingProgress;
+  if (src.readingHighlights && typeof src.readingHighlights === "object") row.readingHighlights = normalizeReadingHighlightsForCloud(src.readingHighlights);
+  if (src.readingCompletedIds && typeof src.readingCompletedIds === "object") row.readingCompletedIds = sanitizeReadingCompletedMap(src.readingCompletedIds);
+  if (Array.isArray(src.teacherPrivatePractices)) row.teacherPrivatePractices = src.teacherPrivatePractices;
+  if (Array.isArray(src.examHistory)) row.examHistory = src.examHistory;
+  if (Array.isArray(src.deletedAnnouncements)) row.deletedAnnouncements = src.deletedAnnouncements;
+  if (Number.isFinite(Number(src.lastReadAnnouncementsTime))) row.lastReadAnnouncementsTime = Number(src.lastReadAnnouncementsTime || 0);
 }
 
 try {
@@ -416,6 +504,47 @@ window.detachDeckStateSync = function () {
   _deckStateAttachedFor = null;
 };
 
+window.fetchAndAttachUserStateSync = function (uname) {
+  if (!window.useFirebase || !window.db || !uname) return Promise.resolve();
+  const docId = userStateFirestoreDocId(uname);
+  if (!docId) return Promise.resolve();
+  const ref = window.db.collection("global").doc(docId);
+  return ref.get().then(function (snap) {
+    if (snap.exists) {
+      applyUserStatePatchToUser(uname, snap.data() || {});
+      if (typeof dbUserData !== "undefined") dbUserData = window.dbUserData;
+      applyCloudUserData();
+    }
+  }).then(function () {
+    if (typeof window.detachUserStateSync === "function") window.detachUserStateSync();
+    _userStateAttachedFor = uname;
+    _userStateUnsub = ref.onSnapshot(function (snap) {
+      if (!snap.exists) return;
+      applyUserStatePatchToUser(uname, snap.data() || {});
+      if (typeof dbUserData !== "undefined") dbUserData = window.dbUserData;
+      applyCloudUserData();
+    }, function (err) {
+      console.error("Firestore birleşik kullanıcı state (kullanıcı belgesi):", err);
+    });
+  });
+};
+
+window.detachUserStateSync = function () {
+  if (typeof _userStateUnsub === "function") {
+    try { _userStateUnsub(); } catch (e) {}
+  }
+  _userStateUnsub = null;
+  _userStateAttachedFor = null;
+};
+
+window.pushUserStateToFirestore = function (uname) {
+  if (!window.useFirebase || !window.db || !uname) return Promise.resolve();
+  const docId = userStateFirestoreDocId(uname);
+  if (!docId) return Promise.resolve();
+  const payload = buildUserStatePayload(uname);
+  return window.db.collection("global").doc(docId).set(payload).then(function () { return undefined; });
+};
+
 /**
  * Okuma tamamlama haritasını buluta yazar (kullanıcıya özel global/rd_… belgesi).
  * @returns {Promise<void>}
@@ -639,25 +768,11 @@ async function fetchFromFirebase() {
     ingestUsersDoc(usersSnap);
     ingestUserdataDoc(userdataSnap);
     const unBoot = typeof currentUsername !== "undefined" && currentUsername ? currentUsername : null;
-    if (unBoot && typeof window.fetchAndAttachReadingCompletedSync === "function") {
+    if (unBoot && typeof window.fetchAndAttachUserStateSync === "function") {
       try {
-        await window.fetchAndAttachReadingCompletedSync(unBoot);
+        await window.fetchAndAttachUserStateSync(unBoot);
       } catch (e) {
-        console.error("fetchAndAttachReadingCompletedSync (boot)", e);
-      }
-    }
-    if (unBoot && typeof window.fetchAndAttachReadingStateSync === "function") {
-      try {
-        await window.fetchAndAttachReadingStateSync(unBoot);
-      } catch (e) {
-        console.error("fetchAndAttachReadingStateSync (boot)", e);
-      }
-    }
-    if (unBoot && typeof window.fetchAndAttachDeckStateSync === "function") {
-      try {
-        await window.fetchAndAttachDeckStateSync(unBoot);
-      } catch (e) {
-        console.error("fetchAndAttachDeckStateSync (boot)", e);
+        console.error("fetchAndAttachUserStateSync (boot)", e);
       }
     }
     ingestAnnouncementsDoc(annSnap);
@@ -799,13 +914,8 @@ function syncCloudData() {
       : {},
   };
   return saveDb().then(function () {
-    if (typeof window.pushReadingStateToFirestore === "function") {
-      return window.pushReadingStateToFirestore(uname);
-    }
-    return undefined;
-  }).then(function () {
-    if (typeof window.pushDeckStateToFirestore === "function") {
-      return window.pushDeckStateToFirestore(uname);
+    if (typeof window.pushUserStateToFirestore === "function") {
+      return window.pushUserStateToFirestore(uname);
     }
     return undefined;
   });
