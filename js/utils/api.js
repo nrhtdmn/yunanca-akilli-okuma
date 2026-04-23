@@ -736,6 +736,12 @@ async function fetchFromFirebase() {
   if (typeof useFirebase !== "undefined") useFirebase = true;
   if (typeof db !== "undefined") db = window.db;
   try {
+    const safeGet = function (ref, label) {
+      return ref.get().catch(function (err) {
+        console.error("Firestore okuma hatası (" + label + "):", err);
+        return null;
+      });
+    };
     const usersRef = window.db.collection("global").doc("users");
     const userdataRef = window.db.collection("global").doc("userdata");
     const annRef = window.db.collection("global").doc("announcements");
@@ -747,26 +753,19 @@ async function fetchFromFirebase() {
 
     // ÖNEMLİ: finishInit/loadUserData, Firestore'dan ilk veri gelmeden çalışırsa boş profil
     // saveDb() ile buluttaki userdata/users belgelerinin üzerine yazılabiliyordu.
-    const [
-      usersSnap,
-      userdataSnap,
-      annSnap,
-      teacherPubSnap,
-      trafficSnap,
-      lessonsColSnap,
-      lessonsLegacySnap,
-    ] = await Promise.all([
-      usersRef.get(),
-      userdataRef.get(),
-      annRef.get(),
-      teacherPubRef.get(),
-      trafficRef.get(),
-      lessonsColRef.get(),
-      lessonsLegacyRef.get(),
-    ]);
+    const [usersSnap, userdataSnap, annSnap, teacherPubSnap, trafficSnap, lessonsColSnap, lessonsLegacySnap] =
+      await Promise.all([
+        safeGet(usersRef, "global/users"),
+        safeGet(userdataRef, "global/userdata"),
+        safeGet(annRef, "global/announcements"),
+        safeGet(teacherPubRef, "global/teacher_public_practices"),
+        safeGet(trafficRef, "global/traffic_stats"),
+        safeGet(lessonsColRef, "global_lessons"),
+        safeGet(lessonsLegacyRef, "global/lessons_db"),
+      ]);
 
-    ingestUsersDoc(usersSnap);
-    ingestUserdataDoc(userdataSnap);
+    if (usersSnap) ingestUsersDoc(usersSnap);
+    if (userdataSnap) ingestUserdataDoc(userdataSnap);
     const unBoot = typeof currentUsername !== "undefined" && currentUsername ? currentUsername : null;
     if (unBoot && typeof window.fetchAndAttachUserStateSync === "function") {
       try {
@@ -775,11 +774,11 @@ async function fetchFromFirebase() {
         console.error("fetchAndAttachUserStateSync (boot)", e);
       }
     }
-    ingestAnnouncementsDoc(annSnap);
-    ingestTeacherPublicPracticesDoc(teacherPubSnap);
-    ingestTrafficDoc(trafficSnap);
+    if (annSnap) ingestAnnouncementsDoc(annSnap);
+    if (teacherPubSnap) ingestTeacherPublicPracticesDoc(teacherPubSnap);
+    if (trafficSnap) ingestTrafficDoc(trafficSnap);
     if (lessonsColSnap && !lessonsColSnap.empty) ingestLessonsCollection(lessonsColSnap);
-    else ingestLessonsDoc(lessonsLegacySnap);
+    else if (lessonsLegacySnap) ingestLessonsDoc(lessonsLegacySnap);
 
     /** Google oturumu, global/users gelmeden açılırsa yanlışlıkla "yeni pending" oluşmasın diye Auth dinleyicisi bundan sonra kurulur */
     if (typeof window.initFirebaseAuth === "function") window.initFirebaseAuth();

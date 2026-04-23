@@ -4488,9 +4488,11 @@ window.persistLessonsDb = async function () {
     try {
         localStorage.setItem('y_lessons_db', JSON.stringify(window.GLOBAL_LESSONS));
     } catch (e) { /* ignore */ }
-    if (typeof useFirebase !== 'undefined' && useFirebase && typeof db !== 'undefined') {
+    const cloudEnabled = !!(window.useFirebase || (typeof useFirebase !== 'undefined' && useFirebase));
+    const cloudDb = window.db || (typeof db !== 'undefined' ? db : null);
+    if (cloudEnabled && cloudDb) {
         try {
-            const lessonsCol = db.collection('global_lessons');
+            const lessonsCol = cloudDb.collection('global_lessons');
             const existingSnap = await lessonsCol.get();
             const existingIds = new Set(existingSnap.docs.map(function (d) { return d.id; }));
 
@@ -4515,13 +4517,20 @@ window.persistLessonsDb = async function () {
 
             const CHUNK_SIZE = 450;
             for (let i = 0; i < ops.length; i += CHUNK_SIZE) {
-                const batch = db.batch();
+                const batch = cloudDb.batch();
                 ops.slice(i, i + CHUNK_SIZE).forEach(function (op) {
                     if (op.type === "set") batch.set(op.ref, op.data, { merge: true });
                     else if (op.type === "delete") batch.delete(op.ref);
                 });
                 await batch.commit();
             }
+
+            // Geriye uyumluluk: eski istemciler global/lessons_db belgesini okuyor.
+            // Aynı veriyi oraya da yazarak farklı cihaz/sürümde görünürlüğü koru.
+            await cloudDb.collection('global').doc('lessons_db').set({
+                list: window.GLOBAL_LESSONS,
+                updatedAt: Date.now(),
+            });
         } catch (err) {
             console.error('persistLessonsDb', err);
         }
