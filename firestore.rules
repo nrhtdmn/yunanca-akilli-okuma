@@ -13,5 +13,11 @@ service cloud.firestore {
     match /global/{document=**} {
       allow read, write: if true;
     }
+
+    // Konu anlatımı yeni yapıda global_lessons koleksiyonunda tutuluyor.
+    // Bu koleksiyona erişim kapalı olursa dersler cihazlar arası senkronize olmaz.
+    match /global_lessons/{document=**} {
+      allow read, write: if true;
+    }
   }
 }
