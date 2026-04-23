@@ -19,6 +19,7 @@ let readerInkColor = localStorage.getItem("y_reader_ink_color") || "#ef4444";
 let readerInkSize = Number(localStorage.getItem("y_reader_ink_size") || "2.2");
 let readerInkEraserSize = Number(localStorage.getItem("y_reader_ink_eraser_size") || "14");
 let readerInkStylusOnly = localStorage.getItem("y_reader_ink_stylus_only") !== "0";
+let readerInkMarkerAlpha = Number(localStorage.getItem("y_reader_ink_marker_alpha") || "0.14");
 window.savedReadingSearchQuery = window.savedReadingSearchQuery || "";
 window.savedReadingCategoryFilter = window.savedReadingCategoryFilter || "all";
 
@@ -818,10 +819,12 @@ function setReaderInkUiState() {
   const undoBtn = document.getElementById("reader-ink-undo-btn");
   const redoBtn = document.getElementById("reader-ink-redo-btn");
   const stylusBtn = document.getElementById("reader-ink-stylus-btn");
+  const markerAlphaInput = document.getElementById("reader-ink-marker-alpha");
   const presetRed = document.getElementById("reader-ink-preset-red");
   const presetBlue = document.getElementById("reader-ink-preset-blue");
   const presetGreen = document.getElementById("reader-ink-preset-green");
   const hint = document.getElementById("reader-ink-hint");
+  const controlsWrap = document.querySelector(".reader-toolbar-right");
   if (toggleBtn) {
     toggleBtn.textContent = readerInkMode ? "✋ Okuma Modu" : "✏️ Kalem Modu";
     toggleBtn.classList.toggle("reader-completion-btn--done", readerInkMode);
@@ -841,6 +844,10 @@ function setReaderInkUiState() {
   if (sizeInput) {
     sizeInput.style.display = readerInkMode ? "inline-flex" : "none";
     sizeInput.value = String(readerInkTool === "eraser" ? readerInkEraserSize : readerInkSize);
+  }
+  if (markerAlphaInput) {
+    markerAlphaInput.style.display = (readerInkMode && readerInkTool === "marker") ? "inline-flex" : "none";
+    markerAlphaInput.value = String(readerInkMarkerAlpha);
   }
   if (colorInput) {
     colorInput.style.display = readerInkMode ? "inline-flex" : "none";
@@ -870,6 +877,20 @@ function setReaderInkUiState() {
   if (readerInkCanvas) {
     readerInkCanvas.style.pointerEvents = readerInkMode ? "auto" : "none";
     readerInkCanvas.style.cursor = readerInkMode ? (readerInkTool === "eraser" ? "cell" : "crosshair") : "default";
+  }
+  if (controlsWrap) {
+    controlsWrap.querySelectorAll("[data-ink-role='main']").forEach((el) => {
+      el.style.display = readerInkMode ? "none" : "";
+    });
+    controlsWrap.querySelectorAll("[data-ink-role='tool']").forEach((el) => {
+      if (el.id === "reader-ink-toggle-btn") {
+        el.style.display = "";
+      } else if (el.id === "reader-ink-marker-alpha") {
+        el.style.display = (readerInkMode && readerInkTool === "marker") ? "inline-flex" : "none";
+      } else {
+        el.style.display = readerInkMode ? "inline-flex" : "none";
+      }
+    });
   }
 }
 
@@ -931,7 +952,7 @@ function setupReaderInkCanvas(rawText) {
     readerInkCtx.globalCompositeOperation = readerInkTool === "eraser" ? "destination-out" : "source-over";
     readerInkCtx.strokeStyle = readerInkColor;
     if (readerInkTool === "marker") {
-      readerInkCtx.globalAlpha = 0.14;
+      readerInkCtx.globalAlpha = readerInkMarkerAlpha;
       readerInkCtx.lineWidth = Math.max(8, readerInkSize * 3.2);
     } else {
       readerInkCtx.globalAlpha = 1;
@@ -997,6 +1018,14 @@ window.setReaderInkSize = function (sizeVal) {
   setReaderInkUiState();
 };
 
+window.setReaderInkMarkerAlpha = function (alphaVal) {
+  const n = Number(alphaVal);
+  if (!Number.isFinite(n)) return;
+  readerInkMarkerAlpha = Math.max(0.05, Math.min(0.45, n));
+  localStorage.setItem("y_reader_ink_marker_alpha", String(readerInkMarkerAlpha));
+  setReaderInkUiState();
+};
+
 window.toggleReaderInkStylusOnly = function () {
   readerInkStylusOnly = !readerInkStylusOnly;
   localStorage.setItem("y_reader_ink_stylus_only", readerInkStylusOnly ? "1" : "0");
@@ -1030,83 +1059,92 @@ window.clearReaderInk = function () {
   showToastMessage("🧽 Ekran notları temizlendi.");
 };
 
-window.exportReaderInkImage = function (format) {
+function captureReaderContentCanvas() {
   const contentWrap = document.getElementById("reader-content-wrap");
-  if (!contentWrap) {
-    showToastMessage("Önce bir metin açın.");
-    return;
-  }
+  if (!contentWrap) return Promise.reject(new Error("no-content"));
+  const w = Math.max(320, Math.ceil(contentWrap.clientWidth || 320));
+  const h = Math.max(220, Math.ceil(contentWrap.scrollHeight || 220));
+  const clone = contentWrap.cloneNode(true);
+  clone.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
+  clone.style.width = w + "px";
+  clone.style.height = h + "px";
+  clone.style.background = "#ffffff";
+  clone.querySelectorAll("canvas").forEach((cv) => {
+    try {
+      const url = cv.toDataURL("image/png");
+      const imgEl = document.createElement("img");
+      imgEl.src = url;
+      imgEl.style.width = cv.style.width || cv.width + "px";
+      imgEl.style.height = cv.style.height || cv.height + "px";
+      imgEl.style.position = cv.style.position || "absolute";
+      imgEl.style.left = cv.style.left || "0";
+      imgEl.style.top = cv.style.top || "0";
+      imgEl.style.zIndex = cv.style.zIndex || "8";
+      cv.replaceWith(imgEl);
+    } catch (e) {}
+  });
+  const xhtml = new XMLSerializer().serializeToString(clone);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><foreignObject x="0" y="0" width="100%" height="100%">${xhtml}</foreignObject></svg>`;
+  const data = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = function () {
+      const c = document.createElement("canvas");
+      c.width = w;
+      c.height = h;
+      const x = c.getContext("2d");
+      if (!x) return reject(new Error("no-ctx"));
+      x.fillStyle = "#ffffff";
+      x.fillRect(0, 0, w, h);
+      x.drawImage(img, 0, 0, w, h);
+      // Cizim katmanini garanti olarak ayri bindir.
+      if (readerInkCanvas) {
+        try {
+          x.drawImage(readerInkCanvas, 0, 0, w, h);
+        } catch (e) {}
+      }
+      resolve(c);
+    };
+    img.onerror = function () { reject(new Error("img-load")); };
+    img.src = data;
+  });
+}
+
+window.exportReaderInkImage = function (format) {
   const mime = format === "jpeg" ? "image/jpeg" : "image/png";
   const quality = format === "jpeg" ? 0.92 : 1;
-  const svg = new XMLSerializer().serializeToString(contentWrap);
-  const data = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
-  const img = new Image();
-  img.onload = function () {
-    const w = contentWrap.clientWidth || 1200;
-    const h = contentWrap.scrollHeight || 900;
-    const c = document.createElement("canvas");
-    c.width = w;
-    c.height = h;
-    const x = c.getContext("2d");
-    if (!x) return;
-    x.fillStyle = "#ffffff";
-    x.fillRect(0, 0, w, h);
-    x.drawImage(img, 0, 0, w, h);
-    if (readerInkCanvas) {
-      x.drawImage(readerInkCanvas, 0, 0, w, h);
-    }
-    const out = c.toDataURL(mime, quality);
-    const a = document.createElement("a");
-    a.href = out;
-    a.download = `okuma-notlari-${Date.now()}.${format === "jpeg" ? "jpg" : "png"}`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    showToastMessage(format === "jpeg" ? "🖼️ JPEG dışa aktarıldı." : "🖼️ PNG dışa aktarıldı.");
-  };
-  img.onerror = function () {
-    showToastMessage("Dışa aktarma başarısız. Lütfen tekrar deneyin.");
-  };
-  img.src = data;
+  captureReaderContentCanvas()
+    .then(function (c) {
+      const out = c.toDataURL(mime, quality);
+      const a = document.createElement("a");
+      a.href = out;
+      a.download = `okuma-notlari-${Date.now()}.${format === "jpeg" ? "jpg" : "png"}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      showToastMessage(format === "jpeg" ? "🖼️ JPEG dışa aktarıldı." : "🖼️ PNG dışa aktarıldı.");
+    })
+    .catch(function () {
+      showToastMessage("Dışa aktarma başarısız. Lütfen tekrar deneyin.");
+    });
 };
 
 window.exportReaderInkPdf = function () {
-  const contentWrap = document.getElementById("reader-content-wrap");
-  if (!contentWrap) {
-    showToastMessage("Önce bir metin açın.");
-    return;
-  }
-  const svg = new XMLSerializer().serializeToString(contentWrap);
-  const data = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
-  const img = new Image();
-  img.onload = function () {
-    const w = contentWrap.clientWidth || 1200;
-    const h = contentWrap.scrollHeight || 900;
-    const c = document.createElement("canvas");
-    c.width = w;
-    c.height = h;
-    const x = c.getContext("2d");
-    if (!x) return;
-    x.fillStyle = "#ffffff";
-    x.fillRect(0, 0, w, h);
-    x.drawImage(img, 0, 0, w, h);
-    if (readerInkCanvas) {
-      x.drawImage(readerInkCanvas, 0, 0, w, h);
-    }
-    const out = c.toDataURL("image/png");
-    const win = window.open("", "_blank");
-    if (!win) {
-      showToastMessage("Popup engellendi. Tarayıcı izinlerini kontrol edin.");
-      return;
-    }
-    win.document.write(`<html><head><title>Okuma Notları PDF</title></head><body style="margin:0; background:#fff;"><img src="${out}" style="width:100%; height:auto; display:block;"></body></html>`);
-    win.document.close();
-    setTimeout(function () { win.print(); }, 400);
-  };
-  img.onerror = function () {
-    showToastMessage("PDF hazırlığı başarısız.");
-  };
-  img.src = data;
+  captureReaderContentCanvas()
+    .then(function (c) {
+      const out = c.toDataURL("image/png");
+      const win = window.open("", "_blank");
+      if (!win) {
+        showToastMessage("Popup engellendi. Tarayıcı izinlerini kontrol edin.");
+        return;
+      }
+      win.document.write(`<html><head><title>Okuma Notları PDF</title></head><body style="margin:0; background:#fff;"><img src="${out}" style="width:100%; height:auto; display:block;"></body></html>`);
+      win.document.close();
+      setTimeout(function () { win.print(); }, 400);
+    })
+    .catch(function () {
+      showToastMessage("PDF hazırlığı başarısız.");
+    });
 };
 
 window.toggleReaderNotesPanel = function () {
@@ -1772,35 +1810,36 @@ function processAndRenderText() {
   toolbar.innerHTML = `
     <div class="reader-toolbar-left">📖 Kelimeye tıkla → çeviri + telaffuz</div>
     <div class="reader-toolbar-right">
-      <button class="toolbar-btn tts-toolbar-btn" onclick="speakAllText()" title="Tüm metni sesli oku">🔊 Oku</button>
-      <button class="toolbar-btn tts-toolbar-btn" onclick="togglePauseSpeech()" title="Duraklat/Devam Et">⏸ Duraklat</button>
-      <button class="toolbar-btn" onclick="stopSpeech()" title="Seslendirmeyi durdur">⏹ Durdur</button>
-      <button class="toolbar-btn" onclick="adjustReaderFontSize(-0.1)" title="Yazıyı küçült">A-</button>
-      <button class="toolbar-btn" onclick="adjustReaderFontSize(0.1)" title="Yazıyı büyüt">A+</button>
-      <button class="toolbar-btn" onclick="goToGrammarForCurrentReadingText()" title="Metni analiz edip uygun konu anlatımına git">🧠 Gramere Git</button>
-      <button class="toolbar-btn" id="reader-ink-toggle-btn" onclick="toggleReaderInkMode()" title="Metin üstüne kalemle not al">✏️ Kalem Modu</button>
-      <button class="toolbar-btn" id="reader-ink-pen-btn" onclick="setReaderInkTool('pen')" style="display:none;" title="Kalem">🖊️</button>
-      <button class="toolbar-btn" id="reader-ink-marker-btn" onclick="setReaderInkTool('marker')" style="display:none;" title="Fosforlu">🖍️</button>
-      <button class="toolbar-btn" id="reader-ink-eraser-btn" onclick="setReaderInkTool('eraser')" style="display:none;" title="Silgi">🩹</button>
-      <button class="toolbar-btn" id="reader-ink-preset-red" onclick="setReaderInkPresetColor('#ef4444')" style="display:none;" title="Kırmızı">🔴</button>
-      <button class="toolbar-btn" id="reader-ink-preset-blue" onclick="setReaderInkPresetColor('#2563eb')" style="display:none;" title="Mavi">🔵</button>
-      <button class="toolbar-btn" id="reader-ink-preset-green" onclick="setReaderInkPresetColor('#16a34a')" style="display:none;" title="Yeşil">🟢</button>
-      <input id="reader-ink-color" type="color" style="display:none; width:34px; height:30px; padding:0; border:1px solid var(--border); border-radius:6px; background:transparent;" onchange="setReaderInkColor(this.value)" title="Renk">
-      <input id="reader-ink-size" type="range" min="1" max="24" step="0.2" style="display:none; width:90px;" onchange="setReaderInkSize(this.value)" title="Kalınlık">
-      <button class="toolbar-btn" id="reader-ink-stylus-btn" onclick="toggleReaderInkStylusOnly()" style="display:none;" title="Parmakla çizimi kapat/aç">🖊️ Sadece Kalem</button>
-      <button class="toolbar-btn" id="reader-ink-undo-btn" onclick="undoReaderInk()" style="display:none;" title="Geri al">↶</button>
-      <button class="toolbar-btn" id="reader-ink-redo-btn" onclick="redoReaderInk()" style="display:none;" title="İleri al">↷</button>
-      <button class="toolbar-btn" onclick="clearReaderInk()" title="Bu metindeki çizimleri temizle">🧽 Notları Sil</button>
-      <button class="toolbar-btn" onclick="exportReaderInkImage('png')" title="Okuma alanını PNG olarak indir">🖼️ PNG</button>
-      <button class="toolbar-btn" onclick="exportReaderInkImage('jpeg')" title="Okuma alanını JPEG olarak indir">🖼️ JPG</button>
-      <button class="toolbar-btn" onclick="exportReaderInkPdf()" title="Okuma alanını PDF olarak dışa aktar">📄 PDF</button>
-      <span id="reader-ink-hint" style="display:none; color:var(--text-dim); font-size:0.8rem;">Kalem açık: metin tıklamaları geçici kapalı</span>
-      <button class="toolbar-btn" onclick="toggleReaderNotesPanel()" title="Kelime/cümle notlarını aç">📝 Notlar</button>
-      <button class="toolbar-btn" onclick="toggleReaderNotebookPanel()" title="Serbest defter alanını aç">📓 Defter</button>
-      <button class="toolbar-btn" onclick="persistCurrentReadingState()" title="Okuma değişikliklerini kalıcı kaydet">💾 Değişiklikleri Kaydet</button>
-      <button class="${completionBtnClass}" id="reader-completion-mark-btn" onclick="markCurrentReadingCompleted()" title="${completionTitleAttr}">${completionLabel}</button>
-      <button class="toolbar-btn" id="reader-completion-clear-btn" onclick="clearCurrentReadingCompleted()" ${clearDisabledAttr} title="Tamamlandı işaretini kaldır">↩️ İptal</button>
-    <button class="secondary-btn" onclick="clearReader()" style="border-color:var(--error); color:var(--error); padding: 5px 10px; font-size: 0.85rem; margin-left: 5px;" title="Okuma alanını temizle">🗑️ Temizle</button>
+      <button class="toolbar-btn tts-toolbar-btn" data-ink-role="main" onclick="speakAllText()" title="Tüm metni sesli oku">🔊 Oku</button>
+      <button class="toolbar-btn tts-toolbar-btn" data-ink-role="main" onclick="togglePauseSpeech()" title="Duraklat/Devam Et">⏸ Duraklat</button>
+      <button class="toolbar-btn" data-ink-role="main" onclick="stopSpeech()" title="Seslendirmeyi durdur">⏹ Durdur</button>
+      <button class="toolbar-btn" data-ink-role="main" onclick="adjustReaderFontSize(-0.1)" title="Yazıyı küçült">A-</button>
+      <button class="toolbar-btn" data-ink-role="main" onclick="adjustReaderFontSize(0.1)" title="Yazıyı büyüt">A+</button>
+      <button class="toolbar-btn" data-ink-role="main" onclick="goToGrammarForCurrentReadingText()" title="Metni analiz edip uygun konu anlatımına git">🧠 Gramere Git</button>
+      <button class="toolbar-btn" data-ink-role="tool" id="reader-ink-toggle-btn" onclick="toggleReaderInkMode()" title="Metin üstüne kalemle not al">✏️ Kalem Modu</button>
+      <button class="toolbar-btn" data-ink-role="tool" id="reader-ink-pen-btn" onclick="setReaderInkTool('pen')" style="display:none;" title="Kalem">🖊️</button>
+      <button class="toolbar-btn" data-ink-role="tool" id="reader-ink-marker-btn" onclick="setReaderInkTool('marker')" style="display:none;" title="Fosforlu">🖍️</button>
+      <button class="toolbar-btn" data-ink-role="tool" id="reader-ink-eraser-btn" onclick="setReaderInkTool('eraser')" style="display:none;" title="Silgi">🩹</button>
+      <button class="toolbar-btn" data-ink-role="tool" id="reader-ink-preset-red" onclick="setReaderInkPresetColor('#ef4444')" style="display:none;" title="Kırmızı">🔴</button>
+      <button class="toolbar-btn" data-ink-role="tool" id="reader-ink-preset-blue" onclick="setReaderInkPresetColor('#2563eb')" style="display:none;" title="Mavi">🔵</button>
+      <button class="toolbar-btn" data-ink-role="tool" id="reader-ink-preset-green" onclick="setReaderInkPresetColor('#16a34a')" style="display:none;" title="Yeşil">🟢</button>
+      <input id="reader-ink-color" data-ink-role="tool" type="color" style="display:none; width:34px; height:30px; padding:0; border:1px solid var(--border); border-radius:6px; background:transparent;" onchange="setReaderInkColor(this.value)" title="Renk">
+      <input id="reader-ink-size" data-ink-role="tool" type="range" min="1" max="24" step="0.2" style="display:none; width:90px;" onchange="setReaderInkSize(this.value)" title="Kalınlık">
+      <input id="reader-ink-marker-alpha" data-ink-role="tool" type="range" min="0.05" max="0.45" step="0.01" style="display:none; width:90px;" onchange="setReaderInkMarkerAlpha(this.value)" title="Fosfor şeffaflık">
+      <button class="toolbar-btn" data-ink-role="tool" id="reader-ink-stylus-btn" onclick="toggleReaderInkStylusOnly()" style="display:none;" title="Parmakla çizimi kapat/aç">🖊️ Sadece Kalem</button>
+      <button class="toolbar-btn" data-ink-role="tool" id="reader-ink-undo-btn" onclick="undoReaderInk()" style="display:none;" title="Geri al">↶</button>
+      <button class="toolbar-btn" data-ink-role="tool" id="reader-ink-redo-btn" onclick="redoReaderInk()" style="display:none;" title="İleri al">↷</button>
+      <button class="toolbar-btn" data-ink-role="tool" onclick="clearReaderInk()" title="Bu metindeki çizimleri temizle">🧽 Notları Sil</button>
+      <button class="toolbar-btn" data-ink-role="tool" onclick="exportReaderInkImage('png')" title="Okuma alanını PNG olarak indir">🖼️ PNG</button>
+      <button class="toolbar-btn" data-ink-role="tool" onclick="exportReaderInkImage('jpeg')" title="Okuma alanını JPEG olarak indir">🖼️ JPG</button>
+      <button class="toolbar-btn" data-ink-role="tool" onclick="exportReaderInkPdf()" title="Okuma alanını PDF olarak dışa aktar">📄 PDF</button>
+      <span id="reader-ink-hint" data-ink-role="tool" style="display:none; color:var(--text-dim); font-size:0.8rem;">Kalem açık: metin tıklamaları geçici kapalı</span>
+      <button class="toolbar-btn" data-ink-role="main" onclick="toggleReaderNotesPanel()" title="Kelime/cümle notlarını aç">📝 Notlar</button>
+      <button class="toolbar-btn" data-ink-role="main" onclick="toggleReaderNotebookPanel()" title="Serbest defter alanını aç">📓 Defter</button>
+      <button class="toolbar-btn" data-ink-role="main" onclick="persistCurrentReadingState()" title="Okuma değişikliklerini kalıcı kaydet">💾 Değişiklikleri Kaydet</button>
+      <button class="${completionBtnClass}" data-ink-role="main" id="reader-completion-mark-btn" onclick="markCurrentReadingCompleted()" title="${completionTitleAttr}">${completionLabel}</button>
+      <button class="toolbar-btn" data-ink-role="main" id="reader-completion-clear-btn" onclick="clearCurrentReadingCompleted()" ${clearDisabledAttr} title="Tamamlandı işaretini kaldır">↩️ İptal</button>
+    <button class="secondary-btn" data-ink-role="main" onclick="clearReader()" style="border-color:var(--error); color:var(--error); padding: 5px 10px; font-size: 0.85rem; margin-left: 5px;" title="Okuma alanını temizle">🗑️ Temizle</button>
 
       </div>`;
   readerDiv.appendChild(toolbar);
