@@ -13,6 +13,11 @@ let readerInkCanvas = null;
 let readerInkRawTextKey = "";
 let readerInkPointerDown = false;
 let readerInkLastPoint = null;
+let readerInkHistory = [];
+let readerInkRedo = [];
+let readerInkColor = localStorage.getItem("y_reader_ink_color") || "#ef4444";
+let readerInkSize = Number(localStorage.getItem("y_reader_ink_size") || "2.2");
+let readerInkEraserSize = Number(localStorage.getItem("y_reader_ink_eraser_size") || "14");
 window.savedReadingSearchQuery = window.savedReadingSearchQuery || "";
 window.savedReadingCategoryFilter = window.savedReadingCategoryFilter || "all";
 
@@ -780,10 +785,37 @@ function loadReaderInkSnapshot(rawText) {
   return row && typeof row === "object" ? String(row.dataUrl || "") : "";
 }
 
+function applyReaderInkSnapshot(dataUrl) {
+  if (!readerInkCanvas || !readerInkCtx) return;
+  const w = parseInt(readerInkCanvas.style.width || "0", 10) || Math.floor(readerInkCanvas.width / (window.devicePixelRatio || 1));
+  const h = parseInt(readerInkCanvas.style.height || "0", 10) || Math.floor(readerInkCanvas.height / (window.devicePixelRatio || 1));
+  readerInkCtx.clearRect(0, 0, readerInkCanvas.width, readerInkCanvas.height);
+  if (!dataUrl) return;
+  const img = new Image();
+  img.onload = function () {
+    readerInkCtx.drawImage(img, 0, 0, w, h);
+  };
+  img.src = dataUrl;
+}
+
+function pushReaderInkHistorySnapshot() {
+  if (!readerInkCanvas) return;
+  const snap = readerInkCanvas.toDataURL("image/png");
+  if (readerInkHistory.length && readerInkHistory[readerInkHistory.length - 1] === snap) return;
+  readerInkHistory.push(snap);
+  if (readerInkHistory.length > 80) readerInkHistory.shift();
+  readerInkRedo.length = 0;
+}
+
 function setReaderInkUiState() {
   const toggleBtn = document.getElementById("reader-ink-toggle-btn");
   const penBtn = document.getElementById("reader-ink-pen-btn");
+  const markerBtn = document.getElementById("reader-ink-marker-btn");
   const eraserBtn = document.getElementById("reader-ink-eraser-btn");
+  const sizeInput = document.getElementById("reader-ink-size");
+  const colorInput = document.getElementById("reader-ink-color");
+  const undoBtn = document.getElementById("reader-ink-undo-btn");
+  const redoBtn = document.getElementById("reader-ink-redo-btn");
   const hint = document.getElementById("reader-ink-hint");
   if (toggleBtn) {
     toggleBtn.textContent = readerInkMode ? "✋ Okuma Modu" : "✏️ Kalem Modu";
@@ -793,10 +825,25 @@ function setReaderInkUiState() {
     penBtn.style.display = readerInkMode ? "inline-flex" : "none";
     penBtn.classList.toggle("reader-completion-btn--done", readerInkTool === "pen");
   }
+  if (markerBtn) {
+    markerBtn.style.display = readerInkMode ? "inline-flex" : "none";
+    markerBtn.classList.toggle("reader-completion-btn--done", readerInkTool === "marker");
+  }
   if (eraserBtn) {
     eraserBtn.style.display = readerInkMode ? "inline-flex" : "none";
     eraserBtn.classList.toggle("reader-completion-btn--done", readerInkTool === "eraser");
   }
+  if (sizeInput) {
+    sizeInput.style.display = readerInkMode ? "inline-flex" : "none";
+    sizeInput.value = String(readerInkTool === "eraser" ? readerInkEraserSize : readerInkSize);
+  }
+  if (colorInput) {
+    colorInput.style.display = readerInkMode ? "inline-flex" : "none";
+    colorInput.value = readerInkColor;
+    colorInput.disabled = readerInkTool === "eraser";
+  }
+  if (undoBtn) undoBtn.style.display = readerInkMode ? "inline-flex" : "none";
+  if (redoBtn) redoBtn.style.display = readerInkMode ? "inline-flex" : "none";
   if (hint) hint.style.display = readerInkMode ? "inline" : "none";
   if (readerInkCanvas) {
     readerInkCanvas.style.pointerEvents = readerInkMode ? "auto" : "none";
@@ -826,8 +873,8 @@ function setupReaderInkCanvas(rawText) {
   ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
-  ctx.lineWidth = 2.2;
-  ctx.strokeStyle = "#ef4444";
+  ctx.lineWidth = readerInkSize;
+  ctx.strokeStyle = readerInkColor;
   const dataUrl = loadReaderInkSnapshot(rawText);
   if (dataUrl) {
     const img = new Image();
@@ -837,6 +884,9 @@ function setupReaderInkCanvas(rawText) {
   readerInkCtx = ctx;
   readerInkCanvas = canvas;
   readerInkRawTextKey = String(rawText || "");
+  readerInkHistory = [];
+  readerInkRedo = [];
+  pushReaderInkHistorySnapshot();
 
   const getPos = (e) => {
     const r = canvas.getBoundingClientRect();
@@ -846,6 +896,7 @@ function setupReaderInkCanvas(rawText) {
     if (!readerInkMode) return;
     readerInkPointerDown = true;
     readerInkLastPoint = getPos(e);
+    pushReaderInkHistorySnapshot();
     try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
     e.preventDefault();
   };
@@ -854,17 +905,27 @@ function setupReaderInkCanvas(rawText) {
     const p = getPos(e);
     readerInkCtx.beginPath();
     readerInkCtx.globalCompositeOperation = readerInkTool === "eraser" ? "destination-out" : "source-over";
-    readerInkCtx.strokeStyle = "#ef4444";
-    readerInkCtx.lineWidth = readerInkTool === "eraser" ? 14 : 2.2;
+    readerInkCtx.strokeStyle = readerInkColor;
+    if (readerInkTool === "marker") {
+      readerInkCtx.globalAlpha = 0.28;
+      readerInkCtx.lineWidth = Math.max(8, readerInkSize * 3.2);
+    } else {
+      readerInkCtx.globalAlpha = 1;
+      readerInkCtx.lineWidth = readerInkTool === "eraser" ? readerInkEraserSize : readerInkSize;
+    }
     readerInkCtx.moveTo(readerInkLastPoint.x, readerInkLastPoint.y);
     readerInkCtx.lineTo(p.x, p.y);
     readerInkCtx.stroke();
+    readerInkCtx.globalAlpha = 1;
     readerInkLastPoint = p;
     e.preventDefault();
   };
   const endDraw = function (e) {
     if (!readerInkMode) return;
-    if (readerInkPointerDown) saveReaderInkSnapshot(readerInkRawTextKey);
+    if (readerInkPointerDown) {
+      pushReaderInkHistorySnapshot();
+      saveReaderInkSnapshot(readerInkRawTextKey);
+    }
     readerInkPointerDown = false;
     readerInkLastPoint = null;
     try { canvas.releasePointerCapture(e.pointerId); } catch (err) {}
@@ -882,15 +943,134 @@ window.toggleReaderInkMode = function () {
 };
 
 window.setReaderInkTool = function (tool) {
-  readerInkTool = tool === "eraser" ? "eraser" : "pen";
+  if (tool === "eraser" || tool === "marker") readerInkTool = tool;
+  else readerInkTool = "pen";
   setReaderInkUiState();
+};
+
+window.setReaderInkColor = function (color) {
+  readerInkColor = String(color || "#ef4444");
+  localStorage.setItem("y_reader_ink_color", readerInkColor);
+  setReaderInkUiState();
+};
+
+window.setReaderInkSize = function (sizeVal) {
+  const n = Number(sizeVal || 2.2);
+  if (!Number.isFinite(n)) return;
+  if (readerInkTool === "eraser") {
+    readerInkEraserSize = Math.max(6, Math.min(48, n));
+    localStorage.setItem("y_reader_ink_eraser_size", String(readerInkEraserSize));
+  } else {
+    readerInkSize = Math.max(1, Math.min(18, n));
+    localStorage.setItem("y_reader_ink_size", String(readerInkSize));
+  }
+  setReaderInkUiState();
+};
+
+window.undoReaderInk = function () {
+  if (!readerInkCanvas || readerInkHistory.length < 2) return;
+  const current = readerInkHistory.pop();
+  if (current) readerInkRedo.push(current);
+  const prev = readerInkHistory[readerInkHistory.length - 1] || "";
+  applyReaderInkSnapshot(prev);
+  saveReaderInkSnapshot(readerInkRawTextKey);
+};
+
+window.redoReaderInk = function () {
+  if (!readerInkCanvas || !readerInkRedo.length) return;
+  const next = readerInkRedo.pop();
+  if (!next) return;
+  applyReaderInkSnapshot(next);
+  readerInkHistory.push(next);
+  saveReaderInkSnapshot(readerInkRawTextKey);
 };
 
 window.clearReaderInk = function () {
   if (!readerInkCanvas || !readerInkCtx) return;
+  pushReaderInkHistorySnapshot();
   readerInkCtx.clearRect(0, 0, readerInkCanvas.width, readerInkCanvas.height);
+  pushReaderInkHistorySnapshot();
   saveReaderInkSnapshot(readerInkRawTextKey);
   showToastMessage("🧽 Ekran notları temizlendi.");
+};
+
+window.exportReaderInkImage = function (format) {
+  const contentWrap = document.getElementById("reader-content-wrap");
+  if (!contentWrap) {
+    showToastMessage("Önce bir metin açın.");
+    return;
+  }
+  const mime = format === "jpeg" ? "image/jpeg" : "image/png";
+  const quality = format === "jpeg" ? 0.92 : 1;
+  const svg = new XMLSerializer().serializeToString(contentWrap);
+  const data = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+  const img = new Image();
+  img.onload = function () {
+    const w = contentWrap.clientWidth || 1200;
+    const h = contentWrap.scrollHeight || 900;
+    const c = document.createElement("canvas");
+    c.width = w;
+    c.height = h;
+    const x = c.getContext("2d");
+    if (!x) return;
+    x.fillStyle = "#ffffff";
+    x.fillRect(0, 0, w, h);
+    x.drawImage(img, 0, 0, w, h);
+    if (readerInkCanvas) {
+      x.drawImage(readerInkCanvas, 0, 0, w, h);
+    }
+    const out = c.toDataURL(mime, quality);
+    const a = document.createElement("a");
+    a.href = out;
+    a.download = `okuma-notlari-${Date.now()}.${format === "jpeg" ? "jpg" : "png"}`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    showToastMessage(format === "jpeg" ? "🖼️ JPEG dışa aktarıldı." : "🖼️ PNG dışa aktarıldı.");
+  };
+  img.onerror = function () {
+    showToastMessage("Dışa aktarma başarısız. Lütfen tekrar deneyin.");
+  };
+  img.src = data;
+};
+
+window.exportReaderInkPdf = function () {
+  const contentWrap = document.getElementById("reader-content-wrap");
+  if (!contentWrap) {
+    showToastMessage("Önce bir metin açın.");
+    return;
+  }
+  const svg = new XMLSerializer().serializeToString(contentWrap);
+  const data = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+  const img = new Image();
+  img.onload = function () {
+    const w = contentWrap.clientWidth || 1200;
+    const h = contentWrap.scrollHeight || 900;
+    const c = document.createElement("canvas");
+    c.width = w;
+    c.height = h;
+    const x = c.getContext("2d");
+    if (!x) return;
+    x.fillStyle = "#ffffff";
+    x.fillRect(0, 0, w, h);
+    x.drawImage(img, 0, 0, w, h);
+    if (readerInkCanvas) {
+      x.drawImage(readerInkCanvas, 0, 0, w, h);
+    }
+    const out = c.toDataURL("image/png");
+    const win = window.open("", "_blank");
+    if (!win) {
+      showToastMessage("Popup engellendi. Tarayıcı izinlerini kontrol edin.");
+      return;
+    }
+    win.document.write(`<html><head><title>Okuma Notları PDF</title></head><body style="margin:0; background:#fff;"><img src="${out}" style="width:100%; height:auto; display:block;"></body></html>`);
+    win.document.close();
+    setTimeout(function () { win.print(); }, 400);
+  };
+  img.onerror = function () {
+    showToastMessage("PDF hazırlığı başarısız.");
+  };
+  img.src = data;
 };
 
 window.toggleReaderNotesPanel = function () {
@@ -1564,8 +1744,16 @@ function processAndRenderText() {
       <button class="toolbar-btn" onclick="goToGrammarForCurrentReadingText()" title="Metni analiz edip uygun konu anlatımına git">🧠 Gramere Git</button>
       <button class="toolbar-btn" id="reader-ink-toggle-btn" onclick="toggleReaderInkMode()" title="Metin üstüne kalemle not al">✏️ Kalem Modu</button>
       <button class="toolbar-btn" id="reader-ink-pen-btn" onclick="setReaderInkTool('pen')" style="display:none;" title="Kalem">🖊️</button>
+      <button class="toolbar-btn" id="reader-ink-marker-btn" onclick="setReaderInkTool('marker')" style="display:none;" title="Fosforlu">🖍️</button>
       <button class="toolbar-btn" id="reader-ink-eraser-btn" onclick="setReaderInkTool('eraser')" style="display:none;" title="Silgi">🩹</button>
+      <input id="reader-ink-color" type="color" style="display:none; width:34px; height:30px; padding:0; border:1px solid var(--border); border-radius:6px; background:transparent;" onchange="setReaderInkColor(this.value)" title="Renk">
+      <input id="reader-ink-size" type="range" min="1" max="24" step="0.2" style="display:none; width:90px;" onchange="setReaderInkSize(this.value)" title="Kalınlık">
+      <button class="toolbar-btn" id="reader-ink-undo-btn" onclick="undoReaderInk()" style="display:none;" title="Geri al">↶</button>
+      <button class="toolbar-btn" id="reader-ink-redo-btn" onclick="redoReaderInk()" style="display:none;" title="İleri al">↷</button>
       <button class="toolbar-btn" onclick="clearReaderInk()" title="Bu metindeki çizimleri temizle">🧽 Notları Sil</button>
+      <button class="toolbar-btn" onclick="exportReaderInkImage('png')" title="Okuma alanını PNG olarak indir">🖼️ PNG</button>
+      <button class="toolbar-btn" onclick="exportReaderInkImage('jpeg')" title="Okuma alanını JPEG olarak indir">🖼️ JPG</button>
+      <button class="toolbar-btn" onclick="exportReaderInkPdf()" title="Okuma alanını PDF olarak dışa aktar">📄 PDF</button>
       <span id="reader-ink-hint" style="display:none; color:var(--text-dim); font-size:0.8rem;">Kalem açık: metin tıklamaları geçici kapalı</span>
       <button class="toolbar-btn" onclick="toggleReaderNotesPanel()" title="Kelime/cümle notlarını aç">📝 Notlar</button>
       <button class="toolbar-btn" onclick="toggleReaderNotebookPanel()" title="Serbest defter alanını aç">📓 Defter</button>
