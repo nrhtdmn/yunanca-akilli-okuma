@@ -4808,15 +4808,18 @@ window.renderLessonLibrary = function(searchQuery = "") {
         let cardsHtml = `<div class="text-grid">`;
         lessonsInCat.forEach(row => {
             const l = row.lesson;
-            const isYouTube = l.link && (l.link.includes('youtube.com') || l.link.includes('youtu.be'));
+            const linkVal = String(l.link || "");
+            const isYouTube = linkVal && (linkVal.includes('youtube.com') || linkVal.includes('youtu.be'));
             const isAssetFile = l.link && /(^|\/)assets\/lessons\//i.test(String(l.link));
+            const isEmbeddableRemote = !!(linkVal && (/\.(x?html?|pdf|docx?)(\?|#|$)/i.test(linkVal)));
+            const hasInlineEmbedTag = /\[(pdf|doc|html|embed):/i.test(String(l.content || ""));
             const safeLessonId = String(l.id || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
-            const clickAction = (isYouTube || !l.link || isAssetFile)
+            const clickAction = (isYouTube || !l.link || isAssetFile || isEmbeddableRemote || hasInlineEmbedTag)
                 ? `openLesson('${safeLessonId}')`
                 : `window.open('${l.link}', '_blank')`;
             const actionText = isYouTube
                 ? "📺 Videoyu İzle ➔"
-                : (isAssetFile ? "📄 Dosyayı Aç ➔" : (l.link ? "🔗 Kaynağa Git ➔" : "📖 Dersi Oku ➔"));
+                : ((isAssetFile || isEmbeddableRemote || hasInlineEmbedTag) ? "📄 Dosyayı Aç ➔" : (l.link ? "🔗 Kaynağa Git ➔" : "📖 Dersi Oku ➔"));
             const snippetHtml = row.snippet ? `<div style="color:var(--text-dim); font-size:0.82rem; line-height:1.4; margin-bottom:8px;">${escapeHtml(row.snippet)}</div>` : "";
 
             cardsHtml += `
@@ -4927,6 +4930,9 @@ window.openLesson = function(id) {
     document.getElementById('lesson-active-title').textContent = lesson.title;
     
     let finalContent = lesson.content || "";
+    const rawContent = String(lesson.content || "");
+    const hadExplicitEmbedTag = /\[(pdf|doc|html|embed):/i.test(rawContent);
+    const hadShortEmbedTag = /\[(pdf|doc|html)\]/i.test(rawContent);
 
     function isPdfUrl(url) {
         return /\.pdf(\?|#|$)/i.test(String(url || "").trim());
@@ -5043,7 +5049,7 @@ window.openLesson = function(id) {
     });
 
     // Link kutusu PDF/Word ise metne [pdf] / [doc] etiketleri yazılarak da gömülebilsin.
-    if (lesson.link && isPdfUrl(lesson.link)) {
+    if (!hadExplicitEmbedTag && !hadShortEmbedTag && lesson.link && isPdfUrl(lesson.link)) {
         const pdfHtml = buildPdfEmbedHtml(lesson.link);
         if (finalContent.includes('[pdf]')) finalContent = finalContent.replace('[pdf]', pdfHtml);
         else if (!/\[(pdf|doc|embed):/i.test(finalContent)) finalContent = pdfHtml + finalContent;
@@ -5051,7 +5057,7 @@ window.openLesson = function(id) {
         finalContent = finalContent.replace('[pdf]', '');
     }
 
-    if (lesson.link && isWordUrl(lesson.link)) {
+    if (!hadExplicitEmbedTag && !hadShortEmbedTag && lesson.link && isWordUrl(lesson.link)) {
         const docHtml = buildWordEmbedHtml(lesson.link);
         if (finalContent.includes('[doc]')) finalContent = finalContent.replace('[doc]', docHtml);
         else if (!/\[(pdf|doc|embed):/i.test(finalContent)) finalContent = docHtml + finalContent;
@@ -5059,7 +5065,7 @@ window.openLesson = function(id) {
         finalContent = finalContent.replace('[doc]', '');
     }
 
-    if (lesson.link && isHtmlUrl(lesson.link)) {
+    if (!hadExplicitEmbedTag && !hadShortEmbedTag && lesson.link && isHtmlUrl(lesson.link)) {
         const htmlEmbed = buildHtmlEmbedHtml(lesson.link);
         if (finalContent.includes('[html]')) finalContent = finalContent.replace('[html]', htmlEmbed);
         else if (!/\[(pdf|doc|html|embed):/i.test(finalContent)) finalContent = htmlEmbed + finalContent;

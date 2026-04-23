@@ -725,7 +725,28 @@ function ingestLessonsStaticList(list) {
       .slice()
       .sort((a, b) => Number(a?.__order || 0) - Number(b?.__order || 0)),
   );
-  window.GLOBAL_LESSONS = mergeLessonsPreferLatest(normalized);
+  const byId = new Map();
+  normalized.forEach((lesson, idx) => {
+    const id = String(lesson && lesson.id || "").trim();
+    if (!id) return;
+    if (!byId.has(id)) {
+      byId.set(id, { ...lesson, __idx: idx });
+      return;
+    }
+    const prev = byId.get(id);
+    const prevTs = Number(prev.updatedAt || 0) || 0;
+    const curTs = Number(lesson.updatedAt || 0) || 0;
+    if (curTs >= prevTs) byId.set(id, { ...prev, ...lesson, __idx: prev.__idx });
+  });
+  const deduped = Array.from(byId.values())
+    .sort((a, b) => Number(a.__idx || 0) - Number(b.__idx || 0))
+    .map((x) => {
+      const { __idx, ...rest } = x;
+      return rest;
+    });
+  // Static modda tek kaynak lessons.json olmalı.
+  // Local/bulut merge duplicate üretebildiği için doğrudan bunu kullan.
+  window.GLOBAL_LESSONS = deduped;
   try {
     localStorage.setItem("y_lessons_db", JSON.stringify(window.GLOBAL_LESSONS));
   } catch (e) {}
