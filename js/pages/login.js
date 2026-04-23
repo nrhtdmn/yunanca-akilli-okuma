@@ -25,6 +25,11 @@ function submitAuth() {
       currentUsername = u;
       localStorage.setItem("y_currentUser", u);
       loadUserData();
+      if (typeof window.fetchAndAttachReadingCompletedSync === "function") {
+        window.fetchAndAttachReadingCompletedSync(u).catch(function (e) {
+          console.error("fetchAndAttachReadingCompletedSync", e);
+        });
+      }
       if (typeof renderSavedReadingWorks === "function") renderSavedReadingWorks();
       closeAuthModal();
       updateUserUI();
@@ -64,6 +69,11 @@ function submitAuth() {
     currentUsername = u;
     localStorage.setItem("y_currentUser", u);
     loadUserData();
+    if (typeof window.fetchAndAttachReadingCompletedSync === "function") {
+      window.fetchAndAttachReadingCompletedSync(u).catch(function (e) {
+        console.error("fetchAndAttachReadingCompletedSync", e);
+      });
+    }
     if (typeof renderSavedReadingWorks === "function") renderSavedReadingWorks();
     closeAuthModal();
     updateUserUI();
@@ -169,6 +179,11 @@ window.syncAuthUserWithApp = async function syncAuthUserWithApp() {
   currentUsername = accountKey;
   localStorage.setItem("y_currentUser", accountKey);
   if (typeof loadUserData === "function") loadUserData();
+  if (typeof window.fetchAndAttachReadingCompletedSync === "function") {
+    window.fetchAndAttachReadingCompletedSync(accountKey).catch(function (e) {
+      console.error("fetchAndAttachReadingCompletedSync", e);
+    });
+  }
   if (typeof renderSavedReadingWorks === "function") renderSavedReadingWorks();
   if (typeof updateUserUI === "function") updateUserUI();
   if (typeof closeAuthModal === "function") closeAuthModal();
@@ -182,6 +197,7 @@ function initFirebaseAuth() {
   _firebaseAuthListenerRegistered = true;
   firebase.auth().onAuthStateChanged(function (user) {
     if (!user) {
+      if (typeof window.detachReadingCompletedSync === "function") window.detachReadingCompletedSync();
       if (
         typeof currentUser !== "undefined" &&
         currentUser &&
@@ -208,6 +224,7 @@ function initFirebaseAuth() {
 window.initFirebaseAuth = initFirebaseAuth;
 
 function logout() {
+  if (typeof window.detachReadingCompletedSync === "function") window.detachReadingCompletedSync();
   if (typeof firebase !== "undefined" && typeof firebase.auth === "function") {
     firebase.auth().signOut().catch(function () {});
   }

@@ -667,14 +667,20 @@ function setReadingCompletionDone(key, done) {
   }
   if (done) state.readingCompletedIds[key] = Date.now();
   else delete state.readingCompletedIds[key];
-  let syncPromise = Promise.resolve();
-  if (typeof syncCloudData === "function") syncPromise = syncCloudData() || Promise.resolve();
-  else if (typeof saveDb === "function") syncPromise = saveDb() || Promise.resolve();
-  const pushDone =
-    typeof window.pushReadingCompletedToFirestore === "function" && typeof currentUsername !== "undefined" && currentUsername
-      ? window.pushReadingCompletedToFirestore(currentUsername)
-      : Promise.resolve();
-  Promise.all([syncPromise, pushDone]).catch(function (err) {
+  let chain = Promise.resolve();
+  if (typeof syncCloudData === "function") chain = Promise.resolve(syncCloudData());
+  else if (typeof saveDb === "function") chain = Promise.resolve(saveDb());
+  chain = chain.then(function () {
+    if (
+      typeof window.pushReadingCompletedToFirestore === "function" &&
+      typeof currentUsername !== "undefined" &&
+      currentUsername
+    ) {
+      return window.pushReadingCompletedToFirestore(currentUsername);
+    }
+    return undefined;
+  });
+  chain.catch(function (err) {
     console.error("Firestore okuma tamamlama / userdata", err);
     if (typeof showToastMessage === "function") {
       showToastMessage(

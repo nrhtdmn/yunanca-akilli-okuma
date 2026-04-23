@@ -5,8 +5,26 @@ window.db = null;
 window.TEACHER_PUBLIC_PRACTICES_LIST = [];
 window.dbTrafficStats = {};
 
-/** Okuma "Bitirdim" tikleri — userdata yerine ayrı belgede (e-posta noktaları / merge sınırı sorunları olmadan tüm cihazlar) */
-var READING_COMPLETED_V1 = "reading_completed_v1";
+/** Eski tek belge (varsa okuma ile birleştirilir) */
+var READING_COMPLETED_V1_LEGACY = "reading_completed_v1";
+
+var _readingDoneUnsub = null;
+var _readingDoneAttachedFor = null;
+
+/** Kullanıcı adı/e-postayı Firestore belge kimliğine çevirir (nokta/@ güvenli) */
+function readingCompletedFirestoreDocId(uname) {
+  if (!uname || typeof uname !== "string") return null;
+  try {
+    const b = btoa(encodeURIComponent(uname))
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=/g, "");
+    const id = "rd_" + b.slice(0, 700);
+    return id.length > 1 ? id : null;
+  } catch (e) {
+    return null;
+  }
+}
 
 try {
   const firebaseConfig = {
@@ -161,24 +179,80 @@ function mergeReadingCompletedPatchIntoUser(uname, patch) {
   window.dbUserData[uname].readingCompletedIds = out;
 }
 
-/** global/reading_completed_v1 — her alan bir kullanıcı adı/e-postası, değer tamamlama anahtarı → zaman damgası */
-function ingestReadingCompletedDoc(doc) {
-  if (!doc || !doc.exists) return;
-  const data = doc.data() || {};
-  if (!window.dbUserData) window.dbUserData = typeof dbUserData !== "undefined" && dbUserData ? dbUserData : {};
-  Object.keys(data).forEach((uname) => {
-    mergeReadingCompletedPatchIntoUser(uname, data[uname]);
-  });
-  if (typeof dbUserData !== "undefined") dbUserData = window.dbUserData;
-  applyCloudUserData();
+function mergeReadingCompletedLegacyV1Doc(uname) {
+  return window.db
+    .collection("global")
+    .doc(READING_COMPLETED_V1_LEGACY)
+    .get()
+    .then(function (v1) {
+      if (!v1.exists) return;
+      const d = v1.data() || {};
+      const slice = d[uname];
+      if (slice && typeof slice === "object") mergeReadingCompletedPatchIntoUser(uname, slice);
+    })
+    .catch(function () {});
 }
 
 /**
- * Sadece okuma tamamlama haritasını buluta yazar (userdata ile aynı anda kalır; bu belge cihazlar arası güvenilir kaynak).
+ * Oturum / sayfa yükünde: eski v1 + kullanıcıya özel belgeyi oku, birleştir, canlı dinle.
+ * (Giriş öncesi snapshot kaçmasın diye giriş sonrası da çağrılmalı.)
+ * @returns {Promise<void>}
+ */
+window.fetchAndAttachReadingCompletedSync = function (uname) {
+  if (!window.useFirebase || !window.db || !uname) return Promise.resolve();
+  const docId = readingCompletedFirestoreDocId(uname);
+  if (!docId) return Promise.resolve();
+  const ref = window.db.collection("global").doc(docId);
+
+  return mergeReadingCompletedLegacyV1Doc(uname)
+    .then(function () {
+      return ref.get();
+    })
+    .then(function (snap) {
+      if (snap.exists) {
+        const patch = snap.data().readingCompletedIds;
+        if (patch && typeof patch === "object") mergeReadingCompletedPatchIntoUser(uname, patch);
+      }
+      if (typeof dbUserData !== "undefined") dbUserData = window.dbUserData;
+      applyCloudUserData();
+      if (typeof window.refreshReadingCompletionUI === "function") window.refreshReadingCompletionUI();
+    })
+    .then(function () {
+      if (typeof window.detachReadingCompletedSync === "function") window.detachReadingCompletedSync();
+      _readingDoneAttachedFor = uname;
+      _readingDoneUnsub = ref.onSnapshot(
+        function (snap) {
+          if (!snap.exists) return;
+          const patch = snap.data().readingCompletedIds;
+          if (patch && typeof patch === "object") mergeReadingCompletedPatchIntoUser(uname, patch);
+          if (typeof dbUserData !== "undefined") dbUserData = window.dbUserData;
+          applyCloudUserData();
+        },
+        function (err) {
+          console.error("Firestore okuma tamamlama (kullanıcı belgesi):", err);
+        },
+      );
+    });
+};
+
+window.detachReadingCompletedSync = function () {
+  if (typeof _readingDoneUnsub === "function") {
+    try {
+      _readingDoneUnsub();
+    } catch (e) {}
+  }
+  _readingDoneUnsub = null;
+  _readingDoneAttachedFor = null;
+};
+
+/**
+ * Okuma tamamlama haritasını buluta yazar (kullanıcıya özel global/rd_… belgesi).
  * @returns {Promise<void>}
  */
 window.pushReadingCompletedToFirestore = function (uname) {
   if (!window.useFirebase || !window.db || !uname) return Promise.resolve();
+  const docId = readingCompletedFirestoreDocId(uname);
+  if (!docId) return Promise.resolve();
   const row = window.dbUserData && window.dbUserData[uname];
   const ids =
     row && row.readingCompletedIds && typeof row.readingCompletedIds === "object" ? row.readingCompletedIds : {};
@@ -187,11 +261,19 @@ window.pushReadingCompletedToFirestore = function (uname) {
     const n = Number(ids[k]);
     if (Number.isFinite(n) && n > 0) sanitized[k] = n;
   });
+  const payload = {
+    readingCompletedIds: sanitized,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  };
   return window.db
     .collection("global")
-    .doc(READING_COMPLETED_V1)
-    .set({ [uname]: sanitized }, { merge: true })
-    .then(() => undefined);
+    .doc(docId)
+    .set(payload, { merge: true })
+    .then(() => undefined)
+    .catch(function (err) {
+      console.error("pushReadingCompletedToFirestore", err);
+      throw err;
+    });
 };
 
 function ingestAnnouncementsDoc(doc) {
@@ -312,11 +394,9 @@ async function fetchFromFirebase() {
 
     // ÖNEMLİ: finishInit/loadUserData, Firestore'dan ilk veri gelmeden çalışırsa boş profil
     // saveDb() ile buluttaki userdata/users belgelerinin üzerine yazılabiliyordu.
-    const readingDoneRef = window.db.collection("global").doc(READING_COMPLETED_V1);
     const [
       usersSnap,
       userdataSnap,
-      readingDoneSnap,
       annSnap,
       teacherPubSnap,
       trafficSnap,
@@ -325,7 +405,6 @@ async function fetchFromFirebase() {
     ] = await Promise.all([
       usersRef.get(),
       userdataRef.get(),
-      readingDoneRef.get(),
       annRef.get(),
       teacherPubRef.get(),
       trafficRef.get(),
@@ -335,7 +414,14 @@ async function fetchFromFirebase() {
 
     ingestUsersDoc(usersSnap);
     ingestUserdataDoc(userdataSnap);
-    ingestReadingCompletedDoc(readingDoneSnap);
+    const unBoot = typeof currentUsername !== "undefined" && currentUsername ? currentUsername : null;
+    if (unBoot && typeof window.fetchAndAttachReadingCompletedSync === "function") {
+      try {
+        await window.fetchAndAttachReadingCompletedSync(unBoot);
+      } catch (e) {
+        console.error("fetchAndAttachReadingCompletedSync (boot)", e);
+      }
+    }
     ingestAnnouncementsDoc(annSnap);
     ingestTeacherPublicPracticesDoc(teacherPubSnap);
     ingestTrafficDoc(trafficSnap);
@@ -348,9 +434,6 @@ async function fetchFromFirebase() {
     // İlk okuma tamamlandıktan sonra UI boot — canlı dinleyiciler aynı veriyi günceller
     usersRef.onSnapshot(ingestUsersDoc, (err) => console.error("Firestore global/users dinleyicisi:", err));
     userdataRef.onSnapshot(ingestUserdataDoc, (err) => console.error("Firestore global/userdata dinleyicisi:", err));
-    readingDoneRef.onSnapshot(ingestReadingCompletedDoc, (err) =>
-      console.error("Firestore global/reading_completed_v1 dinleyicisi:", err),
-    );
     annRef.onSnapshot(ingestAnnouncementsDoc, (err) => console.error("Firestore global/announcements dinleyicisi:", err));
     teacherPubRef.onSnapshot(ingestTeacherPublicPracticesDoc, (err) =>
       console.error("Firestore teacher_public_practices:", err),
