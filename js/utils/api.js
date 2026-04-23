@@ -4,6 +4,7 @@ window.useFirebase = false;
 window.db = null;
 window.TEACHER_PUBLIC_PRACTICES_LIST = [];
 window.dbTrafficStats = {};
+window.USE_STATIC_LESSONS_DB = true;
 
 /** Eski tek belge (varsa okuma ile birleştirilir) */
 var READING_COMPLETED_V1_LEGACY = "reading_completed_v1";
@@ -717,6 +718,36 @@ function mergeLessonsPreferLatest(cloudList) {
     });
 }
 
+function ingestLessonsStaticList(list) {
+  if (!Array.isArray(list)) return;
+  const normalized = normalizeLessonsListForUi(
+    list
+      .slice()
+      .sort((a, b) => Number(a?.__order || 0) - Number(b?.__order || 0)),
+  );
+  window.GLOBAL_LESSONS = mergeLessonsPreferLatest(normalized);
+  try {
+    localStorage.setItem("y_lessons_db", JSON.stringify(window.GLOBAL_LESSONS));
+  } catch (e) {}
+  if (typeof window.renderLessonLibrary === "function") window.renderLessonLibrary();
+  if (typeof window.populateAdminLessons === "function") window.populateAdminLessons();
+}
+
+async function fetchLessonsFromStaticDb() {
+  try {
+    const url = "assets/lessons/lessons.json?v=20260423a";
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) return false;
+    const data = await res.json();
+    if (!Array.isArray(data)) return false;
+    ingestLessonsStaticList(data);
+    return true;
+  } catch (e) {
+    console.error("Static lessons load failed:", e);
+    return false;
+  }
+}
+
 function ingestLessonsDoc(doc) {
   if (!doc.exists) return;
   const list = doc.data().list;
@@ -812,8 +843,8 @@ async function fetchFromFirebase() {
         safeGet(annRef, "global/announcements"),
         safeGet(teacherPubRef, "global/teacher_public_practices"),
         safeGet(trafficRef, "global/traffic_stats"),
-        safeGet(lessonsColRef, "global_lessons"),
-        safeGet(lessonsLegacyRef, "global/lessons_db"),
+        window.USE_STATIC_LESSONS_DB ? Promise.resolve(null) : safeGet(lessonsColRef, "global_lessons"),
+        window.USE_STATIC_LESSONS_DB ? Promise.resolve(null) : safeGet(lessonsLegacyRef, "global/lessons_db"),
       ]);
 
     if (usersSnap) ingestUsersDoc(usersSnap);
@@ -829,7 +860,9 @@ async function fetchFromFirebase() {
     if (annSnap) ingestAnnouncementsDoc(annSnap);
     if (teacherPubSnap) ingestTeacherPublicPracticesDoc(teacherPubSnap);
     if (trafficSnap) ingestTrafficDoc(trafficSnap);
-    if (lessonsColSnap && !lessonsColSnap.empty) ingestLessonsCollection(lessonsColSnap);
+    if (window.USE_STATIC_LESSONS_DB) {
+      await fetchLessonsFromStaticDb();
+    } else if (lessonsColSnap && !lessonsColSnap.empty) ingestLessonsCollection(lessonsColSnap);
     else if (lessonsLegacySnap) ingestLessonsDoc(lessonsLegacySnap);
 
     /** Google oturumu, global/users gelmeden açılırsa yanlışlıkla "yeni pending" oluşmasın diye Auth dinleyicisi bundan sonra kurulur */
@@ -845,9 +878,11 @@ async function fetchFromFirebase() {
     trafficRef.onSnapshot(ingestTrafficDoc, (err) =>
       console.error("Firestore global/traffic_stats dinleyicisi:", err),
     );
-    lessonsColRef.onSnapshot(ingestLessonsCollection, (err) =>
-      console.error("Firestore global_lessons dinleyicisi:", err),
-    );
+    if (!window.USE_STATIC_LESSONS_DB) {
+      lessonsColRef.onSnapshot(ingestLessonsCollection, (err) =>
+        console.error("Firestore global_lessons dinleyicisi:", err),
+      );
+    }
 
     kursRef.onSnapshot((doc) => {
         if (doc.exists && typeof window.updateKursDataFromCloud === 'function') {
@@ -874,6 +909,9 @@ async function fetchFromFirebase() {
       );
     }
     if (typeof window.initFirebaseAuth === "function") window.initFirebaseAuth();
+    if (window.USE_STATIC_LESSONS_DB) {
+      try { await fetchLessonsFromStaticDb(); } catch (e2) {}
+    }
     finishInit();
   }
 }

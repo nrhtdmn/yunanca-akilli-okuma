@@ -4490,6 +4490,9 @@ window.persistLessonsDb = async function () {
     } catch (e) { /* ignore */ }
     const cloudEnabled = !!(window.useFirebase || (typeof useFirebase !== 'undefined' && useFirebase));
     const cloudDb = window.db || (typeof db !== 'undefined' ? db : null);
+    if (window.USE_STATIC_LESSONS_DB) {
+        return;
+    }
     if (cloudEnabled && cloudDb) {
         try {
             const lessonsCol = cloudDb.collection('global_lessons');
