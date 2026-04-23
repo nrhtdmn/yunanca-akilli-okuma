@@ -683,6 +683,25 @@ function setReadingCompletionDone(key, done) {
   return true;
 }
 
+/** Firestore userdata güncellenince okuma tamamlama arayüzünü (buton yeşili, kütüphane tikleri) senkronlar */
+window.refreshReadingCompletionUI = function () {
+  try {
+    if (typeof renderTextLibrary === "function") renderTextLibrary();
+  } catch (e) {}
+  if (typeof renderSavedReadingWorks === "function") renderSavedReadingWorks();
+  const rawText = String(document.getElementById("input-text")?.value || "").trim();
+  const btn = document.getElementById("reader-completion-btn");
+  if (!btn || !rawText) return;
+  const key = readingCompletionKey(currentReadingWorkMeta, rawText);
+  const done = !!(key && isReadingCompletionKeyDone(key));
+  btn.classList.toggle("reader-completion-btn--done", done);
+  btn.textContent = done ? "✓ Tamamlandı" : "✅ Bitirdim";
+  const completionTitle = done
+    ? "Tekrar çalışmak için tamamlanmayı kaldırın"
+    : "Bitirdiğiniz metni işaretleyin; okuma listesinde tik görünür (tüm cihazlarda)";
+  btn.title = completionTitle;
+};
+
 window.toggleCurrentReadingCompleted = function () {
   if (!requireAuth(1)) return;
   const rawText = String(document.getElementById("input-text")?.value || "").trim();
@@ -697,18 +716,7 @@ window.toggleCurrentReadingCompleted = function () {
   }
   const nowDone = !isReadingCompletionKeyDone(key);
   setReadingCompletionDone(key, nowDone);
-  const btn = document.getElementById("reader-completion-btn");
-  if (btn) {
-    btn.classList.toggle("reader-completion-btn--done", nowDone);
-    btn.textContent = nowDone ? "✓ Tamamlandı" : "✅ Bitirdim";
-    btn.title = nowDone
-      ? "Tekrar çalışmak için tamamlanmayı kaldırın"
-      : "Bu metni bitirdiğinizi işaretleyin; listede tik görünür";
-  }
-  try {
-    if (typeof renderTextLibrary === "function") renderTextLibrary();
-  } catch (e) {}
-  if (typeof renderSavedReadingWorks === "function") renderSavedReadingWorks();
+  if (typeof window.refreshReadingCompletionUI === "function") window.refreshReadingCompletionUI();
   showToastMessage(nowDone ? "✅ Metin tamamlandı olarak işaretlendi." : "Tamamlama işareti kaldırıldı.");
 };
 
@@ -1030,7 +1038,7 @@ function processAndRenderText() {
   const completionLabel = completionDone ? "✓ Tamamlandı" : "✅ Bitirdim";
   const completionTitle = completionDone
     ? "Tekrar çalışmak için tamamlanmayı kaldırın"
-    : "Bitirdiğiniz metni işaretleyin; okuma listesinde tik görünür (yalnızca siz işaretlersiniz)";
+    : "Bitirdiğiniz metni işaretleyin; okuma listesinde tik görünür (tüm cihazlarda)";
   const completionTitleAttr = String(completionTitle).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
 
   const toolbar = document.createElement("div");

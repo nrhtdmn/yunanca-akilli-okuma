@@ -42,6 +42,13 @@ function applyCloudUserData() {
   } else if (typeof renderDecksAccordion === 'function') {
     renderDecksAccordion();
   }
+  if (typeof window.refreshReadingCompletionUI === "function") {
+    try {
+      window.refreshReadingCompletionUI();
+    } catch (e) {
+      console.error("refreshReadingCompletionUI", e);
+    }
+  }
 }
 
 function applyCloudUsers() {
@@ -122,8 +129,13 @@ function ingestUserdataDoc(doc) {
         const b = (cloudUserData.readingCompletedIds && typeof cloudUserData.readingCompletedIds === "object")
           ? cloudUserData.readingCompletedIds
           : {};
-        if (localTs >= cloudTs) return { ...b, ...a };
-        return { ...a, ...b };
+        const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
+        const out = {};
+        keys.forEach((k) => {
+          const m = Math.max(Number(a[k] || 0), Number(b[k] || 0));
+          if (m > 0) out[k] = m;
+        });
+        return out;
       })(),
     };
   });
