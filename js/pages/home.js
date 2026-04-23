@@ -4610,12 +4610,21 @@ window.saveLesson = async function() {
         return;
     }
 
+    const normalizeLessonLink = function(raw) {
+        const val = String(raw || "").trim();
+        if (!val) return "";
+        if (/^(https?:)?\/\//i.test(val)) return val;
+        if (/^assets\/lessons\//i.test(val)) return val;
+        if (/^[^\/]+\.(pdf|docx?)$/i.test(val)) return "assets/lessons/" + val;
+        return val;
+    };
+
     const lessonData = {
         id: idInput.value.trim(),
         title: titleInput.value.trim(),
         category: catInput.value.trim() || "Genel Gramer",
         content: bodyInput.innerHTML,
-        link: linkInput ? linkInput.value.trim() : "", 
+        link: linkInput ? normalizeLessonLink(linkInput.value) : "",
         date: new Date().toLocaleDateString('tr-TR')
     };
 
@@ -4643,10 +4652,74 @@ window.filterLessons = function() {
     window.renderLessonLibrary(query);
 };
 
+window.LESSON_ASSET_TEXT_INDEX = window.LESSON_ASSET_TEXT_INDEX || {};
+window.__lessonAssetIndexBuildInFlight = false;
+window.__lessonAssetIndexKey = window.__lessonAssetIndexKey || "";
+
+window.getLessonAssetUrl = function(lesson) {
+    if (!lesson || typeof lesson !== "object") return "";
+    const link = String(lesson.link || "").trim();
+    if (link && /(^|\/)assets\/lessons\//i.test(link)) return link;
+    const content = String(lesson.content || "");
+    const m = content.match(/\[(?:pdf|doc|embed):(.+?)\]/i);
+    if (m && m[1]) {
+        const url = String(m[1]).trim();
+        if (/(^|\/)assets\/lessons\//i.test(url)) return url;
+    }
+    return "";
+};
+
+window.getLessonAssetTextPath = function(assetUrl) {
+    const s = String(assetUrl || "").trim();
+    if (!s) return "";
+    return s.replace(/\.(pdf|docx?|PDF|DOCX?)(\?.*)?$/, ".txt");
+};
+
+window.ensureLessonAssetSearchIndex = function() {
+    const lessons = Array.isArray(window.GLOBAL_LESSONS) ? window.GLOBAL_LESSONS : [];
+    const keys = lessons.map(function(l) {
+        return String(l && l.id || "") + "|" + window.getLessonAssetUrl(l);
+    }).join("||");
+    if (keys === window.__lessonAssetIndexKey) return;
+    window.__lessonAssetIndexKey = keys;
+    if (window.__lessonAssetIndexBuildInFlight) return;
+    window.__lessonAssetIndexBuildInFlight = true;
+
+    const jobs = lessons.map(function(l) {
+        const lessonId = String(l && l.id || "");
+        if (!lessonId) return Promise.resolve();
+        const assetUrl = window.getLessonAssetUrl(l);
+        if (!assetUrl) return Promise.resolve();
+        const txtPath = window.getLessonAssetTextPath(assetUrl);
+        if (!txtPath) return Promise.resolve();
+        if (typeof window.LESSON_ASSET_TEXT_INDEX[lessonId] === "string") return Promise.resolve();
+        return fetch(txtPath)
+            .then(function(res) { return res.ok ? res.text() : ""; })
+            .then(function(text) {
+                window.LESSON_ASSET_TEXT_INDEX[lessonId] = String(text || "");
+            })
+            .catch(function() {
+                window.LESSON_ASSET_TEXT_INDEX[lessonId] = "";
+            });
+    });
+
+    Promise.all(jobs).finally(function() {
+        window.__lessonAssetIndexBuildInFlight = false;
+        if (typeof window.renderLessonLibrary === "function") {
+            const qEl = document.getElementById('lesson-search-input');
+            const q = qEl ? qEl.value : "";
+            window.renderLessonLibrary(q);
+        }
+    });
+};
+
 // 2. KARTLARI ÇİZDİRME (Gelişmiş Canlı Arama Destekli)
 window.renderLessonLibrary = function(searchQuery = "") {
     const container = document.getElementById('lessons-grid-container');
     if(!container) return;
+    if (typeof window.ensureLessonAssetSearchIndex === "function") {
+        window.ensureLessonAssetSearchIndex();
+    }
     
     if(window.GLOBAL_LESSONS.length === 0) {
          container.innerHTML = '<p style="color:var(--text-dim); text-align:center; padding: 20px;">Henüz konu eklenmemiş.</p>';
@@ -4676,9 +4749,11 @@ window.renderLessonLibrary = function(searchQuery = "") {
             const titleRaw = String(l.title || "");
             const categoryRaw = String(l.category || "");
             const contentRaw = stripHtml(l.content || "");
+            const assetTextRaw = String((window.LESSON_ASSET_TEXT_INDEX && window.LESSON_ASSET_TEXT_INDEX[l.id]) || "");
             const title = normalizeStr(titleRaw);
             const category = normalizeStr(categoryRaw);
             const content = normalizeStr(contentRaw);
+            const assetText = normalizeStr(assetTextRaw);
 
             let score = 0;
             terms.forEach((t) => {
@@ -4686,17 +4761,19 @@ window.renderLessonLibrary = function(searchQuery = "") {
               if (title.includes(t)) score += 10;
               if (category.includes(t)) score += 6;
               if (content.includes(t)) score += 3;
+              if (assetText.includes(t)) score += 4;
             });
 
             let snippet = "";
             if (score > 0) {
               const firstTerm = terms.find((t) => t.length >= 2) || "";
-              const normContent = normalizeStr(contentRaw);
-              const idx = firstTerm ? normContent.indexOf(firstTerm) : -1;
+              const sourceForSnippet = contentRaw || assetTextRaw;
+              const normSource = normalizeStr(sourceForSnippet);
+              const idx = firstTerm ? normSource.indexOf(firstTerm) : -1;
               if (idx >= 0) {
                 const start = Math.max(0, idx - 55);
-                const end = Math.min(contentRaw.length, idx + 115);
-                snippet = (start > 0 ? "... " : "") + contentRaw.slice(start, end).trim() + (end < contentRaw.length ? " ..." : "");
+                const end = Math.min(sourceForSnippet.length, idx + 115);
+                snippet = (start > 0 ? "... " : "") + sourceForSnippet.slice(start, end).trim() + (end < sourceForSnippet.length ? " ..." : "");
               }
             }
             return { lesson: l, score, snippet };
@@ -4728,8 +4805,13 @@ window.renderLessonLibrary = function(searchQuery = "") {
         lessonsInCat.forEach(row => {
             const l = row.lesson;
             const isYouTube = l.link && (l.link.includes('youtube.com') || l.link.includes('youtu.be'));
-            const clickAction = (isYouTube || !l.link) ? `openLesson('${l.id}')` : `window.open('${l.link}', '_blank')`;
-            const actionText = isYouTube ? "📺 Videoyu İzle ➔" : (l.link ? "🔗 Kaynağa Git ➔" : "📖 Dersi Oku ➔");
+            const isAssetFile = l.link && /(^|\/)assets\/lessons\//i.test(String(l.link));
+            const clickAction = (isYouTube || !l.link || isAssetFile)
+                ? `openLesson(${JSON.stringify(String(l.id || ""))})`
+                : `window.open('${l.link}', '_blank')`;
+            const actionText = isYouTube
+                ? "📺 Videoyu İzle ➔"
+                : (isAssetFile ? "📄 Dosyayı Aç ➔" : (l.link ? "🔗 Kaynağa Git ➔" : "📖 Dersi Oku ➔"));
             const snippetHtml = row.snippet ? `<div style="color:var(--text-dim); font-size:0.82rem; line-height:1.4; margin-bottom:8px;">${escapeHtml(row.snippet)}</div>` : "";
 
             cardsHtml += `
@@ -4841,6 +4923,51 @@ window.openLesson = function(id) {
     
     let finalContent = lesson.content || "";
 
+    function isPdfUrl(url) {
+        return /\.pdf(\?|#|$)/i.test(String(url || "").trim());
+    }
+
+    function isWordUrl(url) {
+        return /\.(doc|docx)(\?|#|$)/i.test(String(url || "").trim());
+    }
+
+    function buildPdfEmbedHtml(url) {
+        const safeUrl = String(url || "").trim();
+        if (!safeUrl) return "";
+        return `
+            <div style="margin:25px 0; border-radius:12px; border:1px solid var(--border); box-shadow: var(--shadow); overflow:hidden; background:var(--surface-alt);">
+                <iframe
+                    style="display:block; width:100%; height:78vh; min-height:560px; border:0;"
+                    src="${safeUrl}"
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    title="PDF Görüntüleyici"></iframe>
+            </div>`;
+    }
+
+    function buildWordEmbedHtml(url) {
+        const safeUrl = String(url || "").trim();
+        if (!safeUrl) return "";
+        let absoluteUrl = safeUrl;
+        if (!/^(https?:)?\/\//i.test(safeUrl)) {
+            try {
+                absoluteUrl = new URL(safeUrl, window.location.origin + "/").toString();
+            } catch (e) {
+                absoluteUrl = safeUrl;
+            }
+        }
+        const encoded = encodeURIComponent(absoluteUrl);
+        return `
+            <div style="margin:25px 0; border-radius:12px; border:1px solid var(--border); box-shadow: var(--shadow); overflow:hidden; background:var(--surface-alt);">
+                <iframe
+                    style="display:block; width:100%; height:78vh; min-height:560px; border:0;"
+                    src="https://docs.google.com/gview?embedded=1&url=${encoded}"
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    title="Word Görüntüleyici"></iframe>
+            </div>`;
+    }
+
     // --- 1. ANA VİDEO MOTORU (Üstteki Link Kutusuna Yazılan Video) ---
     if (lesson.link && (lesson.link.includes('youtube.com') || lesson.link.includes('youtu.be'))) {
         const mainVideoId = extractYouTubeId(lesson.link);
@@ -4873,6 +5000,39 @@ window.openLesson = function(id) {
         }
         return match; // Eğer geçersiz bir linkse yazıyı bozmadan bırakır
     });
+
+    // --- 3. DOSYA GÖMME MOTORU (PDF / WORD) ---
+    // [pdf:URL], [doc:URL], [embed:URL]
+    finalContent = finalContent.replace(/\[(pdf|doc|embed):(.+?)\]/gi, function(match, kind, rawUrl) {
+        const url = String(rawUrl || "").trim();
+        if (!url) return "";
+        const k = String(kind || "").toLowerCase();
+        if (k === "pdf") return buildPdfEmbedHtml(url);
+        if (k === "doc") return buildWordEmbedHtml(url);
+        if (isPdfUrl(url)) return buildPdfEmbedHtml(url);
+        if (isWordUrl(url)) return buildWordEmbedHtml(url);
+        return `
+            <p style="margin:16px 0;">
+                <a href="${url}" target="_blank" rel="noopener noreferrer">📎 İçeriği yeni sekmede aç</a>
+            </p>`;
+    });
+
+    // Link kutusu PDF/Word ise metne [pdf] / [doc] etiketleri yazılarak da gömülebilsin.
+    if (lesson.link && isPdfUrl(lesson.link)) {
+        const pdfHtml = buildPdfEmbedHtml(lesson.link);
+        if (finalContent.includes('[pdf]')) finalContent = finalContent.replace('[pdf]', pdfHtml);
+        else if (!/\[(pdf|doc|embed):/i.test(finalContent)) finalContent = pdfHtml + finalContent;
+    } else {
+        finalContent = finalContent.replace('[pdf]', '');
+    }
+
+    if (lesson.link && isWordUrl(lesson.link)) {
+        const docHtml = buildWordEmbedHtml(lesson.link);
+        if (finalContent.includes('[doc]')) finalContent = finalContent.replace('[doc]', docHtml);
+        else if (!/\[(pdf|doc|embed):/i.test(finalContent)) finalContent = docHtml + finalContent;
+    } else {
+        finalContent = finalContent.replace('[doc]', '');
+    }
     
     const lessonBody = document.getElementById('lesson-active-body');
     lessonBody.innerHTML = finalContent;
