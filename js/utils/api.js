@@ -79,6 +79,13 @@ function applyCloudUserData() {
   } else if (typeof renderDecksAccordion === 'function') {
     renderDecksAccordion();
   }
+  if (typeof window.refreshCurrentReadingHighlightsUI === "function") {
+    try {
+      window.refreshCurrentReadingHighlightsUI();
+    } catch (e) {
+      console.error("refreshCurrentReadingHighlightsUI", e);
+    }
+  }
   if (typeof window.refreshReadingCompletionUI === "function") {
     try {
       window.refreshReadingCompletionUI();
@@ -289,8 +296,30 @@ function applyReadingStatePatchToUser(uname, data) {
   const row = window.dbUserData[uname];
   const works = Array.isArray(data && data.readingWorks) ? data.readingWorks : [];
   const prog = data && data.readingProgress && typeof data.readingProgress === "object" ? data.readingProgress : {};
+  const rawRh = data && data.readingHighlights && typeof data.readingHighlights === "object" ? data.readingHighlights : {};
+  const rhOut = {};
+  Object.keys(rawRh).forEach((k) => {
+    const arr = Array.isArray(rawRh[k]) ? rawRh[k] : [];
+    rhOut[k] = arr
+      .map((entry) => {
+        if (Array.isArray(entry) && entry.length >= 2) {
+          const s = Number(entry[0]);
+          const e = Number(entry[1]);
+          if (!Number.isNaN(s) && !Number.isNaN(e)) return { s: s, e: e };
+          return null;
+        }
+        if (entry && typeof entry === "object") {
+          const s = Number(entry.s);
+          const e = Number(entry.e);
+          if (!Number.isNaN(s) && !Number.isNaN(e)) return { s: s, e: e };
+        }
+        return null;
+      })
+      .filter(Boolean);
+  });
   row.readingWorks = works;
   row.readingProgress = prog;
+  row.readingHighlights = rhOut;
 }
 
 window.fetchAndAttachReadingStateSync = function (uname) {
@@ -366,9 +395,31 @@ window.pushReadingStateToFirestore = function (uname) {
   const row = window.dbUserData && window.dbUserData[uname] ? window.dbUserData[uname] : {};
   const works = Array.isArray(row.readingWorks) ? row.readingWorks : [];
   const prog = row.readingProgress && typeof row.readingProgress === "object" ? row.readingProgress : {};
+  const rawRh = row.readingHighlights && typeof row.readingHighlights === "object" ? row.readingHighlights : {};
+  const rhOut = {};
+  Object.keys(rawRh).forEach((k) => {
+    const arr = Array.isArray(rawRh[k]) ? rawRh[k] : [];
+    rhOut[k] = arr
+      .map((entry) => {
+        if (Array.isArray(entry) && entry.length >= 2) {
+          const s = Number(entry[0]);
+          const e = Number(entry[1]);
+          if (!Number.isNaN(s) && !Number.isNaN(e)) return { s: s, e: e };
+          return null;
+        }
+        if (entry && typeof entry === "object") {
+          const s = Number(entry.s);
+          const e = Number(entry.e);
+          if (!Number.isNaN(s) && !Number.isNaN(e)) return { s: s, e: e };
+        }
+        return null;
+      })
+      .filter(Boolean);
+  });
   const payload = {
     readingWorks: works,
     readingProgress: prog,
+    readingHighlights: rhOut,
     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
   };
   return window.db.collection("global").doc(docId).set(payload).then(function () { return undefined; });

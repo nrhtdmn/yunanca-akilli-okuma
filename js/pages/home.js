@@ -884,6 +884,15 @@ function applySavedHighlightsToReader(rawText) {
   });
 }
 
+/** Buluttan yeni highlight geldiğinde açık okuma metnindeki vurguları yeniden uygular */
+window.refreshCurrentReadingHighlightsUI = function () {
+  const text = String(document.getElementById("input-text")?.value || "").trim();
+  if (!text || !Array.isArray(allWordSpans) || !allWordSpans.length) return;
+  allWordSpans.forEach((span) => span.classList.remove("highlighted"));
+  applySavedHighlightsToReader(text);
+  updateReadingProgressForText(text);
+};
+
 /**
  * Kelime vurgusu (modal) — data-start/data-end ile kalıcı kayıt
  */
