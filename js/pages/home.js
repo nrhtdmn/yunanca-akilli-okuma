@@ -4961,7 +4961,7 @@ window.openLesson = function(id) {
             <div style="margin:25px 0; border-radius:12px; border:1px solid var(--border); box-shadow: var(--shadow); overflow:hidden; background:var(--surface-alt);">
                 <iframe
                     style="display:block; width:100%; height:78vh; min-height:560px; border:0;"
-                    src="https://docs.google.com/gview?embedded=1&url=${encoded}"
+                    src="https://view.officeapps.live.com/op/embed.aspx?src=${encoded}"
                     loading="lazy"
                     referrerpolicy="no-referrer-when-downgrade"
                     title="Word Görüntüleyici"></iframe>
