@@ -711,7 +711,11 @@ window.refreshReadingCompletionUI = function () {
 };
 
 window.toggleCurrentReadingCompleted = function () {
-  if (!requireAuth(1)) return;
+  if (!currentUser || !currentUsername) {
+    if (typeof showAuthModal === "function") showAuthModal(true);
+    showToastMessage("Bu işlemi kaydetmek için giriş yapın.");
+    return;
+  }
   const rawText = String(document.getElementById("input-text")?.value || "").trim();
   if (!rawText) {
     showToastMessage("Önce bir metin yükleyin.");
