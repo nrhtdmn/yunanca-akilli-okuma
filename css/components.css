@@ -325,6 +325,11 @@ textarea:focus {
   background: rgba(34, 197, 94, 0.2) !important;
 }
 
+#reader-completion-clear-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .video-card {
   background: var(--surface-alt);
   border: 1px solid var(--border);

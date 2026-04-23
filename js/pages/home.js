@@ -698,38 +698,69 @@ window.refreshReadingCompletionUI = function () {
   } catch (e) {}
   if (typeof renderSavedReadingWorks === "function") renderSavedReadingWorks();
   const rawText = String(document.getElementById("input-text")?.value || "").trim();
-  const btn = document.getElementById("reader-completion-btn");
-  if (!btn || !rawText) return;
+  const markBtn = document.getElementById("reader-completion-mark-btn");
+  const clearBtn = document.getElementById("reader-completion-clear-btn");
+  if ((!markBtn && !clearBtn) || !rawText) return;
   const key = readingCompletionKey(currentReadingWorkMeta, rawText);
   const done = !!(key && isReadingCompletionKeyDone(key));
-  btn.classList.toggle("reader-completion-btn--done", done);
-  btn.textContent = done ? "✓ Tamamlandı" : "✅ Bitirdim";
-  const completionTitle = done
-    ? "Tekrar çalışmak için tamamlanmayı kaldırın"
-    : "Bitirdiğiniz metni işaretleyin; okuma listesinde tik görünür (tüm cihazlarda)";
-  btn.title = completionTitle;
+  if (markBtn) {
+    markBtn.classList.toggle("reader-completion-btn--done", done);
+    markBtn.textContent = done ? "✓ Tamamlandı" : "✅ Bitirdim";
+    markBtn.title = done
+      ? "Bu metin zaten tamamlandı."
+      : "Bitirdiğiniz metni işaretleyin; okuma listesinde tik görünür (tüm cihazlarda)";
+  }
+  if (clearBtn) {
+    clearBtn.disabled = !done;
+    clearBtn.title = done
+      ? "Tamamlandı işaretini kaldır"
+      : "Önce metni Bitirdim ile işaretleyin";
+  }
 };
 
-window.toggleCurrentReadingCompleted = function () {
+function getCurrentReadingCompletionContext() {
   if (!currentUser || !currentUsername) {
     if (typeof showAuthModal === "function") showAuthModal(true);
     showToastMessage("Bu işlemi kaydetmek için giriş yapın.");
-    return;
+    return null;
   }
   const rawText = String(document.getElementById("input-text")?.value || "").trim();
   if (!rawText) {
     showToastMessage("Önce bir metin yükleyin.");
-    return;
+    return null;
   }
   const key = readingCompletionKey(currentReadingWorkMeta, rawText);
   if (!key) {
     showToastMessage("Bu metin için tamamlama anahtarı oluşturulamadı.");
+    return null;
+  }
+  return { key: key };
+}
+
+window.markCurrentReadingCompleted = function () {
+  const ctx = getCurrentReadingCompletionContext();
+  if (!ctx) return;
+  if (isReadingCompletionKeyDone(ctx.key)) {
+    showToastMessage("Bu metin zaten tamamlandı.");
+    if (typeof window.refreshReadingCompletionUI === "function") window.refreshReadingCompletionUI();
     return;
   }
-  const nowDone = !isReadingCompletionKeyDone(key);
-  setReadingCompletionDone(key, nowDone);
+  setReadingCompletionDone(ctx.key, true);
   if (typeof window.refreshReadingCompletionUI === "function") window.refreshReadingCompletionUI();
-  showToastMessage(nowDone ? "✅ Metin tamamlandı olarak işaretlendi." : "Tamamlama işareti kaldırıldı.");
+  showToastMessage("✅ Metin tamamlandı olarak işaretlendi.");
+};
+
+window.clearCurrentReadingCompleted = function () {
+  const ctx = getCurrentReadingCompletionContext();
+  if (!ctx) return;
+  if (!isReadingCompletionKeyDone(ctx.key)) {
+    showToastMessage("Bu metin zaten işaretli değil.");
+    if (typeof window.refreshReadingCompletionUI === "function") window.refreshReadingCompletionUI();
+    return;
+  }
+  setReadingCompletionDone(ctx.key, false);
+  if (typeof window.refreshReadingCompletionUI === "function") window.refreshReadingCompletionUI();
+  showToastMessage("Tamamlama işareti kaldırıldı.");
 };
 
 function getCurrentReaderTokenCount() {
@@ -1049,9 +1080,10 @@ function processAndRenderText() {
   const completionBtnClass = completionDone ? "toolbar-btn reader-completion-btn--done" : "toolbar-btn";
   const completionLabel = completionDone ? "✓ Tamamlandı" : "✅ Bitirdim";
   const completionTitle = completionDone
-    ? "Tekrar çalışmak için tamamlanmayı kaldırın"
+    ? "Bu metin zaten tamamlandı."
     : "Bitirdiğiniz metni işaretleyin; okuma listesinde tik görünür (tüm cihazlarda)";
   const completionTitleAttr = String(completionTitle).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+  const clearDisabledAttr = completionDone ? "" : "disabled";
 
   const toolbar = document.createElement("div");
   toolbar.className = "reader-toolbar";
@@ -1065,7 +1097,8 @@ function processAndRenderText() {
       <button class="toolbar-btn" onclick="adjustReaderFontSize(0.1)" title="Yazıyı büyüt">A+</button>
       <button class="toolbar-btn" onclick="goToGrammarForCurrentReadingText()" title="Metni analiz edip uygun konu anlatımına git">🧠 Gramere Git</button>
       <button class="toolbar-btn" onclick="persistCurrentReadingState()" title="Okuma değişikliklerini kalıcı kaydet">💾 Değişiklikleri Kaydet</button>
-      <button class="${completionBtnClass}" id="reader-completion-btn" onclick="toggleCurrentReadingCompleted()" title="${completionTitleAttr}">${completionLabel}</button>
+      <button class="${completionBtnClass}" id="reader-completion-mark-btn" onclick="markCurrentReadingCompleted()" title="${completionTitleAttr}">${completionLabel}</button>
+      <button class="toolbar-btn" id="reader-completion-clear-btn" onclick="clearCurrentReadingCompleted()" ${clearDisabledAttr} title="Tamamlandı işaretini kaldır">↩️ İptal</button>
     <button class="secondary-btn" onclick="clearReader()" style="border-color:var(--error); color:var(--error); padding: 5px 10px; font-size: 0.85rem; margin-left: 5px;" title="Okuma alanını temizle">🗑️ Temizle</button>
 
       </div>`;
