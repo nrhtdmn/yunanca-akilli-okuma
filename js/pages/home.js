@@ -5,6 +5,14 @@ let currentReadingWorkMeta = null;
 let readerSelectionBindingDone = false;
 let readerFontScale = Number(localStorage.getItem("y_reader_font_scale") || "1");
 let readerNotesPanelOpen = false;
+let readerNotebookPanelOpen = false;
+let readerInkMode = false;
+let readerInkTool = "pen";
+let readerInkCtx = null;
+let readerInkCanvas = null;
+let readerInkRawTextKey = "";
+let readerInkPointerDown = false;
+let readerInkLastPoint = null;
 window.savedReadingSearchQuery = window.savedReadingSearchQuery || "";
 window.savedReadingCategoryFilter = window.savedReadingCategoryFilter || "all";
 
@@ -693,6 +701,198 @@ function deleteCurrentReaderNote(noteId) {
   persistReaderNotesStore();
 }
 
+function getReaderNotebookStore() {
+  if (!window._readerNotebookStore || typeof window._readerNotebookStore !== "object") {
+    try {
+      window._readerNotebookStore = JSON.parse(localStorage.getItem("y_reader_notebook_v1") || "{}");
+    } catch (e) {
+      window._readerNotebookStore = {};
+    }
+  }
+  return window._readerNotebookStore;
+}
+
+function persistReaderNotebookStore() {
+  try {
+    localStorage.setItem("y_reader_notebook_v1", JSON.stringify(getReaderNotebookStore()));
+  } catch (e) {}
+}
+
+function getCurrentReaderNotebook() {
+  const key = getReadingNoteContextKey();
+  if (!key) return { text: "", drawingDataUrl: "" };
+  const store = getReaderNotebookStore();
+  const row = store[key];
+  if (!row || typeof row !== "object") return { text: "", drawingDataUrl: "" };
+  return {
+    text: String(row.text || ""),
+    drawingDataUrl: String(row.drawingDataUrl || ""),
+  };
+}
+
+function saveCurrentReaderNotebookPatch(patch) {
+  const key = getReadingNoteContextKey();
+  if (!key) return false;
+  const store = getReaderNotebookStore();
+  const prev = store[key] && typeof store[key] === "object" ? store[key] : {};
+  store[key] = {
+    ...prev,
+    ...patch,
+    updatedAt: Date.now(),
+  };
+  persistReaderNotebookStore();
+  return true;
+}
+
+function getReaderInkStore() {
+  if (!window._readerInkStore || typeof window._readerInkStore !== "object") {
+    try {
+      window._readerInkStore = JSON.parse(localStorage.getItem("y_reader_ink_v1") || "{}");
+    } catch (e) {
+      window._readerInkStore = {};
+    }
+  }
+  return window._readerInkStore;
+}
+
+function persistReaderInkStore() {
+  try {
+    localStorage.setItem("y_reader_ink_v1", JSON.stringify(getReaderInkStore()));
+  } catch (e) {}
+}
+
+function saveReaderInkSnapshot(rawText) {
+  if (!readerInkCanvas) return;
+  const key = hashReadingText(String(rawText || ""));
+  if (!key) return;
+  const store = getReaderInkStore();
+  store[key] = {
+    dataUrl: readerInkCanvas.toDataURL("image/png"),
+    updatedAt: Date.now(),
+  };
+  persistReaderInkStore();
+}
+
+function loadReaderInkSnapshot(rawText) {
+  const key = hashReadingText(String(rawText || ""));
+  const store = getReaderInkStore();
+  const row = store[key];
+  return row && typeof row === "object" ? String(row.dataUrl || "") : "";
+}
+
+function setReaderInkUiState() {
+  const toggleBtn = document.getElementById("reader-ink-toggle-btn");
+  const penBtn = document.getElementById("reader-ink-pen-btn");
+  const eraserBtn = document.getElementById("reader-ink-eraser-btn");
+  const hint = document.getElementById("reader-ink-hint");
+  if (toggleBtn) {
+    toggleBtn.textContent = readerInkMode ? "✋ Okuma Modu" : "✏️ Kalem Modu";
+    toggleBtn.classList.toggle("reader-completion-btn--done", readerInkMode);
+  }
+  if (penBtn) {
+    penBtn.style.display = readerInkMode ? "inline-flex" : "none";
+    penBtn.classList.toggle("reader-completion-btn--done", readerInkTool === "pen");
+  }
+  if (eraserBtn) {
+    eraserBtn.style.display = readerInkMode ? "inline-flex" : "none";
+    eraserBtn.classList.toggle("reader-completion-btn--done", readerInkTool === "eraser");
+  }
+  if (hint) hint.style.display = readerInkMode ? "inline" : "none";
+  if (readerInkCanvas) {
+    readerInkCanvas.style.pointerEvents = readerInkMode ? "auto" : "none";
+    readerInkCanvas.style.cursor = readerInkMode ? (readerInkTool === "eraser" ? "cell" : "crosshair") : "default";
+  }
+}
+
+function setupReaderInkCanvas(rawText) {
+  const host = document.getElementById("reader-content-wrap");
+  const canvas = document.getElementById("reader-ink-canvas");
+  if (!host || !canvas) return;
+  const ratio = Math.max(1, window.devicePixelRatio || 1);
+  const w = Math.max(320, Math.ceil(host.clientWidth || 320));
+  const h = Math.max(220, Math.ceil(host.scrollHeight || 220));
+  canvas.width = Math.floor(w * ratio);
+  canvas.height = Math.floor(h * ratio);
+  canvas.style.width = `${w}px`;
+  canvas.style.height = `${h}px`;
+  canvas.style.position = "absolute";
+  canvas.style.left = "0";
+  canvas.style.top = "0";
+  canvas.style.zIndex = "8";
+  canvas.style.background = "transparent";
+  canvas.style.touchAction = "none";
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.lineWidth = 2.2;
+  ctx.strokeStyle = "#ef4444";
+  const dataUrl = loadReaderInkSnapshot(rawText);
+  if (dataUrl) {
+    const img = new Image();
+    img.onload = function () { ctx.drawImage(img, 0, 0, w, h); };
+    img.src = dataUrl;
+  }
+  readerInkCtx = ctx;
+  readerInkCanvas = canvas;
+  readerInkRawTextKey = String(rawText || "");
+
+  const getPos = (e) => {
+    const r = canvas.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  };
+  canvas.onpointerdown = function (e) {
+    if (!readerInkMode) return;
+    readerInkPointerDown = true;
+    readerInkLastPoint = getPos(e);
+    try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+    e.preventDefault();
+  };
+  canvas.onpointermove = function (e) {
+    if (!readerInkMode || !readerInkPointerDown || !readerInkCtx) return;
+    const p = getPos(e);
+    readerInkCtx.beginPath();
+    readerInkCtx.globalCompositeOperation = readerInkTool === "eraser" ? "destination-out" : "source-over";
+    readerInkCtx.strokeStyle = "#ef4444";
+    readerInkCtx.lineWidth = readerInkTool === "eraser" ? 14 : 2.2;
+    readerInkCtx.moveTo(readerInkLastPoint.x, readerInkLastPoint.y);
+    readerInkCtx.lineTo(p.x, p.y);
+    readerInkCtx.stroke();
+    readerInkLastPoint = p;
+    e.preventDefault();
+  };
+  const endDraw = function (e) {
+    if (!readerInkMode) return;
+    if (readerInkPointerDown) saveReaderInkSnapshot(readerInkRawTextKey);
+    readerInkPointerDown = false;
+    readerInkLastPoint = null;
+    try { canvas.releasePointerCapture(e.pointerId); } catch (err) {}
+  };
+  canvas.onpointerup = endDraw;
+  canvas.onpointercancel = endDraw;
+  setReaderInkUiState();
+}
+
+window.toggleReaderInkMode = function () {
+  readerInkMode = !readerInkMode;
+  setReaderInkUiState();
+  if (readerInkMode) showToastMessage("✏️ Kalem modu açık.");
+  else showToastMessage("📖 Okuma modu açık.");
+};
+
+window.setReaderInkTool = function (tool) {
+  readerInkTool = tool === "eraser" ? "eraser" : "pen";
+  setReaderInkUiState();
+};
+
+window.clearReaderInk = function () {
+  if (!readerInkCanvas || !readerInkCtx) return;
+  readerInkCtx.clearRect(0, 0, readerInkCanvas.width, readerInkCanvas.height);
+  saveReaderInkSnapshot(readerInkRawTextKey);
+  showToastMessage("🧽 Ekran notları temizlendi.");
+};
+
 window.toggleReaderNotesPanel = function () {
   readerNotesPanelOpen = !readerNotesPanelOpen;
   const panel = document.getElementById("reader-notes-panel");
@@ -783,6 +983,127 @@ window.deleteReaderNoteByIndex = function (idx) {
   if (!note || !note.id) return;
   deleteCurrentReaderNote(note.id);
   window.renderReaderNotesPanel();
+};
+
+window.toggleReaderNotebookPanel = function () {
+  readerNotebookPanelOpen = !readerNotebookPanelOpen;
+  const panel = document.getElementById("reader-notebook-panel");
+  if (!panel) return;
+  panel.style.display = readerNotebookPanelOpen ? "block" : "none";
+  if (readerNotebookPanelOpen && typeof window.renderReaderNotebookPanel === "function") {
+    window.renderReaderNotebookPanel();
+  }
+};
+
+window.renderReaderNotebookPanel = function () {
+  const panel = document.getElementById("reader-notebook-panel");
+  if (!panel) return;
+  const data = getCurrentReaderNotebook();
+  panel.innerHTML = `
+    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+      <button class="toolbar-btn" onclick="saveReaderNotebookText()" title="Defter yazısını kaydet">💾 Defteri Kaydet</button>
+      <button class="toolbar-btn" onclick="clearReaderNotebookText()" title="Yazı alanını temizle">🧹 Metni Temizle</button>
+      <button class="toolbar-btn" onclick="clearReaderNotebookDrawing()" title="Çizimi temizle">🧽 Çizimi Sil</button>
+      <small style="color:var(--text-dim); align-self:center;">Bu defter bu cihazda saklanır.</small>
+    </div>
+    <textarea id="reader-notebook-text" class="auth-input" style="min-height:180px; padding:10px; margin-bottom:10px; resize:vertical;" placeholder="Buraya serbest not alabilirsiniz...">${String(data.text || "").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</textarea>
+    <div style="border:1px dashed var(--border); border-radius:10px; padding:8px; background:var(--surface);">
+      <canvas id="reader-notebook-canvas" style="display:block; width:100%; height:260px; border-radius:8px; background:#fff; touch-action:none;"></canvas>
+    </div>
+  `;
+  if (typeof window.initReaderNotebookCanvas === "function") {
+    window.initReaderNotebookCanvas(data.drawingDataUrl || "");
+  }
+};
+
+window.saveReaderNotebookText = function () {
+  const ta = document.getElementById("reader-notebook-text");
+  if (!ta) return;
+  const ok = saveCurrentReaderNotebookPatch({ text: String(ta.value || "") });
+  if (!ok) {
+    showToastMessage("Önce bir metin yükleyin.");
+    return;
+  }
+  showToastMessage("📓 Defter kaydedildi.");
+};
+
+window.clearReaderNotebookText = function () {
+  const ta = document.getElementById("reader-notebook-text");
+  if (ta) ta.value = "";
+  const ok = saveCurrentReaderNotebookPatch({ text: "" });
+  if (ok) showToastMessage("Defter metni temizlendi.");
+};
+
+window.clearReaderNotebookDrawing = function () {
+  const c = document.getElementById("reader-notebook-canvas");
+  if (!c) return;
+  const ctx = c.getContext("2d");
+  if (!ctx) return;
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, c.width, c.height);
+  saveCurrentReaderNotebookPatch({ drawingDataUrl: c.toDataURL("image/png") });
+  showToastMessage("Defter çizimi temizlendi.");
+};
+
+window.initReaderNotebookCanvas = function (drawingDataUrl) {
+  const canvas = document.getElementById("reader-notebook-canvas");
+  if (!canvas) return;
+  const ratio = Math.max(1, window.devicePixelRatio || 1);
+  const rect = canvas.getBoundingClientRect();
+  const w = Math.max(320, Math.floor(rect.width || 320));
+  const h = Math.max(220, Math.floor(rect.height || 260));
+  canvas.width = Math.floor(w * ratio);
+  canvas.height = Math.floor(h * ratio);
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+  ctx.scale(ratio, ratio);
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.lineWidth = 2.2;
+  ctx.strokeStyle = "#1f2937";
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, w, h);
+
+  if (drawingDataUrl) {
+    const img = new Image();
+    img.onload = function () { ctx.drawImage(img, 0, 0, w, h); };
+    img.src = drawingDataUrl;
+  }
+
+  let drawing = false;
+  let lx = 0;
+  let ly = 0;
+  function getPos(e) {
+    const r = canvas.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  }
+  function down(e) {
+    drawing = true;
+    const p = getPos(e);
+    lx = p.x;
+    ly = p.y;
+    try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+  }
+  function move(e) {
+    if (!drawing) return;
+    const p = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(lx, ly);
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+    lx = p.x;
+    ly = p.y;
+  }
+  function up(e) {
+    if (!drawing) return;
+    drawing = false;
+    saveCurrentReaderNotebookPatch({ drawingDataUrl: canvas.toDataURL("image/png") });
+    try { canvas.releasePointerCapture(e.pointerId); } catch (err) {}
+  }
+  canvas.onpointerdown = down;
+  canvas.onpointermove = move;
+  canvas.onpointerup = up;
+  canvas.onpointercancel = up;
 };
 
 function isReadingCompletionKeyDone(key) {
@@ -1241,7 +1562,13 @@ function processAndRenderText() {
       <button class="toolbar-btn" onclick="adjustReaderFontSize(-0.1)" title="Yazıyı küçült">A-</button>
       <button class="toolbar-btn" onclick="adjustReaderFontSize(0.1)" title="Yazıyı büyüt">A+</button>
       <button class="toolbar-btn" onclick="goToGrammarForCurrentReadingText()" title="Metni analiz edip uygun konu anlatımına git">🧠 Gramere Git</button>
+      <button class="toolbar-btn" id="reader-ink-toggle-btn" onclick="toggleReaderInkMode()" title="Metin üstüne kalemle not al">✏️ Kalem Modu</button>
+      <button class="toolbar-btn" id="reader-ink-pen-btn" onclick="setReaderInkTool('pen')" style="display:none;" title="Kalem">🖊️</button>
+      <button class="toolbar-btn" id="reader-ink-eraser-btn" onclick="setReaderInkTool('eraser')" style="display:none;" title="Silgi">🩹</button>
+      <button class="toolbar-btn" onclick="clearReaderInk()" title="Bu metindeki çizimleri temizle">🧽 Notları Sil</button>
+      <span id="reader-ink-hint" style="display:none; color:var(--text-dim); font-size:0.8rem;">Kalem açık: metin tıklamaları geçici kapalı</span>
       <button class="toolbar-btn" onclick="toggleReaderNotesPanel()" title="Kelime/cümle notlarını aç">📝 Notlar</button>
+      <button class="toolbar-btn" onclick="toggleReaderNotebookPanel()" title="Serbest defter alanını aç">📓 Defter</button>
       <button class="toolbar-btn" onclick="persistCurrentReadingState()" title="Okuma değişikliklerini kalıcı kaydet">💾 Değişiklikleri Kaydet</button>
       <button class="${completionBtnClass}" id="reader-completion-mark-btn" onclick="markCurrentReadingCompleted()" title="${completionTitleAttr}">${completionLabel}</button>
       <button class="toolbar-btn" id="reader-completion-clear-btn" onclick="clearCurrentReadingCompleted()" ${clearDisabledAttr} title="Tamamlandı işaretini kaldır">↩️ İptal</button>
@@ -1253,13 +1580,22 @@ function processAndRenderText() {
   notesPanel.id = "reader-notes-panel";
   notesPanel.style.cssText = "display:none; margin:10px 0 15px 0; border:1px solid var(--border); border-radius:10px; padding:10px; background:var(--surface-alt);";
   readerDiv.appendChild(notesPanel);
+  const notebookPanel = document.createElement("div");
+  notebookPanel.id = "reader-notebook-panel";
+  notebookPanel.style.cssText = "display:none; margin:0 0 15px 0; border:1px solid var(--border); border-radius:10px; padding:10px; background:var(--surface-alt);";
+  readerDiv.appendChild(notebookPanel);
 
   globalTextForTTS = "";
   allWordSpans = [];
   window.activeSelectionTokenElements = [];
+  const contentWrap = document.createElement("div");
+  contentWrap.id = "reader-content-wrap";
+  contentWrap.style.position = "relative";
+  contentWrap.style.padding = "2px 0";
+
   rawText.split("\n").forEach((line) => {
     if (!line.trim()) {
-      readerDiv.appendChild(document.createElement("br"));
+      contentWrap.appendChild(document.createElement("br"));
       globalTextForTTS += "\n";
       return;
     }
@@ -1281,15 +1617,25 @@ function processAndRenderText() {
         globalTextForTTS += token;
       }
     });
-    readerDiv.appendChild(pContainer);
+    contentWrap.appendChild(pContainer);
     globalTextForTTS += "\n";
   });
+  const inkCanvas = document.createElement("canvas");
+  inkCanvas.id = "reader-ink-canvas";
+  contentWrap.appendChild(inkCanvas);
+  readerDiv.appendChild(contentWrap);
   applySavedHighlightsToReader(rawText);
+  setupReaderInkCanvas(rawText);
   applyReaderFontSize();
   if (readerNotesPanelOpen) {
     const panel = document.getElementById("reader-notes-panel");
     if (panel) panel.style.display = "block";
     window.renderReaderNotesPanel();
+  }
+  if (readerNotebookPanelOpen) {
+    const panel = document.getElementById("reader-notebook-panel");
+    if (panel) panel.style.display = "block";
+    if (typeof window.renderReaderNotebookPanel === "function") window.renderReaderNotebookPanel();
   }
   updateReadingProgressForText(rawText);
   renderDecksAccordion();
