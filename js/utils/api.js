@@ -143,21 +143,12 @@ function ingestUserdataDoc(doc) {
         (localTs >= cloudTs && localUserData.readingProgress)
           ? localUserData.readingProgress
           : (cloudUserData.readingProgress || localUserData.readingProgress || {}),
-      readingCompletedIds: (() => {
-        const a = (localUserData.readingCompletedIds && typeof localUserData.readingCompletedIds === "object")
+      // readingCompletedIds artık global/rd_* belgesinden yönetiliyor.
+      // userdata içindeki eski alanı sadece yerel fallback olarak koru; buluttan geri yazıp toggle'ı bozmasın.
+      readingCompletedIds:
+        (localUserData.readingCompletedIds && typeof localUserData.readingCompletedIds === "object")
           ? localUserData.readingCompletedIds
-          : {};
-        const b = (cloudUserData.readingCompletedIds && typeof cloudUserData.readingCompletedIds === "object")
-          ? cloudUserData.readingCompletedIds
-          : {};
-        const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
-        const out = {};
-        keys.forEach((k) => {
-          const m = Math.max(Number(a[k] || 0), Number(b[k] || 0));
-          if (m > 0) out[k] = m;
-        });
-        return out;
-      })(),
+          : {},
     };
   });
   applyCloudUserData();
@@ -175,6 +166,17 @@ function mergeReadingCompletedPatchIntoUser(uname, patch) {
     const m = Math.max(Number(out[k] || 0), Number(patch[k] || 0));
     if (m > 0) out[k] = m;
     else delete out[k];
+  });
+  window.dbUserData[uname].readingCompletedIds = out;
+}
+
+function replaceReadingCompletedForUser(uname, patch) {
+  if (!uname || !window.dbUserData || !window.dbUserData[uname]) return;
+  const src = patch && typeof patch === "object" ? patch : {};
+  const out = {};
+  Object.keys(src).forEach((k) => {
+    const n = Number(src[k]);
+    if (Number.isFinite(n) && n > 0) out[k] = n;
   });
   window.dbUserData[uname].readingCompletedIds = out;
 }
@@ -211,7 +213,7 @@ window.fetchAndAttachReadingCompletedSync = function (uname) {
     .then(function (snap) {
       if (snap.exists) {
         const patch = snap.data().readingCompletedIds;
-        if (patch && typeof patch === "object") mergeReadingCompletedPatchIntoUser(uname, patch);
+        replaceReadingCompletedForUser(uname, patch);
       }
       if (typeof dbUserData !== "undefined") dbUserData = window.dbUserData;
       applyCloudUserData();
@@ -222,9 +224,12 @@ window.fetchAndAttachReadingCompletedSync = function (uname) {
       _readingDoneAttachedFor = uname;
       _readingDoneUnsub = ref.onSnapshot(
         function (snap) {
-          if (!snap.exists) return;
-          const patch = snap.data().readingCompletedIds;
-          if (patch && typeof patch === "object") mergeReadingCompletedPatchIntoUser(uname, patch);
+          if (!snap.exists) {
+            replaceReadingCompletedForUser(uname, {});
+          } else {
+            const patch = snap.data().readingCompletedIds;
+            replaceReadingCompletedForUser(uname, patch);
+          }
           if (typeof dbUserData !== "undefined") dbUserData = window.dbUserData;
           applyCloudUserData();
         },
