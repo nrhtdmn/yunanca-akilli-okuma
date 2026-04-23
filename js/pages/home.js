@@ -4807,8 +4807,9 @@ window.renderLessonLibrary = function(searchQuery = "") {
             const l = row.lesson;
             const isYouTube = l.link && (l.link.includes('youtube.com') || l.link.includes('youtu.be'));
             const isAssetFile = l.link && /(^|\/)assets\/lessons\//i.test(String(l.link));
+            const safeLessonId = String(l.id || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
             const clickAction = (isYouTube || !l.link || isAssetFile)
-                ? `openLesson(${JSON.stringify(String(l.id || ""))})`
+                ? `openLesson('${safeLessonId}')`
                 : `window.open('${l.link}', '_blank')`;
             const actionText = isYouTube
                 ? "📺 Videoyu İzle ➔"
