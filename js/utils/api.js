@@ -12,6 +12,8 @@ var _readingDoneUnsub = null;
 var _readingDoneAttachedFor = null;
 var _readingStateUnsub = null;
 var _readingStateAttachedFor = null;
+var _deckStateUnsub = null;
+var _deckStateAttachedFor = null;
 
 /** Kullanıcı adı/e-postayı Firestore belge kimliğine çevirir (nokta/@ güvenli) */
 function readingCompletedFirestoreDocId(uname) {
@@ -36,6 +38,20 @@ function readingStateFirestoreDocId(uname) {
       .replace(/\//g, "_")
       .replace(/=/g, "");
     const id = "rs_" + b.slice(0, 700);
+    return id.length > 1 ? id : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function deckStateFirestoreDocId(uname) {
+  if (!uname || typeof uname !== "string") return null;
+  try {
+    const b = btoa(encodeURIComponent(uname))
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=/g, "");
+    const id = "ds_" + b.slice(0, 700);
     return id.length > 1 ? id : null;
   } catch (e) {
     return null;
@@ -355,6 +371,51 @@ window.detachReadingStateSync = function () {
   _readingStateAttachedFor = null;
 };
 
+function applyDeckStatePatchToUser(uname, data) {
+  if (!uname || !window.dbUserData) return;
+  if (!window.dbUserData[uname]) window.dbUserData[uname] = {};
+  const row = window.dbUserData[uname];
+  const decks = data && data.decks && typeof data.decks === "object" ? data.decks : { "Genel Kelimeler": [] };
+  const customDict = data && data.customDict && typeof data.customDict === "object" ? data.customDict : {};
+  const lastActiveDeck = data && typeof data.lastActiveDeck === "string" ? data.lastActiveDeck : "Genel Kelimeler";
+  row.decks = decks;
+  row.customDict = customDict;
+  row.lastActiveDeck = lastActiveDeck;
+}
+
+window.fetchAndAttachDeckStateSync = function (uname) {
+  if (!window.useFirebase || !window.db || !uname) return Promise.resolve();
+  const docId = deckStateFirestoreDocId(uname);
+  if (!docId) return Promise.resolve();
+  const ref = window.db.collection("global").doc(docId);
+  return ref.get().then(function (snap) {
+    if (snap.exists) {
+      applyDeckStatePatchToUser(uname, snap.data() || {});
+      if (typeof dbUserData !== "undefined") dbUserData = window.dbUserData;
+      applyCloudUserData();
+    }
+  }).then(function () {
+    if (typeof window.detachDeckStateSync === "function") window.detachDeckStateSync();
+    _deckStateAttachedFor = uname;
+    _deckStateUnsub = ref.onSnapshot(function (snap) {
+      if (!snap.exists) return;
+      applyDeckStatePatchToUser(uname, snap.data() || {});
+      if (typeof dbUserData !== "undefined") dbUserData = window.dbUserData;
+      applyCloudUserData();
+    }, function (err) {
+      console.error("Firestore deste state (kullanıcı belgesi):", err);
+    });
+  });
+};
+
+window.detachDeckStateSync = function () {
+  if (typeof _deckStateUnsub === "function") {
+    try { _deckStateUnsub(); } catch (e) {}
+  }
+  _deckStateUnsub = null;
+  _deckStateAttachedFor = null;
+};
+
 /**
  * Okuma tamamlama haritasını buluta yazar (kullanıcıya özel global/rd_… belgesi).
  * @returns {Promise<void>}
@@ -420,6 +481,20 @@ window.pushReadingStateToFirestore = function (uname) {
     readingWorks: works,
     readingProgress: prog,
     readingHighlights: rhOut,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  };
+  return window.db.collection("global").doc(docId).set(payload).then(function () { return undefined; });
+};
+
+window.pushDeckStateToFirestore = function (uname) {
+  if (!window.useFirebase || !window.db || !uname) return Promise.resolve();
+  const docId = deckStateFirestoreDocId(uname);
+  if (!docId) return Promise.resolve();
+  const row = window.dbUserData && window.dbUserData[uname] ? window.dbUserData[uname] : {};
+  const payload = {
+    decks: row.decks && typeof row.decks === "object" ? row.decks : { "Genel Kelimeler": [] },
+    customDict: row.customDict && typeof row.customDict === "object" ? row.customDict : {},
+    lastActiveDeck: typeof row.lastActiveDeck === "string" ? row.lastActiveDeck : "Genel Kelimeler",
     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
   };
   return window.db.collection("global").doc(docId).set(payload).then(function () { return undefined; });
@@ -578,6 +653,13 @@ async function fetchFromFirebase() {
         console.error("fetchAndAttachReadingStateSync (boot)", e);
       }
     }
+    if (unBoot && typeof window.fetchAndAttachDeckStateSync === "function") {
+      try {
+        await window.fetchAndAttachDeckStateSync(unBoot);
+      } catch (e) {
+        console.error("fetchAndAttachDeckStateSync (boot)", e);
+      }
+    }
     ingestAnnouncementsDoc(annSnap);
     ingestTeacherPublicPracticesDoc(teacherPubSnap);
     ingestTrafficDoc(trafficSnap);
@@ -719,6 +801,11 @@ function syncCloudData() {
   return saveDb().then(function () {
     if (typeof window.pushReadingStateToFirestore === "function") {
       return window.pushReadingStateToFirestore(uname);
+    }
+    return undefined;
+  }).then(function () {
+    if (typeof window.pushDeckStateToFirestore === "function") {
+      return window.pushDeckStateToFirestore(uname);
     }
     return undefined;
   });

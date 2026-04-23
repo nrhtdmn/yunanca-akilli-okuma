@@ -35,6 +35,11 @@ function submitAuth() {
           console.error("fetchAndAttachReadingStateSync", e);
         });
       }
+      if (typeof window.fetchAndAttachDeckStateSync === "function") {
+        window.fetchAndAttachDeckStateSync(u).catch(function (e) {
+          console.error("fetchAndAttachDeckStateSync", e);
+        });
+      }
       if (typeof renderSavedReadingWorks === "function") renderSavedReadingWorks();
       closeAuthModal();
       updateUserUI();
@@ -82,6 +87,11 @@ function submitAuth() {
     if (typeof window.fetchAndAttachReadingStateSync === "function") {
       window.fetchAndAttachReadingStateSync(u).catch(function (e) {
         console.error("fetchAndAttachReadingStateSync", e);
+      });
+    }
+    if (typeof window.fetchAndAttachDeckStateSync === "function") {
+      window.fetchAndAttachDeckStateSync(u).catch(function (e) {
+        console.error("fetchAndAttachDeckStateSync", e);
       });
     }
     if (typeof renderSavedReadingWorks === "function") renderSavedReadingWorks();
@@ -199,6 +209,11 @@ window.syncAuthUserWithApp = async function syncAuthUserWithApp() {
       console.error("fetchAndAttachReadingStateSync", e);
     });
   }
+  if (typeof window.fetchAndAttachDeckStateSync === "function") {
+    window.fetchAndAttachDeckStateSync(accountKey).catch(function (e) {
+      console.error("fetchAndAttachDeckStateSync", e);
+    });
+  }
   if (typeof renderSavedReadingWorks === "function") renderSavedReadingWorks();
   if (typeof updateUserUI === "function") updateUserUI();
   if (typeof closeAuthModal === "function") closeAuthModal();
@@ -214,6 +229,7 @@ function initFirebaseAuth() {
     if (!user) {
       if (typeof window.detachReadingCompletedSync === "function") window.detachReadingCompletedSync();
       if (typeof window.detachReadingStateSync === "function") window.detachReadingStateSync();
+      if (typeof window.detachDeckStateSync === "function") window.detachDeckStateSync();
       if (
         typeof currentUser !== "undefined" &&
         currentUser &&
@@ -242,6 +258,7 @@ window.initFirebaseAuth = initFirebaseAuth;
 function logout() {
   if (typeof window.detachReadingCompletedSync === "function") window.detachReadingCompletedSync();
   if (typeof window.detachReadingStateSync === "function") window.detachReadingStateSync();
+  if (typeof window.detachDeckStateSync === "function") window.detachDeckStateSync();
   if (typeof firebase !== "undefined" && typeof firebase.auth === "function") {
     firebase.auth().signOut().catch(function () {});
   }
