@@ -206,15 +206,32 @@ window.fetchAndAttachReadingCompletedSync = function (uname) {
   if (!docId) return Promise.resolve();
   const ref = window.db.collection("global").doc(docId);
 
-  return mergeReadingCompletedLegacyV1Doc(uname)
-    .then(function () {
-      return ref.get();
-    })
+  return ref
+    .get()
     .then(function (snap) {
       if (snap.exists) {
         const patch = snap.data().readingCompletedIds;
         replaceReadingCompletedForUser(uname, patch);
+        return;
       }
+      // Sadece yeni kullanıcı-belgesi yoksa eski v1 belgesinden bir kez taşı.
+      return mergeReadingCompletedLegacyV1Doc(uname).then(function () {
+        const migrated =
+          window.dbUserData &&
+          window.dbUserData[uname] &&
+          window.dbUserData[uname].readingCompletedIds &&
+          typeof window.dbUserData[uname].readingCompletedIds === "object"
+            ? window.dbUserData[uname].readingCompletedIds
+            : {};
+        if (Object.keys(migrated).length && typeof window.pushReadingCompletedToFirestore === "function") {
+          return window.pushReadingCompletedToFirestore(uname).catch(function (e) {
+            console.error("reading_completed_v1 migration push", e);
+          });
+        }
+        return undefined;
+      });
+    })
+    .then(function () {
       if (typeof dbUserData !== "undefined") dbUserData = window.dbUserData;
       applyCloudUserData();
       if (typeof window.refreshReadingCompletionUI === "function") window.refreshReadingCompletionUI();
