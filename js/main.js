@@ -1,4 +1,28 @@
 // Bu dosya en son çalışacak ve uygulamayı init (boot) edecektir.
+// GitHub Pages'te eski SW cache'i bazen güncel JS'i gölgeleyebiliyor; ilk açılışta temizle.
+;(function cleanupLegacyServiceWorkerCaches() {
+  if (typeof window === "undefined" || typeof navigator === "undefined") return;
+  if (!("serviceWorker" in navigator) || typeof caches === "undefined") return;
+  const cleanupKey = "y_sw_cleanup_v20260423";
+  if (localStorage.getItem(cleanupKey) === "1") return;
+  navigator.serviceWorker.getRegistrations()
+    .then(function (regs) {
+      return Promise.all((regs || []).map(function (r) {
+        try { return r.unregister(); } catch (e) { return Promise.resolve(false); }
+      }));
+    })
+    .then(function () {
+      return caches.keys().then(function (keys) {
+        return Promise.all((keys || []).map(function (k) {
+          try { return caches.delete(k); } catch (e) { return Promise.resolve(false); }
+        }));
+      });
+    })
+    .finally(function () {
+      localStorage.setItem(cleanupKey, "1");
+    });
+})();
+
 // kurs.js vb. yüklendikten sonra sekme (URL / localStorage) — Kurs’ta F5 ile aynı yerde kalmak için
 if (typeof window.initMainTabFromUrlOrStorage === "function") {
   try {
