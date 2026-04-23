@@ -4615,7 +4615,7 @@ window.saveLesson = async function() {
         if (!val) return "";
         if (/^(https?:)?\/\//i.test(val)) return val;
         if (/^assets\/lessons\//i.test(val)) return val;
-        if (/^[^\/]+\.(pdf|docx?)$/i.test(val)) return "assets/lessons/" + val;
+        if (/^[^\/]+\.(pdf|docx?|xhtml?|html?)$/i.test(val)) return "assets/lessons/" + val;
         return val;
     };
 
@@ -4625,7 +4625,8 @@ window.saveLesson = async function() {
         category: catInput.value.trim() || "Genel Gramer",
         content: bodyInput.innerHTML,
         link: linkInput ? normalizeLessonLink(linkInput.value) : "",
-        date: new Date().toLocaleDateString('tr-TR')
+        date: new Date().toLocaleDateString('tr-TR'),
+        updatedAt: Date.now(),
     };
 
     const idx = window.GLOBAL_LESSONS.findIndex(l => l.id === lessonData.id);
@@ -4931,6 +4932,10 @@ window.openLesson = function(id) {
         return /\.(doc|docx)(\?|#|$)/i.test(String(url || "").trim());
     }
 
+    function isHtmlUrl(url) {
+        return /\.(x?html?)(\?|#|$)/i.test(String(url || "").trim());
+    }
+
     function buildPdfEmbedHtml(url) {
         const safeUrl = String(url || "").trim();
         if (!safeUrl) return "";
@@ -4968,6 +4973,20 @@ window.openLesson = function(id) {
             </div>`;
     }
 
+    function buildHtmlEmbedHtml(url) {
+        const safeUrl = String(url || "").trim();
+        if (!safeUrl) return "";
+        return `
+            <div style="margin:25px 0; border-radius:12px; border:1px solid var(--border); box-shadow: var(--shadow); overflow:hidden; background:var(--surface-alt);">
+                <iframe
+                    style="display:block; width:100%; height:78vh; min-height:560px; border:0; background:#fff;"
+                    src="${safeUrl}"
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    title="Ders Dokumani"></iframe>
+            </div>`;
+    }
+
     // --- 1. ANA VİDEO MOTORU (Üstteki Link Kutusuna Yazılan Video) ---
     if (lesson.link && (lesson.link.includes('youtube.com') || lesson.link.includes('youtu.be'))) {
         const mainVideoId = extractYouTubeId(lesson.link);
@@ -5002,15 +5021,17 @@ window.openLesson = function(id) {
     });
 
     // --- 3. DOSYA GÖMME MOTORU (PDF / WORD) ---
-    // [pdf:URL], [doc:URL], [embed:URL]
-    finalContent = finalContent.replace(/\[(pdf|doc|embed):(.+?)\]/gi, function(match, kind, rawUrl) {
+    // [pdf:URL], [doc:URL], [html:URL], [embed:URL]
+    finalContent = finalContent.replace(/\[(pdf|doc|html|embed):(.+?)\]/gi, function(match, kind, rawUrl) {
         const url = String(rawUrl || "").trim();
         if (!url) return "";
         const k = String(kind || "").toLowerCase();
         if (k === "pdf") return buildPdfEmbedHtml(url);
         if (k === "doc") return buildWordEmbedHtml(url);
+        if (k === "html") return buildHtmlEmbedHtml(url);
         if (isPdfUrl(url)) return buildPdfEmbedHtml(url);
         if (isWordUrl(url)) return buildWordEmbedHtml(url);
+        if (isHtmlUrl(url)) return buildHtmlEmbedHtml(url);
         return `
             <p style="margin:16px 0;">
                 <a href="${url}" target="_blank" rel="noopener noreferrer">📎 İçeriği yeni sekmede aç</a>
@@ -5032,6 +5053,14 @@ window.openLesson = function(id) {
         else if (!/\[(pdf|doc|embed):/i.test(finalContent)) finalContent = docHtml + finalContent;
     } else {
         finalContent = finalContent.replace('[doc]', '');
+    }
+
+    if (lesson.link && isHtmlUrl(lesson.link)) {
+        const htmlEmbed = buildHtmlEmbedHtml(lesson.link);
+        if (finalContent.includes('[html]')) finalContent = finalContent.replace('[html]', htmlEmbed);
+        else if (!/\[(pdf|doc|html|embed):/i.test(finalContent)) finalContent = htmlEmbed + finalContent;
+    } else {
+        finalContent = finalContent.replace('[html]', '');
     }
     
     const lessonBody = document.getElementById('lesson-active-body');

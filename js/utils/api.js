@@ -660,17 +660,71 @@ function ingestTrafficDoc(doc) {
   }
 }
 
+function normalizeLessonsListForUi(list) {
+  const arr = Array.isArray(list) ? list : [];
+  return arr
+    .map((item) => {
+      if (!item || typeof item !== "object") return null;
+      const { __order, ...rest } = item;
+      return rest;
+    })
+    .filter(Boolean);
+}
+
+function mergeLessonsPreferLatest(cloudList) {
+  let localList = [];
+  try {
+    localList = JSON.parse(localStorage.getItem("y_lessons_db") || "[]");
+  } catch (e) {
+    localList = [];
+  }
+  const existingMem = Array.isArray(window.GLOBAL_LESSONS) ? window.GLOBAL_LESSONS : [];
+  const merged = new Map();
+
+  function upsert(list, sourceOrderOffset) {
+    (Array.isArray(list) ? list : []).forEach((lesson, idx) => {
+      if (!lesson || typeof lesson !== "object") return;
+      const id = String(lesson.id || "").trim();
+      if (!id) return;
+      const incomingTs = Number(lesson.updatedAt || 0) || 0;
+      const prev = merged.get(id);
+      if (!prev) {
+        merged.set(id, { ...lesson, __mergeOrder: sourceOrderOffset + idx });
+        return;
+      }
+      const prevTs = Number(prev.updatedAt || 0) || 0;
+      if (incomingTs >= prevTs) {
+        merged.set(id, { ...prev, ...lesson, __mergeOrder: Math.min(prev.__mergeOrder, sourceOrderOffset + idx) });
+      }
+    });
+  }
+
+  // Bulut oncelikli, yerel tamamlayici.
+  upsert(cloudList, 0);
+  upsert(localList, 100000);
+  upsert(existingMem, 200000);
+
+  return Array.from(merged.values())
+    .sort((a, b) => {
+      const ao = Number(a.__order);
+      const bo = Number(b.__order);
+      if (Number.isFinite(ao) && Number.isFinite(bo) && ao !== bo) return ao - bo;
+      return Number(a.__mergeOrder || 0) - Number(b.__mergeOrder || 0);
+    })
+    .map((lesson) => {
+      const { __mergeOrder, ...rest } = lesson;
+      return rest;
+    });
+}
+
 function ingestLessonsDoc(doc) {
   if (!doc.exists) return;
   const list = doc.data().list;
   if (!Array.isArray(list)) return;
-  window.GLOBAL_LESSONS = list;
-  window.GLOBAL_LESSONS.sort((a, b) => Number(a?.__order || 0) - Number(b?.__order || 0));
-  window.GLOBAL_LESSONS = window.GLOBAL_LESSONS.map((item) => {
-    if (!item || typeof item !== "object") return item;
-    const { __order, ...rest } = item;
-    return rest;
-  });
+  const normalizedCloud = normalizeLessonsListForUi(
+    list.slice().sort((a, b) => Number(a?.__order || 0) - Number(b?.__order || 0)),
+  );
+  window.GLOBAL_LESSONS = mergeLessonsPreferLatest(normalizedCloud);
   try {
     localStorage.setItem("y_lessons_db", JSON.stringify(window.GLOBAL_LESSONS));
   } catch (e) {}
@@ -680,14 +734,12 @@ function ingestLessonsDoc(doc) {
 
 function ingestLessonsCollection(snapshot) {
   if (!snapshot || snapshot.empty) return;
-  const list = snapshot.docs
+  const normalizedCloud = normalizeLessonsListForUi(
+    snapshot.docs
     .map((d) => d.data() || {})
     .sort((a, b) => Number(a?.__order || 0) - Number(b?.__order || 0))
-    .map((item) => {
-      const { __order, ...rest } = item;
-      return rest;
-    });
-  window.GLOBAL_LESSONS = list;
+  );
+  window.GLOBAL_LESSONS = mergeLessonsPreferLatest(normalizedCloud);
   try {
     localStorage.setItem("y_lessons_db", JSON.stringify(window.GLOBAL_LESSONS));
   } catch (e) {}
