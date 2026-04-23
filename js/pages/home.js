@@ -18,6 +18,7 @@ let readerInkRedo = [];
 let readerInkColor = localStorage.getItem("y_reader_ink_color") || "#ef4444";
 let readerInkSize = Number(localStorage.getItem("y_reader_ink_size") || "2.2");
 let readerInkEraserSize = Number(localStorage.getItem("y_reader_ink_eraser_size") || "14");
+let readerInkStylusOnly = localStorage.getItem("y_reader_ink_stylus_only") !== "0";
 window.savedReadingSearchQuery = window.savedReadingSearchQuery || "";
 window.savedReadingCategoryFilter = window.savedReadingCategoryFilter || "all";
 
@@ -816,6 +817,10 @@ function setReaderInkUiState() {
   const colorInput = document.getElementById("reader-ink-color");
   const undoBtn = document.getElementById("reader-ink-undo-btn");
   const redoBtn = document.getElementById("reader-ink-redo-btn");
+  const stylusBtn = document.getElementById("reader-ink-stylus-btn");
+  const presetRed = document.getElementById("reader-ink-preset-red");
+  const presetBlue = document.getElementById("reader-ink-preset-blue");
+  const presetGreen = document.getElementById("reader-ink-preset-green");
   const hint = document.getElementById("reader-ink-hint");
   if (toggleBtn) {
     toggleBtn.textContent = readerInkMode ? "✋ Okuma Modu" : "✏️ Kalem Modu";
@@ -844,6 +849,23 @@ function setReaderInkUiState() {
   }
   if (undoBtn) undoBtn.style.display = readerInkMode ? "inline-flex" : "none";
   if (redoBtn) redoBtn.style.display = readerInkMode ? "inline-flex" : "none";
+  if (stylusBtn) {
+    stylusBtn.style.display = readerInkMode ? "inline-flex" : "none";
+    stylusBtn.classList.toggle("reader-completion-btn--done", !!readerInkStylusOnly);
+    stylusBtn.textContent = readerInkStylusOnly ? "🖊️ Sadece Kalem" : "👆 Parmak + Kalem";
+  }
+  if (presetRed) {
+    presetRed.style.display = readerInkMode ? "inline-flex" : "none";
+    presetRed.classList.toggle("reader-completion-btn--done", readerInkColor.toLowerCase() === "#ef4444");
+  }
+  if (presetBlue) {
+    presetBlue.style.display = readerInkMode ? "inline-flex" : "none";
+    presetBlue.classList.toggle("reader-completion-btn--done", readerInkColor.toLowerCase() === "#2563eb");
+  }
+  if (presetGreen) {
+    presetGreen.style.display = readerInkMode ? "inline-flex" : "none";
+    presetGreen.classList.toggle("reader-completion-btn--done", readerInkColor.toLowerCase() === "#16a34a");
+  }
   if (hint) hint.style.display = readerInkMode ? "inline" : "none";
   if (readerInkCanvas) {
     readerInkCanvas.style.pointerEvents = readerInkMode ? "auto" : "none";
@@ -894,6 +916,7 @@ function setupReaderInkCanvas(rawText) {
   };
   canvas.onpointerdown = function (e) {
     if (!readerInkMode) return;
+    if (readerInkStylusOnly && e.pointerType !== "pen") return;
     readerInkPointerDown = true;
     readerInkLastPoint = getPos(e);
     pushReaderInkHistorySnapshot();
@@ -902,12 +925,13 @@ function setupReaderInkCanvas(rawText) {
   };
   canvas.onpointermove = function (e) {
     if (!readerInkMode || !readerInkPointerDown || !readerInkCtx) return;
+    if (readerInkStylusOnly && e.pointerType !== "pen") return;
     const p = getPos(e);
     readerInkCtx.beginPath();
     readerInkCtx.globalCompositeOperation = readerInkTool === "eraser" ? "destination-out" : "source-over";
     readerInkCtx.strokeStyle = readerInkColor;
     if (readerInkTool === "marker") {
-      readerInkCtx.globalAlpha = 0.28;
+      readerInkCtx.globalAlpha = 0.14;
       readerInkCtx.lineWidth = Math.max(8, readerInkSize * 3.2);
     } else {
       readerInkCtx.globalAlpha = 1;
@@ -954,6 +978,12 @@ window.setReaderInkColor = function (color) {
   setReaderInkUiState();
 };
 
+window.setReaderInkPresetColor = function (color) {
+  window.setReaderInkColor(color);
+  const colorInput = document.getElementById("reader-ink-color");
+  if (colorInput) colorInput.value = readerInkColor;
+};
+
 window.setReaderInkSize = function (sizeVal) {
   const n = Number(sizeVal || 2.2);
   if (!Number.isFinite(n)) return;
@@ -964,6 +994,12 @@ window.setReaderInkSize = function (sizeVal) {
     readerInkSize = Math.max(1, Math.min(18, n));
     localStorage.setItem("y_reader_ink_size", String(readerInkSize));
   }
+  setReaderInkUiState();
+};
+
+window.toggleReaderInkStylusOnly = function () {
+  readerInkStylusOnly = !readerInkStylusOnly;
+  localStorage.setItem("y_reader_ink_stylus_only", readerInkStylusOnly ? "1" : "0");
   setReaderInkUiState();
 };
 
@@ -1746,8 +1782,12 @@ function processAndRenderText() {
       <button class="toolbar-btn" id="reader-ink-pen-btn" onclick="setReaderInkTool('pen')" style="display:none;" title="Kalem">🖊️</button>
       <button class="toolbar-btn" id="reader-ink-marker-btn" onclick="setReaderInkTool('marker')" style="display:none;" title="Fosforlu">🖍️</button>
       <button class="toolbar-btn" id="reader-ink-eraser-btn" onclick="setReaderInkTool('eraser')" style="display:none;" title="Silgi">🩹</button>
+      <button class="toolbar-btn" id="reader-ink-preset-red" onclick="setReaderInkPresetColor('#ef4444')" style="display:none;" title="Kırmızı">🔴</button>
+      <button class="toolbar-btn" id="reader-ink-preset-blue" onclick="setReaderInkPresetColor('#2563eb')" style="display:none;" title="Mavi">🔵</button>
+      <button class="toolbar-btn" id="reader-ink-preset-green" onclick="setReaderInkPresetColor('#16a34a')" style="display:none;" title="Yeşil">🟢</button>
       <input id="reader-ink-color" type="color" style="display:none; width:34px; height:30px; padding:0; border:1px solid var(--border); border-radius:6px; background:transparent;" onchange="setReaderInkColor(this.value)" title="Renk">
       <input id="reader-ink-size" type="range" min="1" max="24" step="0.2" style="display:none; width:90px;" onchange="setReaderInkSize(this.value)" title="Kalınlık">
+      <button class="toolbar-btn" id="reader-ink-stylus-btn" onclick="toggleReaderInkStylusOnly()" style="display:none;" title="Parmakla çizimi kapat/aç">🖊️ Sadece Kalem</button>
       <button class="toolbar-btn" id="reader-ink-undo-btn" onclick="undoReaderInk()" style="display:none;" title="Geri al">↶</button>
       <button class="toolbar-btn" id="reader-ink-redo-btn" onclick="redoReaderInk()" style="display:none;" title="İleri al">↷</button>
       <button class="toolbar-btn" onclick="clearReaderInk()" title="Bu metindeki çizimleri temizle">🧽 Notları Sil</button>
