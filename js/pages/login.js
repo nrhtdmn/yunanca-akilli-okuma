@@ -94,19 +94,51 @@ async function signInWithGoogle() {
   }
 }
 
+/**
+ * Google e-postasına karşılık gelen dbUsers anahtarı.
+ * Kullanıcı adı + şifre ile kayıtlı hesapta contactEmail aynıysa aynı hesaba bağlanır (userdata anahtarı tutarlı kalır).
+ */
+function resolveGoogleAccountStorageKey(emailLower) {
+  const dbu = window.dbUsers;
+  if (!dbu || typeof dbu !== "object" || !emailLower) return emailLower;
+  if (dbu[emailLower] && typeof dbu[emailLower] === "object") return emailLower;
+  const keys = Object.keys(dbu);
+  for (let i = 0; i < keys.length; i++) {
+    const k = keys[i];
+    const row = dbu[k];
+    if (!row || typeof row !== "object") continue;
+    const ce = String(row.contactEmail || row.email || "").toLowerCase().trim();
+    if (ce && ce === emailLower) return k;
+  }
+  return emailLower;
+}
+
 /** Firestore yüklendikten veya oturum değişince çağrılır */
-window.syncAuthUserWithApp = function syncAuthUserWithApp() {
+window.syncAuthUserWithApp = async function syncAuthUserWithApp() {
   if (typeof firebase === "undefined" || typeof firebase.auth !== "function") return;
   const user = firebase.auth().currentUser;
   if (!user || !user.email) return;
   if (typeof dbUsers === "undefined" || !window.dbUsers) return;
 
   const email = user.email.toLowerCase();
+
+  if (!window.__usersDocSyncedFromFirestore && window.useFirebase && window.db) {
+    try {
+      const snap = await window.db.collection("global").doc("users").get();
+      if (snap.exists && typeof window.ingestUsersDoc === "function") {
+        window.ingestUsersDoc(snap);
+      }
+    } catch (err) {
+      console.warn("Google oturumu: kullanıcı listesi yeniden okunamadı", err);
+    }
+  }
+
   const dbu = window.dbUsers;
-  const isNew = !dbu[email];
+  const accountKey = resolveGoogleAccountStorageKey(email);
+  const isNew = !dbu[accountKey];
 
   if (isNew) {
-    dbu[email] = {
+    dbu[accountKey] = {
       email: email,
       uid: user.uid,
       authProvider: "google",
@@ -124,26 +156,30 @@ window.syncAuthUserWithApp = function syncAuthUserWithApp() {
       showToastMessage("✅ Google hesabı kaydedildi. Yönetici onayından sonra tam erişim.");
     }
   } else {
-    dbu[email].uid = user.uid;
-    dbu[email].email = email;
-    if (user.displayName) dbu[email].displayName = user.displayName;
-    if (user.photoURL) dbu[email].photoURL = user.photoURL;
-    if (!dbu[email].authProvider) dbu[email].authProvider = "google";
-    if (dbu[email].emailNotify === undefined) dbu[email].emailNotify = true;
+    dbu[accountKey].uid = user.uid;
+    dbu[accountKey].email = email;
+    if (user.displayName) dbu[accountKey].displayName = user.displayName;
+    if (user.photoURL) dbu[accountKey].photoURL = user.photoURL;
+    if (!dbu[accountKey].authProvider) dbu[accountKey].authProvider = "google";
+    if (dbu[accountKey].emailNotify === undefined) dbu[accountKey].emailNotify = true;
     saveDb();
   }
 
-  currentUser = dbu[email];
-  currentUsername = email;
-  localStorage.setItem("y_currentUser", email);
+  currentUser = dbu[accountKey];
+  currentUsername = accountKey;
+  localStorage.setItem("y_currentUser", accountKey);
   if (typeof loadUserData === "function") loadUserData();
   if (typeof renderSavedReadingWorks === "function") renderSavedReadingWorks();
   if (typeof updateUserUI === "function") updateUserUI();
   if (typeof closeAuthModal === "function") closeAuthModal();
 };
 
+let _firebaseAuthListenerRegistered = false;
+
 function initFirebaseAuth() {
   if (typeof firebase === "undefined" || typeof firebase.auth !== "function") return;
+  if (_firebaseAuthListenerRegistered) return;
+  _firebaseAuthListenerRegistered = true;
   firebase.auth().onAuthStateChanged(function (user) {
     if (!user) {
       if (
@@ -162,10 +198,14 @@ function initFirebaseAuth() {
       return;
     }
     if (typeof window.syncAuthUserWithApp === "function") {
-      window.syncAuthUserWithApp();
+      window.syncAuthUserWithApp().catch(function (err) {
+        console.error("syncAuthUserWithApp", err);
+      });
     }
   });
 }
+
+window.initFirebaseAuth = initFirebaseAuth;
 
 function logout() {
   if (typeof firebase !== "undefined" && typeof firebase.auth === "function") {

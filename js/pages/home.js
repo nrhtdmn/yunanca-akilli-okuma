@@ -271,7 +271,14 @@ function finishInit() {
   try { if (typeof window.renderLessonLibrary === 'function') window.renderLessonLibrary(); } catch(e) { console.error('renderLessonLibrary hatası:', e); }
   try { fetchExamData(); } catch(e) { console.error('fetchExamData hatası:', e); }
   try {
-    if (typeof window.syncAuthUserWithApp === "function") window.syncAuthUserWithApp();
+    if (typeof window.syncAuthUserWithApp === "function") {
+      const syncRet = window.syncAuthUserWithApp();
+      if (syncRet && typeof syncRet.then === "function") {
+        syncRet.catch(function (err) {
+          console.error("syncAuthUserWithApp hatası:", err);
+        });
+      }
+    }
   } catch (e) {
     console.error("syncAuthUserWithApp hatası:", e);
   }

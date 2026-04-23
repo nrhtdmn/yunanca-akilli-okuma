@@ -66,6 +66,7 @@ function ingestUsersDoc(doc) {
   const cloudUsers = doc.data();
   console.log("☁️ Firebase'den gelen kullanıcı verisi:", cloudUsers);
   Object.assign(window.dbUsers, cloudUsers);
+  window.__usersDocSyncedFromFirestore = true;
 
   applyCloudUsers();
 }
@@ -227,7 +228,11 @@ async function trackSiteTraffic() {
 }
 
 async function fetchFromFirebase() {
-  if(!window.useFirebase) { finishInit(); return; }
+  if (!window.useFirebase) {
+    if (typeof window.initFirebaseAuth === "function") window.initFirebaseAuth();
+    finishInit();
+    return;
+  }
   // window ile helpers let'leri tekrar hizala (başka bir betik sırası değişirse diye)
   if (typeof useFirebase !== "undefined") useFirebase = true;
   if (typeof db !== "undefined") db = window.db;
@@ -261,6 +266,9 @@ async function fetchFromFirebase() {
     if (lessonsColSnap && !lessonsColSnap.empty) ingestLessonsCollection(lessonsColSnap);
     else ingestLessonsDoc(lessonsLegacySnap);
 
+    /** Google oturumu, global/users gelmeden açılırsa yanlışlıkla "yeni pending" oluşmasın diye Auth dinleyicisi bundan sonra kurulur */
+    if (typeof window.initFirebaseAuth === "function") window.initFirebaseAuth();
+
     // İlk okuma tamamlandıktan sonra UI boot — canlı dinleyiciler aynı veriyi günceller
     usersRef.onSnapshot(ingestUsersDoc, (err) => console.error("Firestore global/users dinleyicisi:", err));
     userdataRef.onSnapshot(ingestUserdataDoc, (err) => console.error("Firestore global/userdata dinleyicisi:", err));
@@ -292,16 +300,19 @@ async function fetchFromFirebase() {
     await trackSiteTraffic();
     finishInit();
     
-  } catch(e) { 
+  } catch (e) {
     console.error("Bulut okuma hatası", e);
     if (e && e.code === "permission-denied") {
       console.error(
-        "Firestore erişimi reddedildi. Firebase Console → Firestore → Kurallar bölümünde global/* için okuma/yazma izni verin veya projedeki firestore.rules dosyasını yükleyin (firebase deploy --only firestore:rules)."
+        "Firestore erişimi reddedildi. Firebase Console → Firestore → Kurallar bölümünde global/* için okuma/yazma izni verin veya projedeki firestore.rules dosyasını yükleyin (firebase deploy --only firestore:rules).",
       );
     }
-    finishInit(); 
+    if (typeof window.initFirebaseAuth === "function") window.initFirebaseAuth();
+    finishInit();
   }
 }
+
+window.ingestUsersDoc = ingestUsersDoc;
 
 function normalizeReadingHighlightEntryForCloud(entry) {
   if (Array.isArray(entry) && entry.length >= 2) {

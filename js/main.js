@@ -8,7 +8,6 @@ if (typeof window.initMainTabFromUrlOrStorage === "function") {
   }
 }
 fetchFromFirebase();
-if (typeof initFirebaseAuth === "function") initFirebaseAuth();
 
 /* ==================================================
    PWA (UYGULAMA YÜKLEME) BUTONU MANTIĞI
