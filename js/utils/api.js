@@ -290,7 +290,9 @@ window.pushReadingCompletedToFirestore = function (uname) {
   return window.db
     .collection("global")
     .doc(docId)
-    .set(payload, { merge: true })
+    // merge:true map alanlarında silinen anahtarları bırakabildiği için
+    // tamamını overwrite ederek "İptal" sonrası geri gelmeyi engelliyoruz.
+    .set(payload)
     .then(() => undefined)
     .catch(function (err) {
       console.error("pushReadingCompletedToFirestore", err);
