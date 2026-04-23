@@ -902,6 +902,8 @@ function setReaderInkUiState() {
         el.style.display = readerInkMode ? "inline-flex" : "none";
       } else if (el.id === "reader-ink-marker-alpha") {
         el.style.display = (readerInkMode && !readerInkControlsCollapsed && readerInkTool === "marker") ? "inline-flex" : "none";
+      } else if (el.id === "reader-ink-export-png-btn" || el.id === "reader-ink-export-pdf-btn") {
+        el.style.display = readerInkMode ? "inline-flex" : "none";
       } else if (readerInkControlsCollapsed) {
         el.style.display = "none";
       } else {
@@ -1083,7 +1085,7 @@ window.clearReaderInk = function () {
 };
 
 function captureReaderContentCanvas() {
-  const readerRoot = document.getElementById("reader");
+  const readerRoot = document.getElementById("reader-content-wrap");
   if (!readerRoot) return Promise.reject(new Error("no-content"));
   if (readerInkPointerDown) {
     // Cizim devam ederken export alinirsa son stroke da gorunsun.
@@ -1091,6 +1093,7 @@ function captureReaderContentCanvas() {
   }
   const w = Math.max(320, Math.ceil(readerRoot.clientWidth || 320));
   const h = Math.max(240, Math.ceil(readerRoot.scrollHeight || 240));
+  const pad = 28;
   const scale = 2;
   const clone = readerRoot.cloneNode(true);
   clone.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
@@ -1148,14 +1151,16 @@ function captureReaderContentCanvas() {
   });
 
   const xhtml = new XMLSerializer().serializeToString(clone);
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w * scale}" height="${h * scale}" viewBox="0 0 ${w} ${h}"><foreignObject x="0" y="0" width="${w}" height="${h}">${xhtml}</foreignObject></svg>`;
+  const svgW = w + pad * 2;
+  const svgH = h + pad * 2;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${svgW * scale}" height="${svgH * scale}" viewBox="0 0 ${svgW} ${svgH}"><rect x="0" y="0" width="${svgW}" height="${svgH}" fill="#ffffff"/><foreignObject x="${pad}" y="${pad}" width="${w}" height="${h}">${xhtml}</foreignObject></svg>`;
   const data = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = function () {
       const c = document.createElement("canvas");
-      c.width = Math.floor(w * scale);
-      c.height = Math.floor(h * scale);
+      c.width = Math.floor(svgW * scale);
+      c.height = Math.floor(svgH * scale);
       const x = c.getContext("2d");
       if (!x) return reject(new Error("no-ctx"));
       x.fillStyle = "#ffffff";
@@ -1889,9 +1894,8 @@ function processAndRenderText() {
       <button class="toolbar-btn" data-ink-role="tool" id="reader-ink-undo-btn" onclick="undoReaderInk()" style="display:none;" title="Geri al">↶</button>
       <button class="toolbar-btn" data-ink-role="tool" id="reader-ink-redo-btn" onclick="redoReaderInk()" style="display:none;" title="İleri al">↷</button>
       <button class="toolbar-btn" data-ink-role="tool" onclick="clearReaderInk()" title="Bu metindeki çizimleri temizle">🧽</button>
-      <button class="toolbar-btn" data-ink-role="tool" onclick="exportReaderInkImage('png')" title="PNG dışa aktar">🖼️</button>
-      <button class="toolbar-btn" data-ink-role="tool" onclick="exportReaderInkImage('jpeg')" title="JPG dışa aktar">🖼️</button>
-      <button class="toolbar-btn" data-ink-role="tool" onclick="exportReaderInkPdf()" title="PDF dışa aktar">📄</button>
+      <button class="toolbar-btn" data-ink-role="tool" id="reader-ink-export-png-btn" onclick="exportReaderInkImage('png')" title="PNG dışa aktar">🖼️</button>
+      <button class="toolbar-btn" data-ink-role="tool" id="reader-ink-export-pdf-btn" onclick="exportReaderInkPdf()" title="PDF dışa aktar">📄</button>
       <span id="reader-ink-hint" data-ink-role="tool" style="display:none; color:var(--text-dim); font-size:0.8rem;">Kalem açık: metin tıklamaları geçici kapalı</span>
       <button class="toolbar-btn" data-ink-role="main" onclick="toggleReaderNotesPanel()" title="Kelime/cümle notlarını aç">📝</button>
       <button class="toolbar-btn" data-ink-role="main" onclick="toggleReaderNotebookPanel()" title="Serbest defter alanını aç">📓</button>
