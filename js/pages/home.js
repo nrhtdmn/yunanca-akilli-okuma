@@ -4,6 +4,7 @@
 let currentReadingWorkMeta = null;
 let readerSelectionBindingDone = false;
 let readerFontScale = Number(localStorage.getItem("y_reader_font_scale") || "1");
+let readerNotesPanelOpen = false;
 window.savedReadingSearchQuery = window.savedReadingSearchQuery || "";
 window.savedReadingCategoryFilter = window.savedReadingCategoryFilter || "all";
 
@@ -638,6 +639,152 @@ function readingCompletionKey(meta, rawText) {
   return "";
 }
 
+function getReadingNoteContextKey() {
+  const rawText = String(document.getElementById("input-text")?.value || "").trim();
+  if (!rawText) return "";
+  const k = readingCompletionKey(currentReadingWorkMeta, rawText);
+  if (k) return k;
+  return `text:${hashReadingText(rawText)}`;
+}
+
+function getReaderNotesStore() {
+  if (!window._readerNotesStore || typeof window._readerNotesStore !== "object") {
+    try {
+      window._readerNotesStore = JSON.parse(localStorage.getItem("y_reader_notes_v1") || "{}");
+    } catch (e) {
+      window._readerNotesStore = {};
+    }
+  }
+  return window._readerNotesStore;
+}
+
+function persistReaderNotesStore() {
+  try {
+    localStorage.setItem("y_reader_notes_v1", JSON.stringify(getReaderNotesStore()));
+  } catch (e) {}
+}
+
+function getCurrentReaderNotes() {
+  const key = getReadingNoteContextKey();
+  if (!key) return [];
+  const store = getReaderNotesStore();
+  const arr = store[key];
+  return Array.isArray(arr) ? arr : [];
+}
+
+function upsertCurrentReaderNote(note) {
+  const key = getReadingNoteContextKey();
+  if (!key) return false;
+  const store = getReaderNotesStore();
+  if (!Array.isArray(store[key])) store[key] = [];
+  const idx = store[key].findIndex((n) => n && n.id === note.id);
+  if (idx === -1) store[key].unshift(note);
+  else store[key][idx] = note;
+  persistReaderNotesStore();
+  return true;
+}
+
+function deleteCurrentReaderNote(noteId) {
+  const key = getReadingNoteContextKey();
+  if (!key) return;
+  const store = getReaderNotesStore();
+  const arr = Array.isArray(store[key]) ? store[key] : [];
+  store[key] = arr.filter((n) => n && n.id !== noteId);
+  persistReaderNotesStore();
+}
+
+window.toggleReaderNotesPanel = function () {
+  readerNotesPanelOpen = !readerNotesPanelOpen;
+  const panel = document.getElementById("reader-notes-panel");
+  if (panel) panel.style.display = readerNotesPanelOpen ? "block" : "none";
+  if (readerNotesPanelOpen) window.renderReaderNotesPanel();
+};
+
+window.renderReaderNotesPanel = function () {
+  const panel = document.getElementById("reader-notes-panel");
+  if (!panel) return;
+  const notes = getCurrentReaderNotes();
+  const listHtml = notes.length
+    ? notes.map((n, idx) => {
+        const quote = String(n.quote || "").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        const body = String(n.note || "").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        const dt = new Date(Number(n.updatedAt || n.createdAt || Date.now())).toLocaleString("tr-TR");
+        return `<div style="border:1px solid var(--border); border-radius:8px; padding:10px; margin-bottom:8px; background:var(--surface);">
+          ${quote ? `<div style="font-size:0.85rem; color:var(--accent2); margin-bottom:6px;">“${quote}”</div>` : ""}
+          <div style="white-space:pre-wrap; color:var(--text); line-height:1.5;">${body}</div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+            <small style="color:var(--text-dim);">${dt}</small>
+            <button class="secondary-btn" style="padding:5px 8px; font-size:0.78rem; border-color:var(--error); color:var(--error);" onclick="deleteReaderNoteByIndex(${idx})">Sil</button>
+          </div>
+        </div>`;
+      }).join("")
+    : `<div style="color:var(--text-dim); font-size:0.9rem;">Henüz not yok. Metinden seçim yapıp not düşebilirsiniz.</div>`;
+  const selectedText = (window.lastReaderSelectionMeta && window.lastReaderSelectionMeta.text) ? window.lastReaderSelectionMeta.text : "";
+  panel.innerHTML = `
+    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+      <button class="toolbar-btn" onclick="saveReaderNoteFromComposer()" title="Aşağıdaki notu kaydet">💾 Notu Kaydet</button>
+      <button class="toolbar-btn" onclick="prefillReaderNoteFromSelection()" title="Seçili metni alıntıya taşı">✍️ Seçimi Ekle</button>
+      <button class="toolbar-btn" onclick="clearReaderNoteComposer()" title="Not alanını temizle">🧹 Temizle</button>
+    </div>
+    <input id="reader-note-quote" class="auth-input" style="margin-bottom:8px; padding:10px;" placeholder="Alıntı (opsiyonel)" value="${String(selectedText).replace(/"/g, "&quot;")}">
+    <textarea id="reader-note-body" class="auth-input" style="min-height:100px; padding:10px; margin-bottom:10px; resize:vertical;" placeholder="Bu kelime/cümle hakkında notunuz..."></textarea>
+    <div style="max-height:260px; overflow:auto; padding-right:4px;">${listHtml}</div>
+  `;
+};
+
+window.prefillReaderNoteFromSelection = function () {
+  const quoteInput = document.getElementById("reader-note-quote");
+  if (!quoteInput) return;
+  const txt = (window.lastReaderSelectionMeta && window.lastReaderSelectionMeta.text) || String(window.getSelection?.() || "").trim();
+  if (!txt) {
+    showToastMessage("Önce metinden bir kelime/cümle seçin.");
+    return;
+  }
+  quoteInput.value = txt;
+};
+
+window.clearReaderNoteComposer = function () {
+  const quoteInput = document.getElementById("reader-note-quote");
+  const bodyInput = document.getElementById("reader-note-body");
+  if (quoteInput) quoteInput.value = "";
+  if (bodyInput) bodyInput.value = "";
+};
+
+window.saveReaderNoteFromComposer = function () {
+  const quoteInput = document.getElementById("reader-note-quote");
+  const bodyInput = document.getElementById("reader-note-body");
+  const quote = String(quoteInput?.value || "").trim();
+  const note = String(bodyInput?.value || "").trim();
+  if (!quote && !note) {
+    showToastMessage("Not için metin yazın.");
+    return;
+  }
+  const now = Date.now();
+  const payload = {
+    id: `rn_${now}_${Math.random().toString(36).slice(2, 7)}`,
+    quote,
+    note,
+    createdAt: now,
+    updatedAt: now,
+  };
+  if (!upsertCurrentReaderNote(payload)) {
+    showToastMessage("Önce bir metin yükleyin.");
+    return;
+  }
+  if (bodyInput) bodyInput.value = "";
+  showToastMessage("📝 Not kaydedildi (bu cihazda).");
+  window.renderReaderNotesPanel();
+};
+
+window.deleteReaderNoteByIndex = function (idx) {
+  const notes = getCurrentReaderNotes();
+  if (!Array.isArray(notes) || idx < 0 || idx >= notes.length) return;
+  const note = notes[idx];
+  if (!note || !note.id) return;
+  deleteCurrentReaderNote(note.id);
+  window.renderReaderNotesPanel();
+};
+
 function isReadingCompletionKeyDone(key) {
   if (!key) return false;
   const state = getCurrentUserReadingState();
@@ -1094,6 +1241,7 @@ function processAndRenderText() {
       <button class="toolbar-btn" onclick="adjustReaderFontSize(-0.1)" title="Yazıyı küçült">A-</button>
       <button class="toolbar-btn" onclick="adjustReaderFontSize(0.1)" title="Yazıyı büyüt">A+</button>
       <button class="toolbar-btn" onclick="goToGrammarForCurrentReadingText()" title="Metni analiz edip uygun konu anlatımına git">🧠 Gramere Git</button>
+      <button class="toolbar-btn" onclick="toggleReaderNotesPanel()" title="Kelime/cümle notlarını aç">📝 Notlar</button>
       <button class="toolbar-btn" onclick="persistCurrentReadingState()" title="Okuma değişikliklerini kalıcı kaydet">💾 Değişiklikleri Kaydet</button>
       <button class="${completionBtnClass}" id="reader-completion-mark-btn" onclick="markCurrentReadingCompleted()" title="${completionTitleAttr}">${completionLabel}</button>
       <button class="toolbar-btn" id="reader-completion-clear-btn" onclick="clearCurrentReadingCompleted()" ${clearDisabledAttr} title="Tamamlandı işaretini kaldır">↩️ İptal</button>
@@ -1101,6 +1249,10 @@ function processAndRenderText() {
 
       </div>`;
   readerDiv.appendChild(toolbar);
+  const notesPanel = document.createElement("div");
+  notesPanel.id = "reader-notes-panel";
+  notesPanel.style.cssText = "display:none; margin:10px 0 15px 0; border:1px solid var(--border); border-radius:10px; padding:10px; background:var(--surface-alt);";
+  readerDiv.appendChild(notesPanel);
 
   globalTextForTTS = "";
   allWordSpans = [];
@@ -1134,6 +1286,11 @@ function processAndRenderText() {
   });
   applySavedHighlightsToReader(rawText);
   applyReaderFontSize();
+  if (readerNotesPanelOpen) {
+    const panel = document.getElementById("reader-notes-panel");
+    if (panel) panel.style.display = "block";
+    window.renderReaderNotesPanel();
+  }
   updateReadingProgressForText(rawText);
   renderDecksAccordion();
   if (typeof renderSavedReadingWorks === "function") renderSavedReadingWorks();
