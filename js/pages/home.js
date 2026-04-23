@@ -112,6 +112,9 @@ function loadUserData() {
   if (!dbUserData[currentUsername].readingProgress) {
     dbUserData[currentUsername].readingProgress = {};
   }
+  if (!dbUserData[currentUsername].readingCompletedIds || typeof dbUserData[currentUsername].readingCompletedIds !== "object") {
+    dbUserData[currentUsername].readingCompletedIds = {};
+  }
   const data = dbUserData[currentUsername];
   userDecks = data.decks || { "Genel Kelimeler": [] };
   userCustomDict = new Map(Object.entries(data.customDict || {}));
@@ -549,10 +552,14 @@ function renderTextLibrary() {
         // O seviyedeki metinleri kendi içindeki KUTUCUKLAR (grid) olarak listeliyoruz
         html += `<div class="text-grid" style="margin-bottom: 25px;">`;
         textsInCat.forEach((item) => {
+          const done = typeof isLibraryCatalogTextDone === "function" && isLibraryCatalogTextDone(item.id);
+          const cardClass = done ? "text-card text-card--reading-done" : "text-card";
+          const tick = done ? '<span class="reading-done-badge" title="Tamamlandı olarak işaretlediniz">✓</span>' : "";
+          const playLine = done ? "📖 Tekrar aç ➔" : "📖 Oku ➔";
           html += `
-            <div class="text-card" onclick="openSampleText('${item.id}')">
-              <div class="text-card-title">${item.title}</div>
-              <div class="text-card-play">📖 Oku ➔</div>
+            <div class="${cardClass}" onclick="openSampleText('${item.id}')">
+              <div class="text-card-title">${item.title}${tick}</div>
+              <div class="text-card-play">${playLine}</div>
             </div>`;
         });
         html += `</div>`;
@@ -604,8 +611,88 @@ function getCurrentUserReadingState() {
   if (!data.readingProgress || typeof data.readingProgress !== "object") {
     data.readingProgress = {};
   }
+  if (!data.readingCompletedIds || typeof data.readingCompletedIds !== "object") {
+    data.readingCompletedIds = {};
+  }
   return data;
 }
+
+/** Okuma tamamlama anahtarı (örnek metin, kayıt, URL vb.) */
+function readingCompletionKey(meta, rawText) {
+  const m = meta || {};
+  if (m.sourceType === "saved" && m.sourceId != null && String(m.sourceId).length) {
+    return `saved:${m.sourceId}`;
+  }
+  if (m.sourceType && m.sourceId != null && String(m.sourceId).length) {
+    return `${m.sourceType}:${m.sourceId}`;
+  }
+  const text = String(rawText || "").trim();
+  if (text) return `text:${hashReadingText(text)}`;
+  return "";
+}
+
+function isReadingCompletionKeyDone(key) {
+  if (!key) return false;
+  const state = getCurrentUserReadingState();
+  if (!state || !state.readingCompletedIds || typeof state.readingCompletedIds !== "object") return false;
+  return Number(state.readingCompletedIds[key] || 0) > 0;
+}
+
+/** Katalog metni: doğrudan sample:id veya bu metinden kaydedilmiş çalışmada saved:rw tamamlandıysa */
+function isLibraryCatalogTextDone(itemId) {
+  if (!itemId || !getCurrentUserReadingState()) return false;
+  if (isReadingCompletionKeyDone(`sample:${itemId}`)) return true;
+  const state = getCurrentUserReadingState();
+  const works = state.readingWorks;
+  if (!Array.isArray(works)) return false;
+  return works.some((w) => {
+    if (!w || w.sourceType !== "sample" || w.sourceId !== itemId) return false;
+    return isReadingCompletionKeyDone(`saved:${w.id}`);
+  });
+}
+
+function setReadingCompletionDone(key, done) {
+  if (!key) return false;
+  const state = getCurrentUserReadingState();
+  if (!state) return false;
+  if (!state.readingCompletedIds || typeof state.readingCompletedIds !== "object") {
+    state.readingCompletedIds = {};
+  }
+  if (done) state.readingCompletedIds[key] = Date.now();
+  else delete state.readingCompletedIds[key];
+  if (typeof syncCloudData === "function") syncCloudData();
+  else if (typeof saveDb === "function") saveDb();
+  return true;
+}
+
+window.toggleCurrentReadingCompleted = function () {
+  if (!requireAuth(1)) return;
+  const rawText = String(document.getElementById("input-text")?.value || "").trim();
+  if (!rawText) {
+    showToastMessage("Önce bir metin yükleyin.");
+    return;
+  }
+  const key = readingCompletionKey(currentReadingWorkMeta, rawText);
+  if (!key) {
+    showToastMessage("Bu metin için tamamlama anahtarı oluşturulamadı.");
+    return;
+  }
+  const nowDone = !isReadingCompletionKeyDone(key);
+  setReadingCompletionDone(key, nowDone);
+  const btn = document.getElementById("reader-completion-btn");
+  if (btn) {
+    btn.classList.toggle("reader-completion-btn--done", nowDone);
+    btn.textContent = nowDone ? "✓ Tamamlandı" : "✅ Bitirdim";
+    btn.title = nowDone
+      ? "Tekrar çalışmak için tamamlanmayı kaldırın"
+      : "Bu metni bitirdiğinizi işaretleyin; listede tik görünür";
+  }
+  try {
+    if (typeof renderTextLibrary === "function") renderTextLibrary();
+  } catch (e) {}
+  if (typeof renderSavedReadingWorks === "function") renderSavedReadingWorks();
+  showToastMessage(nowDone ? "✅ Metin tamamlandı olarak işaretlendi." : "Tamamlama işareti kaldırıldı.");
+};
 
 function getCurrentReaderTokenCount() {
   if (!Array.isArray(allWordSpans)) return 0;
@@ -919,6 +1006,15 @@ function processAndRenderText() {
   readerDiv.innerHTML = "";
   readerDiv.style.display = "block";
 
+  const completionKey = readingCompletionKey(currentReadingWorkMeta, rawText);
+  const completionDone = completionKey && isReadingCompletionKeyDone(completionKey);
+  const completionBtnClass = completionDone ? "toolbar-btn reader-completion-btn--done" : "toolbar-btn";
+  const completionLabel = completionDone ? "✓ Tamamlandı" : "✅ Bitirdim";
+  const completionTitle = completionDone
+    ? "Tekrar çalışmak için tamamlanmayı kaldırın"
+    : "Bitirdiğiniz metni işaretleyin; okuma listesinde tik görünür (yalnızca siz işaretlersiniz)";
+  const completionTitleAttr = String(completionTitle).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+
   const toolbar = document.createElement("div");
   toolbar.className = "reader-toolbar";
   toolbar.innerHTML = `
@@ -931,6 +1027,7 @@ function processAndRenderText() {
       <button class="toolbar-btn" onclick="adjustReaderFontSize(0.1)" title="Yazıyı büyüt">A+</button>
       <button class="toolbar-btn" onclick="goToGrammarForCurrentReadingText()" title="Metni analiz edip uygun konu anlatımına git">🧠 Gramere Git</button>
       <button class="toolbar-btn" onclick="persistCurrentReadingState()" title="Okuma değişikliklerini kalıcı kaydet">💾 Değişiklikleri Kaydet</button>
+      <button class="${completionBtnClass}" id="reader-completion-btn" onclick="toggleCurrentReadingCompleted()" title="${completionTitleAttr}">${completionLabel}</button>
     <button class="secondary-btn" onclick="clearReader()" style="border-color:var(--error); color:var(--error); padding: 5px 10px; font-size: 0.85rem; margin-left: 5px;" title="Okuma alanını temizle">🗑️ Temizle</button>
 
       </div>`;
@@ -1059,7 +1156,7 @@ window.saveCurrentReadingWork = function () {
   if (existingIdx >= 0) state.readingWorks[existingIdx] = payload;
   else state.readingWorks.unshift(payload);
   currentReadingWorkMeta = {
-    sourceType: payload.sourceType,
+    sourceType: "saved",
     sourceId: payload.id,
     title: payload.title,
   };
@@ -1102,7 +1199,7 @@ window.openSavedReadingWork = function (workId) {
   if (!work) return;
   document.getElementById("input-text").value = work.text || "";
   currentReadingWorkMeta = {
-    sourceType: work.sourceType || "saved",
+    sourceType: "saved",
     sourceId: work.id,
     title: work.title || "Kaydedilen metin",
   };
@@ -1158,10 +1255,15 @@ window.renderSavedReadingWorks = function () {
       const pct = Number(prog.percent || 0);
       const dateText = new Date(w.updatedAt || w.createdAt || Date.now()).toLocaleString("tr-TR");
       const cat = (w.category || "Genel").trim() || "Genel";
-      return `<div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; padding:10px; border:1px solid var(--border); border-radius:8px; background:var(--surface);">
+      const rwDone =
+        typeof isReadingCompletionKeyDone === "function" &&
+        isReadingCompletionKeyDone(`saved:${w.id}`);
+      const tick = rwDone ? ' <span class="reading-done-badge" title="Tamamlandı">✓</span>' : "";
+      const doneNote = rwDone ? " • <span style='color:var(--success);'>Bitirdiğinizi işaretlediniz</span>" : "";
+      return `<div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; padding:10px; border:1px solid var(--border); border-radius:8px; background:var(--surface);${rwDone ? " border-color: rgba(34, 197, 94, 0.45);" : ""}">
         <div style="min-width:0;">
-          <div style="font-weight:bold; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${w.title}</div>
-          <div style="font-size:0.82rem; color:var(--text-dim);">Kategori: ${cat} • Son çalışma: ${dateText} • %${pct} tamamlandı</div>
+          <div style="font-weight:bold; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${w.title}${tick}</div>
+          <div style="font-size:0.82rem; color:var(--text-dim);">Kategori: ${cat} • Son çalışma: ${dateText} • %${pct} tamamlandı${doneNote}</div>
         </div>
         <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
           <button class="secondary-btn" style="padding:7px 10px; font-size:0.82rem;" onclick="openSavedReadingWork('${w.id}')">Aç</button>

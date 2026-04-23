@@ -86,6 +86,11 @@ function ingestUserdataDoc(doc) {
       const t = Number(prog[k] && prog[k].updatedAt || 0);
       if (t > ts) ts = t;
     });
+    const comp = (u.readingCompletedIds && typeof u.readingCompletedIds === "object") ? u.readingCompletedIds : {};
+    Object.keys(comp).forEach((k) => {
+      const t = Number(comp[k] || 0);
+      if (t > ts) ts = t;
+    });
     return ts;
   };
 
@@ -109,6 +114,16 @@ function ingestUserdataDoc(doc) {
         (localTs >= cloudTs && localUserData.readingProgress)
           ? localUserData.readingProgress
           : (cloudUserData.readingProgress || localUserData.readingProgress || {}),
+      readingCompletedIds: (() => {
+        const a = (localUserData.readingCompletedIds && typeof localUserData.readingCompletedIds === "object")
+          ? localUserData.readingCompletedIds
+          : {};
+        const b = (cloudUserData.readingCompletedIds && typeof cloudUserData.readingCompletedIds === "object")
+          ? cloudUserData.readingCompletedIds
+          : {};
+        if (localTs >= cloudTs) return { ...b, ...a };
+        return { ...a, ...b };
+      })(),
     };
   });
   applyCloudUserData();
@@ -355,6 +370,9 @@ function syncCloudData() {
     readingHighlights: window.dbUserData[uname]?.readingHighlights || {},
     readingWorks: Array.isArray(window.dbUserData[uname]?.readingWorks) ? window.dbUserData[uname].readingWorks : [],
     readingProgress: window.dbUserData[uname]?.readingProgress || {},
+    readingCompletedIds: (window.dbUserData[uname]?.readingCompletedIds && typeof window.dbUserData[uname].readingCompletedIds === "object")
+      ? window.dbUserData[uname].readingCompletedIds
+      : {},
   };
   saveDb();
 }
