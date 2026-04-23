@@ -5,6 +5,9 @@ window.db = null;
 window.TEACHER_PUBLIC_PRACTICES_LIST = [];
 window.dbTrafficStats = {};
 
+/** Okuma "Bitirdim" tikleri — userdata yerine ayrı belgede (e-posta noktaları / merge sınırı sorunları olmadan tüm cihazlar) */
+var READING_COMPLETED_V1 = "reading_completed_v1";
+
 try {
   const firebaseConfig = {
     apiKey: "AIzaSyBD0BwWNj1ypc2oMk_ZndkwlqUsimC8Y4E",
@@ -142,6 +145,55 @@ function ingestUserdataDoc(doc) {
   applyCloudUserData();
 }
 
+function mergeReadingCompletedPatchIntoUser(uname, patch) {
+  if (!uname || !window.dbUserData || !window.dbUserData[uname]) return;
+  if (!patch || typeof patch !== "object") return;
+  const cur =
+    window.dbUserData[uname].readingCompletedIds && typeof window.dbUserData[uname].readingCompletedIds === "object"
+      ? window.dbUserData[uname].readingCompletedIds
+      : {};
+  const out = { ...cur };
+  Object.keys(patch).forEach((k) => {
+    const m = Math.max(Number(out[k] || 0), Number(patch[k] || 0));
+    if (m > 0) out[k] = m;
+    else delete out[k];
+  });
+  window.dbUserData[uname].readingCompletedIds = out;
+}
+
+/** global/reading_completed_v1 — her alan bir kullanıcı adı/e-postası, değer tamamlama anahtarı → zaman damgası */
+function ingestReadingCompletedDoc(doc) {
+  if (!doc || !doc.exists) return;
+  const data = doc.data() || {};
+  if (!window.dbUserData) window.dbUserData = typeof dbUserData !== "undefined" && dbUserData ? dbUserData : {};
+  Object.keys(data).forEach((uname) => {
+    mergeReadingCompletedPatchIntoUser(uname, data[uname]);
+  });
+  if (typeof dbUserData !== "undefined") dbUserData = window.dbUserData;
+  applyCloudUserData();
+}
+
+/**
+ * Sadece okuma tamamlama haritasını buluta yazar (userdata ile aynı anda kalır; bu belge cihazlar arası güvenilir kaynak).
+ * @returns {Promise<void>}
+ */
+window.pushReadingCompletedToFirestore = function (uname) {
+  if (!window.useFirebase || !window.db || !uname) return Promise.resolve();
+  const row = window.dbUserData && window.dbUserData[uname];
+  const ids =
+    row && row.readingCompletedIds && typeof row.readingCompletedIds === "object" ? row.readingCompletedIds : {};
+  const sanitized = {};
+  Object.keys(ids).forEach((k) => {
+    const n = Number(ids[k]);
+    if (Number.isFinite(n) && n > 0) sanitized[k] = n;
+  });
+  return window.db
+    .collection("global")
+    .doc(READING_COMPLETED_V1)
+    .set({ [uname]: sanitized }, { merge: true })
+    .then(() => undefined);
+};
+
 function ingestAnnouncementsDoc(doc) {
   if (!doc.exists) return;
   window.dbAnnouncements.length = 0;
@@ -260,9 +312,20 @@ async function fetchFromFirebase() {
 
     // ÖNEMLİ: finishInit/loadUserData, Firestore'dan ilk veri gelmeden çalışırsa boş profil
     // saveDb() ile buluttaki userdata/users belgelerinin üzerine yazılabiliyordu.
-    const [usersSnap, userdataSnap, annSnap, teacherPubSnap, trafficSnap, lessonsColSnap, lessonsLegacySnap] = await Promise.all([
+    const readingDoneRef = window.db.collection("global").doc(READING_COMPLETED_V1);
+    const [
+      usersSnap,
+      userdataSnap,
+      readingDoneSnap,
+      annSnap,
+      teacherPubSnap,
+      trafficSnap,
+      lessonsColSnap,
+      lessonsLegacySnap,
+    ] = await Promise.all([
       usersRef.get(),
       userdataRef.get(),
+      readingDoneRef.get(),
       annRef.get(),
       teacherPubRef.get(),
       trafficRef.get(),
@@ -272,6 +335,7 @@ async function fetchFromFirebase() {
 
     ingestUsersDoc(usersSnap);
     ingestUserdataDoc(userdataSnap);
+    ingestReadingCompletedDoc(readingDoneSnap);
     ingestAnnouncementsDoc(annSnap);
     ingestTeacherPublicPracticesDoc(teacherPubSnap);
     ingestTrafficDoc(trafficSnap);
@@ -284,6 +348,9 @@ async function fetchFromFirebase() {
     // İlk okuma tamamlandıktan sonra UI boot — canlı dinleyiciler aynı veriyi günceller
     usersRef.onSnapshot(ingestUsersDoc, (err) => console.error("Firestore global/users dinleyicisi:", err));
     userdataRef.onSnapshot(ingestUserdataDoc, (err) => console.error("Firestore global/userdata dinleyicisi:", err));
+    readingDoneRef.onSnapshot(ingestReadingCompletedDoc, (err) =>
+      console.error("Firestore global/reading_completed_v1 dinleyicisi:", err),
+    );
     annRef.onSnapshot(ingestAnnouncementsDoc, (err) => console.error("Firestore global/announcements dinleyicisi:", err));
     teacherPubRef.onSnapshot(ingestTeacherPublicPracticesDoc, (err) =>
       console.error("Firestore teacher_public_practices:", err),

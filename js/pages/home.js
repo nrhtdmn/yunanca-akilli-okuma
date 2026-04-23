@@ -670,16 +670,18 @@ function setReadingCompletionDone(key, done) {
   let syncPromise = Promise.resolve();
   if (typeof syncCloudData === "function") syncPromise = syncCloudData() || Promise.resolve();
   else if (typeof saveDb === "function") syncPromise = saveDb() || Promise.resolve();
-  if (syncPromise && typeof syncPromise.then === "function") {
-    syncPromise.catch(function (err) {
-      console.error("Firestore userdata (readingCompletedIds)", err);
-      if (typeof showToastMessage === "function") {
-        showToastMessage(
-          "Tamamlama bu cihazda kaydedildi; buluta yazılamadı. İnternetinizi kontrol edip bir kez daha “Bitirdim”e basın.",
-        );
-      }
-    });
-  }
+  const pushDone =
+    typeof window.pushReadingCompletedToFirestore === "function" && typeof currentUsername !== "undefined" && currentUsername
+      ? window.pushReadingCompletedToFirestore(currentUsername)
+      : Promise.resolve();
+  Promise.all([syncPromise, pushDone]).catch(function (err) {
+    console.error("Firestore okuma tamamlama / userdata", err);
+    if (typeof showToastMessage === "function") {
+      showToastMessage(
+        "Tamamlama bu cihazda kaydedildi; buluta yazılamadı. İnternetinizi kontrol edip bir kez daha “Bitirdim”e basın.",
+      );
+    }
+  });
   return true;
 }
 
