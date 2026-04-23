@@ -890,7 +890,6 @@ window.refreshCurrentReadingHighlightsUI = function () {
   if (!text || !Array.isArray(allWordSpans) || !allWordSpans.length) return;
   allWordSpans.forEach((span) => span.classList.remove("highlighted"));
   applySavedHighlightsToReader(text);
-  updateReadingProgressForText(text);
 };
 
 /**
