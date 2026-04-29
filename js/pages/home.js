@@ -4308,6 +4308,13 @@ function checkPracticeAnswers() {
     fb.innerHTML = `Gelişim var! ${totalCount} sorudan ${correctCount} tanesini doğru yaptınız. Kırmızı olanları tekrar inceleyin.`;
     fb.style.color = "var(--accent2)";
   }
+
+  // Yazmalı boşlukta "Cevabı Gör" butonu yalnızca sonuçtan sonra aktif olsun.
+  document.querySelectorAll(".cloze-reveal-btn").forEach((btn) => {
+    btn.style.display = "inline-flex";
+    btn.disabled = false;
+    btn.style.opacity = "1";
+  });
 }
 
 /* ==========================================
@@ -4583,7 +4590,7 @@ function tokenizePracTextLine(line, questionsArray) {
 
         html += `<span style="white-space: nowrap; display:inline-flex; align-items:center;">
                         <input type="text" class="prac-input cloze-inline-input" id="ans-${q.id}" autocomplete="off" placeholder="..." onclick="event.stopPropagation()">
-                        <button class="secondary-btn" style="padding:2px 6px; font-size:0.9rem; border:1px solid var(--accent2); color:var(--accent2); background:transparent; border-radius:4px; cursor:pointer; margin-left:4px;" onclick="event.stopPropagation(); document.getElementById('ans-${q.id}').value = '${safeAns}'; this.style.opacity='0.5';" title="Cevabı Gör">👁️</button>
+                        <button class="secondary-btn cloze-reveal-btn" style="padding:2px 6px; font-size:0.9rem; border:1px solid var(--accent2); color:var(--accent2); background:transparent; border-radius:4px; cursor:pointer; margin-left:4px; display:none; opacity:0.5;" onclick="event.stopPropagation(); document.getElementById('ans-${q.id}').value = '${safeAns}'; this.style.opacity='0.5';" title="Cevabı Gör" disabled>👁️</button>
                      </span>`;
       } else if (q && q.type === "fill-select") {
         q.isRenderedInline = true;
@@ -4740,9 +4747,38 @@ function clearAdminPracticeFormFields() {
   const qEl = document.getElementById("admin-prac-questions");
   if (idEl) idEl.value = "";
   if (titleEl) titleEl.value = "";
-  if (textEl) textEl.value = "";
+  if (textEl) textEl.innerHTML = "";
   if (qEl) qEl.innerHTML = "";
   if (typeof adminQCount !== "undefined") adminQCount = 0;
+}
+
+function escapeHtmlForEditor(text) {
+  return String(text || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function getAdminPracticeTextValue() {
+  const el = document.getElementById("admin-prac-text");
+  if (!el) return "";
+  let html = (el.innerHTML || "").trim();
+  if (html === "<br>" || html === "<div><br></div>") html = "";
+  return html;
+}
+
+function setAdminPracticeTextValue(rawText) {
+  const el = document.getElementById("admin-prac-text");
+  if (!el) return;
+  const text = String(rawText || "");
+  // Eski düz metin kayıtlarında satır sonlarını koruyup editörde göster.
+  if (!/[<>]/.test(text)) {
+    el.innerHTML = escapeHtmlForEditor(text).replace(/\r?\n/g, "<br>");
+    return;
+  }
+  el.innerHTML = text;
 }
 
 function changeAdminQType(selectElem, qId) {
@@ -4794,7 +4830,7 @@ function savePracticeFromForm() {
   const title = document.getElementById("admin-prac-title").value.trim();
   const level = document.getElementById("admin-prac-level").value;
   const category = document.getElementById("admin-prac-cat").value.trim();
-  const text = document.getElementById("admin-prac-text").value.trim();
+  const text = getAdminPracticeTextValue();
 
   if (!id || !title || !category || !text) {
     showToastMessage(
@@ -4935,7 +4971,7 @@ function loadPracticeToAdminForm(id, source) {
   document.getElementById("admin-prac-title").value = p.title;
   document.getElementById("admin-prac-level").value = p.level;
   document.getElementById("admin-prac-cat").value = p.category;
-  document.getElementById("admin-prac-text").value = p.text;
+  setAdminPracticeTextValue(p.text);
   document.getElementById("admin-prac-questions").innerHTML = "";
   adminQCount = 0;
 
