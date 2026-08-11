@@ -201,6 +201,13 @@ function applyCloudUserData() {
 }
 
 function applyCloudUsers() {
+  if (typeof ensureUnlimitedMembership === 'function' && window.dbUsers) {
+    let anyChanged = false;
+    Object.keys(window.dbUsers).forEach(function (key) {
+      if (ensureUnlimitedMembership(window.dbUsers[key])) anyChanged = true;
+    });
+    if (anyChanged && typeof saveDb === 'function') saveDb();
+  }
   try {
     localStorage.setItem('y_users_db', JSON.stringify(window.dbUsers));
   } catch (e) { /* ignore */ }

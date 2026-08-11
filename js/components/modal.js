@@ -245,7 +245,7 @@ function triggerWordPopup(event, word, contextSentence) {
     return;
   }
 
-  const isLoggedIn = !!currentUser && currentUser.status === 'approved';
+  const isLoggedIn = !!currentUser;
   activeTokenElement = (event && event.target && event.target.classList && event.target.classList.contains("tok")) ? event.target : null;
   if (activeTokenElement) window.activeSelectionTokenElements = [activeTokenElement];
   activeWordString = word; activeContextSentence = contextSentence;

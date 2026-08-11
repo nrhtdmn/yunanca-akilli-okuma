@@ -21,6 +21,7 @@ function submitAuth() {
       return;
     }
     if (row && row.password === p) {
+      if (typeof ensureUnlimitedMembership === "function" && ensureUnlimitedMembership(row)) saveDb();
       currentUser = row;
       currentUsername = u;
       localStorage.setItem("y_currentUser", u);
@@ -53,9 +54,9 @@ function submitAuth() {
     dbUsers[u] = {
       password: p,
       role: "user",
-      status: "pending",
-      isPremium: false,
-      credits: 50,
+      status: "approved",
+      isPremium: true,
+      credits: 999999,
       authProvider: "password",
     };
     if (fullName) dbUsers[u].displayName = fullName;
@@ -77,7 +78,7 @@ function submitAuth() {
     if (typeof renderSavedReadingWorks === "function") renderSavedReadingWorks();
     closeAuthModal();
     updateUserUI();
-    showToastMessage("✅ Kayıt başarılı! Yönetici onaylayana kadar kısıtlı erişimdesiniz.");
+    showToastMessage("✅ Kayıt başarılı! Tüm özellikler sınırsız açık.");
     sendTelegramRegistrationNotice(`Kullanıcı: ${u}${fullName ? " — " + fullName : ""}${regEmail ? " — " + regEmail : ""}`);
   }
 }
@@ -155,15 +156,15 @@ window.syncAuthUserWithApp = async function syncAuthUserWithApp() {
       displayName: user.displayName || "",
       photoURL: user.photoURL || "",
       role: "user",
-      status: "pending",
-      isPremium: false,
-      credits: 50,
+      status: "approved",
+      isPremium: true,
+      credits: 999999,
       emailNotify: true,
     };
     saveDb();
     sendTelegramRegistrationNotice(`Google: ${email}`);
     if (typeof showToastMessage === "function") {
-      showToastMessage("✅ Google hesabı kaydedildi. Yönetici onayından sonra tam erişim.");
+      showToastMessage("✅ Google hesabı kaydedildi. Tüm özellikler sınırsız açık.");
     }
   } else {
     dbu[accountKey].uid = user.uid;
@@ -175,6 +176,9 @@ window.syncAuthUserWithApp = async function syncAuthUserWithApp() {
     saveDb();
   }
 
+  if (typeof ensureUnlimitedMembership === "function" && ensureUnlimitedMembership(dbu[accountKey])) {
+    saveDb();
+  }
   currentUser = dbu[accountKey];
   currentUsername = accountKey;
   localStorage.setItem("y_currentUser", accountKey);
@@ -240,26 +244,29 @@ function logout() {
 }
 
 function requireAuth(actionCost = 1) {
-  if (!currentUser) {
-    showAuthModal();
-    return false;
-  }
-  if (currentUser.status === "pending") {
-    showToastMessage("⚠️ Hesabınız henüz onaylanmadı. Yöneticinin onayını bekleyin.");
-    return false;
-  }
-
-  if (currentUser.role !== "admin" && !currentUser.isPremium) {
-    if (currentUser.credits < actionCost) {
-      document.getElementById("premium-modal").style.display = "flex";
-      return false;
-    }
-    currentUser.credits -= actionCost;
-    saveDb();
-    updateUserUI();
-  }
+  // Üyelik / kredi sistemi kapalı — herkes sınırsız kullanabilir
   return true;
 }
+
+/** Eski pending / kredi kısıtlı hesapları otomatik aç */
+function ensureUnlimitedMembership(user) {
+  if (!user || typeof user !== "object") return false;
+  let changed = false;
+  if (user.status !== "approved") {
+    user.status = "approved";
+    changed = true;
+  }
+  if (!user.isPremium) {
+    user.isPremium = true;
+    changed = true;
+  }
+  if (typeof user.credits !== "number" || user.credits < 999999) {
+    user.credits = 999999;
+    changed = true;
+  }
+  return changed;
+}
+window.ensureUnlimitedMembership = ensureUnlimitedMembership;
 
 function updateUserAdmin(uname, key, val) {
   if (!currentUser || currentUser.role !== "admin") {

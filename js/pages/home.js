@@ -167,10 +167,8 @@ function updateUserUI() {
     badges += `<span class="premium-badge" style="background:#2563eb; color:#fff;">ÖĞRETMEN</span>`;
   else if (currentUser.role === "student")
     badges += `<span class="premium-badge" style="background:#15803d; color:#fff;">ÖĞRENCİ</span>`;
-  else if (currentUser.isPremium)
-    badges += `<span class="premium-badge">PREMIUM</span>`;
   else
-    badges += `<span class="credit-badge">${currentUser.credits} Kredi</span>`;
+    badges += `<span class="premium-badge">ÜYE</span>`;
 
   badges += `</div>`; // user-badge div'i kapandı
 
@@ -197,10 +195,8 @@ function openProfileModal() {
     roleBadge.innerHTML = `<span class="premium-badge" style="background:#2563eb; color:#fff; padding: 6px 12px; font-size:0.85rem;">ÖĞRETMEN</span>`;
   } else if (currentUser.role === "student") {
     roleBadge.innerHTML = `<span class="premium-badge" style="background:#15803d; color:#fff; padding: 6px 12px; font-size:0.85rem;">ÖĞRENCİ</span>`;
-  } else if (currentUser.isPremium) {
-    roleBadge.innerHTML = `<span class="premium-badge" style="padding: 6px 12px; font-size:0.85rem;">👑 PREMIUM ÜYE</span>`;
   } else {
-    roleBadge.innerHTML = `<span style="background: rgba(255,255,255,0.1); color: var(--text-dim); padding: 5px 12px; border-radius: 12px; font-size:0.8rem; font-weight:bold;">ÜYE</span>`;
+    roleBadge.innerHTML = `<span class="premium-badge" style="padding: 6px 12px; font-size:0.85rem;">ÜYE</span>`;
   }
 
   // İSTATİSTİK 1: Toplam Öğrenilen/Kaydedilen Kelime Sayısı
@@ -227,11 +223,9 @@ function openProfileModal() {
   if (currentUser.role === "admin") {
     statusText.innerHTML =
       "<b>Yönetici Yetkisi:</b> Tüm sistem ayarlarını ve üyeleri kontrol edebilirsiniz.";
-  } else if (currentUser.isPremium) {
+  } else {
     statusText.innerHTML =
       "<b>Durum:</b> <span style='color:var(--success)'>Aktif</span><br><small style='color:var(--text-dim)'>Tüm araçlara, çevirilere ve testlere sınırsız erişim hakkınız var.</small>";
-  } else {
-    statusText.innerHTML = `<b>Kalan Kredi:</b> <span style='color:var(--error); font-size:1.2rem; font-weight:bold;'>${currentUser.credits}</span><br><small style='color:var(--text-dim)'>Metin okuma, çeviri ve test işlemleri kredi harcar. Krediniz bittiğinde yöneticiye başvurun.</small>`;
   }
 
   const pe = document.getElementById("profile-contact-email");
